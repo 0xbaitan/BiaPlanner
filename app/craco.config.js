@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
+
+/**
+ * References:
+ *
+ * [1] Wieruch, R. (2020). How to use ESLint in Webpack 5 - Setup Tutorial. [online] robinwieruch.de.
+ *     Available at: https://www.robinwieruch.de/webpack-eslint/ [Accessed 16 Oct. 2024].
+ *
+ */
 const path = require("path");
 
 module.exports = {
@@ -14,12 +22,6 @@ module.exports = {
         poll: 1000, // Polling interval in milliseconds
       };
       return webpackConfig;
-    },
-  },
-
-  style: {
-    postcss: {
-      plugins: [require("tailwindcss"), require("autoprefixer")],
     },
   },
 
