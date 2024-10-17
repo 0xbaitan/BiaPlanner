@@ -2,10 +2,6 @@
   "name": "biaplanner",
   "version": "1.0.0",
   "description": "A kitchen inventory management and recipe planner system as part of my submission for the module: CSC3047 - CIT Project delivered at Queen's University Belfast",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git@gitlab.eeecs.qub.ac.uk:40354098/BiaPlanner.git"
