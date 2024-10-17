@@ -1,0 +1,26 @@
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+FROM base AS builder
+COPY . /usr/src
+WORKDIR /usr/src
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile && \
+    pnpm run -r build && \
+    pnpm deploy --filter=app /prod/app && \
+    pnpm deploy --filter=server /prod/server
+
+FROM base AS app-deployer 
+COPY --from=builder /prod/app /prod/app
+WORKDIR /usr/src
+RUN pnpm -g install serve 
+WORKDIR /prod/app
+EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]
+
+FROM base AS server-deployer 
+COPY --from=builder /prod/server /prod/server
+WORKDIR /prod/server
+EXPOSE 3000
+CMD ["node", "dist/main.js"]

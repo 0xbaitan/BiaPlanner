@@ -1,6 +1,7 @@
 {
   "name": "app",
   "version": "0.1.0",
+  "packageManager": "pnpm@9.12.2",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",

@@ -1,6 +1,7 @@
 {
   "name": "biaplanner",
   "version": "1.0.0",
+  "packageManager": "pnpm@9.12.2",
   "description": "A kitchen inventory management and recipe planner system as part of my submission for the module: CSC3047 - CIT Project delivered at Queen's University Belfast",
   "repository": {
     "type": "git",
@@ -43,9 +44,9 @@
   },
   "private": true,
   "workspaces": [
-    "app",
-    "server",
-    "shared"
+    "packages/app",
+    "packages/server",
+    "packages/shared"
   ],
   "keywords": [
     "\"Food\"",

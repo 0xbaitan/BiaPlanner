@@ -1,0 +1,17 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore .git directory
+.git/
+
+# Ignore all markdown files
+*.md
+
+# Ignore dist directory
+dist/
+
+# Ignore all of the above at any sublevel
+**/node_modules/
+**/.git/
+**/*.md
+**/dist/
