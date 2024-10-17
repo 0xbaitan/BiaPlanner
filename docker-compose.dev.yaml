@@ -6,50 +6,44 @@ services:
     container_name: app
     build: 
       context: .
-      target: app-deployer
-      dockerfile: Dockerfile.prod
+      target: app-dev
+      dockerfile: Dockerfile.dev
     restart: always
     ports:
         - 3000:3000
     volumes:
-      - .:/usr/src/
+      - ./packages/app/src/:/usr/src/packages/app/src
       - /usr/src/node_modules
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
       - WDS_SOCKET_PORT=3000
-      - CHOKIDAR_INTERVAL=300
     stdin_open: true
     tty: true
     networks:
       - biaplanner_link
-    depends_on:
-      - server
 
   server:
     container_name: server
     build:
       context: .
-      target: server-deployer
-      dockerfile: Dockerfile.prod
+      target: server-dev
+      dockerfile: Dockerfile.dev
     restart: always
     ports:
       - 4000:3000
     volumes:
-      - .:/usr/src/
+      - ./packages/server/src:/usr/src/packages/server/src
       - /usr/src/node_modules
     env_file:
       - .env.prod
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - CHOKIDAR_INTERVAL=300
     stdin_open: true
     tty: true
     networks:
       - biaplanner_link 
     
-
-
 networks:
   biaplanner_link:
     driver: bridge
