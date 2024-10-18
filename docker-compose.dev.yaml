@@ -8,7 +8,7 @@ services:
       context: .
       target: app-dev
       dockerfile: Dockerfile.dev
-    restart: always
+    restart: unless-stopped
     ports:
         - 3000:3000
     volumes:
@@ -29,7 +29,7 @@ services:
       context: .
       target: server-dev
       dockerfile: Dockerfile.dev
-    restart: always
+    restart: unless-stopped
     ports:
       - 4000:3000
     volumes:
@@ -44,6 +44,24 @@ services:
     networks:
       - biaplanner_link 
     
+  database:
+    container_name:  database
+    image: mysql:5.7
+    restart: unless-stopped
+    env_file: 
+      - ./.env.dev
+    ports:
+      - 3307:3306
+    expose:
+      - 3306
+    volumes:
+      - data:/var/lib/mysql
+    networks:
+      - biaplanner_link
+
 networks:
   biaplanner_link:
     driver: bridge
+
+volumes:
+  data:

@@ -14,3 +14,6 @@
 
 - **Understanding how pnpm interacts with Docker and writing appropriate Dockerfiles**:  
   pnpm (2015). Working with Docker | pnpm. [online] pnpm.io. Available at: https://pnpm.io/docker [Accessed 17 Oct. 2024].
+
+- **Using mysql in a docker compose setup**:  
+  Chuck, C. (2018). How to Create a MySql Instance with Docker Compose - Chris Chuck - Medium. [online] Medium. Available at: https://medium.com/@chrischuck35/how-to-create-a-mysql-instance-with-docker-compose-1598f3cc1bee [Accessed 18 Oct. 2024].
