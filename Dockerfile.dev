@@ -12,13 +12,13 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
 # App Dev Server
 FROM dev-env AS app-dev
-WORKDIR /usr/src/packages/app
+WORKDIR /usr/src/
 EXPOSE 3000
-CMD ["pnpm", "start"] 
+CMD ["./run.sh", "start-service:app"] 
 
 # Server Dev Environment
 FROM dev-env AS server-dev
 COPY ./packages/server /usr/src/packages/server
-WORKDIR /usr/src/packages/server
+WORKDIR /usr/src/
 EXPOSE 3000
-CMD ["npx", "nodemon", "-L", "--config", "nodemon.json"] 
+CMD ["./run.sh", "start-service:server"] 

@@ -41,6 +41,16 @@ case "$command" in
         docker-compose -f docker-compose.yaml down
     ;;
     
+    "start-service:app")
+        nohup ./run.sh build-watch:shared > /dev/null 2>&1 &
+        pnpm --filter app run start
+    ;;
+    
+    "start-service:server")
+        nohup ./run.sh build-watch:shared > /dev/null 2>&1 &
+        pnpm --filter server run start
+    ;;
+    
     *)
         echo "No valid option was chosen. Please select a valid choice from start, build, end"
     ;;

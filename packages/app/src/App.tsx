@@ -1,8 +1,9 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-
+import { VERSION } from "@biaplanner/shared";
 function App() {
+  console.log(VERSION);
   return (
     <div className="App">
       <header className="App-header">

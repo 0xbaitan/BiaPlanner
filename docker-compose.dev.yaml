@@ -12,7 +12,8 @@ services:
     ports:
         - 3000:3000
     volumes:
-      - ./packages/app/src/:/usr/src/packages/app/src
+      - ./packages/app/:/usr/src/packages/app/
+      - ./packages/shared/:/usr/src/packages/shared/
       - /usr/src/node_modules
     environment:
       - WATCHPACK_POLLING=true
@@ -37,7 +38,8 @@ services:
     ports:
       - 4000:3000
     volumes:
-      - ./packages/server/src:/usr/src/packages/server/src
+      - ./packages/server/:/usr/src/packages/server/
+      - ./packages/shared/:/usr/src/packages/shared/
       - /usr/src/node_modules
     env_file:
       - .env.prod

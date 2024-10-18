@@ -15,3 +15,6 @@ dist/
 **/.git/
 **/*.md
 **/dist/
+
+# Exception for @biaplanner
+!**/node_modules/@biaplanner
