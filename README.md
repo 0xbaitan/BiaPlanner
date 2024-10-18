@@ -19,3 +19,6 @@
 
 - **Using PhpMyAdmin with MySQL in a docker compose setup**:
   Krishnan, K. (2022). MySQL + phpMyAdmin Docker Compose. [online] DEV Community. Available at: https://dev.to/devkiran/mysql-phpmyadmin-docker-compose-54h7 [Accessed 18 Oct. 2024].
+
+- **Resolving no file exists error when trying to log into PhpMyAdmin by checking an example PhpMyAdmin docker-compose.yaml file**:  
+  phpmyadmin (2015). docker/testing/docker-compose/docker-compose.testing-one-socket-host.yml at 2335c3151b93ea6a4cf8779c4c90cb21572b6c50 · phpmyadmin/docker. [online] GitHub. Available at: https://github.com/phpmyadmin/docker/blob/2335c3151b93ea6a4cf8779c4c90cb21572b6c50/testing/docker-compose/docker-compose.testing-one-socket-host.yml#L33 [Accessed 18 Oct. 2024].
