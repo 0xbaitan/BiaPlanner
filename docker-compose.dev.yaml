@@ -22,6 +22,10 @@ services:
     tty: true
     networks:
       - biaplanner_link
+    depends_on:
+      - server
+      - database
+      - phpmyadmin
 
   server:
     container_name: server
@@ -42,12 +46,15 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - biaplanner_link 
+      - biaplanner_link
+    depends_on:
+      - database
+      - phpmyadmin
     
   database:
     container_name:  database
     image: mysql:5.7
-    restart: unless-stopped
+    restart: always
     env_file: 
       - ./.env.dev
     ports:
@@ -58,6 +65,22 @@ services:
       - data:/var/lib/mysql
     networks:
       - biaplanner_link
+  
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:5.2.1-apache
+    restart: always
+    env_file: 
+      - ./.env.dev
+    ports:
+      - 8080:80
+    volumes:
+      - ./data/phpmyadmin.config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - data:/run/mysqld/
+    networks:
+      - biaplanner_link
+    depends_on:
+      - database
 
 networks:
   biaplanner_link:

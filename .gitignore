@@ -1,5 +1,6 @@
 resources/
 data/
+phpmyadmin/
 */**/node_modules
 */**/package-lock.json
 */**/.env.*
