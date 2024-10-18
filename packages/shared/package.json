@@ -1,0 +1,17 @@
+{
+  "name": "@biaplanner/shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "clean": "rm -rf build tsconif.tsbuildinfo",
+    "build": "tsc --incremental",
+    "build:watch": "tsc -w --incremental"
+  },
+  "keywords": [],
+  "author": "Tanish Baidya",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

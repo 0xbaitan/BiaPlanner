@@ -8,27 +8,36 @@ shift 2
 
 case "$command" in
     
-    "build:dev")
+    "docker-build:dev")
         docker-compose -f docker-compose.dev.yaml build
     ;;
     
-    "build:prod")
+    "docker-build:prod")
         docker-compose -f docker-compose.yaml build
     ;;
     
-    "start:dev")
+    "build:shared")
+        pnpm --filter shared run build
+    ;;
+    
+    "build-watch:shared")
+        pnpm --filter shared run build:watch
+    ;;
+    
+    "docker-start:dev")
+        nohup ./run.sh build-watch:shared > /dev/null 2>&1 &
         docker-compose -f docker-compose.dev.yaml up
     ;;
     
-    "start:prod")
+    "docker-start:prod")
         docker-compose -f docker-compose.yaml up
     ;;
     
-    "end:dev")
+    "docker-end:dev")
         docker-compose -f docker-compose.dev.yaml down
     ;;
     
-    "end:prod")
+    "docker-end:prod")
         docker-compose -f docker-compose.yaml down
     ;;
     

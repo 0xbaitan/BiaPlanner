@@ -11,6 +11,7 @@
 
 - **Installation guide for NestJS and official documentation**:  
    Mysliwiec, K. (n.d.). Documentation | NestJS - A progressive Node.js framework. [online] Documentation | NestJS - A progressive Node.js framework. Available at: https://docs.nestjs.com/first-steps [Accessed 16 Oct. 2024].
+   
 - **Understanding how pnpm interacts with Docker and writing appropriate Dockerfiles**:  
   pnpm (2015). Working with Docker | pnpm. [online] pnpm.io. Available at: https://pnpm.io/docker [Accessed 17 Oct. 2024].
 
@@ -22,3 +23,6 @@
 
 - **Resolving no file exists error when trying to log into PhpMyAdmin by checking an example PhpMyAdmin docker-compose.yaml file**:  
   phpmyadmin (2015). docker/testing/docker-compose/docker-compose.testing-one-socket-host.yml at 2335c3151b93ea6a4cf8779c4c90cb21572b6c50 · phpmyadmin/docker. [online] GitHub. Available at: https://github.com/phpmyadmin/docker/blob/2335c3151b93ea6a4cf8779c4c90cb21572b6c50/testing/docker-compose/docker-compose.testing-one-socket-host.yml#L33 [Accessed 18 Oct. 2024].
+
+- **Understanding how to share a package with other packages within the project**:  
+  Davis, A. (2022). Managing a full-stack, multipackage monorepo using pnpm - LogRocket Blog. [online] LogRocket Blog. Available at: https://blog.logrocket.com/managing-full-stack-monorepo-pnpm/#sharing-types-typescript [Accessed 18 Oct. 2024].
