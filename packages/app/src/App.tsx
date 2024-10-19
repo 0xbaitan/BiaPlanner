@@ -17,7 +17,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn Tanisher
+          Learn Tanisherse
         </a>
       </header>
     </div>
