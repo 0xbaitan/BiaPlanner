@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "./logo.svg";
-import "./App.css";
+import "./App.scss";
 import { VERSION } from "@biaplanner/shared";
 function App() {
   console.log(VERSION);
@@ -17,7 +17,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn Tanish
+          Learn Tanisher
         </a>
       </header>
     </div>

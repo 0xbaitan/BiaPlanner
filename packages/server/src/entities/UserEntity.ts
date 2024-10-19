@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { User } from '@biaplanner/shared';
-@Entity()
+@Entity('users')
 export class UserEntity implements User {
   @PrimaryGeneratedColumn()
   id: number;
