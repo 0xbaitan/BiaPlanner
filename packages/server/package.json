@@ -18,6 +18,7 @@
     "migration:run": "typeorm -d src/ormconfig.ts -- migration:run",
     "migration:revert": "typeorm -d src/ormconfig.ts -- migration:revert",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "generate": "nest generate",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

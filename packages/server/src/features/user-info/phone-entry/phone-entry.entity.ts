@@ -3,8 +3,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
 
 @Entity('phone-entries')
 export class PhoneEntryEntity implements PhoneEntry {
@@ -31,6 +33,9 @@ export class PhoneEntryEntity implements PhoneEntry {
 
   @Column({ default: false })
   isLandline?: boolean;
+
+  @ManyToOne(() => UserEntity, (user) => user.phoneEntries)
+  user?: UserEntity;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

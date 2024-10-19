@@ -8,6 +8,12 @@ command=$1
 
 case "$command" in
     
+    "bundle:generate")
+        pnpm --filter server generate module features/$2
+        pnpm --filter server generate service features/$2
+        pnpm --filter server generate controller features/$2
+    ;;
+    
     "migration:generate")
         shift 1
         source .env.dev
