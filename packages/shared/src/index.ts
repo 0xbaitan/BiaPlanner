@@ -2,4 +2,4 @@ import "./types";
 
 export * from "./types";
 
-export const VERSION = "0.1.7";
+export const VERSION = "1.1.7";
