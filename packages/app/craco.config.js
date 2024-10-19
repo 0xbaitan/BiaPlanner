@@ -14,12 +14,11 @@ module.exports = {
   webpack: {
     alias: {
       "@": path.resolve(__dirname, "src/"),
-      "@shared": path.resolve(__dirname, "..", "shared/build"),
     },
     configure: (webpackConfig) => {
       // Modify webpackConfig here if needed
       webpackConfig.watchOptions = {
-        poll: 1000, // Polling interval in milliseconds
+        poll: 300, // Polling interval in milliseconds
       };
       return webpackConfig;
     },
