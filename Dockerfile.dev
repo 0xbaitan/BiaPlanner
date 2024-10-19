@@ -9,7 +9,7 @@ RUN corepack enable
 FROM base AS dev-env
 COPY . /usr/src/
 WORKDIR /usr/src
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm -r install --frozen-lockfile
 
 # App Dev Server
 FROM dev-env AS app-dev
