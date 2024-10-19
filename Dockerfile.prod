@@ -6,7 +6,7 @@ RUN corepack enable
 FROM base AS builder
 COPY . /usr/src
 WORKDIR /usr/src
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile && \
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm recursive install --frozen-lockfile && \
     pnpm run -r build && \
     pnpm deploy --filter=app /prod/app && \
     pnpm deploy --filter=server /prod/server

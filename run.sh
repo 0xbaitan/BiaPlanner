@@ -8,8 +8,20 @@ shift 2
 
 case "$command" in
     
+    "clean:all")
+        rm -rf node_modules pnpm-lock.yaml packages/app/node_modules packages/server/node_modules packages/shared/node_modules packages/app/build packages/server/dist packages/shared/build
+    ;;
+    
+    "install")
+        pnpm recursive install
+    ;;
+    
     "docker-build:dev")
         docker-compose -f docker-compose.dev.yaml build
+    ;;
+    
+    "docker-build-no-cache:dev")
+        docker-compose -f docker-compose.dev.yaml build --no-cache
     ;;
     
     "docker-build:prod")
@@ -48,7 +60,7 @@ case "$command" in
     
     "start-service:server")
         nohup ./run.sh build-watch:shared > /dev/null 2>&1 &
-        pnpm --filter server run start
+        pnpm --filter server run start:dev
     ;;
     
     *)

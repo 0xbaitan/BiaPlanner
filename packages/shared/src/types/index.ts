@@ -1,7 +1,6 @@
-export type Shape = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  radius: number;
-};
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  age: number;
+}

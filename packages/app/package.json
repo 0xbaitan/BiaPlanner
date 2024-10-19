@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.12.2",
   "private": true,
   "dependencies": {
-    "@biaplanner/shared": "file:../shared",
+    "@biaplanner/shared": "workspace:shared",
     "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
