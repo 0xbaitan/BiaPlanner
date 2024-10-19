@@ -1,4 +1,5 @@
 export interface PhoneEntry {
+  id: number;
   countryCode: string;
   countryCallingCode: string;
   phoneNumber: string;

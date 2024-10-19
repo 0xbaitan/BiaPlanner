@@ -4,9 +4,15 @@ export DOCKER_BUILDKIT=1
 
 command=$1
 
-shift 2
+
 
 case "$command" in
+    
+    "migration:generate")
+        shift 1
+        source .env.dev
+        pnpm --filter server run migration:generate $@
+    ;;
     
     "clean:all")
         rm -rf node_modules pnpm-lock.yaml packages/app/node_modules packages/server/node_modules packages/shared/node_modules packages/app/build packages/server/dist packages/shared/build
