@@ -1,14 +1,8 @@
-resources/
-data/
-phpmyadmin/
 */**/node_modules
 */**/package-lock.json
-*/**/.env.*
-*/**/.env
 */**/build 
 */**/dist
 */**/tsconfig.tsbuildinfo
 node_modules
 package-lock.json
-./pnpm-lock.yaml
-.env*
+
