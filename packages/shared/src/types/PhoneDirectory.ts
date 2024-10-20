@@ -1,7 +1,7 @@
 import { User } from "./User";
 
 export interface PhoneEntry {
-  id: number;
+  id?: number;
   countryCode: string;
   countryCallingCode: string;
   phoneNumber: string;
@@ -11,3 +11,4 @@ export interface PhoneEntry {
   isLandline?: boolean;
   user?: User;
 }
+

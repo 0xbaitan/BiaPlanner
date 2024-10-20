@@ -1,0 +1,225 @@
+const yargs = require("yargs/yargs");
+const { hideBin } = require("yargs/helpers");
+const shell = require("shelljs");
+const path = require('path')
+
+function exitWithError(message) {
+  console.error(message);
+  process.exit(1);
+}
+
+function succeedWithMessage(message) {
+  console.log(message);
+  process.exit(0);
+}
+function generateMigration(migrationName) {
+  const migrationPath = path.join('src', 'db', 'migrations', migrationName)
+  const result = shell.exec(
+    `pnpm --filter server run migration:generate ${migrationPath}`
+  );
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
+}
+
+function runMigration() {
+   const result = shell.exec(
+     `pnpm --filter server run migration:run`
+   );
+   if (result.code !== 0) {
+     exitWithError(result.stderr);
+   }
+   succeedWithMessage(result.stdout);
+}
+
+function buildDocker(prod, dev, noCache = false) {
+  let result;
+  if (dev) {
+    result = shell.exec(
+      `docker-compose -f docker-compose.dev.yaml build ${noCache ? "--no-cache" : ""}`
+    );
+  } else if (prod) {
+    result = shell.exec(
+      `docker-compose -f docker-compose.yaml build ${noCache ? "--no-cache" : ""}`
+    );
+  } else {
+    exitWithError("Unexpected error");
+  }
+
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  } else {
+    succeedWithMessage(result.stdout);
+  }
+}
+
+function startDocker(prod, dev) {
+  let result;
+  if (dev) {
+    result = shell.exec("docker-compose -f docker-compose.dev.yaml up");
+  } else if (prod) {
+    result = shell.exec("docker-compose -f docker-compose.yaml up");
+  } else {
+    exitWithError("Unexpected error");
+  }
+
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  } else {
+    succeedWithMessage(result.stdout);
+  }
+}
+
+function endDocker(prod, dev) {
+  let result;
+  if (dev) {
+    result = shell.exec("docker-compose -f docker-compose.dev.yaml down");
+  } else if (prod) {
+    result = shell.exec("docker-compose -f docker-compose.yaml down");
+  } else {
+    exitWithError("Unexpected error");
+  }
+
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  } else {
+    succeedWithMessage(result.stdout);
+  }
+}
+
+async function main() {
+  const arguments = hideBin(process.argv);
+
+  return yargs(arguments)
+    .command(
+      "migration:generate",
+      "Generate a new migration",
+      (yargs) => {
+        yargs.option("m", {
+          alias: "migration-name",
+          describe: "The name of the migration",
+          type: "string",
+          demandOption: true,
+        });
+      },
+      (argv) => {
+        const migrationName = argv.m;
+        if (migrationName.trim().length === 0) {
+          exitWithError(
+            "An empty string has been provided for the migration name. Please enter a valid string."
+          );
+        }
+        generateMigration(argv.m);
+      }
+    )
+    .command(
+      "docker:build",
+      "Build the docker compose project",
+      (yargs) => {
+        yargs
+          .option("x", {
+            alias: "exclude-cache",
+            describe: "Build containers without caching",
+            type: "boolean",
+            default: false,
+          })
+          .option("d", {
+            alias: "dev",
+            describe: "Build docker containers for development environment",
+            type: "boolean",
+            default: false,
+          })
+          .option("p", {
+            alias: "prod",
+            describe: "Build docker containers for production environment",
+            type: "boolean",
+            default: false,
+          });
+      },
+      (argv) => {
+        if (!argv.d && !argv.p) {
+          exitWithError(
+            "Please select any of the options to run this command -p, --prod, -d or --dev"
+          );
+        }
+        if (argv.d && argv.p) {
+          exitWithError(
+            "Both production and development cannot be enabled at the same time. Please choose only one flag"
+          );
+        }
+
+        buildDocker(argv.p, argv.d, argv.x);
+      }
+    )
+    .command(
+      "docker:start",
+      "Up the docker compose project",
+      (yargs) => {
+        yargs
+          .option("d", {
+            alias: "dev",
+            describe: "Build docker containers for development environment",
+            type: "boolean",
+            default: false,
+          })
+          .option("p", {
+            alias: "prod",
+            describe: "Build docker containers for production environment",
+            type: "boolean",
+            default: false,
+          });
+      },
+      (argv) => {
+        if (!argv.d && !argv.p) {
+          exitWithError(
+            "Please select any of the options to run this command -p, --prod, -d or --dev"
+          );
+        }
+        if (argv.d && argv.p) {
+          exitWithError(
+            "Both production and development cannot be enabled at the same time. Please choose only one flag"
+          );
+        }
+
+        startDocker(argv.p, argv.d);
+      }
+    )
+    .command(
+      "docker:end",
+      "Down the docker compose project",
+      (yargs) => {
+        yargs
+          .option("d", {
+            alias: "dev",
+            describe: "Build docker containers for development environment",
+            type: "boolean",
+            default: false,
+          })
+          .option("p", {
+            alias: "prod",
+            describe: "Build docker containers for production environment",
+            type: "boolean",
+            default: false,
+          });
+      },
+      (argv) => {
+        if (!argv.d && !argv.p) {
+          exitWithError(
+            "Please select any of the options to run this command -p, --prod, -d or --dev"
+          );
+        }
+        if (argv.d && argv.p) {
+          exitWithError(
+            "Both production and development cannot be enabled at the same time. Please choose only one flag"
+          );
+        }
+
+        endDocker(argv.p, argv.d);
+      }
+    )
+    .help()
+    .parseAsync();
+}
+
+main();

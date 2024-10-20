@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { User } from '@biaplanner/shared';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
+import { User } from '@biaplanner/shared';
+
 @Entity('users')
 export class UserEntity implements User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -16,5 +18,6 @@ export class UserEntity implements User {
   age: number;
 
   @OneToMany(() => PhoneEntryEntity, (phoneEntry) => phoneEntry.user)
+  @JoinColumn({name: 'userId'})  
   phoneEntries?: PhoneEntryEntity[];
 }

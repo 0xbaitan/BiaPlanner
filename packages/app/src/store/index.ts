@@ -7,7 +7,7 @@ import rootReducer from "./RootReducer";
 const store = configureStore({
   reducer: combineReducers({
     [rootApi.reducerPath]: rootApi.reducer,
-    rootReducer
+   
   }),
   middleware: (getDefaultMiddleware) => (getDefaultMiddleware().concat(rootApi.middleware))
 });

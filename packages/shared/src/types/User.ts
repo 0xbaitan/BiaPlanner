@@ -1,7 +1,7 @@
 import { PhoneEntry } from "./PhoneDirectory";
 
 export interface User {
-  id: number;
+  id?: number;
   firstName: string;
   lastName: string;
   age: number;

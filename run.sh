@@ -28,11 +28,11 @@ case "$command" in
         pnpm recursive install
     ;;
     
-    "docker-build:dev")
+    "build"|"docker-build:dev")
         docker-compose -f docker-compose.dev.yaml build
     ;;
     
-    "docker-build-no-cache:dev")
+    "buildnc"|"docker-build-no-cache:dev")
         docker-compose -f docker-compose.dev.yaml build --no-cache
     ;;
     
@@ -48,7 +48,7 @@ case "$command" in
         pnpm --filter shared run build:watch
     ;;
     
-    "docker-start:dev")
+    "start"|"docker-start:dev")
         nohup ./run.sh build-watch:shared > /dev/null 2>&1 &
         docker-compose -f docker-compose.dev.yaml up
     ;;
@@ -57,7 +57,7 @@ case "$command" in
         docker-compose -f docker-compose.yaml up
     ;;
     
-    "docker-end:dev")
+    "end"|"docker-end:dev")
         docker-compose -f docker-compose.dev.yaml down
     ;;
     

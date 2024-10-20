@@ -1,4 +1,3 @@
-import { PhoneEntry } from '@biaplanner/shared';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { PhoneEntry } from '@biaplanner/shared';
 import { UserEntity } from '../user/user.entity';
 
 @Entity('phone-entries')

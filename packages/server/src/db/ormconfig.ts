@@ -1,4 +1,4 @@
-import { DataSourceOptions, DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
@@ -11,9 +11,9 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.MYSQL_DATABASE ?? 'biaplanner',
   synchronize: false,
   bigNumberStrings: true,
-  logging: true,
-  entities: ['dist/**/*.entity.{ts,js}'],
-  migrations: ['dist/migrations/**/*.{ts,js}'],
+  logging: false,
+  entities: ['src/**/*.entity.{ts,js}'],
+  migrations: ['src/db/migrations/**/*.{ts,js}'],
   migrationsRun: true,
   migrationsTableName: 'migrations',
 };
