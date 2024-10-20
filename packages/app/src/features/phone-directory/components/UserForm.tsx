@@ -1,5 +1,5 @@
 import { Formik, FormikHelpers } from "formik";
-import { useAddUserQuery, useLazyAddUserQuery } from "@/apis/UsersApi";
+import { useAddUserMutation, useGetUsersQuery } from "@/apis/UsersApi";
 
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -7,7 +7,8 @@ import { User } from "@biaplanner/shared";
 import { useSetUserFormModalOpenState } from "../hooks/usePhoneDirectoryState";
 
 export default function UserForm() {
-  const [addUser] = useLazyAddUserQuery();
+  const [addUser] = useAddUserMutation();
+  const { refetch: refetchUsers } = useGetUsersQuery();
   const setModalOpenState = useSetUserFormModalOpenState();
   return (
     <Formik<User>
@@ -21,8 +22,8 @@ export default function UserForm() {
         values: User,
         formikHelpers: FormikHelpers<User>
       ): Promise<User> => {
-        const { isError, data } = await addUser(values);
-        if (isError) {
+        const { data, error } = await addUser(values);
+        if (error) {
           throw new Error("Failed to add user");
         }
         if (!data) {
@@ -33,8 +34,9 @@ export default function UserForm() {
     >
       {({ values, handleChange, handleSubmit }) => (
         <Form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             handleSubmit(e);
+            await refetchUsers();
             setModalOpenState(false);
           }}
           className="d-flex flex-column"

@@ -2,16 +2,10 @@
 
 # Welcome to this project where I am testing things
 
-
-
-
-
-
 # Footnotes & References
 
 - **Installation guide for NestJS and official documentation**:  
    Mysliwiec, K. (n.d.). Documentation | NestJS - A progressive Node.js framework. [online] Documentation | NestJS - A progressive Node.js framework. Available at: https://docs.nestjs.com/first-steps [Accessed 16 Oct. 2024].
-   
 - **Understanding how pnpm interacts with Docker and writing appropriate Dockerfiles**:  
   pnpm (2015). Working with Docker | pnpm. [online] pnpm.io. Available at: https://pnpm.io/docker [Accessed 17 Oct. 2024].
 
@@ -29,3 +23,9 @@
 
 - **Understanding how to use `yargs` to create a node script to replace my bash script**:
   yargs (2015). yargs/docs/advanced.md at main · yargs/yargs. [online] GitHub. Available at: https://github.com/yargs/yargs/blob/main/docs/advanced.md[Accessed 20 Oct. 2024].
+
+- **Understanding how I can refetch data on making changes to the database automatically**:
+  Redux (2024). Redux Essentials, Part 8: RTK Query Advanced Patterns. [online] redux.js.org. Available at: https://redux.js.org/tutorials/essentials/part-8-rtk-query-advanced [Accessed 20 Oct. 2024].
+
+- **Debugging an error when implementing tags in Redux Query**:
+  Oro (2022). Type error when adding providesTags in RTK Query. [online] Stack Overflow. Available at: https://stackoverflow.com/a/71124913 [Accessed 20 Oct. 2024].

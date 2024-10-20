@@ -4,6 +4,7 @@ export const rootApi = createApi({
   reducerPath: "root",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:4000/" }),
   endpoints: () => ({}),
+  tagTypes: ["User"],
 });
 
 export default rootApi.reducer;
