@@ -1,10 +1,15 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
-import rootReducer from "./RootReducer";
+
 import { rootApi } from "@/apis";
+import rootReducer from "./RootReducer";
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: combineReducers({
+    [rootApi.reducerPath]: rootApi.reducer,
+    rootReducer
+  }),
+  middleware: (getDefaultMiddleware) => (getDefaultMiddleware().concat(rootApi.middleware))
 });
 
 export default store;
