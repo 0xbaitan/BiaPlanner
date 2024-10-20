@@ -1,15 +1,16 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 
+import phoneDirectoryReducer from "@/features/phone-directory/reducers/PhoneDirectoryReducer";
 import { rootApi } from "@/apis";
-import rootReducer from "./RootReducer";
 
 const store = configureStore({
-  reducer: combineReducers({
+  reducer: {
+    phoneDirectory: phoneDirectoryReducer.reducer,
     [rootApi.reducerPath]: rootApi.reducer,
-   
-  }),
-  middleware: (getDefaultMiddleware) => (getDefaultMiddleware().concat(rootApi.middleware))
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(rootApi.middleware),
 });
 
 export default store;
