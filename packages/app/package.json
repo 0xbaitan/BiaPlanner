@@ -37,6 +37,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:watch": "craco build --watch",
     "test": "craco test",
     "lint": "eslint src/**/*.{js,jsx,ts,tsx} --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",

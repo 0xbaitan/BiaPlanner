@@ -8,6 +8,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "build:watch": "nest build --watch",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "npx  nodemon -L --config nodemon.json --watch src",

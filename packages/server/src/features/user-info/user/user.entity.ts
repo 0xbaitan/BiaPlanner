@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
 import { User } from '@biaplanner/shared';
@@ -14,10 +20,10 @@ export class UserEntity implements User {
   @Column()
   lastName: string;
 
-  @Column({ default: 0 })
-  age: number;
+  @Column()
+  dateOfBirth: Date;
 
   @OneToMany(() => PhoneEntryEntity, (phoneEntry) => phoneEntry.user)
-  @JoinColumn({name: 'userId'})  
+  @JoinColumn({ name: 'userId' })
   phoneEntries?: PhoneEntryEntity[];
 }

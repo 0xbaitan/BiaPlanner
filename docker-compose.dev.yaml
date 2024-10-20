@@ -1,17 +1,17 @@
 services:
-
   app:
     container_name: app
-    build: 
+    build:
       context: .
       target: app-dev
       dockerfile: Dockerfile.dev
     restart: always
     ports:
-        - 3000:3000
+      - 3000:3000
     volumes:
       - ./packages/app/:/usr/src/packages/app/
       - ./packages/shared/:/usr/src/packages/shared/
+      - ./run.js:/usr/src/run.js
       - /usr/src/node_modules
     environment:
       - WATCHPACK_POLLING=true
@@ -38,6 +38,7 @@ services:
     volumes:
       - ./packages/server/:/usr/src/packages/server/
       - ./packages/shared/:/usr/src/packages/shared/
+      - ./run.js:/usr/src/run.js
       - /usr/src/node_modules
     env_file:
       - .env.prod
@@ -50,12 +51,12 @@ services:
     depends_on:
       - database
       - phpmyadmin
-    
+
   database:
-    container_name:  database
+    container_name: database
     image: mysql:5.7
     restart: always
-    env_file: 
+    env_file:
       - ./.env.dev
     ports:
       - 3307:3306
@@ -65,12 +66,12 @@ services:
       - data:/var/lib/mysql
     networks:
       - biaplanner_link
-  
+
   phpmyadmin:
     container_name: phpmyadmin
     image: phpmyadmin:5.2.1-apache
     restart: always
-    env_file: 
+    env_file:
       - ./.env.dev
     ports:
       - 8080:80
@@ -88,4 +89,3 @@ networks:
 
 volumes:
   data:
-  

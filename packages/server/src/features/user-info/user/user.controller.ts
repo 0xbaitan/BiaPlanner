@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@biaplanner/shared';
 
@@ -14,5 +14,10 @@ export class UserController {
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<User> {
     return this.userService.find(id);
+  }
+
+  @Post()
+  async addUser(@Body() user: User): Promise<User> {
+    return this.userService.addUser(user)
   }
 }
