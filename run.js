@@ -1,7 +1,8 @@
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const shell = require("shelljs");
-const path = require('path')
+const path = require("path");
+const { command } = require("yargs");
 
 function exitWithError(message) {
   console.error(message);
@@ -12,25 +13,32 @@ function succeedWithMessage(message) {
   console.log(message);
   process.exit(0);
 }
-function generateMigration(migrationName) {
-  const migrationPath = path.join('src', 'db', 'migrations', migrationName)
-  const result = shell.exec(
-    `pnpm --filter server run migration:generate ${migrationPath}`
-  );
+function generateMigration(migrationName, inDocker = false) {
+  const migrationPath = path.join("src", "db", "migrations", migrationName);
+  const command = `${inDocker ? "docker exec server" : ""} pnpm --filter server run migration:generate ${migrationPath}`;
+  const result = shell.exec(command);
   if (result.code !== 0) {
     exitWithError(result.stderr);
   }
   succeedWithMessage(result.stdout);
 }
 
-function runMigration() {
-   const result = shell.exec(
-     `pnpm --filter server run migration:run`
-   );
-   if (result.code !== 0) {
-     exitWithError(result.stderr);
-   }
-   succeedWithMessage(result.stdout);
+function runMigration(inDocker = false) {
+  const command = `${inDocker ? "docker exec server" : ""} pnpm --filter server run migration:run`;
+  const result = shell.exec(command);
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
+}
+function revertMigration(inDocker = false) {
+  const command = `${inDocker ? "docker exec server" : ""} pnpm --filter server run migration:revert`;
+
+  const result = shell.exec(command);
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
 }
 
 function buildDocker(prod, dev, noCache = false) {
@@ -96,12 +104,19 @@ async function main() {
       "migration:generate",
       "Generate a new migration",
       (yargs) => {
-        yargs.option("m", {
-          alias: "migration-name",
-          describe: "The name of the migration",
-          type: "string",
-          demandOption: true,
-        });
+        yargs
+          .option("m", {
+            alias: "migration-name",
+            describe: "The name of the migration",
+            type: "string",
+            demandOption: true,
+          })
+          .option("d", {
+            alias: "docker",
+            describe: "Apply migrations within the running docker container",
+            type: "boolean",
+            default: false,
+          });
       },
       (argv) => {
         const migrationName = argv.m;
@@ -110,7 +125,37 @@ async function main() {
             "An empty string has been provided for the migration name. Please enter a valid string."
           );
         }
-        generateMigration(argv.m);
+        generateMigration(argv.m, argv.d);
+      }
+    )
+    .command(
+      "migration:run",
+      "Run the latest migrations",
+      (yargs) => {
+        yargs.option("d", {
+          alias: "docker",
+          describe: "Apply migrations within the running docker container",
+          type: "boolean",
+          default: false,
+        });
+      },
+      (argv) => {
+        runMigration(argv.d);
+      }
+    )
+    .command(
+      "migration:revert",
+      "Revert the latest migration",
+      (yargs) => {
+        yargs.option("d", {
+          alias: "docker",
+          describe: "Apply migrations within the running docker container",
+          type: "boolean",
+          default: false,
+        });
+      },
+      (argv) => {
+        revertMigration(argv.d);
       }
     )
     .command(

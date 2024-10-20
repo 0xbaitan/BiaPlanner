@@ -26,3 +26,6 @@
 
 - **Understanding how to share a package with other packages within the project**:  
   Davis, A. (2022). Managing a full-stack, multipackage monorepo using pnpm - LogRocket Blog. [online] LogRocket Blog. Available at: https://blog.logrocket.com/managing-full-stack-monorepo-pnpm/#sharing-types-typescript [Accessed 18 Oct. 2024].
+
+- **Understanding how to use `yargs` to create a node script to replace my bash script**:
+  yargs (2015). yargs/docs/advanced.md at main · yargs/yargs. [online] GitHub. Available at: https://github.com/yargs/yargs/blob/main/docs/advanced.md[Accessed 20 Oct. 2024].
