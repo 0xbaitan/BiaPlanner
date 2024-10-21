@@ -23,7 +23,9 @@ export class UserEntity implements User {
   @Column({ type: 'timestamp' })
   dateOfBirth: Date;
 
-  @OneToMany(() => PhoneEntryEntity, (phoneEntry) => phoneEntry.user)
+  @OneToMany(() => PhoneEntryEntity, (phoneEntry) => phoneEntry.user, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'userId' })
   phoneEntries?: PhoneEntryEntity[];
 }
