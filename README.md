@@ -29,3 +29,6 @@
 
 - **Debugging an error when implementing tags in Redux Query**:
   Oro (2022). Type error when adding providesTags in RTK Query. [online] Stack Overflow. Available at: https://stackoverflow.com/a/71124913 [Accessed 20 Oct. 2024].
+
+- **Understanding how to use React Hook Forms with Zod validation**:
+  Uhiene, G. (2024). How to Validate Forms with Zod and React-Hook-Form. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/react-form-validation-zod-react-hook-form/ [Accessed 21 Oct. 2024].

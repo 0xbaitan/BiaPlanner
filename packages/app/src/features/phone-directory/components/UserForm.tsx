@@ -1,199 +1,205 @@
 import "react-phone-input-2/lib/style.css";
 
-import { Formik, FormikHelpers } from "formik";
+import {
+  FieldErrors,
+  FormProvider,
+  UseFormRegister,
+  useFieldArray,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 import { PhoneEntry, UserDto } from "@biaplanner/shared";
-import { useAddUserMutation, useGetUsersQuery } from "@/apis/UsersApi";
-import { useEffect, useState } from "react";
+import { ZodType, z } from "zod";
+import { useCallback, useMemo, useState } from "react";
 
-import Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
 import PhoneInput from "react-phone-input-2";
 import { convertToPhoneEntry } from "../util/convertToPhoneEntry";
 import dayjs from "dayjs";
-import { parsePhoneNumber } from "awesome-phonenumber";
+import { useAddUserMutation } from "@/apis/UsersApi";
 import { useSetUserFormModalOpenState } from "../hooks/usePhoneDirectoryState";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+export type UserFormData = Omit<UserDto, "phoneEntries"> & {
+  phoneEntries: { phoneNumber: string }[];
+};
+
+export const UserFormValidationSchema: ZodType<UserFormData> = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  dateOfBirth: z.string().min(1, { message: "Date of birth is required" }),
+  phoneEntries: z
+    .array(
+      z.object({
+        phoneNumber: z
+          .string()
+          .min(1, { message: "Phone number is required" })
+          .refine(
+            (phoneNumber) => {
+              const [, error] = convertToPhoneEntry(phoneNumber);
+              return !error;
+            },
+            { message: "Invalid phone number" }
+          ),
+      })
+    )
+    .min(1, { message: "At least one phone number is required" }),
+});
 export default function UserForm() {
   const [addUser] = useAddUserMutation();
-  const { refetch: refetchUsers } = useGetUsersQuery();
+
   const setModalOpenState = useSetUserFormModalOpenState();
+
+  const methods = useForm<UserFormData>({
+    defaultValues: {
+      dateOfBirth: dayjs().format("YYYY-MM-DD"),
+      firstName: "",
+      lastName: "",
+      phoneEntries: [
+        {
+          phoneNumber: "",
+        },
+      ],
+    },
+    resolver: zodResolver(UserFormValidationSchema),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    register,
+    setError,
+    getValues,
+  } = methods;
+
+  const onSubmit = useCallback(
+    async (data: UserFormData) => {
+      try {
+        const { phoneEntries, ...rest } = data;
+        const phoneEntriesParsed = phoneEntries.map((entry) => {
+          const [parsedEntry] = convertToPhoneEntry(entry.phoneNumber);
+          return parsedEntry;
+        }) as PhoneEntry[];
+        const user: UserDto = {
+          ...rest,
+          phoneEntries: phoneEntriesParsed,
+        };
+        await addUser(user);
+        setModalOpenState(false);
+      } catch (error) {
+        throw error;
+      }
+    },
+    [addUser, setModalOpenState]
+  );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "phoneEntries",
+  });
+
+  const mobileNumberFields = useMemo(() => {
+    {
+      return fields.map((field, index) => (
+        <MobileNumberField key={field.id} index={index} />
+      ));
+    }
+  }, [fields, register, setError, errors]);
+
   return (
-    <Formik<UserDto>
-      initialValues={{
-        firstName: "",
-        lastName: "",
-        dateOfBirth: dayjs().toISOString(),
-        phoneEntries: [
-          {
-            countryCallingCode: "",
-            countryCode: "",
-            phoneNumber: "",
-            isForHome: false,
-            isForWork: false,
-            isLandline: false,
-            isMobile: true,
-          },
-        ],
-      }}
-      onSubmit={async (
-        values: UserDto,
-        formikHelpers: FormikHelpers<UserDto>
-      ): Promise<UserDto> => {
-        const { data, error } = await addUser(values);
-        if (error) {
-          throw new Error("Failed to add user");
+    <FormProvider {...methods}>
+      <Button
+        onClick={() =>
+          console.log(
+            getValues()
+              .phoneEntries.map((entry) => entry.phoneNumber)
+              .join(",")
+          )
         }
-        if (!data) {
-          throw new Error("No data returned");
-        }
-        return data;
-      }}
-    >
-      {({ values, handleChange, handleSubmit, setFieldValue }) => (
-        <Form
-          onSubmit={async (e) => {
-            console.log(values);
-            handleSubmit(e);
-            await refetchUsers();
-            setModalOpenState(false);
+      >
+        Get Values
+      </Button>
+      <Form id="user-form" onSubmit={handleSubmit(onSubmit)}>
+        <Form.Group>
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
+            type="text"
+            {...register("firstName", { required: true })}
+          />
+          {errors.firstName && (
+            <Form.Text className="+error">{errors.firstName.message}</Form.Text>
+          )}
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            type="text"
+            {...register("lastName", { required: true })}
+          />
+          {errors.lastName && (
+            <Form.Text className="+error">{errors.lastName.message}</Form.Text>
+          )}
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Date of Birth</Form.Label>
+          <Form.Control
+            type="date"
+            {...register("dateOfBirth", { required: true })}
+          />
+          {errors.dateOfBirth && (
+            <Form.Text className="+error">
+              {errors.dateOfBirth.message}
+            </Form.Text>
+          )}
+        </Form.Group>
+        {mobileNumberFields}
+        <Button
+          onClick={() => {
+            append({ phoneNumber: "" });
           }}
-          id="user-form"
-          className="d-flex flex-column"
         >
-          <Form.Group>
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              name="firstName"
-              placeholder="e.g. John"
-              value={values.firstName}
-              onChange={handleChange}
-              required
-              form="user-form"
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              name="lastName"
-              placeholder="e.g. Doe"
-              value={values.lastName}
-              onChange={handleChange}
-              required
-              form="user-form"
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Date of Birth</Form.Label>
-            <Form.Control
-              name="dateOfBirth"
-              value={values.dateOfBirth}
-              required
-              type="date"
-              onChange={handleChange}
-              form="user-form"
-            />
-          </Form.Group>
-          <div>
-            <MobileNumberField
-              values={values}
-              handleChange={handleChange}
-              index={0}
-              setFieldValue={setFieldValue}
-            />
-          </div>
-          <Button type="submit">Submit</Button>
-        </Form>
-      )}
-    </Formik>
+          Add Mobile Number
+        </Button>
+        <Button onClick={() => remove(fields.length - 1)}>
+          Remove Mobile Number
+        </Button>
+        <Button type="submit">Submit</Button>
+      </Form>
+    </FormProvider>
   );
 }
 
-// function MobileNumberField() {
-//   // props: { values: UserDto, handleChange: React.ChangeEventHandler<PhoneEntry>, index: number }
-//   // const { values, handleChange } = props;
-//   const [value, setValue] = useState<Value>();
-//   if (value) {
-//     console.log(parsePhoneNumber(value));
-//   }
+function MobileNumberField(props: { index: number }) {
+  const { index } = props;
 
-//   return (
-//     <Form.Group>
-//       <Form.Label>Mobile Number</Form.Label>
-//       <PhoneInput
-//         defaultCountry={"GB"}
-//         international={true}
-//         value={value}
-//         onChange={(value) => setValue(value)}
-//       />
-//     </Form.Group>
-//   );
-// }
+  const {
+    formState: { errors },
+    setValue,
+  } = useFormContext<UserFormData>();
 
-function MobileNumberField(props: {
-  values: UserDto;
-  handleChange: React.ChangeEventHandler<PhoneEntry>;
-  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
-  index: number;
-}) {
-  const { values, handleChange, index, setFieldValue } = props;
-  console.log(values);
-  const currentPhoneEntry = values?.phoneEntries?.at(index);
-  const [phoneNumberText, setPhoneNumberText] = useState<string | undefined>(
-    currentPhoneEntry?.phoneNumber
-  );
-  const [phoneEntry, setPhoneEntry] = useState<PhoneEntry | undefined>(
-    currentPhoneEntry
-  );
+  const phoneEntryError = errors.phoneEntries?.[index]?.phoneNumber;
 
-  useEffect(() => {
-    if (phoneNumberText) {
-      const [parsedPhoneEntry, errorCode] =
-        convertToPhoneEntry(phoneNumberText);
-      console.log(errorCode);
-      if (errorCode || !parsedPhoneEntry) {
-        return;
-      } else {
-        setFieldValue(`phoneEntries[${index}]`, parsedPhoneEntry);
-      }
-    }
-  }, [phoneNumberText]);
+  const handleChange = (value: string | undefined) => {
+    setValue(`phoneEntries.${index}.phoneNumber`, value ?? "");
+  };
+
   return (
     <Form.Group>
       <Form.Label>Mobile Number</Form.Label>
-      <input
-        hidden
-        type="text"
-        name={`phoneEntries[${index}].countryCallingCode`}
-        value={phoneEntry?.countryCallingCode}
-        form="user-form"
-        disabled
-      />
-      <input
-        hidden
-        type="text"
-        name={`phoneEntries[${index}].countryCode`}
-        value={phoneEntry?.countryCode}
-        form="user-form"
-        disabled
-      />
-      <input
-        hidden
-        type="text"
-        name={`phoneEntries[${index}].phoneNumber`}
-        value={phoneEntry?.phoneNumber}
-        disabled
-      />
+
       <PhoneInput
         inputProps={{
-          name: "phoneNumber",
-          required: true,
           placeholder: "e.g. +44 1234 567890",
           type: "tel",
         }}
         autocompleteSearch
-        value={phoneNumberText}
-        onChange={(value, data, e) => setPhoneNumberText(value)}
+        value={undefined}
+        onChange={handleChange}
       />
+      {phoneEntryError && (
+        <Form.Text className="+error">{phoneEntryError.message}</Form.Text>
+      )}
     </Form.Group>
   );
 }

@@ -1,18 +1,18 @@
-
 @use "partials/colors" as colors;
-
 
 @import "bootstrap/scss/functions";
 
-@import "bootstrap/scss/variables" ;
-@import "bootstrap/scss/mixins" ;
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
 @import "bootstrap/scss/maps";
-@import "bootstrap/scss/root" ;
+@import "bootstrap/scss/root";
 
 @import "bootstrap";
 
-
 .btn-primary {
-    @include button-variant(colors.$primary, $secondary, $white);
-    
+  @include button-variant(colors.$primary, $secondary, $white);
+}
+
+.\+error {
+  color: colors.$danger;
 }

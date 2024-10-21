@@ -5,8 +5,12 @@
   "private": true,
   "dependencies": {
     "@biaplanner/shared": "workspace:shared",
+    "@hookform/resolvers": "^3.9.0",
     "@reduxjs/toolkit": "^2.2.3",
     "@rjsf/core": "^5.21.2",
+    "@rjsf/react-bootstrap": "6.0.0-alpha.0",
+    "@rjsf/utils": "^5.21.2",
+    "@rjsf/validator-ajv8": "^5.21.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -24,6 +28,7 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.53.1",
     "react-phone-input-2": "^2.15.1",
     "react-phone-number-input": "^3.4.9",
     "react-redux": "^9.1.0",
@@ -36,7 +41,8 @@
     "sass-loader": "^7.2.0",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "zod": "^3.23.8"
   },
   "optionalDependencies": {
     "sass-embedded": "^1.70.0"
