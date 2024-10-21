@@ -118,7 +118,7 @@ function buildProject(project, watch = false, noOutput = false) {
   succeedWithMessage(result.stdout);
 }
 
-function startProject(project, buildShared = false) {
+function startProject(project) {
   const validProjects = ["server", "app"];
   if (!validProjects.includes(project)) {
     exitWithError(
@@ -131,10 +131,6 @@ function startProject(project, buildShared = false) {
     result = shell.exec("pnpm --filter server run start:dev");
   } else if (project === "app") {
     result = shell.exec("pnpm --filter app run start");
-  }
-
-  if (buildShared) {
-    buildProject("shared", true, true);
   }
 
   if (result.code !== 0) {
@@ -343,22 +339,15 @@ async function main() {
       "project:start",
       "Start the project",
       (yargs) => {
-        yargs
-          .option("p", {
-            alias: "project",
-            describe: "The project to start",
-            type: "string",
-            demandOption: true,
-          })
-          .option("s", {
-            alias: "shared",
-            describe: "Build shared project",
-            type: "boolean",
-            default: false,
-          });
+        yargs.option("p", {
+          alias: "project",
+          describe: "The project to start",
+          type: "string",
+          demandOption: true,
+        });
       },
       (argv) => {
-        startProject(argv.p, argv.s);
+        startProject(argv.p);
       }
     )
     .help()

@@ -3,7 +3,8 @@ import { useAddUserMutation, useGetUsersQuery } from "@/apis/UsersApi";
 
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { User } from "@biaplanner/shared";
+import { UserDto } from "@biaplanner/shared";
+import dayjs from "dayjs";
 import { useSetUserFormModalOpenState } from "../hooks/usePhoneDirectoryState";
 
 export default function UserForm() {
@@ -11,17 +12,17 @@ export default function UserForm() {
   const { refetch: refetchUsers } = useGetUsersQuery();
   const setModalOpenState = useSetUserFormModalOpenState();
   return (
-    <Formik<User>
+    <Formik<UserDto>
       initialValues={{
         firstName: "",
         lastName: "",
-        dateOfBirth: new Date(),
+        dateOfBirth: dayjs().toISOString(),
         phoneEntries: [],
       }}
       onSubmit={async (
-        values: User,
-        formikHelpers: FormikHelpers<User>
-      ): Promise<User> => {
+        values: UserDto,
+        formikHelpers: FormikHelpers<UserDto>
+      ): Promise<UserDto> => {
         const { data, error } = await addUser(values);
         if (error) {
           throw new Error("Failed to add user");
@@ -63,7 +64,8 @@ export default function UserForm() {
             <Form.Label>Date of Birth</Form.Label>
             <Form.Control
               name="dateOfBirth"
-              value={values.dateOfBirth.toISOString()}
+              value={values.dateOfBirth}
+              type="date"
               onChange={handleChange}
             />
           </Form.Group>

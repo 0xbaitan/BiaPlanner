@@ -15,11 +15,13 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm -r --prod=false install -
 FROM dev-env AS app-dev
 WORKDIR /usr/src/
 EXPOSE 3000
-CMD ["node", "run.js", "project:start", "--project", "app", "-s"] 
+RUN node run.js project:build --project shared -w -n
+CMD ["node", "run.js", "project:start", "--project", "app"] 
 
 # Server Dev Environment
 FROM dev-env AS server-dev
 COPY ./packages/server /usr/src/packages/server
 WORKDIR /usr/src/
 EXPOSE 3000
-CMD ["node", "run.js", "project:start", "--project", "server", "-s"] 
+RUN node run.js project:build --project shared --w -n
+CMD ["node", "run.js", "project:start", "--project", "server"] 

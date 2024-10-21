@@ -1,11 +1,11 @@
 import { ResultDescription, createApi } from "@reduxjs/toolkit/query";
+import { User, UserDto } from "@biaplanner/shared";
 
-import { User } from "@biaplanner/shared";
 import { rootApi } from ".";
 
 export const usersApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
-    getUsers: build.query<User[], void>({
+    getUsers: build.query<UserDto[], void>({
       query: () => ({
         url: "/users",
         method: "GET",
@@ -18,7 +18,7 @@ export const usersApi = rootApi.injectEndpoints({
             ]
           : [{ type: "User", id: "LIST" }],
     }),
-    getUser: build.query<User[], number>({
+    getUser: build.query<UserDto[], number>({
       query: (id: number) => ({
         url: "/users/:id",
         method: "GET",
@@ -26,8 +26,8 @@ export const usersApi = rootApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: "User", id }],
     }),
-    addUser: build.mutation<User, User>({
-      query: (user: User) => ({
+    addUser: build.mutation<UserDto, UserDto>({
+      query: (user: UserDto) => ({
         url: "/users",
         method: "POST",
         body: user,

@@ -1,12 +1,14 @@
+import { User, UserDto } from "@biaplanner/shared";
+
 import Button from "react-bootstrap/Button";
 import { Suspense } from "react";
 import Table from "react-bootstrap/Table";
-import { User } from "@biaplanner/shared";
 import UserForm from "./UserForm";
 import UserFormModal from "./UserFormModal";
 import { useGetPhoneEntriesQuery } from "@/apis/PhoneEntriesApi";
 import { useGetUsersQuery } from "@/apis/UsersApi";
 import { useSetUserFormModalOpenState } from "../hooks/usePhoneDirectoryState";
+
 export default function PhoneDirectoryTable() {
   const { data: users, isLoading, isError } = useGetUsersQuery();
   const setModalOpenState = useSetUserFormModalOpenState();
@@ -38,7 +40,7 @@ export default function PhoneDirectoryTable() {
   );
 }
 
-function TableRow(props: { user: User }) {
+function TableRow(props: { user: UserDto }) {
   const { user } = props;
   return (
     <tr>

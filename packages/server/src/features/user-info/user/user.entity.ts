@@ -20,7 +20,7 @@ export class UserEntity implements User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   dateOfBirth: Date;
 
   @OneToMany(() => PhoneEntryEntity, (phoneEntry) => phoneEntry.user)
