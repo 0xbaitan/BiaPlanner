@@ -1,9 +1,7 @@
 import { PhoneEntry } from "@biaplanner/shared";
 import { parsePhoneNumber } from "awesome-phonenumber";
 
-export function convertToPhoneEntry(
-  numberText: string
-): [PhoneEntry | null, string | false] {
+export function convertToPhoneEntry(numberText: string, id?: number): [PhoneEntry | null, string | false] {
   if (numberText === "") {
     return [null, "phone-number-empty"];
   }
@@ -23,6 +21,7 @@ export function convertToPhoneEntry(
 
   return [
     {
+      id,
       countryCode: parsedNumber.regionCode,
       countryCallingCode: parsedNumber.countryCode.toString(),
       phoneNumber: parsedNumber.number.international,

@@ -1,20 +1,45 @@
 import { PayloadAction, createReducer, createSlice } from "@reduxjs/toolkit";
+import { PhoneEntry, UserDto } from "@biaplanner/shared";
 
 import { StoreState } from "@/store";
 import { useSelector } from "react-redux";
 
 export type PhoneReducerState = {
   isUserFormModalOpen: boolean;
+  showPhoneEntryDeletionWarning: boolean;
+  activePhoneEntry?: PhoneEntry;
+  showUpdateUserForm: boolean;
+  activeUser?: UserDto;
+};
+
+const initialState: PhoneReducerState = {
+  isUserFormModalOpen: false,
+  showPhoneEntryDeletionWarning: false,
+  showUpdateUserForm: false,
 };
 
 const phoneDirectoryReducer = createSlice({
   name: "phoneDirectory",
-  initialState: {
-    isUserFormModalOpen: false,
-  },
+  initialState,
   reducers: {
     setUserFormModalOpenState: (state, action: PayloadAction<boolean>) => {
       state.isUserFormModalOpen = action.payload;
+    },
+
+    setShowPhoneEntryDeletionWarning: (state, action: PayloadAction<boolean>) => {
+      state.showPhoneEntryDeletionWarning = action.payload;
+    },
+
+    setActivePhoneEntryId: (state, action: PayloadAction<PhoneEntry | undefined>) => {
+      state.activePhoneEntry = action.payload;
+    },
+
+    setShowUpdateUserForm: (state, action: PayloadAction<boolean>) => {
+      state.showUpdateUserForm = action.payload;
+    },
+
+    setActiveUser: (state, action: PayloadAction<UserDto | undefined>) => {
+      state.activeUser = action.payload;
     },
   },
 });

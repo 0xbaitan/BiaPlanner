@@ -9,8 +9,16 @@
 
 @import "bootstrap";
 
-.btn-primary {
-  @include button-variant(colors.$primary, $secondary, $white);
+// .btn-primary {
+//   @include button-variant(colors.$primary, colors.$primary, $white);
+// }
+
+.\+flex {
+  display: flex;
+}
+
+.\+gap {
+  gap: 0.5rem;
 }
 
 .\+error {

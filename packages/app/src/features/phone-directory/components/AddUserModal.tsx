@@ -5,7 +5,7 @@ import usePhoneDirectoryState, {
 import Modal from "react-bootstrap/Modal";
 import UserForm from "./UserForm";
 
-export default function UserFormModal() {
+export default function AddUserModal() {
   const { isUserFormModalOpen } = usePhoneDirectoryState();
   const setModalOpenState = useSetUserFormModalOpenState();
 
@@ -15,7 +15,7 @@ export default function UserFormModal() {
         <Modal.Title>Add User</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <UserForm />
+        <UserForm submitType="add" />
       </Modal.Body>
     </Modal>
   );

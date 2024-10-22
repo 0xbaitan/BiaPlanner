@@ -18,11 +18,10 @@ export const usersApi = rootApi.injectEndpoints({
             ]
           : [{ type: "User", id: "LIST" }],
     }),
-    getUser: build.query<UserDto[], number>({
+    getUser: build.query<UserDto, number>({
       query: (id: number) => ({
-        url: "/users/:id",
+        url: `/users/${id}`,
         method: "GET",
-        params: { id },
       }),
       providesTags: (_result, _error, id) => [{ type: "User", id }],
     }),
@@ -33,7 +32,16 @@ export const usersApi = rootApi.injectEndpoints({
         body: user,
       }),
 
-      invalidatesTags: ["User"],
+      invalidatesTags: ["User", "PhoneEntry"],
+    }),
+    updateUser: build.mutation({
+      query: ({ id, user }: { id: number; user: Partial<UserDto> }) => ({
+        url: `/users/${id}`,
+        method: "PUT",
+        body: user,
+      }),
+
+      invalidatesTags: ["User", "PhoneEntry"],
     }),
   }),
 });
@@ -44,4 +52,5 @@ export const {
   useAddUserMutation,
   useLazyGetUserQuery,
   useLazyGetUsersQuery,
+  useUpdateUserMutation,
 } = usersApi;

@@ -29,6 +29,20 @@ export class UserService {
     return addedUser;
   }
 
+  public async updateUser(id: number, user: User): Promise<User> {
+    const existingUser = this.userRepository.findOneOrFail({
+      where: {
+        id: id,
+      },
+      relations: ['phoneEntries'],
+    });
+
+    return this.userRepository.save({
+      ...existingUser,
+      ...user,
+    });
+  }
+
   public convertToUserDto(user: User): UserDto {
     const userDto: UserDto = {
       ...user,

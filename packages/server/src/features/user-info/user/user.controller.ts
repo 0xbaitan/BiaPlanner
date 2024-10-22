@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User, UserDto } from '@biaplanner/shared';
 
@@ -15,7 +15,7 @@ export class UserController {
     return userDtos;
   }
 
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: number): Promise<User> {
     return this.userService.find(id);
   }
@@ -24,5 +24,13 @@ export class UserController {
   async addUser(@Body() userDto: UserDto): Promise<User> {
     const user = this.userService.convertFromUserDto(userDto);
     return this.userService.addUser(user);
+  }
+
+  @Put('/:id')
+  async updateUser(@Param('id') id: number, @Body() userDto: UserDto) {
+    return this.userService.updateUser(
+      Number(id),
+      this.userService.convertFromUserDto(userDto),
+    );
   }
 }
