@@ -2,7 +2,7 @@ import "react-phone-input-2/lib/style.css";
 
 import { FaMinusCircle, FaPlus, FaPlusCircle } from "react-icons/fa";
 import { FieldErrors, FormProvider, UseFormRegister, useFieldArray, useForm, useFormContext } from "react-hook-form";
-import { PhoneEntry, UserDto } from "@biaplanner/shared";
+import { IUser, PhoneEntry } from "@biaplanner/shared";
 import { ZodType, z } from "zod";
 import { useAddUserMutation, useUpdateUserMutation } from "@/apis/UsersApi";
 import { useCallback, useMemo, useState } from "react";
@@ -15,7 +15,7 @@ import { convertToPhoneEntry } from "../util/convertToPhoneEntry";
 import dayjs from "dayjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type UserFormData = Omit<UserDto, "phoneEntries"> & {
+export type UserFormData = Omit<IUser, "phoneEntries" | "email" | "password" | "username"> & {
   phoneEntries: { phoneNumber: string; id?: number }[];
 };
 
@@ -93,12 +93,12 @@ export default function UserForm(props: UserFormProps) {
         const [parsedEntry] = convertToPhoneEntry(entry.phoneNumber, entry.id);
         return parsedEntry;
       }) as PhoneEntry[];
-      const user: UserDto = {
+      const user: Partial<IUser> = {
         ...rest,
         phoneEntries: phoneEntriesParsed,
       };
       if (submitType === "add") {
-        await addUser(user);
+        // await addUser(user);
         setModalOpenState(false);
       } else {
         console.log(user);

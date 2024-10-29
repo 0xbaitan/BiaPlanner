@@ -44,13 +44,9 @@ function revertMigration(inDocker = false) {
 function buildDocker(prod, dev, noCache = false) {
   let result;
   if (dev) {
-    result = shell.exec(
-      `docker-compose -f docker-compose.dev.yaml build ${noCache ? "--no-cache" : ""}`
-    );
+    result = shell.exec(`docker-compose -f docker-compose.dev.yaml build ${noCache ? "--no-cache" : ""}`);
   } else if (prod) {
-    result = shell.exec(
-      `docker-compose -f docker-compose.yaml build ${noCache ? "--no-cache" : ""}`
-    );
+    result = shell.exec(`docker-compose -f docker-compose.yaml build ${noCache ? "--no-cache" : ""}`);
   } else {
     exitWithError("Unexpected error");
   }
@@ -96,12 +92,19 @@ function endDocker(prod, dev) {
   }
 }
 
+function buildSharedForDocker() {
+  result = shell.exec("docker exec server pnpm --filter shared run build");
+  result = shell.exec("docker exec app pnpm --filter shared run build");
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
+}
+
 function buildProject(project, watch = false, noOutput = false) {
   const validProjects = ["server", "app", "shared"];
   if (!validProjects.includes(project)) {
-    exitWithError(
-      "Invalid project name provided. Please provide a valid project name"
-    );
+    exitWithError("Invalid project name provided. Please provide a valid project name");
   }
   let result;
   let command = `pnpm --filter ${project} run build`;
@@ -121,9 +124,7 @@ function buildProject(project, watch = false, noOutput = false) {
 function startProject(project) {
   const validProjects = ["server", "app"];
   if (!validProjects.includes(project)) {
-    exitWithError(
-      "Invalid project name provided. Please provide a valid project name"
-    );
+    exitWithError("Invalid project name provided. Please provide a valid project name");
   }
 
   let result;
@@ -169,14 +170,10 @@ async function main() {
       },
       (argv) => {
         if (!argv.d && !argv.p) {
-          exitWithError(
-            "Please select any of the options to run this command -p, --prod, -d or --dev"
-          );
+          exitWithError("Please select any of the options to run this command -p, --prod, -d or --dev");
         }
         if (argv.d && argv.p) {
-          exitWithError(
-            "Both production and development cannot be enabled at the same time. Please choose only one flag"
-          );
+          exitWithError("Both production and development cannot be enabled at the same time. Please choose only one flag");
         }
 
         buildDocker(argv.p, argv.d, argv.x);
@@ -202,14 +199,10 @@ async function main() {
       },
       (argv) => {
         if (!argv.d && !argv.p) {
-          exitWithError(
-            "Please select any of the options to run this command -p, --prod, -d or --dev"
-          );
+          exitWithError("Please select any of the options to run this command -p, --prod, -d or --dev");
         }
         if (argv.d && argv.p) {
-          exitWithError(
-            "Both production and development cannot be enabled at the same time. Please choose only one flag"
-          );
+          exitWithError("Both production and development cannot be enabled at the same time. Please choose only one flag");
         }
 
         endDocker(argv.p, argv.d);
@@ -235,14 +228,10 @@ async function main() {
       },
       (argv) => {
         if (!argv.d && !argv.p) {
-          exitWithError(
-            "Please select any of the options to run this command -p, --prod, -d or --dev"
-          );
+          exitWithError("Please select any of the options to run this command -p, --prod, -d or --dev");
         }
         if (argv.d && argv.p) {
-          exitWithError(
-            "Both production and development cannot be enabled at the same time. Please choose only one flag"
-          );
+          exitWithError("Both production and development cannot be enabled at the same time. Please choose only one flag");
         }
 
         startDocker(argv.p, argv.d);
@@ -269,9 +258,7 @@ async function main() {
       (argv) => {
         const migrationName = argv.m;
         if (migrationName.trim().length === 0) {
-          exitWithError(
-            "An empty string has been provided for the migration name. Please enter a valid string."
-          );
+          exitWithError("An empty string has been provided for the migration name. Please enter a valid string.");
         }
         generateMigration(argv.m, argv.d);
       }
@@ -348,6 +335,14 @@ async function main() {
       },
       (argv) => {
         startProject(argv.p);
+      }
+    )
+    .command(
+      "shared:build",
+      "Build the shared project",
+      (_yargs) => {},
+      (_argv) => {
+        buildSharedForDocker();
       }
     )
     .help()

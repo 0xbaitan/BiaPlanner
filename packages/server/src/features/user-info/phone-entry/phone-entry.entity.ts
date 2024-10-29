@@ -37,6 +37,7 @@ export class PhoneEntryEntity implements PhoneEntry {
 
   @ManyToOne(() => UserEntity, (user) => user.phoneEntries)
   user?: UserEntity;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }

@@ -1,9 +1,9 @@
-import { UserDto } from "@biaplanner/shared";
+import { IUser } from "@biaplanner/shared";
 import { UserFormData } from "../components/UserForm";
 import dayjs from "dayjs";
 import removePhoneNumberFormatting from "./removePhoneNumberFormatting";
 
-export default function convertToUserFormData(user: UserDto): UserFormData {
+export default function convertToUserFormData(user: IUser): UserFormData {
   return {
     id: user.id,
     firstName: user.firstName,

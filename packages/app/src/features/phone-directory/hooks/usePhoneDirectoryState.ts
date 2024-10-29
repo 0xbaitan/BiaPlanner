@@ -1,4 +1,4 @@
-import { PhoneEntry, UserDto } from "@biaplanner/shared";
+import { IUser, PhoneEntry } from "@biaplanner/shared";
 import { PhoneReducerState, phoneDirectoryActions } from "../reducers/PhoneDirectoryReducer";
 import { StoreState, useStoreDispatch } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -57,7 +57,7 @@ export function useSetShowUpdateUserForm() {
 export function useSetActiveUser() {
   const dispatch = useStoreDispatch();
   const setActiveUser = useCallback(
-    (user: UserDto | undefined) => {
+    (user: IUser | undefined) => {
       dispatch(phoneDirectoryActions.setActiveUser(user));
     },
     [dispatch]

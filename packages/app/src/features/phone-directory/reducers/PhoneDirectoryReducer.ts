@@ -1,5 +1,5 @@
 import { PayloadAction, createReducer, createSlice } from "@reduxjs/toolkit";
-import { PhoneEntry, UserDto } from "@biaplanner/shared";
+import { PhoneEntry, IUser } from "@biaplanner/shared";
 
 import { StoreState } from "@/store";
 import { useSelector } from "react-redux";
@@ -9,7 +9,7 @@ export type PhoneReducerState = {
   showPhoneEntryDeletionWarning: boolean;
   activePhoneEntry?: PhoneEntry;
   showUpdateUserForm: boolean;
-  activeUser?: UserDto;
+  activeUser?: IUser;
 };
 
 const initialState: PhoneReducerState = {
@@ -38,7 +38,7 @@ const phoneDirectoryReducer = createSlice({
       state.showUpdateUserForm = action.payload;
     },
 
-    setActiveUser: (state, action: PayloadAction<UserDto | undefined>) => {
+    setActiveUser: (state, action: PayloadAction<IUser | undefined>) => {
       state.activeUser = action.payload;
     },
   },

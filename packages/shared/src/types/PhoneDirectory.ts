@@ -1,4 +1,4 @@
-import { User } from "./User";
+import { IUser } from "./User";
 
 export interface PhoneEntry {
   id?: number;
@@ -9,6 +9,5 @@ export interface PhoneEntry {
   isForHome?: boolean;
   isMobile?: boolean;
   isLandline?: boolean;
-  user?: User;
+  user?: IUser;
 }
-

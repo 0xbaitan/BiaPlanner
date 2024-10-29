@@ -1,5 +1,5 @@
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { PhoneEntry, User, UserDto } from "@biaplanner/shared";
+import { IUser, PhoneEntry } from "@biaplanner/shared";
 import { Suspense, useCallback } from "react";
 import { useSetActivePhoneEntry, useSetShowPhoneEntryDeletionWarning, useSetShowUpdateUserForm, useSetUserFormModalOpenState, useShowUpdateUserForm } from "../hooks/usePhoneDirectoryState";
 

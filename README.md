@@ -32,3 +32,9 @@
 
 - **Understanding how to use React Hook Forms with Zod validation**:
   Uhiene, G. (2024). How to Validate Forms with Zod and React-Hook-Form. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/react-form-validation-zod-react-hook-form/ [Accessed 21 Oct. 2024].
+
+- **Understanding how to implement Passport.js in NestJS for user authentication**:
+  NestJS (2024). Documentation | NestJS - A progressive Node.js framework. [online] Documentation | NestJS - A progressive Node.js framework. Available at: https://docs.nestjs.com/recipes/passport [Accessed 26 Oct. 2024].
+
+- **Understanding how to hash passwords and compare them with plaintext passwords for added security**:
+  Charity, D.T. (2024). How to Hash Passwords with bcrypt in Node.js. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/how-to-hash-passwords-with-bcrypt-in-nodejs/ [Accessed 27 Oct. 2024].

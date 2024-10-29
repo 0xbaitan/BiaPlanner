@@ -1,36 +1,44 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { User, UserDto } from '@biaplanner/shared';
+import {
+  IUser,
+  UpdateRequestUserDto,
+  CreateRequestUserDto,
+} from '@biaplanner/shared';
+import { LocalGuard } from '../authentication/local.guard';
 
+@UseGuards(LocalGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAll(): Promise<UserDto[]> {
-    const users = await this.userService.findAll();
-    const userDtos = users.map((user) =>
-      this.userService.convertToUserDto(user),
-    );
-    return userDtos;
+  async findAll(): Promise<IUser[]> {
+    const users = await this.userService.readAllUsers();
+    return users;
   }
 
   @Get('/:id')
-  async findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.find(id);
+  async readUser(@Param('id') id: number): Promise<IUser> {
+    const user = this.userService.readUser({ id });
+    return user;
   }
 
   @Post()
-  async addUser(@Body() userDto: UserDto): Promise<User> {
-    const user = this.userService.convertFromUserDto(userDto);
-    return this.userService.addUser(user);
+  async createUser(@Body() dto: CreateRequestUserDto): Promise<IUser> {
+    return this.userService.createUser(dto);
   }
 
-  @Put('/:id')
-  async updateUser(@Param('id') id: number, @Body() userDto: UserDto) {
-    return this.userService.updateUser(
-      Number(id),
-      this.userService.convertFromUserDto(userDto),
-    );
+  @Put()
+  async updateUser(@Body() dto: UpdateRequestUserDto): Promise<IUser> {
+    return this.userService.updateUser(dto);
   }
 }

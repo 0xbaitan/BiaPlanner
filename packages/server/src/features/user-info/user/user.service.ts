@@ -1,9 +1,15 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { User, UserDto } from '@biaplanner/shared';
-import dayjs from 'dayjs';
+import {
+  DeleteRequestUserDto,
+  ICreateRequestUserDto,
+  IReadRequestUserDto,
+  IUpdateRequestUserDto,
+  IUser,
+} from '@biaplanner/shared';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -11,51 +17,44 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  public async findAll(): Promise<User[]> {
-    const users = await this.userRepository.find();
+  public async readAllUsers(): Promise<IUser[]> {
+    const users = await this.userRepository.find({
+      relations: ['phoneEntries'],
+    });
     return users;
   }
 
-  public async find(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
+  public async readUser(dto: IReadRequestUserDto): Promise<IUser> {
+    const user = await this.userRepository.findOneOrFail({
+      where: [{ id: dto.id }, { username: dto.username }, { email: dto.email }],
       relations: ['phoneEntries'],
     });
     return user;
   }
 
-  public async addUser(user: User): Promise<User> {
-    const addedUser = await this.userRepository.save(user);
-    return addedUser;
+  public async createUser(dto: ICreateRequestUserDto): Promise<IUser> {
+    const newUser = this.userRepository.create(dto);
+    return this.userRepository.save(newUser);
   }
 
-  public async updateUser(id: number, user: User): Promise<User> {
-    const existingUser = this.userRepository.findOneOrFail({
-      where: {
-        id: id,
-      },
-      relations: ['phoneEntries'],
+  public async updateUser(dto: IUpdateRequestUserDto): Promise<IUser> {
+    const existingUser = this.readUser({
+      id: dto.id,
     });
 
-    return this.userRepository.save({
+    const updateUser = this.userRepository.save({
       ...existingUser,
-      ...user,
+      ...dto,
     });
+
+    return updateUser;
   }
 
-  public convertToUserDto(user: User): UserDto {
-    const userDto: UserDto = {
-      ...user,
-      dateOfBirth: dayjs(user.dateOfBirth).toISOString(),
-    };
-    return userDto;
-  }
+  public async deleteUser(dto: DeleteRequestUserDto): Promise<IUser> {
+    const user = await this.userRepository.findOneOrFail({
+      where: [{ id: dto.id }],
+    });
 
-  public convertFromUserDto(userDto: UserDto): User {
-    const user: User = {
-      ...userDto,
-      dateOfBirth: dayjs(userDto.dateOfBirth).toDate(),
-    };
-    return user;
+    return await this.userRepository.remove(user);
   }
 }
