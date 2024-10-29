@@ -17,10 +17,10 @@ import { UserModule } from '../user/user.module';
     PassportModule,
     JwtModule.register({
       secret: Environment.getJWTSecret(),
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   providers: [AuthenticationService, LocalStrategy, JwtStrategy],
-  exports: [AuthenticationService, LocalStrategy],
+  exports: [AuthenticationService, LocalStrategy, JwtStrategy],
 })
 export class AuthenticationModule {}

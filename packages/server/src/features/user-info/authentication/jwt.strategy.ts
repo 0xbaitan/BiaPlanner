@@ -1,7 +1,7 @@
 import { Environment } from 'src/environment';
 import { ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-local';
+import { Strategy } from 'passport-jwt';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
