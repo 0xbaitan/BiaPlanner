@@ -14,6 +14,7 @@ import {
   ISanitisedUser,
   IUser,
   LoginRequestUserDto,
+  SanitisedUser,
 } from '@biaplanner/shared';
 import { LocalGuard } from './features/user-info/authentication/local.guard';
 import { AuthenticationService } from './features/user-info/authentication/authentication.service';
@@ -21,6 +22,7 @@ import { JwtGuard } from './features/user-info/authentication/jwt.guard';
 import { Request as ERequest } from 'express';
 import { Util } from './util';
 import { EvadeJWTGuard } from './features/user-info/authentication/evade-jwt-guard.decorator';
+import { plainToInstance } from 'class-transformer';
 
 @Controller()
 export class AppController {
@@ -40,18 +42,17 @@ export class AppController {
   }
 
   @Post('/auth/logout')
-  async logoutUser(@Request() req: any): Promise<{ user: ISanitisedUser }> {
+  async logoutUser(@Request() req: any): Promise<void> {
     const username = req.user.username;
-    await this.authService.logoutUser(username);
-    return { user: null };
+    return await this.authService.logoutUser(username);
   }
   @EvadeJWTGuard()
   @UseGuards(LocalGuard)
   @Post('/auth/register')
   async registerUser(
     @Body() dto: CreateRequestUserDto,
-  ): Promise<{ user: ISanitisedUser }> {
+  ): Promise<ISanitisedUser> {
     const user = await this.authService.registerUser(dto);
-    return { user };
+    return plainToInstance(SanitisedUser, user);
   }
 }
