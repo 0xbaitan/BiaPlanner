@@ -1,7 +1,10 @@
 import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 
 import { AppModule } from './app.module';
-import { NestFactory } from '@nestjs/core';
+import { AuthenticationService } from './features/user-info/authentication/authentication.service';
+import { JwtGuard } from './features/user-info/authentication/jwt.guard';
+import { JwtService } from '@nestjs/jwt';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +13,14 @@ async function bootstrap() {
     methods: 'GET, POST, PUT, DELETE', // Allowed methods
     allowedHeaders: '*',
   });
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(
+    new JwtGuard(
+      app.get(JwtService),
+      app.get(AuthenticationService),
+      reflector,
+    ),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

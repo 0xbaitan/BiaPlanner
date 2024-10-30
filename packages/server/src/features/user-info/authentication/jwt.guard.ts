@@ -7,23 +7,36 @@ import {
 
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
+import { CAN_EVADE_JWT_GUARD_KEY } from './evade-jwt-guard.decorator';
 import { Environment } from 'src/environment';
 import { ITokenPayload } from '@biaplanner/shared';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
+import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { Util } from 'src/util';
 
+/**
+ * Used AI to understand how I can use global guards in my application with exceptions for routes
+ */
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
   constructor(
     private readonly jwtService: JwtService,
     private readonly authService: AuthenticationService,
+    private readonly reflector: Reflector,
   ) {
     super();
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const canEvadeJWT = this.reflector.get<boolean>(
+      CAN_EVADE_JWT_GUARD_KEY,
+      context.getHandler(),
+    );
+    if (canEvadeJWT) {
+      return true;
+    }
     const request = context.switchToHttp().getRequest();
     const token = Util.extractTokenFromHeader(request);
     if (!token) {

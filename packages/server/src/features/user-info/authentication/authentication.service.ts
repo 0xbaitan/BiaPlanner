@@ -164,7 +164,7 @@ export class AuthenticationService {
   async blacklistToken(username: string, token: string) {
     this.cacheService.setValue<string>(
       `${AuthenticationCacheIndices.BLACKLIST_TOKEN}_${username}_${token}`,
-      token,
+      username,
       convertDurationStringToMilli(AuthenticationCacheTTLs.REFRESH_TOKEN),
     );
   }
@@ -188,18 +188,25 @@ export class AuthenticationService {
     return !!token;
   }
 
-  async loginUser(dto: IUser): Promise<IAccessJWTObject> {
-    if (this.doesAccessTokenExist(dto.username)) {
-      const accessTokenObj = await this.retrieveAccessToken(dto.username);
-      await this.blacklistToken(dto.username, accessTokenObj.accessToken);
-      await this.removeAccessToken(dto.username);
+  private async blackListAccessTokenIfExisting(username: string) {
+    if (await this.doesAccessTokenExist(username)) {
+      const accessTokenObj = await this.retrieveAccessToken(username);
+      await this.blacklistToken(username, accessTokenObj.accessToken);
+      await this.removeAccessToken(username);
     }
+  }
 
-    if (this.doesRefreshTokenExist(dto.username)) {
-      const refreshTokenObj = await this.retrieveRefreshToken(dto.username);
-      await this.blacklistToken(dto.username, refreshTokenObj.refreshToken);
-      await this.removeRefreshToken(dto.username);
+  private async blackListRefreshTokenIfExisting(username: string) {
+    if (await this.doesRefreshTokenExist(username)) {
+      const refreshTokenObj = await this.retrieveRefreshToken(username);
+      await this.blacklistToken(username, refreshTokenObj.refreshToken);
+      await this.removeRefreshToken(username);
     }
+  }
+
+  async loginUser(dto: IUser): Promise<IAccessJWTObject> {
+    await this.blackListAccessTokenIfExisting(dto.username);
+    await this.blackListRefreshTokenIfExisting(dto.username);
 
     const accessTokenObj = await this.createAccessToken(dto);
     const refreshTokenObj = await this.createRefreshToken(dto, accessTokenObj);
@@ -212,17 +219,7 @@ export class AuthenticationService {
 
   async logoutUser(username: string, token: string) {
     await this.blacklistToken(username, token);
-
-    if (this.doesAccessTokenExist(username)) {
-      const accessTokenObj = await this.retrieveAccessToken(username);
-      await this.blacklistToken(username, accessTokenObj.accessToken);
-      await this.removeAccessToken(username);
-    }
-
-    if (this.doesRefreshTokenExist(username)) {
-      const refreshTokenObj = await this.retrieveRefreshToken(username);
-      await this.blacklistToken(username, refreshTokenObj.refreshToken);
-      await this.removeRefreshToken(username);
-    }
+    await this.blackListAccessTokenIfExisting(username);
+    await this.blackListRefreshTokenIfExisting(username);
   }
 }

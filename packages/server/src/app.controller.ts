@@ -19,6 +19,7 @@ import { AuthenticationService } from './features/user-info/authentication/authe
 import { JwtGuard } from './features/user-info/authentication/jwt.guard';
 import { Request as ERequest } from 'express';
 import { Util } from './util';
+import { EvadeJWTGuard } from './features/user-info/authentication/evade-jwt-guard.decorator';
 
 @Controller()
 export class AppController {
@@ -27,6 +28,7 @@ export class AppController {
     private readonly authService: AuthenticationService,
   ) {}
 
+  @EvadeJWTGuard()
   @UseGuards(LocalGuard)
   @Post('/auth/login')
   async loginUser(
@@ -36,7 +38,6 @@ export class AppController {
     return this.authService.loginUser(req.user);
   }
 
-  @UseGuards(JwtGuard)
   @Post('/auth/logout')
   async logoutUser(@Request() req: any): Promise<{ user: IUser }> {
     const username = req.user.username;
@@ -44,7 +45,7 @@ export class AppController {
     await this.authService.logoutUser(username, token);
     return { user: null };
   }
-
+  @EvadeJWTGuard()
   @UseGuards(LocalGuard)
   @Post('/auth/register')
   async registerUser(
@@ -54,7 +55,6 @@ export class AppController {
     return { user };
   }
 
-  @UseGuards(JwtGuard)
   @Get('/profile')
   getProfile(@Request() req: any): IUser {
     return req.user;
