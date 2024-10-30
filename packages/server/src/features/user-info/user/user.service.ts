@@ -17,6 +17,13 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+  public async getPasswordForUser(username: string): Promise<string> {
+    const user = await this.userRepository.findOneOrFail({
+      where: [{ username }],
+    });
+    return user.password;
+  }
+
   public async readAllUsers(): Promise<IUser[]> {
     const users = await this.userRepository.find({
       relations: ['phoneEntries'],

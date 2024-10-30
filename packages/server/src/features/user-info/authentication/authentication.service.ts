@@ -52,6 +52,7 @@ export class AuthenticationService {
       username: dto.login,
       email: dto.login,
     });
+
     const isUserValid = await this.validatePassword(
       dto.password,
       user.password,
@@ -77,7 +78,8 @@ export class AuthenticationService {
       .toISOString();
     return {
       accessToken: token,
-      ...dto,
+      username: dto.username,
+      id: dto.id,
       expiryTime,
     };
   }
@@ -102,7 +104,8 @@ export class AuthenticationService {
       .toISOString();
     return {
       refreshToken: token,
-      ...dto,
+      username: dto.username,
+      id: dto.id,
       expiryTime,
     };
   }
@@ -181,7 +184,6 @@ export class AuthenticationService {
       ttl ??
       convertDurationStringToMilli(AuthenticationCacheTTLs.REFRESH_TOKEN);
     const expiresIn = dayjs().add(calculatedTttl, 'ms').toISOString();
-    console.log('blacklisting token', { username, token, expiresIn });
     const payload = { username, token, expiresIn };
     this.cacheService.setValue<typeof payload>(
       `${AuthenticationCacheIndices.BLACKLIST_TOKEN}_${username}_${token}`,
@@ -212,7 +214,12 @@ export class AuthenticationService {
   private async blackListAccessTokenIfExisting(username: string) {
     if (await this.doesAccessTokenExist(username)) {
       const accessTokenObj = await this.retrieveAccessToken(username);
-      await this.blacklistToken(username, accessTokenObj.accessToken);
+      const { expiryTime } = accessTokenObj;
+      let ttl: number | undefined;
+      if (expiryTime) {
+        ttl = dayjs(expiryTime).diff(dayjs(), 'ms');
+      }
+      await this.blacklistToken(username, accessTokenObj.accessToken, ttl);
       await this.removeAccessToken(username);
     }
   }
@@ -220,6 +227,7 @@ export class AuthenticationService {
   private async blackListRefreshTokenIfExisting(username: string) {
     if (await this.doesRefreshTokenExist(username)) {
       const refreshTokenObj = await this.retrieveRefreshToken(username);
+
       const { expiryTime } = refreshTokenObj;
       let ttl: number | undefined;
       if (expiryTime) {

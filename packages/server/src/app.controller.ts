@@ -11,6 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   CreateRequestUserDto,
   IAccessJWTObject,
+  ISanitisedUser,
   IUser,
   LoginRequestUserDto,
 } from '@biaplanner/shared';
@@ -39,7 +40,7 @@ export class AppController {
   }
 
   @Post('/auth/logout')
-  async logoutUser(@Request() req: any): Promise<{ user: IUser }> {
+  async logoutUser(@Request() req: any): Promise<{ user: ISanitisedUser }> {
     const username = req.user.username;
     await this.authService.logoutUser(username);
     return { user: null };
@@ -49,13 +50,8 @@ export class AppController {
   @Post('/auth/register')
   async registerUser(
     @Body() dto: CreateRequestUserDto,
-  ): Promise<{ user: IUser }> {
+  ): Promise<{ user: ISanitisedUser }> {
     const user = await this.authService.registerUser(dto);
     return { user };
-  }
-
-  @Get('/profile')
-  getProfile(@Request() req: any): IUser {
-    return req.user;
   }
 }

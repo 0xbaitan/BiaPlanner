@@ -1,8 +1,8 @@
-import { IntersectionType, OmitType, PartialType, PickType } from "@nestjs/mapped-types";
+import { Exclude, Expose } from "class-transformer";
 import { IsDateString, IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsString, IsStrongPassword, Matches, MaxLength, Min, MinLength } from "class-validator";
+import { OmitType, PartialType, PickType } from "@nestjs/mapped-types";
 
 import { ApiProperty } from "@nestjs/swagger";
-import { Exclude } from "class-transformer";
 import { PhoneEntry } from "./PhoneDirectory";
 
 export class User {
@@ -78,7 +78,6 @@ export class User {
     minNumbers: 1,
     minSymbols: 1,
   })
-  @Exclude()
   @ApiProperty()
   password: string;
 
@@ -94,6 +93,11 @@ export class ReadRequestUserDto extends PartialType(PickType(User, ["id", "usern
 export class UpdateRequestUserDto extends PartialType(User) {}
 
 export class DeleteRequestUserDto extends PickType(User, ["id"]) {}
+
+export class SanitisedUser extends User {
+  @Exclude()
+  declare password: string;
+}
 
 export class LoginRequestUserDto extends PickType(User, ["id", "password"]) {
   @ApiProperty()
@@ -117,3 +121,5 @@ export interface IUpdateRequestUserDto extends UpdateRequestUserDto {}
 export interface IDeleteRequestUserDto extends DeleteRequestUserDto {}
 
 export interface ILoginRequestUserDto extends LoginRequestUserDto {}
+
+export interface ISanitisedUser extends SanitisedUser {}

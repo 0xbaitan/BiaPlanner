@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  HttpException,
+  HttpStatus,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 
 import { AppModule } from './app.module';
@@ -14,6 +19,11 @@ async function bootstrap() {
     allowedHeaders: '*',
   });
   const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(reflector, {
+      excludeExtraneousValues: true,
+    }),
+  );
   app.useGlobalGuards(
     new JwtGuard(
       app.get(JwtService),
