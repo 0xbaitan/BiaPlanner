@@ -41,8 +41,7 @@ export class AppController {
   @Post('/auth/logout')
   async logoutUser(@Request() req: any): Promise<{ user: IUser }> {
     const username = req.user.username;
-    const token = Util.extractTokenFromHeader(req);
-    await this.authService.logoutUser(username, token);
+    await this.authService.logoutUser(username);
     return { user: null };
   }
   @EvadeJWTGuard()

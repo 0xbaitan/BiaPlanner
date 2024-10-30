@@ -1,6 +1,7 @@
 interface ICommonJWTObject {
   id?: number;
   username: string;
+  expiryTime?: string;
 }
 
 export interface IAccessJWTObject extends ICommonJWTObject {

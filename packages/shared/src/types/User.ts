@@ -78,9 +78,7 @@ export class User {
     minNumbers: 1,
     minSymbols: 1,
   })
-  @Exclude({
-    toPlainOnly: true,
-  })
+  @Exclude()
   @ApiProperty()
   password: string;
 

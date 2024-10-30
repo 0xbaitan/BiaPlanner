@@ -15,6 +15,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import bcrypt from 'bcrypt';
+import dayjs from 'dayjs';
 
 /**
  * Boilerplate code referenced from: https://docs.nestjs.com/recipes/passport and modified
@@ -68,9 +69,16 @@ export class AuthenticationService {
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: AuthenticationCacheTTLs.ACCESS_TOKEN,
     });
+    const expiryTime = dayjs()
+      .add(
+        convertDurationStringToMilli(AuthenticationCacheTTLs.ACCESS_TOKEN),
+        'ms',
+      )
+      .toISOString();
     return {
       accessToken: token,
       ...dto,
+      expiryTime,
     };
   }
 
@@ -86,9 +94,16 @@ export class AuthenticationService {
     const token = await this.jwtService.signAsync(payload, {
       expiresIn: AuthenticationCacheTTLs.REFRESH_TOKEN,
     });
+    const expiryTime = dayjs()
+      .add(
+        convertDurationStringToMilli(AuthenticationCacheTTLs.REFRESH_TOKEN),
+        'ms',
+      )
+      .toISOString();
     return {
       refreshToken: token,
       ...dto,
+      expiryTime,
     };
   }
 
@@ -161,11 +176,17 @@ export class AuthenticationService {
     await this.cacheService.deleteValue(key);
   }
 
-  async blacklistToken(username: string, token: string) {
-    this.cacheService.setValue<string>(
+  async blacklistToken(username: string, token: string, ttl?: number) {
+    const calculatedTttl =
+      ttl ??
+      convertDurationStringToMilli(AuthenticationCacheTTLs.REFRESH_TOKEN);
+    const expiresIn = dayjs().add(calculatedTttl, 'ms').toISOString();
+    console.log('blacklisting token', { username, token, expiresIn });
+    const payload = { username, token, expiresIn };
+    this.cacheService.setValue<typeof payload>(
       `${AuthenticationCacheIndices.BLACKLIST_TOKEN}_${username}_${token}`,
-      username,
-      convertDurationStringToMilli(AuthenticationCacheTTLs.REFRESH_TOKEN),
+      payload,
+      calculatedTttl,
     );
   }
 
@@ -199,7 +220,12 @@ export class AuthenticationService {
   private async blackListRefreshTokenIfExisting(username: string) {
     if (await this.doesRefreshTokenExist(username)) {
       const refreshTokenObj = await this.retrieveRefreshToken(username);
-      await this.blacklistToken(username, refreshTokenObj.refreshToken);
+      const { expiryTime } = refreshTokenObj;
+      let ttl: number | undefined;
+      if (expiryTime) {
+        ttl = dayjs(expiryTime).diff(dayjs(), 'ms');
+      }
+      await this.blacklistToken(username, refreshTokenObj.refreshToken, ttl);
       await this.removeRefreshToken(username);
     }
   }
@@ -217,8 +243,7 @@ export class AuthenticationService {
     return accessTokenObj;
   }
 
-  async logoutUser(username: string, token: string) {
-    await this.blacklistToken(username, token);
+  async logoutUser(username: string) {
     await this.blackListAccessTokenIfExisting(username);
     await this.blackListRefreshTokenIfExisting(username);
   }
