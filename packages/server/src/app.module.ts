@@ -1,10 +1,11 @@
 import 'reflect-metadata';
-import { Module } from '@nestjs/common';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { modules } from './modules';
 import { dataSourceOptions } from './db/ormconfig';
+import { modules } from './modules';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { dataSourceOptions } from './db/ormconfig';
       autoLoadEntities: true,
       keepConnectionAlive: true,
     }),
+
     ...modules,
   ],
   controllers: [AppController],

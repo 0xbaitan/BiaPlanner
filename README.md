@@ -38,3 +38,6 @@
 
 - **Understanding how to hash passwords and compare them with plaintext passwords for added security**:
   Charity, D.T. (2024). How to Hash Passwords with bcrypt in Node.js. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/how-to-hash-passwords-with-bcrypt-in-nodejs/ [Accessed 27 Oct. 2024].
+
+- **Understanding how I can implement Redis to my system**:
+  1. Por, P. (2024). How to Use Docker Redis with NestJS - Panat Por - Medium. [online] Medium. Available at: https://medium.com/@panat.siriwong/how-to-use-docker-redis-with-nestjs-7543bd17f39e [Accessed 29 Oct. 2024].

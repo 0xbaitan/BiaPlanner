@@ -83,9 +83,22 @@ services:
     depends_on:
       - database
 
+  redis:
+    container_name: redis
+    image: redis:7.2.6-alpine
+    environment:
+      - REDIS_PORT=6379
+    networks:
+      - biaplanner_link
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
 networks:
   biaplanner_link:
     driver: bridge
 
 volumes:
+  redis:
+    driver: local
   data:

@@ -12,4 +12,19 @@ export class Environment {
     }
     return secret;
   }
+
+  public static getRedistHostAndPort(): [string, number] {
+    const redisHost = process.env.REDIS_HOST;
+    const redisPort = Number(process.env.REDIS_PORT);
+
+    if (!redisHost || redisHost.trim().length === 0) {
+      throw new Error('REDIS_HOST is not set');
+    }
+
+    if (!redisPort || isNaN(redisPort)) {
+      throw new Error('REDIS_PORT is not set');
+    }
+
+    return [redisHost, redisPort];
+  }
 }

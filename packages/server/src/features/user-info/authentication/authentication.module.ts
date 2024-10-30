@@ -1,6 +1,7 @@
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { AuthenticationService } from './authentication.service';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Environment } from 'src/environment';
 import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local.strategy';
@@ -15,9 +16,12 @@ import { UserModule } from '../user/user.module';
   imports: [
     UserModule,
     PassportModule,
-    JwtModule.register({
-      secret: Environment.getJWTSecret(),
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      global: true,
+      useFactory: async () => ({
+        secret: Environment.getJWTSecret(),
+        signOptions: { expiresIn: '1d' },
+      }),
     }),
   ],
   providers: [AuthenticationService, LocalStrategy, JwtStrategy],

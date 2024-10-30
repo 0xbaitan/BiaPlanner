@@ -10,13 +10,15 @@ import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
   CreateRequestUserDto,
-  IJWTResponse,
+  IAccessJWTObject,
   IUser,
   LoginRequestUserDto,
 } from '@biaplanner/shared';
 import { LocalGuard } from './features/user-info/authentication/local.guard';
 import { AuthenticationService } from './features/user-info/authentication/authentication.service';
 import { JwtGuard } from './features/user-info/authentication/jwt.guard';
+import { Request as ERequest } from 'express';
+import { Util } from './util';
 
 @Controller()
 export class AppController {
@@ -30,14 +32,16 @@ export class AppController {
   async loginUser(
     @Request() req: any,
     @Body() _dto: LoginRequestUserDto,
-  ): Promise<IJWTResponse> {
+  ): Promise<IAccessJWTObject> {
     return this.authService.loginUser(req.user);
   }
 
   @UseGuards(JwtGuard)
   @Post('/auth/logout')
   async logoutUser(@Request() req: any): Promise<{ user: IUser }> {
-    req.logout();
+    const username = req.user.username;
+    const token = Util.extractTokenFromHeader(req);
+    await this.authService.logoutUser(username, token);
     return { user: null };
   }
 
