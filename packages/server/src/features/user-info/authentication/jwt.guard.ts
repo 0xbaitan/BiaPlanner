@@ -49,7 +49,6 @@ export class JwtGuard extends AuthGuard('jwt') {
         secret: Environment.getJWTSecret(),
       });
       username = payload.username;
-      console.log('payload', payload);
       request.user = payload;
     } catch (error) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
