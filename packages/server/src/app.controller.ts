@@ -47,7 +47,6 @@ export class AppController {
     return await this.authService.logoutUser(username);
   }
   @EvadeJWTGuard()
-  @UseGuards(LocalGuard)
   @Post('/auth/register')
   async registerUser(
     @Body() dto: CreateRequestUserDto,

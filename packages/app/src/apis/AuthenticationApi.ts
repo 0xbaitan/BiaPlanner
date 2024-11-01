@@ -1,4 +1,4 @@
-import { CreateRequestUserDto, ISanitisedUser } from "@biaplanner/shared";
+import { CreateRequestUserDto, IAccessJWTObject, ISanitisedUser, LoginRequestUserDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -10,6 +10,18 @@ export const authenticationApi = rootApi.injectEndpoints({
         method: "POST",
         body: dto,
       }),
+      invalidatesTags: ["User", "PhoneEntry"],
+    }),
+
+    loginUser: build.mutation<IAccessJWTObject, LoginRequestUserDto>({
+      query: (dto) => ({
+        url: `/auth/login`,
+        method: "POST",
+        body: dto,
+      }),
+      invalidatesTags: ["User", "PhoneEntry"],
     }),
   }),
 });
+
+export const { useRegisterUserMutation, useLoginUserMutation } = authenticationApi;

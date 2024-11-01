@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -8,7 +8,9 @@ import {
   IReadRequestUserDto,
   IUpdateRequestUserDto,
   IUser,
+  IValidationError,
 } from '@biaplanner/shared';
+import CustomValidationError from 'src/errors/CustomValidationError';
 
 @Injectable()
 export class UserService {
@@ -16,6 +18,39 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
+
+  public async validateUniqueUserFields(
+    username: string,
+    email: string,
+  ): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: [{ username }, { email }],
+    });
+    const payloads: IValidationError[] = [];
+    if (user?.email === email) {
+      payloads.push({
+        property: 'email',
+        constraints: {
+          isUnique: 'Email already exists',
+        },
+      });
+    }
+
+    if (user?.username === username) {
+      payloads.push({
+        property: 'username',
+        constraints: {
+          isUnique: 'Username already exists',
+        },
+      });
+    }
+
+    if (payloads.length > 0) {
+      throw new CustomValidationError(...payloads);
+    }
+
+    return;
+  }
 
   public async getPasswordForUser(username: string): Promise<string> {
     const user = await this.userRepository.findOneOrFail({
@@ -32,7 +67,7 @@ export class UserService {
   }
 
   public async readUser(dto: IReadRequestUserDto): Promise<IUser> {
-    const user = await this.userRepository.findOneOrFail({
+    const user = await this.userRepository.findOne({
       where: [{ id: dto.id }, { username: dto.username }, { email: dto.email }],
       relations: ['phoneEntries'],
     });
@@ -40,6 +75,7 @@ export class UserService {
   }
 
   public async createUser(dto: ICreateRequestUserDto): Promise<IUser> {
+    await this.validateUniqueUserFields(dto.username, dto.email);
     const newUser = this.userRepository.create(dto);
     return this.userRepository.save(newUser);
   }

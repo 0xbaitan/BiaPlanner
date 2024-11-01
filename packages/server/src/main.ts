@@ -10,6 +10,7 @@ import { AppModule } from './app.module';
 import { AuthenticationService } from './features/user-info/authentication/authentication.service';
 import { JwtGuard } from './features/user-info/authentication/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
+import { ValidationExceptionFilter } from './features/errors/validation-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,8 @@ async function bootstrap() {
       excludeExtraneousValues: true,
     }),
   );
+
+  app.useGlobalFilters(new ValidationExceptionFilter());
   app.useGlobalGuards(
     new JwtGuard(
       app.get(JwtService),

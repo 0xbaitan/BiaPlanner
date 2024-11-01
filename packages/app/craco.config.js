@@ -9,6 +9,8 @@
  *
  */
 const path = require("path");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const { url } = require("inspector");
 
 module.exports = {
   webpack: {
@@ -21,6 +23,18 @@ module.exports = {
         poll: 300, // Polling interval in milliseconds
       };
       return webpackConfig;
+    },
+    plugins: [new NodePolyfillPlugin()],
+    resolve: {
+      fallback: {
+        path: require.resolve("path-browserify"),
+        url: require.resolve("url"),
+        perf_hooks: false,
+        async_hooks: false,
+        repl: false,
+        net: false,
+        "class-transformer/storage": false,
+      },
     },
   },
 
@@ -49,11 +63,7 @@ module.exports = {
             loader: "sass-loader",
             options: {
               sassOptions: {
-                includePaths: [
-                  path.resolve(__dirname, "node_modules", "bootstrap"),
-                  path.resolve(__dirname, "src"),
-                  path.resolve(__dirname, "src/styles/common.scss"),
-                ],
+                includePaths: [path.resolve(__dirname, "node_modules", "bootstrap"), path.resolve(__dirname, "src"), path.resolve(__dirname, "src/styles/common.scss")],
               },
             },
           },

@@ -11,6 +11,7 @@ import {
 } from '@biaplanner/shared';
 
 import { CacheService } from '../../cache/cache.service';
+import CustomValidationError from 'src/errors/CustomValidationError';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -52,6 +53,15 @@ export class AuthenticationService {
       username: dto.login,
       email: dto.login,
     });
+
+    if (!user) {
+      throw new CustomValidationError({
+        property: 'login',
+        constraints: {
+          userExists: 'User does not exist',
+        },
+      });
+    }
 
     const isUserValid = await this.validatePassword(
       dto.password,
