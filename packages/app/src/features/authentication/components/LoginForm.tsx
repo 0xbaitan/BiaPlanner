@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import { SignUpFormValidationSchema } from "./SignUpForm";
 import dayjs from "dayjs";
 import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import useSessionStorageState from "use-session-storage-state";
 import { useSetAcessTokenObject } from "../hooks/useAuthenticationState";
 import useValidationErrors from "@/features/authentication/hooks/useValidationErrors";
@@ -58,15 +59,18 @@ export default function LoginForm(props: LoginFormProps) {
     handleSubmit,
     register,
   } = methods;
-
+  const navigate = useNavigate();
   const userDoesNotExistMessage = validationErrorsResponse?.containsConstraint("login", "userExists") ? "User of this email/username does not exist" : undefined;
 
   const onSubmit = useCallback(
     async (data: LoginFormData) => {
       const accessTokenObject = await loginUser(data).unwrap();
-      setAccessToken(accessTokenObject);
+      if (accessTokenObject) {
+        setAccessToken(accessTokenObject);
+        navigate("/");
+      }
     },
-    [loginUser, setAccessToken]
+    [loginUser, setAccessToken, navigate]
   );
 
   return (
