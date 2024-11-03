@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { IAccessJWTObject, ILoginRequestUserDto } from "@biaplanner/shared";
+import { IAccessJWTObject, ILoginRequestUserDto, IRefreshJWTObject } from "@biaplanner/shared";
 import { ZodType, z } from "zod";
 
 import Button from "react-bootstrap/esm/Button";
@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import { useCallback } from "react";
 import { useLoginUserMutation } from "@/apis/AuthenticationApi";
 import { useNavigate } from "react-router-dom";
+import useSessionStorageState from "use-session-storage-state";
 import { useSetAcessTokenObject } from "../hooks/useAuthenticationState";
 import useValidationErrors from "@/features/authentication/hooks/useValidationErrors";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,6 +49,7 @@ export default function LoginForm(props: LoginFormProps) {
     },
     resolver: zodResolver(LoginFormValidationSchema),
   });
+  const [, setRefreshTokenObj] = useSessionStorageState<IRefreshJWTObject>("refreshTokenObj");
   const setAccessToken = useSetAcessTokenObject();
   const [loginUser, { isError, error }] = useLoginUserMutation();
   const validationErrorsResponse = useValidationErrors(isError, error);
@@ -61,9 +63,12 @@ export default function LoginForm(props: LoginFormProps) {
 
   const onSubmit = useCallback(
     async (data: LoginFormData) => {
-      const accessTokenObject = await loginUser(data).unwrap();
-      if (accessTokenObject) {
-        setAccessToken(accessTokenObject);
+      const { accessTokenObj, refreshTokenObj } = await loginUser(data).unwrap();
+      if (accessTokenObj) {
+        setAccessToken(accessTokenObj);
+        if (process.env.NODE_ENV === "development") {
+          setRefreshTokenObj(refreshTokenObj);
+        }
         navigate("/");
       }
     },

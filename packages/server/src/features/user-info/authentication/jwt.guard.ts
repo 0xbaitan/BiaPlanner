@@ -63,9 +63,10 @@ export class JwtGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    const accessTokenPayload =
-      this.authService.validateAccessToken(accessToken);
-    request.user = accessTokenPayload;
+    const accessTokenObj =
+      await this.authService.validateAccessToken(accessToken);
+    request.user = accessTokenObj;
+    console.log(accessTokenObj);
 
     return true;
   }

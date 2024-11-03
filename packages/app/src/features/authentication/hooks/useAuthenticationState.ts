@@ -2,6 +2,7 @@ import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { IAccessJWTObject } from "@biaplanner/shared";
 import { authenticationActions } from "../reducers/AuthenticationReducer";
+import dayjs from "dayjs";
 import { useCallback } from "react";
 
 export default function useAuthenticationState() {
@@ -22,5 +23,5 @@ export function useSetAcessTokenObject() {
 
 export function useIsAuthenticated() {
   const { accessTokenObject } = useAuthenticationState();
-  return !!accessTokenObject;
+  return !!accessTokenObject && dayjs(accessTokenObject.expiryTime).subtract(30, "seconds").isAfter(dayjs());
 }

@@ -1,8 +1,9 @@
 import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-router-dom";
 
-import Authenticated from "./features/authentication/components/Authenticated";
 import Home from "@/pages/Home";
 import LoginPage from "./features/authentication/pages/LoginPage";
+import Protected from "./features/authentication/components/Protected";
+import RedirectWhenAuthenticated from "./features/authentication/components/RedirectWhenAuthenticated";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 
 export default function Routes() {
@@ -13,13 +14,20 @@ export default function Routes() {
           path="/"
           index
           element={
-            <Authenticated>
+            <Protected>
               <Home />
-            </Authenticated>
+            </Protected>
           }
         />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/login"
+          element={
+            // <RedirectWhenAuthenticated>
+            <LoginPage />
+            // </RedirectWhenAuthenticated>
+          }
+        />
       </RoutingTable>
     </Router>
   );

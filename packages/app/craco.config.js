@@ -13,6 +13,19 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const { url } = require("inspector");
 
 module.exports = {
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:4000", // Your backend server address
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          "^/api": "",
+        },
+      },
+    },
+  },
+
   webpack: {
     alias: {
       "@": path.resolve(__dirname, "src/"),

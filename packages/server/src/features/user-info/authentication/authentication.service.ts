@@ -153,6 +153,7 @@ export class AuthenticationService {
       );
     }
     const isBlacklisted = await this.isTokenBlacklisted(obj.username, token);
+    console.log('isBlacklisted', isBlacklisted);
     if (isBlacklisted) {
       throw new CustomAuthenticationError(
         AuthenticationErrorCodes.BLACKLISTED_REFRESH_TOKEN,
@@ -164,13 +165,23 @@ export class AuthenticationService {
 
   async refreshAccessToken(refreshToken: string): Promise<IAccessJWTObject> {
     const refreshTokenObj = await this.validateRefreshToken(refreshToken);
-    const accessTokenObj = await this.createAccessToken({
-      id: refreshTokenObj.id,
-      username: refreshTokenObj.username,
-    });
-    await this.blackListAccessTokenIfExisting(refreshTokenObj.username);
-    await this.storeAccessToken(accessTokenObj);
-    return accessTokenObj;
+    const existingAccessToken = await this.retrieveAccessToken(
+      refreshTokenObj.username,
+    );
+    try {
+      if (existingAccessToken) {
+        await this.validateAccessToken(existingAccessToken.accessToken);
+        return existingAccessToken;
+      }
+    } catch (error) {
+      const accessTokenObj = await this.createAccessToken({
+        id: refreshTokenObj.id,
+        username: refreshTokenObj.username,
+      });
+      await this.blackListAccessTokenIfExisting(refreshTokenObj.username);
+      await this.storeAccessToken(accessTokenObj);
+      return accessTokenObj;
+    }
   }
 
   computeAuthenticationCacheKey(
