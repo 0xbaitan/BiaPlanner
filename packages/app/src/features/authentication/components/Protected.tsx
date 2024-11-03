@@ -24,7 +24,7 @@ export default function Protected({ children }: { children: React.ReactNode }) {
         }
       });
     }
-  }, [isAuthenticated, refreshAccessToken, setAcessTokenObject, navigate]);
+  }, [isAuthenticated, refreshAccessToken, setAcessTokenObject, navigate, refreshTokenObj]);
 
   return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>;
 }

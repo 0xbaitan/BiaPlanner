@@ -1,9 +1,8 @@
 import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-router-dom";
 
-import Home from "@/pages/Home";
+import HomePage from "@/pages/HomePage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import Protected from "./features/authentication/components/Protected";
-import RedirectWhenAuthenticated from "./features/authentication/components/RedirectWhenAuthenticated";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 
 export default function Routes() {
@@ -15,7 +14,7 @@ export default function Routes() {
           index
           element={
             <Protected>
-              <Home />
+              <HomePage />
             </Protected>
           }
         />
