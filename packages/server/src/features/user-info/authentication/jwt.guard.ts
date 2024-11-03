@@ -1,19 +1,24 @@
 import {
+  AuthenticationErrorCodes,
+  IRefreshJWTObject,
+  ITokenPayload,
+} from '@biaplanner/shared';
+import {
   ExecutionContext,
   HttpException,
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticationService } from './authentication.service';
 import { CAN_EVADE_JWT_GUARD_KEY } from './evade-jwt-guard.decorator';
+import CustomAuthenticationError from 'src/errors/CustomAuthenticationError';
 import { Environment } from 'src/environment';
-import { ITokenPayload } from '@biaplanner/shared';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
 import { Util } from 'src/util';
 
 /**
@@ -22,7 +27,6 @@ import { Util } from 'src/util';
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly authService: AuthenticationService,
     private readonly reflector: Reflector,
   ) {
@@ -37,34 +41,31 @@ export class JwtGuard extends AuthGuard('jwt') {
     if (canEvadeJWT) {
       return true;
     }
-    const request = context.switchToHttp().getRequest();
-    const token = Util.extractTokenFromHeader(request);
-    if (!token) {
-      throw new HttpException('No token provided', HttpStatus.UNAUTHORIZED);
-    }
+    const request = context.switchToHttp().getRequest() as Request;
+    const response = context.switchToHttp().getResponse() as Response;
 
-    let username: string;
-    try {
-      const payload = await this.jwtService.verifyAsync<ITokenPayload>(token, {
-        secret: Environment.getJWTSecret(),
-      });
-      username = payload.username;
-      request.user = payload;
-    } catch (error) {
-      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
-    }
+    const accessToken = Util.extractTokenFromHeader(request);
+    const refreshToken = request.cookies?.refreshToken;
 
-    const isBlacklisted = await this.authService.isTokenBlacklisted(
-      username,
-      token,
-    );
-
-    if (isBlacklisted) {
-      throw new HttpException(
-        'Token blacklisted, try logging in to create a new token',
-        HttpStatus.UNAUTHORIZED,
+    if (!accessToken && !refreshToken) {
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.NEITHER_ACCESS_NOR_REFRESH_TOKEN_PROVIDED,
+        'Neither access nor refresh token provided',
       );
     }
+
+    if (!accessToken && refreshToken) {
+      const accessTokenObj =
+        await this.authService.refreshAccessToken(refreshToken);
+      response.header('X-New-Access-Token', JSON.stringify(accessTokenObj));
+      request.headers['authorization'] = `Bearer ${accessTokenObj.accessToken}`;
+      request.user = accessTokenObj;
+      return true;
+    }
+
+    const accessTokenPayload =
+      this.authService.validateAccessToken(accessToken);
+    request.user = accessTokenPayload;
 
     return true;
   }

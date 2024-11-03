@@ -1,29 +1,18 @@
-import {
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Body,
-  Get,
-} from '@nestjs/common';
+import { Controller, Req, Res, Post, UseGuards, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthGuard } from '@nestjs/passport';
 import {
   CreateRequestUserDto,
   IAccessJWTObject,
   ISanitisedUser,
-  IUser,
   LoginRequestUserDto,
   SanitisedUser,
 } from '@biaplanner/shared';
 import { LocalGuard } from './features/user-info/authentication/local.guard';
 import { AuthenticationService } from './features/user-info/authentication/authentication.service';
-import { JwtGuard } from './features/user-info/authentication/jwt.guard';
-import { Request as ERequest } from 'express';
-import { Util } from './util';
+
 import { EvadeJWTGuard } from './features/user-info/authentication/evade-jwt-guard.decorator';
 import { plainToInstance } from 'class-transformer';
-
+import { Response } from 'express';
 @Controller()
 export class AppController {
   constructor(
@@ -35,14 +24,24 @@ export class AppController {
   @UseGuards(LocalGuard)
   @Post('/auth/login')
   async loginUser(
-    @Request() req: any,
+    @Req() req: any,
     @Body() _dto: LoginRequestUserDto,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<IAccessJWTObject> {
-    return this.authService.loginUser(req.user);
+    const { accessTokenObj, refreshTokenObj } =
+      await this.authService.loginUser(req.user);
+    res.cookie('refreshToken', refreshTokenObj.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      domain:
+        process.env.NODE_ENV === 'production' ? 'biaplanner.com' : 'localhost',
+    });
+    return accessTokenObj;
   }
 
   @Post('/auth/logout')
-  async logoutUser(@Request() req: any): Promise<void> {
+  async logoutUser(@Req() req: any): Promise<void> {
     const username = req.user.username;
     return await this.authService.logoutUser(username);
   }

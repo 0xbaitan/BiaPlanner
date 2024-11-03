@@ -1,6 +1,7 @@
 import {
   AuthenticationCacheIndices,
   AuthenticationCacheTTLs,
+  AuthenticationErrorCodes,
   IAccessJWTObject,
   ICreateRequestUserDto,
   ILoginRequestUserDto,
@@ -9,10 +10,11 @@ import {
   IUser,
   convertDurationStringToMilli,
 } from '@biaplanner/shared';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { CacheService } from '../../cache/cache.service';
+import CustomAuthenticationError from 'src/errors/CustomAuthenticationError';
 import CustomValidationError from 'src/errors/CustomValidationError';
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import bcrypt from 'bcrypt';
@@ -94,6 +96,26 @@ export class AuthenticationService {
     };
   }
 
+  async validateAccessToken(token: string): Promise<IAccessJWTObject> {
+    let obj: IAccessJWTObject;
+    try {
+      obj = await this.jwtService.verifyAsync<IAccessJWTObject>(token);
+    } catch (error) {
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.INVALID_OR_EXPIRED_ACCESS_TOKEN,
+        'Invalid or expired access token',
+      );
+    }
+    const isBlacklisted = await this.isTokenBlacklisted(obj.username, token);
+    if (isBlacklisted) {
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.BLACKLISTED_ACCESS_TOKEN,
+        'Blacklisted access token',
+      );
+    }
+    return obj;
+  }
+
   async createRefreshToken(
     dto: Pick<IUser, 'id' | 'username'>,
     obj: IAccessJWTObject,
@@ -118,6 +140,37 @@ export class AuthenticationService {
       id: dto.id,
       expiryTime,
     };
+  }
+
+  async validateRefreshToken(token: string): Promise<IRefreshJWTObject> {
+    let obj: IRefreshJWTObject;
+    try {
+      obj = await this.jwtService.verifyAsync<IRefreshJWTObject>(token);
+    } catch (error) {
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.INVALID_OR_EXPIRED_REFRESH_TOKEN,
+        'Invalid or expired refresh token',
+      );
+    }
+    const isBlacklisted = await this.isTokenBlacklisted(obj.username, token);
+    if (isBlacklisted) {
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.BLACKLISTED_REFRESH_TOKEN,
+        'Blacklisted refresh token',
+      );
+    }
+    return obj;
+  }
+
+  async refreshAccessToken(refreshToken: string): Promise<IAccessJWTObject> {
+    const refreshTokenObj = await this.validateRefreshToken(refreshToken);
+    const accessTokenObj = await this.createAccessToken({
+      id: refreshTokenObj.id,
+      username: refreshTokenObj.username,
+    });
+    await this.blackListAccessTokenIfExisting(refreshTokenObj.username);
+    await this.storeAccessToken(accessTokenObj);
+    return accessTokenObj;
   }
 
   computeAuthenticationCacheKey(
@@ -248,7 +301,10 @@ export class AuthenticationService {
     }
   }
 
-  async loginUser(dto: IUser): Promise<IAccessJWTObject> {
+  async loginUser(dto: IUser): Promise<{
+    accessTokenObj: IAccessJWTObject;
+    refreshTokenObj: IRefreshJWTObject;
+  }> {
     await this.blackListAccessTokenIfExisting(dto.username);
     await this.blackListRefreshTokenIfExisting(dto.username);
 
@@ -258,7 +314,7 @@ export class AuthenticationService {
     await this.storeAccessToken(accessTokenObj);
     await this.storeRefreshToken(refreshTokenObj);
 
-    return accessTokenObj;
+    return { accessTokenObj, refreshTokenObj };
   }
 
   async logoutUser(username: string) {
