@@ -1,5 +1,6 @@
 import { Menu, MenuItem, Sidebar, SubMenu, menuClasses, sidebarClasses } from "react-pro-sidebar";
 
+import { Link } from "react-router-dom";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
 
 export default function SideNavigationBar() {
@@ -29,7 +30,9 @@ export default function SideNavigationBar() {
       >
         <MenuItem>Dashboard</MenuItem>
         <SubMenu title="Pantry" label="Pantry" className="+primary">
-          <MenuItem>Inventory</MenuItem>
+          <MenuItem>
+            <Link to={"/pantry/inventory"} >Inventory</Link>
+          </MenuItem>
           <MenuItem>Shopping List</MenuItem>
           <MenuItem>Ingredients Catalogue</MenuItem>
         </SubMenu>

@@ -5,8 +5,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IUser, User } from '@biaplanner/shared';
+import { IUser, PantryItem, PhoneEntry, User } from '@biaplanner/shared';
 
+import { PantryItemEntity } from 'src/features/pantry/pantry-item/pantry-item.entity';
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
 
 @Entity('users')
@@ -36,5 +37,11 @@ export class UserEntity implements IUser {
     cascade: true,
   })
   @JoinColumn({ name: 'userId' })
-  phoneEntries?: PhoneEntryEntity[];
+  phoneEntries?: PhoneEntry[];
+
+  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.user, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'userId' })
+  pantryItems?: PantryItem[];
 }
