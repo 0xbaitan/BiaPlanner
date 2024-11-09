@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
 
 import { ApiProperty } from "@nestjs/swagger";
+import { PantryItem } from "./PantryItem";
 import { PartialType } from "@nestjs/mapped-types";
 import { ProductClassification } from "./ProductClassification";
 
@@ -29,6 +30,11 @@ export class Product {
   @IsNumber()
   @ApiProperty()
   productClassificationId?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ApiProperty()
+  pantryItems?: PantryItem[];
 }
 
 export class CreateProductDto extends Product {}

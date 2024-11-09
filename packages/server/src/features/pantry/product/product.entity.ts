@@ -1,13 +1,19 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IProduct, ProductClassification } from '@biaplanner/shared';
+import {
+  IProduct,
+  PantryItem,
+  ProductClassification,
+} from '@biaplanner/shared';
 
+import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 import { ProductClassificationEntity } from './classification/product-classification.entity';
 
 @Entity('products')
@@ -26,4 +32,8 @@ export class ProductEntity implements IProduct {
 
   @Column({ type: 'bigint' })
   productClassificationId?: number;
+
+  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product)
+  @JoinColumn({ name: 'productId' })
+  pantryItems?: PantryItem[];
 }

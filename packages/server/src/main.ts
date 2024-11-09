@@ -25,7 +25,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(reflector, {
-      excludeExtraneousValues: true,
+      excludeExtraneousValues: false,
     }),
   );
   app.use(cookieParser());
@@ -38,7 +38,6 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       always: true,
-      whitelist: true,
       exceptionFactory: (errors) => {
         const result = errors.map((error) => {
           return {

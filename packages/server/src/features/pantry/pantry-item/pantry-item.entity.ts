@@ -11,6 +11,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -42,7 +43,7 @@ export class PantryItemEntity implements IPantryItem {
   @Column({ type: 'decimal' })
   quantity: number;
 
-  @OneToOne(() => ProductEntity, (product) => product.id)
+  @ManyToOne(() => ProductEntity, (product) => product.pantryItems)
   product: Product;
 
   @Column({ type: 'bigint' })
