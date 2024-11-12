@@ -15,6 +15,7 @@ import {
 
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 import { ProductClassificationEntity } from './classification/product-classification.entity';
+import { UserEntity } from 'src/features/user-info/user/user.entity';
 
 @Entity('products')
 export class ProductEntity implements IProduct {
@@ -36,4 +37,13 @@ export class ProductEntity implements IProduct {
   @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product)
   @JoinColumn({ name: 'productId' })
   pantryItems?: PantryItem[];
+
+  @ManyToOne(() => UserEntity, (user) => user.products)
+  user?: UserEntity;
+
+  @Column({ type: 'bigint', nullable: true })
+  userId?: number;
+
+  @Column({ type: 'boolean', default: true })
+  isGlobal?: boolean;
 }

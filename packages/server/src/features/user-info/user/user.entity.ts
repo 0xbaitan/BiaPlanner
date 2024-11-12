@@ -5,10 +5,17 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IUser, PantryItem, PhoneEntry, User } from '@biaplanner/shared';
+import {
+  IUser,
+  PantryItem,
+  PhoneEntry,
+  Product,
+  User,
+} from '@biaplanner/shared';
 
 import { PantryItemEntity } from 'src/features/pantry/pantry-item/pantry-item.entity';
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
+import { ProductEntity } from 'src/features/pantry/product/product.entity';
 
 @Entity('users')
 export class UserEntity implements IUser {
@@ -44,4 +51,10 @@ export class UserEntity implements IUser {
   })
   @JoinColumn({ name: 'userId' })
   pantryItems?: PantryItem[];
+
+  @OneToMany(() => ProductEntity, (product) => product.user, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'userId' })
+  products?: Product[];
 }

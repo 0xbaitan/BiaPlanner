@@ -1,9 +1,9 @@
 import { Exclude, Expose } from "class-transformer";
 import { IsArray, IsDateString, IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsString, IsStrongPassword, Matches, MaxLength, Min, MinLength } from "class-validator";
 import { OmitType, PartialType, PickType } from "@nestjs/mapped-types";
+import { PantryItem, Product } from "./pantry";
 
 import { ApiProperty } from "@nestjs/swagger";
-import { PantryItem } from "./pantry";
 import { PhoneEntry } from "./PhoneDirectory";
 
 export class User {
@@ -90,6 +90,11 @@ export class User {
   @IsArray()
   @ApiProperty()
   pantryItems?: PantryItem[];
+
+  @IsOptional()
+  @IsArray()
+  @ApiProperty()
+  products?: Product[];
 }
 
 export class CreateRequestUserDto extends OmitType(User, ["id", "phoneEntries"]) {}

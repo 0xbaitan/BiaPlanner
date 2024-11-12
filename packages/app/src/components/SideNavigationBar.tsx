@@ -31,7 +31,7 @@ export default function SideNavigationBar() {
         <MenuItem>Dashboard</MenuItem>
         <SubMenu title="Pantry" label="Pantry" className="+primary">
           <MenuItem>
-            <Link to={"/pantry/inventory"} >Inventory</Link>
+            <Link to={"/pantry/inventory"}>Inventory</Link>
           </MenuItem>
           <MenuItem>Shopping List</MenuItem>
           <MenuItem>Ingredients Catalogue</MenuItem>
@@ -39,6 +39,11 @@ export default function SideNavigationBar() {
         <SubMenu title="Meal Planning" label="Meal Planning" className="+primary">
           <MenuItem>Meal Plans</MenuItem>
           <MenuItem>Recipes</MenuItem>
+        </SubMenu>
+        <SubMenu title="Admin" label="Admin" className="+primary">
+          <MenuItem>
+            <Link to={"/admin/products"}>Products</Link>
+          </MenuItem>
         </SubMenu>
         <MenuItem>Community </MenuItem>
         <MenuItem>Settings</MenuItem>
