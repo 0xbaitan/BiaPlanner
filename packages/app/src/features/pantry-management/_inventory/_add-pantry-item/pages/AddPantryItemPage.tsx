@@ -1,3 +1,5 @@
+import PantryItemForm from "../components/CreatePantryItemForm";
+
 export default function AddPantryItemPage() {
   return (
     <div>
