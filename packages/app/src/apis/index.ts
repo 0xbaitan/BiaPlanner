@@ -8,7 +8,6 @@ export const rootApi = createApi({
     baseUrl: "http://localhost:4000",
     prepareHeaders: (headers, { getState }) => {
       const accessToken = (getState() as StoreState).authentication.accessTokenObject?.accessToken;
-      console.log(JSON.stringify(getState()));
       if (accessToken) {
         headers.set("authorization", `Bearer ${accessToken}`);
       }
@@ -17,7 +16,7 @@ export const rootApi = createApi({
   }),
 
   endpoints: () => ({}),
-  tagTypes: ["User", "PhoneEntry", "PantryItem"],
+  tagTypes: ["User", "PhoneEntry", "PantryItem", "Product"],
 });
 
 export default rootApi.reducer;

@@ -4,6 +4,7 @@ import { ProductEntity } from './product.entity';
 import {
   CreateProductDto,
   IProduct,
+  ReadProductDto,
   UpdateProductDto,
 } from '@biaplanner/shared';
 import { Repository } from 'typeorm';
@@ -20,13 +21,17 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async readAllProducts(): Promise<IProduct[]> {
-    return this.productRepository.find();
+  async readProducts(dto: ReadProductDto): Promise<IProduct[]> {
+    return this.productRepository.find({
+      where: dto,
+      relations: ['productClassification', 'user'],
+    });
   }
 
   async readProductById(id: number): Promise<IProduct> {
     return this.productRepository.findOneOrFail({
       where: { id },
+      relations: ['productClassification', 'user'],
     });
   }
 
