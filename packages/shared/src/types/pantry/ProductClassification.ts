@@ -1,7 +1,7 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { PartialType, PickType } from "@nestjs/mapped-types";
 
 import { ApiProperty } from "@nestjs/swagger";
-import { PartialType } from "@nestjs/mapped-types";
 import { Product } from "./Product";
 
 export class ProductClassification {
@@ -25,6 +25,7 @@ export class ProductClassification {
 }
 
 export class CreateProductClassificationDto extends ProductClassification {}
+export class ReadProductClassificationDto extends PartialType(PickType(ProductClassification, ["id"])) {}
 export class UpdateProductClassificationDto extends PartialType(CreateProductClassificationDto) {}
 export class DeleteProductClassificationDto extends ProductClassification {}
 

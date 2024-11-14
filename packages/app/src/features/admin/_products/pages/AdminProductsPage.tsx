@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useGetProductsQuery, useLazyGetProductsQuery } from "@/apis/ProductsApi";
 
 import { IProduct } from "@biaplanner/shared";
-import ProductsTable from "../../components/ProductsTable";
+import ProductsTable from "../components/ProductsTable";
 import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
 
 export default function AdminProductsPage() {

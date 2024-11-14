@@ -5,7 +5,7 @@ import { rootApi } from ".";
 export const productsApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
     getProducts: build.query<IProduct[], ReadProductDto>({
-      query: (params?: ReadProductDto) => ({
+      query: (params: ReadProductDto) => ({
         url: "/products",
         method: "GET",
         params,
