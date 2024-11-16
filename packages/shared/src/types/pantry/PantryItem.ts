@@ -1,12 +1,10 @@
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
+import { IsBoolean, IsDateString, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, IsOptional, Min } from "class-validator";
 import { PartialType, PickType } from "@nestjs/mapped-types";
 
 import { ApiProperty } from "@nestjs/swagger";
 import { Brand } from "./Brand";
 import { Product } from "./Product";
 import { User } from "../User";
-import { Volumes } from "../units/Volumes";
-import { Weights } from "../units";
 
 export class PantryItem {
   @IsOptional()
@@ -20,42 +18,15 @@ export class PantryItem {
   @IsNumber()
   @IsOptional()
   @Min(1, {
-    message: "Pantry ID must be a positive number",
+    message: "created by  must be a positive number",
   })
   @ApiProperty()
-  userId?: number;
+  createdById?: number;
 
   @IsObject()
   @IsOptional()
   @ApiProperty()
-  user?: User;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  brandedItemName?: string;
-
-  @IsObject({
-    message: "Brand must be an object",
-  })
-  @IsOptional()
-  @ApiProperty()
-  brand?: Brand;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(1, {
-    message: "Brand ID must be a positive number",
-  })
-  @ApiProperty()
-  brandId?: number;
-
-  @IsNumber({
-    maxDecimalPlaces: 0,
-  })
-  @IsNotEmpty()
-  @ApiProperty()
-  quantity: number;
+  createdBy?: User;
 
   @IsObject()
   @IsNotEmptyObject()
@@ -69,6 +40,13 @@ export class PantryItem {
   })
   @ApiProperty()
   productId?: number;
+
+  @IsNumber({
+    maxDecimalPlaces: 0,
+  })
+  @IsNotEmpty()
+  @ApiProperty()
+  quantity: number;
 
   @IsDateString({
     strict: true,
@@ -106,48 +84,9 @@ export class PantryItem {
   openedDate?: string;
 
   @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  millisecondsToExpiryAfterOpening?: number;
-
-  @IsOptional()
   @IsBoolean()
   @ApiProperty()
   isExpired?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty()
-  canQuicklyExpireAfterOpening?: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  numberOfServingsOrPieces?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  weightPerContainerOrPacket?: number;
-
-  @IsOptional()
-  @IsEnum(Weights, {
-    message: "Weight unit must be a valid weight unit",
-  })
-  @ApiProperty()
-  weightUnit?: Weights;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  volumePerContainerOrPacket?: number;
-
-  @IsOptional()
-  @IsEnum(Weights, {
-    message: "Volume unit must be a valid volume unit",
-  })
-  @ApiProperty()
-  volumeUnit?: Volumes;
 }
 
 export class CreatePantryItemDto extends PantryItem {}

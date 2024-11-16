@@ -24,14 +24,14 @@ export class ProductService {
   async readProducts(dto: ReadProductDto): Promise<IProduct[]> {
     return this.productRepository.find({
       where: dto,
-      relations: ['productClassification', 'user'],
+      relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
   }
 
   async readProductById(id: number): Promise<IProduct> {
     return this.productRepository.findOneOrFail({
       where: { id },
-      relations: ['productClassification', 'user'],
+      relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
   }
 

@@ -3,6 +3,7 @@ import { PartialType, PickType } from "@nestjs/mapped-types";
 
 import { ApiProperty } from "@nestjs/swagger";
 import { PantryItem } from "./PantryItem";
+import { Product } from "./Product";
 
 export class Brand {
   @IsNumber()
@@ -16,12 +17,12 @@ export class Brand {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  brandName: string;
+  name: string;
 
   @IsOptional()
   @ApiProperty()
   @IsArray()
-  pantryItems?: PantryItem[];
+  products?: Product[];
 }
 
 export class CreateBrandDto extends Brand {}

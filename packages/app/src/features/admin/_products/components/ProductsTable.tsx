@@ -9,7 +9,7 @@ export type ProductsTableProps = {
 const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProduct> = {
   viewKey: "general-details",
   viewTitle: "General Details",
-  columnAccessorKeys: ["product", "category", "scope"],
+  columnAccessorKeys: ["product", "categories", "createdBy"],
   default: true,
 
   columnDefs: [
@@ -19,14 +19,14 @@ const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProduct> = {
       accessorKey: "product",
     },
     {
-      header: "Category",
-      accessorFn: (row) => row.productClassification?.classificationName ?? "N/A",
-      accessorKey: "category",
+      header: "Categories",
+      accessorFn: (row) => row.productCategories?.map((category) => category.name).join(", ") ?? "N/A",
+      accessorKey: "categories",
     },
     {
-      header: "Scope",
-      accessorFn: (row) => row.user?.username ?? "All",
-      accessorKey: "scope",
+      header: "Created By",
+      accessorFn: (row) => row.createdBy?.username ?? "N/A",
+      accessorKey: "createdBy",
     },
   ],
 };

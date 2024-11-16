@@ -26,65 +26,23 @@ export class PantryItemEntity implements IPantryItem {
   id: number;
 
   @Column({ type: 'bigint', nullable: true })
-  userId?: number;
+  createdById?: number;
 
   @ManyToOne(() => UserEntity, (user) => user.pantryItems)
-  user?: User;
-
-  @Column({ nullable: true })
-  brandedItemName?: string;
-
-  @ManyToOne(() => BrandEntity, (brand) => brand.pantryItems)
-  brand?: Brand;
-
-  @Column({ type: 'bigint' })
-  brandId?: number;
-
-  @Column({ type: 'decimal' })
-  quantity: number;
+  createdBy?: User;
 
   @ManyToOne(() => ProductEntity, (product) => product.pantryItems)
   product: Product;
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'bigint', nullable: true })
   productId?: number;
+
+  @Column({ type: 'integer', nullable: false })
+  quantity: number;
 
   @Column({ type: 'timestamp', nullable: true })
   expiryDate?: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  addedDate?: string;
-
   @Column({ type: 'timestamp', nullable: true })
-  bestBeforeDate?: string;
-
-  @Column({ type: 'timestamp', nullable: true })
-  manufacturedDate?: string;
-
-  @Column({ type: 'timestamp', nullable: true })
-  openedDate?: string;
-
-  @Column({ type: 'decimal', default: 0 })
-  millisecondsToExpiryAfterOpening?: number;
-
-  @Column({ type: 'boolean', default: false })
   isExpired?: boolean;
-
-  @Column({ type: 'boolean', default: false })
-  canQuicklyExpireAfterOpening?: boolean;
-
-  @Column({ type: 'decimal', default: 0 })
-  numberOfServingsOrPieces?: number;
-
-  @Column({ type: 'decimal', default: 0 })
-  weightPerContainerOrPacket?: number;
-
-  @Column({ type: 'enum', enum: Weights, default: Weights.GRAM })
-  weightUnit?: Weights;
-
-  @Column({ type: 'decimal', default: 0 })
-  volumePerContainerOrPacket?: number;
-
-  @Column({ type: 'enum', enum: Volumes, default: Volumes.MILLILITRE })
-  volumeUnit?: Volumes;
 }

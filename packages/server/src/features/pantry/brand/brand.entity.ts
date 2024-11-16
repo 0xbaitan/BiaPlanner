@@ -5,9 +5,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { IBrand, PantryItem } from '@biaplanner/shared';
+import { IBrand, PantryItem, Product } from '@biaplanner/shared';
 
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
+import { ProductEntity } from '../product/product.entity';
 
 @Entity('brands')
 export class BrandEntity implements IBrand {
@@ -15,9 +16,9 @@ export class BrandEntity implements IBrand {
   id?: number;
 
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
-  brandName: string;
+  name: string;
 
-  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.brand)
+  @OneToMany(() => ProductEntity, (product) => product.brand)
   @JoinColumn({ name: 'brandId' })
-  pantryItems?: PantryItem[];
+  products?: Product[];
 }

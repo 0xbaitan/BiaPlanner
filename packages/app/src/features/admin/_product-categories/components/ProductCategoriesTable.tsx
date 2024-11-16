@@ -1,11 +1,11 @@
-import { IProduct, IProductClassification } from "@biaplanner/shared";
+import { IProduct, IProductCategory } from "@biaplanner/shared";
 import TabbedViewsTable, { TabbedViewDef, TabbedViewsTableWithoutDataProps } from "@/components/tables/TabbedViewsTable";
 
-export type ProductClassificationTableProps = {
-  data: IProductClassification[];
+export type ProductCategoriesTableProps = {
+  data: IProductCategory[];
 };
 
-const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProductClassification> = {
+const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProductCategory> = {
   viewKey: "general-details",
   viewTitle: "General Details",
   columnAccessorKeys: ["category", "productCount"],
@@ -14,7 +14,7 @@ const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProductClassification> = {
   columnDefs: [
     {
       header: "Category Name",
-      accessorFn: (row) => row.classificationName,
+      accessorFn: (row) => row.name,
       accessorKey: "category",
     },
     {
@@ -25,12 +25,12 @@ const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProductClassification> = {
   ],
 };
 
-export const productClassificationTableConfig: TabbedViewsTableWithoutDataProps<IProductClassification> = {
+export const productCategoriesTableConfig: TabbedViewsTableWithoutDataProps<IProductCategory> = {
   views: [GENERAL_DETAILS_VIEW_DEF],
   showSerialNumber: true,
 };
 
-export default function ProductClassificationTable(props: ProductClassificationTableProps) {
+export default function ProductCategoriesTable(props: ProductCategoriesTableProps) {
   const { data } = props;
-  return <TabbedViewsTable<IProductClassification> {...productClassificationTableConfig} data={data} />;
+  return <TabbedViewsTable<IProductCategory> {...productCategoriesTableConfig} data={data} />;
 }

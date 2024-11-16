@@ -46,15 +46,15 @@ export class UserEntity implements IUser {
   @JoinColumn({ name: 'userId' })
   phoneEntries?: PhoneEntry[];
 
-  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.user, {
+  @OneToMany(() => ProductEntity, (product) => product.createdBy, {
     cascade: true,
   })
-  @JoinColumn({ name: 'userId' })
-  pantryItems?: PantryItem[];
-
-  @OneToMany(() => ProductEntity, (product) => product.user, {
-    cascade: true,
-  })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'createdById' })
   products?: Product[];
+
+  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.createdBy, {
+    cascade: true,
+  })
+  @JoinColumn({ name: 'createdById' })
+  pantryItems?: PantryItem[];
 }

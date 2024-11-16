@@ -6,6 +6,6 @@ import { QUANTITY_AND_MEASUREMENTS_VIEW_DEF } from "./QuantityAndMeasurementsVie
 
 export const pantryItemsTableConfig: TabbedViewsTableWithoutDataProps<IPantryItem> = {
   views: [BRAND_AND_CATEGORY_VIEW_DEF, QUANTITY_AND_MEASUREMENTS_VIEW_DEF],
-  leftPinnedAccessorKeys: ["brandedItemName"],
+  leftPinnedAccessorKeys: ["productName"],
   showSerialNumber: true,
 };

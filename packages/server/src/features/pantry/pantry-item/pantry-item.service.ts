@@ -23,13 +23,23 @@ export default class PantryItemService {
   async readAllPantryItems(userId?: number): Promise<IPantryItem[]> {
     if (!userId) {
       const allPantryItems = this.pantryItemRepository.find({
-        relations: ['brand', 'product', 'product.productClassification'],
+        relations: [
+          'createdBy',
+          'product',
+          'product.brand',
+          'product.productCategories',
+        ],
       });
       return allPantryItems;
     }
     const userScopedPantryItems = await this.pantryItemRepository.find({
-      where: { userId },
-      relations: ['brand', 'product', 'product.productClassification'],
+      where: { createdById: userId },
+      relations: [
+        'createdBy',
+        'product',
+        'product.brand',
+        'product.productCategories',
+      ],
     });
     return userScopedPantryItems;
   }

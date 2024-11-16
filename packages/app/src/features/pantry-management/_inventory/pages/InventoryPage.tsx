@@ -5,7 +5,6 @@ import BasicLayout from "@/layouts/BasicLayout";
 import Button from "react-bootstrap/esm/Button";
 import { IPantryItem } from "@biaplanner/shared";
 import PantryItemsTable from "../components/PantryItemsTable";
-import PantryItemsTable2 from "../components/PantryItemsTable2";
 import Protected from "@/features/authentication/components/Protected";
 import useAuthenticationState from "@/features/authentication/hooks/useAuthenticationState";
 import { useLazyGetPantryItemsQuery } from "@/apis/PantryItemsApi";
@@ -33,7 +32,7 @@ export default function InventoryPage() {
       <h1>Inventory</h1>
       <NavigateToAddItemPageButton />
       {/* <PantryItemsTable data={pantryItems} /> */}
-      {<PantryItemsTable2 data={pantryItems} />}
+      {<PantryItemsTable data={pantryItems} />}
     </>
   );
 }

@@ -4,32 +4,26 @@ import { TabbedViewDef } from "@/components/tables/TabbedViewsTable";
 export const BRAND_AND_CATEGORY_VIEW_DEF: TabbedViewDef<IPantryItem> = {
   viewKey: "brand-and-category",
   viewTitle: "Brand & Category",
-  columnAccessorKeys: ["brandedItemName", "brand", "product", "category"],
+  columnAccessorKeys: ["productName", "brand", "categories"],
   default: true,
 
   columnDefs: [
     {
-      header: "Branded Name",
-      accessorFn: (row) => row.brandedItemName,
-      accessorKey: "brandedItemName",
+      header: "Product Name",
+      accessorFn: (row) => row.product.name,
+      accessorKey: "productName",
     },
 
     {
       header: "Brand",
-      accessorFn: (row) => row.brand?.brandName ?? "N/A",
+      accessorFn: (row) => row.product.brand?.name ?? "N/A",
       accessorKey: "brand",
     },
 
     {
-      header: "Product Name",
-      accessorFn: (row) => row.product.name,
-      accessorKey: "product",
-    },
-
-    {
       header: "Product Category",
-      accessorFn: (row) => row.product.productClassification?.classificationName ?? "N/A",
-      accessorKey: "category",
+      accessorFn: (row) => row.product.productCategories?.map((category) => category.name).join(", ") ?? "N/A",
+      accessorKey: "categories",
     },
   ],
 };

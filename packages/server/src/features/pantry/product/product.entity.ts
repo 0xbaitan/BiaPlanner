@@ -1,20 +1,27 @@
 import {
+  Brand,
+  IProduct,
+  PantryItem,
+  ProductCategory,
+  User,
+  Volumes,
+  Weights,
+} from '@biaplanner/shared';
+import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import {
-  IProduct,
-  PantryItem,
-  ProductClassification,
-} from '@biaplanner/shared';
 
+import { BrandEntity } from '../brand/brand.entity';
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
-import { ProductClassificationEntity } from './classification/product-classification.entity';
+import { ProductCategoryEntity } from './category/product-category.entity';
 import { UserEntity } from 'src/features/user-info/user/user.entity';
 
 @Entity('products')
@@ -22,28 +29,40 @@ export class ProductEntity implements IProduct {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id?: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   name: string;
 
-  @ManyToOne(
-    () => ProductClassificationEntity,
-    (productClassification) => productClassification.products,
+  @ManyToMany(
+    () => ProductCategoryEntity,
+    (productCategory) => productCategory.products,
   )
-  productClassification?: ProductClassification;
+  @JoinTable()
+  productCategories?: ProductCategory[];
+
+  @ManyToOne(() => BrandEntity, (brand) => brand.products)
+  brand?: Brand;
 
   @Column({ type: 'bigint' })
-  productClassificationId?: number;
+  brandId?: number;
 
-  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product)
+  @Column({ type: 'boolean', default: false })
+  canQuicklyExpireAfterOpening?: boolean;
+
+  @Column({ type: 'integer', nullable: true })
+  millisecondsToExpiryAfterOpening?: number;
+
+  @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'productId' })
   pantryItems?: PantryItem[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
-  user?: UserEntity;
+  createdBy?: User;
 
   @Column({ type: 'bigint', nullable: true })
-  userId?: number;
+  createdById?: number;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   isGlobal?: boolean;
 }
