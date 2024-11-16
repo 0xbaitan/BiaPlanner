@@ -1,11 +1,13 @@
-import { CreatePantryItemDto, IPantryItem, UpdatePantryItemDto } from "@biaplanner/shared";
+import { CreatePantryItemDto, IPantryItem, IProduct, UpdatePantryItemDto } from "@biaplanner/shared";
+import { FormProvider, useForm } from "react-hook-form";
 import { ZodType, z } from "zod";
+import { useCallback, useState } from "react";
+import { useGetProductsQuery, useLazyGetProductsQuery } from "@/apis/ProductsApi";
 
-import Col from "react-bootstrap/esm/Col";
-import Nav from "react-bootstrap/esm/Nav";
-import Row from "react-bootstrap/esm/Row";
-import Tab from "react-bootstrap/esm/Tab";
-import { useForm } from "react-hook-form";
+import Form from "react-bootstrap/esm/Form";
+import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
+import { useLazyGetPantryItemsQuery } from "@/apis/PantryItemsApi";
+
 export type CreatePantryItemFormData = CreatePantryItemDto;
 
 export type CreatePantryItemFormProps = {
@@ -13,32 +15,43 @@ export type CreatePantryItemFormProps = {
   onSubmit: (data: CreatePantryItemFormData) => void;
 };
 
-export default function PantryItemForm(props: CreatePantryItemFormProps) {
+export default function CreatePantryItemForm(props: CreatePantryItemFormProps) {
   const pantryItemForm = useForm<CreatePantryItemFormData>({
     defaultValues: props.initialValues,
     shouldFocusError: true,
     mode: "onBlur",
   });
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey="first">
-      <Row>
-        <Col sm={3}>
-          <Nav variant="pills" className="flex-column">
-            <Nav.Item>
-              <Nav.Link eventKey="first">Tab 1</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="second">Tab 2</Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Col>
-        <Col sm={9}>
-          <Tab.Content>
-            <Tab.Pane eventKey="first">First tab content</Tab.Pane>
-            <Tab.Pane eventKey="second">Second tab content</Tab.Pane>
-          </Tab.Content>
-        </Col>
-      </Row>
-    </Tab.Container>
+    <FormProvider {...pantryItemForm}>
+      <RequiredPantryItemDetailsSection />
+    </FormProvider>
+  );
+}
+
+function RequiredPantryItemDetailsSection() {
+  const [getProducts] = useLazyGetProductsQuery();
+  const [products, setProducts] = useState<IProduct[]>([]);
+
+  const gettersAndSetters = useCallback(async () => {
+    const { data: fetchedProducts } = await getProducts({});
+    setProducts(fetchedProducts ?? []);
+  }, [getProducts, setProducts]);
+
+  useAccessTokenChangeWatch(gettersAndSetters);
+
+  return (
+    <section id="required-pantry-item-details-section">
+      <h3>Required Pantry Item Details</h3>
+      <Form.Group>
+        <Form.Label>Select Product</Form.Label>
+        <Form.Select>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+    </section>
   );
 }
