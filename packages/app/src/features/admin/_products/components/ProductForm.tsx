@@ -6,6 +6,8 @@ import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
+import VolumeInput from "@/components/forms/VolumeInput";
+import WeightInput from "@/components/forms/WeightInput";
 import { convertDurationStringToMilli } from "@biaplanner/shared/build/util";
 import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
 import { useLazyGetBrandsQuery } from "@/apis/BrandsApi";
@@ -29,7 +31,7 @@ const ProductFormValidationSchema: z.ZodType<ProductFormValues> = z.object({
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit } = props;
+  const { initialValues } = props;
   const formMethods = useForm<ProductFormValues>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
@@ -63,8 +65,20 @@ function RequiredDetails() {
   } = formMethods;
   const [canExpire, setCanExpire] = useState<boolean>(false);
   const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(false);
+  const [isLoose, setIsLoose] = useState<boolean>(false);
   const [brands, setBrands] = useState<IBrand[]>([]);
+  const [metric, setMetric] = useState<"volume" | "weight" | undefined>();
+
   const [getBrands] = useLazyGetBrandsQuery();
+
+  const onMetricChange = useCallback(
+    (value: "volume" | "weight" | undefined) => {
+      setMetric(value);
+      setValue("useMeasurementMetric", value);
+    },
+    [setValue]
+  );
+
   const onAuthChange = useCallback(async () => {
     const brands = await getBrands({}).unwrap();
     setBrands(brands);
@@ -110,14 +124,10 @@ function RequiredDetails() {
                     console.log(millisecondsToExpiryAfterOpening);
                   }}
                   filter={{
-                    units: [Time.SECOND, Time.MINUTE, Time.HOUR, Time.DAY, Time.WEEK, Time.MONTH],
+                    units: [Time.MINUTE, Time.HOUR, Time.DAY, Time.WEEK, Time.MONTH],
                     type: "include",
                   }}
                   constraints={[
-                    {
-                      unit: Time.SECOND,
-                      maxMagnitude: 60,
-                    },
                     {
                       unit: Time.MINUTE,
                       maxMagnitude: 60,
@@ -144,6 +154,73 @@ function RequiredDetails() {
               </Form.Group>
             )}
           </Form.Group>
+        )}
+      </Form.Group>
+      <Form.Group>
+        <Form.Switch
+          {...register("isLoose")}
+          label="Is this product sold as a loose item?"
+          checked={isLoose}
+          onChange={(e) => {
+            setIsLoose(e.target.checked);
+            if (e.target.checked) {
+              setValue("numberOfServingsOrPieces", 1);
+              setValue("useMeasurementMetric", undefined);
+            }
+          }}
+        />
+        {!isLoose && (
+          <>
+            <Form.Group>
+              <Form.Label>Number of servings/pieces per package</Form.Label>
+              <Form.Control {...register("numberOfServingsOrPieces")} type="number" min={0} step={1} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Choose the metric for measurement of the product</Form.Label>
+              <Form.Check
+                type="radio"
+                checked={metric === "volume"}
+                onChange={(e) => {
+                  if (e.target.checked) onMetricChange("volume");
+                }}
+                label="Volume"
+              />
+              <Form.Check
+                type="radio"
+                checked={metric === "weight"}
+                onChange={(e) => {
+                  if (e.target.checked) onMetricChange("weight");
+                }}
+                label="Weight"
+              />
+              {metric === "volume" && (
+                <Form.Group>
+                  <Form.Label>Volume</Form.Label>
+                  <VolumeInput
+                    onChange={(magnitude, unit) => {
+                      setValue("volumeUnit", unit);
+                      setValue("volumePerContainerOrPacket", magnitude);
+                      setValue("weightPerContainerOrPacket", undefined);
+                      setValue("weightUnit", undefined);
+                    }}
+                  />
+                </Form.Group>
+              )}
+              {metric === "weight" && (
+                <Form.Group>
+                  <Form.Label>Weight</Form.Label>
+                  <WeightInput
+                    onChange={(magnitude, unit) => {
+                      setValue("weightUnit", unit);
+                      setValue("weightPerContainerOrPacket", magnitude);
+                      setValue("volumePerContainerOrPacket", undefined);
+                      setValue("volumeUnit", undefined);
+                    }}
+                  />
+                </Form.Group>
+              )}
+            </Form.Group>
+          </>
         )}
       </Form.Group>
     </>
