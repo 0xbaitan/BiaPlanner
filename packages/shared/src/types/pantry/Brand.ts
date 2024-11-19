@@ -1,5 +1,5 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { PartialType, PickType } from "@nestjs/mapped-types";
+import { PartialType, PickType } from "@nestjs/swagger";
 
 import { ApiProperty } from "@nestjs/swagger";
 import { PantryItem } from "./PantryItem";
@@ -16,7 +16,6 @@ export class Brand {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   name: string;
 
   @IsOptional()
@@ -26,10 +25,12 @@ export class Brand {
 }
 
 export class CreateBrandDto extends Brand {}
+export class ReadBrandDto extends PartialType(PickType<Brand, keyof Brand>(Brand, ["id", "name"])) {}
 export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
-export class DeleteBrandDto extends PickType(Brand, ["id"]) {}
+export class DeleteBrandDto extends PickType<Brand, keyof Brand>(Brand, ["id"]) {}
 
 export interface IBrand extends Brand {}
 export interface ICreateBrandDto extends CreateBrandDto {}
+export interface IReadBrandDto extends ReadBrandDto {}
 export interface IUpdateBrandDto extends UpdateBrandDto {}
 export interface IDeleteBrandDto extends DeleteBrandDto {}

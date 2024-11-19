@@ -12,3 +12,5 @@ export enum Volumes {
   CUBIC_CENTIMETRE = "cm3",
   CUBIC_INCH = "in3",
 }
+
+export const VolumesArray = Object.entries(Volumes).map(([key, value]) => ({ key, value }));

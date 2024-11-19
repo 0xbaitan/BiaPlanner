@@ -6,3 +6,5 @@ export enum Weights {
   MILLIGRAM = "mg",
   MICROGRAM = "mcg",
 }
+
+export const WeightsArray = Object.entries(Weights).map(([key, value]) => ({ key, value }));

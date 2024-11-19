@@ -183,9 +183,6 @@ importers:
       formik:
         specifier: ^2.4.6
         version: 2.4.6(react@18.3.1)
-      node-polyfill-webpack-plugin:
-        specifier: ^4.0.0
-        version: 4.0.0(webpack@5.96.1)
       path-browserify:
         specifier: ^1.0.1
         version: 1.0.1
@@ -249,9 +246,6 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
-      url:
-        specifier: ^0.11.4
-        version: 0.11.4
       use-local-storage:
         specifier: ^3.0.0
         version: 3.0.0(react@18.3.1)
@@ -281,21 +275,57 @@ importers:
       '@types/react-anchor-link-smooth-scroll':
         specifier: ^1.0.5
         version: 1.0.5
+      assert:
+        specifier: ^2.1.0
+        version: 2.1.0
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.20(postcss@8.4.47)
+      browserify-zlib:
+        specifier: ^0.2.0
+        version: 0.2.0
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
+      crypto-browserify:
+        specifier: ^3.12.1
+        version: 3.12.1
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
       globals:
         specifier: ^15.9.0
         version: 15.11.0
+      https-browserify:
+        specifier: ^1.0.0
+        version: 1.0.0
+      node-polyfill-webpack-plugin:
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.96.1)
+      os-browserify:
+        specifier: ^0.3.0
+        version: 0.3.0
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
+      process:
+        specifier: ^0.11.10
+        version: 0.11.10
+      stream-browserify:
+        specifier: ^3.0.0
+        version: 3.0.0
+      stream-http:
+        specifier: ^3.2.0
+        version: 3.2.0
       typescript-eslint:
         specifier: ^8.1.0
         version: 8.10.0(eslint@8.57.1)(typescript@4.9.5)
+      url:
+        specifier: ^0.11.4
+        version: 0.11.4
+      util:
+        specifier: ^0.12.5
+        version: 0.12.5
       webpack:
         specifier: ^5.96.1
         version: 5.96.1
@@ -468,6 +498,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@nestjs/common':
+        specifier: ^10.0.0
+        version: 10.4.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/mapped-types':
         specifier: ^2.0.5
         version: 2.0.5(@nestjs/common@10.4.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)

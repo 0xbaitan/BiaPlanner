@@ -25,7 +25,7 @@ export class ProductCategory {
 }
 
 export class CreateProductCategoryDto extends ProductCategory {}
-export class ReadProductCategoryDto extends PartialType(PickType(ProductCategory, ["id"])) {}
+export class ReadProductCategoryDto extends PartialType(PickType<ProductCategory, keyof ProductCategory>(ProductCategory, ["id"])) {}
 export class UpdateProductCategoryDto extends PartialType(CreateProductCategoryDto) {}
 export class DeleteProductCategoryDto extends ProductCategory {}
 

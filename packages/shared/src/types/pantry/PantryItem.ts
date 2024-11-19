@@ -91,8 +91,8 @@ export class PantryItem {
 
 export class CreatePantryItemDto extends PantryItem {}
 export class UpdatePantryItemDto extends PartialType(PantryItem) {}
-export class DeletePantryItemDto extends PickType(PantryItem, ["id"]) {}
-export class ReadSinglePantryItemDto extends PickType(PantryItem, ["id"]) {}
+export class DeletePantryItemDto extends PickType<PantryItem, keyof PantryItem>(PantryItem, ["id"]) {}
+export class ReadSinglePantryItemDto extends PickType<PantryItem, keyof PantryItem>(PantryItem, ["id"]) {}
 
 export interface IPantryItem extends PantryItem {}
 export interface ICreatePantryItemDto extends CreatePantryItemDto {}

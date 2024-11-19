@@ -1,6 +1,7 @@
 import {
   Brand,
   IProduct,
+  MeasurementMetric,
   PantryItem,
   ProductCategory,
   User,
@@ -65,4 +66,32 @@ export class ProductEntity implements IProduct {
 
   @Column({ type: 'boolean', default: false })
   isGlobal?: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  canExpire?: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  isLoose?: boolean;
+
+  @Column({ type: 'integer', nullable: true, scale: 0 })
+  numberOfServingsOrPieces?: number;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  useMeasurementMetric?: MeasurementMetric;
+
+  @Column({ type: 'integer', nullable: true })
+  volumePerContainerOrPacket?: number;
+
+  @Column({ type: 'enum', enum: Volumes, nullable: true })
+  volumeUnit?: Volumes;
+
+  @Column({ type: 'integer', nullable: true })
+  weightPerContainerOrPacket?: number;
+
+  @Column({ type: 'enum', enum: Weights, nullable: true })
+  weightUnit?: Weights;
 }

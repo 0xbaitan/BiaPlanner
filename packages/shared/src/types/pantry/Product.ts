@@ -45,6 +45,11 @@ export class Product {
   @IsOptional()
   @IsBoolean()
   @ApiProperty()
+  canExpire?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty()
   canQuicklyExpireAfterOpening?: boolean;
 
   @IsOptional()
@@ -71,6 +76,15 @@ export class Product {
   @IsBoolean()
   @ApiProperty()
   isGlobal?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty()
+  isLoose?: boolean;
+
+  @IsOptional()
+  @ApiProperty()
+  useMeasurementMetric?: MeasurementMetric;
 
   @IsOptional()
   @IsNumber()
@@ -102,8 +116,15 @@ export class Product {
   volumeUnit?: Volumes;
 }
 
-export class CreateProductDto extends Product {}
-export class ReadProductDto extends PartialType(PickType(Product, ["id", "isGlobal"])) {}
+export type MeasurementMetric = "weight" | "volume";
+
+export class CreateProductDto extends Product {
+  @IsOptional()
+  @IsArray()
+  @ApiProperty()
+  productCategoryIds?: number[];
+}
+export class ReadProductDto extends PartialType(PickType<Product, keyof Product>(Product, ["id", "isGlobal"])) {}
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 export class DeleteProductDto extends Product {}
 

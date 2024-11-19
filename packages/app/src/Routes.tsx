@@ -2,6 +2,7 @@ import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-ro
 
 import AddPantryItemManuallyPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemManuallyPage";
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
+import AddProductPage from "./features/admin/_products/pages/AddProductPage";
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
@@ -36,6 +37,7 @@ export default function Routes() {
         <Route path="/admin" element={<AdminPagesContainer />}>
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="product-categories" element={<AdminProductCategoriesPage />} />
+          <Route path="products/add-product" element={<AddProductPage />} />
         </Route>
       </RoutingTable>
     </Router>
