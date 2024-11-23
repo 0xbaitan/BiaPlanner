@@ -1,9 +1,10 @@
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { IBrand, ICreateProductDto, IUpdateProductDto } from "@biaplanner/shared";
+import { IBrand, ICreateProductDto, IProductCategory, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useEffect, useState } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
+import MultiselectInput from "@/components/forms/MultiselectInput";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
 import VolumeInput from "@/components/forms/VolumeInput";
@@ -11,6 +12,7 @@ import WeightInput from "@/components/forms/WeightInput";
 import { convertDurationStringToMilli } from "@biaplanner/shared/build/util";
 import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
 import { useLazyGetBrandsQuery } from "@/apis/BrandsApi";
+import { useLazyGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -47,7 +49,6 @@ export default function ProductForm(props: ProductFormProps) {
 
   return (
     <FormProvider {...formMethods}>
-      <h1>Add Product</h1>
       <Form onSubmit={formMethods.handleSubmit(onSubmitForm)}>
         <RequiredDetails />
         <Button type="submit">Submit</Button>
@@ -65,9 +66,11 @@ function RequiredDetails() {
   } = formMethods;
   const [canExpire, setCanExpire] = useState<boolean>(false);
   const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(false);
+  const [getProductCategories] = useLazyGetProductCategoriesQuery();
   const [isLoose, setIsLoose] = useState<boolean>(false);
   const [brands, setBrands] = useState<IBrand[]>([]);
-  const [metric, setMetric] = useState<"volume" | "weight" | undefined>();
+  const [metric, setMetric] = useState<"volume" | "weight" | undefined>("volume");
+  const [productCategories, setProductCategories] = useState<IProductCategory[]>([]);
 
   const [getBrands] = useLazyGetBrandsQuery();
 
@@ -81,8 +84,10 @@ function RequiredDetails() {
 
   const onAuthChange = useCallback(async () => {
     const brands = await getBrands({}).unwrap();
+    const productCategories = await getProductCategories({}).unwrap();
     setBrands(brands);
-  }, [getBrands]);
+    setProductCategories(productCategories);
+  }, [getBrands, getProductCategories]);
 
   useEffect(() => {
     setValue("brandId", brands[0]?.id);
@@ -105,6 +110,18 @@ function RequiredDetails() {
             </option>
           ))}
         </Form.Select>
+        <Form.Group>
+          <Form.Label>Product Categories</Form.Label>
+          <MultiselectInput<IProductCategory>
+            list={productCategories}
+            idSelector={(category) => Number(category.id)}
+            nameSelector={(category) => category.name}
+            onChange={(values) => {
+              const productCategoryIds = values.map((value) => Number(value.id));
+              setValue("productCategoryIds", productCategoryIds);
+            }}
+          />
+        </Form.Group>
       </Form.Group>
       <Form.Group>
         <Form.Switch {...register("canExpire")} checked={canExpire} onChange={(e) => setCanExpire(e.target.checked)} label="Can this product have an expiry date?" />
@@ -163,8 +180,8 @@ function RequiredDetails() {
           checked={isLoose}
           onChange={(e) => {
             setIsLoose(e.target.checked);
-            if (e.target.checked) {
-              setValue("numberOfServingsOrPieces", 1);
+            if (!e.target.checked) {
+              setValue("numberOfServingsOrPieces", undefined);
               setValue("useMeasurementMetric", undefined);
             }
           }}
