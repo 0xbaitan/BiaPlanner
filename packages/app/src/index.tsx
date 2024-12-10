@@ -7,9 +7,14 @@ import { Provider } from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
+import setupLocatorUI from "@locator/runtime";
 import store from "./store";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+if (process.env.NODE_ENV === "development") {
+  setupLocatorUI();
+}
 
 root.render(
   <React.StrictMode>

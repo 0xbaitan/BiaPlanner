@@ -14,6 +14,24 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 require("inspector");
 
 module.exports = {
+  babel: {
+    presets: [
+      [
+        "@babel/preset-react",
+        {
+          runtime: "automatic",
+        },
+      ],
+    ],
+    plugins: [
+      [
+        "@locator/babel-jsx/dist",
+        {
+          env: "development",
+        },
+      ],
+    ],
+  },
   devServer: {
     proxy: {
       "/api": {

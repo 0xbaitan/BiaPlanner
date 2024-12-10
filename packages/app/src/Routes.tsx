@@ -11,6 +11,7 @@ import InventoryPage from "./features/pantry-management/_inventory/pages/Invento
 import LoginPage from "./features/authentication/pages/LoginPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
 import Protected from "./features/authentication/components/Protected";
+import React from "react";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 
 export default function Routes() {

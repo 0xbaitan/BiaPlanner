@@ -38,7 +38,7 @@ export default function MagnitudeAndUnitInput<T extends EnumLike>(props: Magnitu
     // return [defaultMax, defaultMin];
     return [defaultMax, defaultMin];
   }, [magnitudeControlProps]);
-  console.log("defaultMin", defaultMin);
+
   const [magnitude, setMagnitude] = useState(defaultMagnitude ?? 0);
   const [unit, setUnit] = useState(defaultUnit ?? options[0].value);
   const [min, setMin] = useState<number | undefined>(defaultMin);

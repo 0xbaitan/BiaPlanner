@@ -24,12 +24,19 @@ export type ProductFormProps = {
 
 const ProductFormValidationSchema: z.ZodType<ProductFormValues> = z.object({
   name: z.string().min(1, "Product name is required"),
-  // brandId: z.number().min(1, "A brand must be selected"),
-  //   canExpire: z.boolean(),
-  //   canQuicklyExpireAfterOpening: z.boolean().optional(),
-  //   millisecondsToExpiryAfterOpening: z.number().optional(),
-  //   productCategoryIds: z.array(z.number()).optional(),
-  //   expiryDate: z.string().datetime().optional(),
+  // brandId: z.number().min(1, "Brand is required"),
+  // canExpire: z.boolean(),
+  // canQuicklyExpireAfterOpening: z.boolean().optional(),
+  // millisecondsToExpiryAfterOpening: z.number().optional(),
+  // productCategoryIds: z.array(z.number()).optional(),
+  // expiryDate: z.string().datetime().optional(),
+  // isLoose: z.boolean(),
+  // numberOfServingsOrPieces: z.number().optional(),
+  // useMeasurementMetric: z.union([z.literal("volume"), z.literal("weight")]).optional(),
+  // volumePerContainerOrPacket: z.number().optional(),
+  // volumeUnit: z.string().optional(),
+  // weightPerContainerOrPacket: z.number().optional(),
+  // weightUnit: z.string().optional(),
 });
 
 export default function ProductForm(props: ProductFormProps) {
@@ -103,13 +110,14 @@ function RequiredDetails() {
       </Form.Group>
       <Form.Group>
         <Form.Label>Brand</Form.Label>
-        <Form.Select {...register("brandId")} defaultValue={undefined}>
+        <Form.Select {...register("brandId")} isInvalid={!!errors.brandId}>
           {brands.map((brand) => (
             <option key={brand.id} value={brand.id}>
               {brand.name}
             </option>
           ))}
         </Form.Select>
+        {errors.brandId && <Form.Control.Feedback type="invalid">{errors?.brandId?.message}</Form.Control.Feedback>}
         <Form.Group>
           <Form.Label>Product Categories</Form.Label>
           <MultiselectInput<IProductCategory>

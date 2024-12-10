@@ -61,6 +61,7 @@
   },
   "scripts": {
     "start": "craco start",
+    "locator": "locator start",
     "build": "craco build",
     "build:watch": "craco build --watch",
     "test": "craco test",
@@ -88,11 +89,19 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.25.8",
+    "@babel/plugin-transform-react-jsx-self": "^7.25.9",
+    "@babel/plugin-transform-react-jsx-source": "^7.25.9",
+    "@babel/preset-env": "^7.25.8",
+    "@babel/preset-react": "^7.26.3",
     "@craco/craco": "^7.1.0",
     "@eslint/js": "^9.9.0",
+    "@locator/babel-jsx": "^0.4.4",
+    "@locator/runtime": "^0.4.4",
     "@types/react-anchor-link-smooth-scroll": "^1.0.5",
     "assert": "^2.1.0",
     "autoprefixer": "^10.4.19",
+    "babel-loader": "^9.2.1",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
