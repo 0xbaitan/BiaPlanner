@@ -37,7 +37,15 @@ export class ProductEntity implements IProduct {
     () => ProductCategoryEntity,
     (productCategory) => productCategory.products,
   )
-  @JoinTable()
+  @JoinTable({
+    name: 'products_product-categories',
+    joinColumn: { name: 'productId' },
+    inverseJoinColumn: {
+      name: 'productCategoryId',
+
+      referencedColumnName: 'id',
+    },
+  })
   productCategories?: ProductCategory[];
 
   @ManyToOne(() => BrandEntity, (brand) => brand.products)

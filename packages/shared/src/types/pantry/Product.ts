@@ -27,7 +27,7 @@ export class Product {
   @IsOptional()
   @IsArray()
   @ApiProperty()
-  productCategories?: ProductCategory[];
+  productCategories?: Partial<ProductCategory>[];
 
   @IsOptional()
   @IsObject()
@@ -97,9 +97,6 @@ export class Product {
   weightPerContainerOrPacket?: number;
 
   @IsOptional()
-  @IsEnum(Weights, {
-    message: "Weight unit must be a valid weight unit",
-  })
   @ApiProperty()
   weightUnit?: Weights;
 
@@ -109,21 +106,13 @@ export class Product {
   volumePerContainerOrPacket?: number;
 
   @IsOptional()
-  @IsEnum(Weights, {
-    message: "Volume unit must be a valid volume unit",
-  })
   @ApiProperty()
   volumeUnit?: Volumes;
 }
 
 export type MeasurementMetric = "weight" | "volume";
 
-export class CreateProductDto extends Product {
-  @IsOptional()
-  @IsArray()
-  @ApiProperty()
-  productCategoryIds?: number[];
-}
+export class CreateProductDto extends Product {}
 export class ReadProductDto extends PartialType(PickType<Product, keyof Product>(Product, ["id", "isGlobal"])) {}
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 export class DeleteProductDto extends Product {}

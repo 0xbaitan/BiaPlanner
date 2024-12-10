@@ -22,25 +22,16 @@ export type ProductFormProps = {
   onSubmit: (values: ProductFormValues) => void;
 };
 
-const ProductFormValidationSchema: z.ZodType<ProductFormValues> = z.object({
+const ProductFormValidationSchema = z.object({
   name: z.string().min(1, "Product name is required"),
-  // brandId: z.number().min(1, "Brand is required"),
-  // canExpire: z.boolean(),
-  // canQuicklyExpireAfterOpening: z.boolean().optional(),
-  // millisecondsToExpiryAfterOpening: z.number().optional(),
-  // productCategoryIds: z.array(z.number()).optional(),
-  // expiryDate: z.string().datetime().optional(),
-  // isLoose: z.boolean(),
-  // numberOfServingsOrPieces: z.number().optional(),
-  // useMeasurementMetric: z.union([z.literal("volume"), z.literal("weight")]).optional(),
-  // volumePerContainerOrPacket: z.number().optional(),
-  // volumeUnit: z.string().optional(),
-  // weightPerContainerOrPacket: z.number().optional(),
-  // weightUnit: z.string().optional(),
+  brandId: z.number().int().positive("Brand is required"),
+  // productCategoryIds: z.array(z.number()).min(1, "At least one product category is required"),
+  canExpire: z.boolean().optional(),
+  canQuicklyExpireAfterOpening: z.boolean().optional(),
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues } = props;
+  const { initialValues, onSubmit } = props;
   const formMethods = useForm<ProductFormValues>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
@@ -49,16 +40,16 @@ export default function ProductForm(props: ProductFormProps) {
   const onSubmitForm = useCallback(
     (_values: ProductFormValues) => {
       const values = formMethods.getValues();
-      console.log(values);
+      onSubmit(values);
     },
-    [formMethods]
+    [formMethods, onSubmit]
   );
 
   return (
     <FormProvider {...formMethods}>
       <Form onSubmit={formMethods.handleSubmit(onSubmitForm)}>
         <RequiredDetails />
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Add Product</Button>
       </Form>
     </FormProvider>
   );
@@ -110,7 +101,12 @@ function RequiredDetails() {
       </Form.Group>
       <Form.Group>
         <Form.Label>Brand</Form.Label>
-        <Form.Select {...register("brandId")} isInvalid={!!errors.brandId}>
+        <Form.Select
+          {...register("brandId", {
+            valueAsNumber: true,
+          })}
+          isInvalid={!!errors.brandId}
+        >
           {brands.map((brand) => (
             <option key={brand.id} value={brand.id}>
               {brand.name}
@@ -125,8 +121,11 @@ function RequiredDetails() {
             idSelector={(category) => Number(category.id)}
             nameSelector={(category) => category.name}
             onChange={(values) => {
-              const productCategoryIds = values.map((value) => Number(value.id));
-              setValue("productCategoryIds", productCategoryIds);
+              const productCategoriesSelected = values.map((value) => ({
+                id: Number(value.id),
+                name: value.name,
+              }));
+              setValue("productCategories", productCategoriesSelected);
             }}
           />
         </Form.Group>
@@ -198,7 +197,16 @@ function RequiredDetails() {
           <>
             <Form.Group>
               <Form.Label>Number of servings/pieces per package</Form.Label>
-              <Form.Control {...register("numberOfServingsOrPieces")} type="number" min={0} step={1} />
+              <Form.Control
+                {...register("numberOfServingsOrPieces", {
+                  valueAsNumber: true,
+                })}
+                type="number"
+                min={0}
+                step={1}
+                isInvalid={!!errors.numberOfServingsOrPieces}
+              />
+              {errors.numberOfServingsOrPieces && <Form.Control.Feedback type="invalid">{errors?.numberOfServingsOrPieces?.message}</Form.Control.Feedback>}
             </Form.Group>
             <Form.Group>
               <Form.Label>Choose the metric for measurement of the product</Form.Label>
