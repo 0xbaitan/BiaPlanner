@@ -21,6 +21,10 @@ export function useSetAcessTokenObject() {
   return setAccessTokenObject;
 }
 
+export function useUserId() {
+  const { accessTokenObject } = useAuthenticationState();
+  return Number(accessTokenObject?.id);
+}
 export function useIsAuthenticated() {
   const { accessTokenObject } = useAuthenticationState();
   return !!accessTokenObject && dayjs(accessTokenObject.expiryTime).subtract(30, "seconds").isAfter(dayjs());

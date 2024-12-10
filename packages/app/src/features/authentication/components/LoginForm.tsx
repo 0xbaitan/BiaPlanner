@@ -31,6 +31,7 @@ export const LoginFormValidationSchema: ZodType<LoginFormData> = z.object({
       .min(1, { message: "Login is required" })
       .regex(/^[a-zA-Z][a-zA-Z0-9._-]{1,18}$/, {
         message:
+          // eslint-disable-next-line no-multi-str
           "Username must start with a letter and can contain only \
         alphabets, numbers, dashes, periods and underscores",
       })
@@ -50,6 +51,7 @@ export default function LoginForm(props: LoginFormProps) {
     resolver: zodResolver(LoginFormValidationSchema),
   });
   const [, setRefreshTokenObj] = useSessionStorageState<IRefreshJWTObject>("refreshTokenObj");
+
   const setAccessToken = useSetAcessTokenObject();
   const [loginUser, { isError, error }] = useLoginUserMutation();
   const validationErrorsResponse = useValidationErrors(isError, error);
@@ -66,13 +68,14 @@ export default function LoginForm(props: LoginFormProps) {
       const { accessTokenObj, refreshTokenObj } = await loginUser(data).unwrap();
       if (accessTokenObj) {
         setAccessToken(accessTokenObj);
+
         if (process.env.NODE_ENV === "development") {
           setRefreshTokenObj(refreshTokenObj);
         }
         navigate("/");
       }
     },
-    [loginUser, setAccessToken, navigate]
+    [loginUser, setAccessToken, navigate, setRefreshTokenObj]
   );
 
   return (

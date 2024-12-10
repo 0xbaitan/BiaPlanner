@@ -1,9 +1,11 @@
 import { CreateProductDto } from "@biaplanner/shared";
 import ProductForm from "../components/ProductForm";
 import { useCreateProductMutation } from "@/apis/ProductsApi";
+import { useUserId } from "@/features/authentication/hooks/useAuthenticationState";
 
 export default function AddProductPage() {
   const [createProduct] = useCreateProductMutation();
+  const userId = useUserId();
   return (
     <div>
       <h1>Add Product</h1>
@@ -11,7 +13,7 @@ export default function AddProductPage() {
       <br />
       <ProductForm
         onSubmit={async (values) => {
-          await createProduct(values as CreateProductDto).unwrap();
+          await createProduct({ ...values, createdById: userId } as CreateProductDto).unwrap();
           console.log("Product created successfully");
         }}
       />
