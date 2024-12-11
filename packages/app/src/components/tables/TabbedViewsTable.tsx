@@ -1,11 +1,23 @@
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable, VisibilityState } from "@tanstack/react-table";
 import Tabs, { TabsProps } from "react-bootstrap/Tabs";
-
+import Dropdown from "react-bootstrap/Dropdown";
 import Tab from "react-bootstrap/Tab";
-
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 import { useCallback, useMemo, useState } from "react";
-
+import { IconBase } from "react-icons";
+import { FaEllipsisV as KebabIcon } from "react-icons/fa";
 import BootstrapTable from "react-bootstrap/Table";
+import { IconType } from "react-icons";
+import Button from "react-bootstrap/esm/Button";
+
+export type TabbedViewsTableActionType = "update" | "delete" | "view" | string;
+export type TabbedViewsTableAction<T> = {
+  type: TabbedViewsTableActionType;
+  label: string;
+  icon: IconType;
+  onClick: (row: T) => void;
+};
 export type TabbedViewsTableProps<T> = {
   data: T[];
   showSerialNumber?: boolean;
@@ -13,6 +25,7 @@ export type TabbedViewsTableProps<T> = {
   views: TabbedViewDef<T>[];
   leftPinnedAccessorKeys?: string[];
   rightPinnedAccessorKeys?: string[];
+  actions?: TabbedViewsTableAction<T>[];
 };
 
 export type TabbedViewsTableWithoutDataProps<T> = Omit<TabbedViewsTableProps<T>, "data">;
@@ -51,14 +64,71 @@ function useAllColumnDefAccessorKeys<T>(views: TabbedViewDef<T>[]): string[] {
   }, [] as string[]);
 }
 
+function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "actions">) {
+  const { actions } = props;
+  const renderActionsKebabMenu = useCallback(
+    (row: T) => {
+      const kebabContent = actions?.map((action) => {
+        const ActionIcon = action.icon;
+        return (
+          <Dropdown.Item key={action.label} onClick={() => action.onClick(row)}>
+            <div>
+              <ActionIcon className="me-2" />
+              {action.label}
+            </div>
+          </Dropdown.Item>
+        );
+      });
+
+      const kebabMenu = <Dropdown>{kebabContent}</Dropdown>;
+      const kebabMenuPopup = (
+        <Popup
+          trigger={
+            <Button size="sm">
+              <KebabIcon size={"16px"} />
+            </Button>
+          }
+          position="right top"
+          on="click"
+          closeOnDocumentClick={true}
+        >
+          {kebabMenu}
+        </Popup>
+      );
+
+      return kebabMenuPopup;
+    },
+
+    [actions]
+  );
+
+  return renderActionsKebabMenu;
+}
+
 function useAllColumnDef<T>(props: TabbedViewsTableProps<T>): ColumnDef<T>[] {
-  const { views, showSerialNumber } = props;
+  const { views, showSerialNumber, actions } = props;
+  const renderActionsKebabMenu = useRenderActionsKebabMenu({ actions });
   const allColumnDefs = useMemo(() => {
     const collatedViewColDefs = views.reduce((acc, view) => {
       return acc.concat(view.columnDefs);
     }, [] as ColumnDef<T>[]);
-    return [...((showSerialNumber ? [{ header: "#", accessorKey: "serialNumber", accessorFn: (_row, index: number) => index + 1 }] : []) satisfies ColumnDef<T>[]), ...collatedViewColDefs];
-  }, [views, showSerialNumber]);
+    return [
+      ...((showSerialNumber ? [{ header: "#", accessorKey: "serialNumber", accessorFn: (_row, index: number) => index + 1 }] : []) satisfies ColumnDef<T>[]),
+      ...collatedViewColDefs,
+      ...((actions
+        ? [
+            {
+              header: "Actions",
+              accessorKey: "actions",
+              cell: (cell) => {
+                const row = cell.row.original;
+                return renderActionsKebabMenu(row);
+              },
+            },
+          ]
+        : []) as ColumnDef<T>[]),
+    ];
+  }, [views, showSerialNumber, actions, renderActionsKebabMenu]);
 
   return allColumnDefs;
 }
@@ -92,7 +162,7 @@ function useGetColumnVisibility<T>(props: UseColumnVisibilityProps<T>): (activeV
 }
 
 export default function TabbedViewsTable<T>(props: TabbedViewsTableProps<T>) {
-  const { data, views, leftPinnedAccessorKeys, rightPinnedAccessorKeys, showSerialNumber } = props;
+  const { data, views, leftPinnedAccessorKeys, rightPinnedAccessorKeys, showSerialNumber, actions } = props;
   const defaultActiveKey = useMemo(() => views.find((view) => view.default)?.viewKey ?? views[0].viewKey, [views]);
   const [activeKey, setActiveKey] = useState(defaultActiveKey);
 
@@ -109,7 +179,7 @@ export default function TabbedViewsTable<T>(props: TabbedViewsTableProps<T>) {
     state: {
       columnPinning: {
         left: showSerialNumber ? ["serialNumber", ...(leftPinnedAccessorKeys ?? [])] : leftPinnedAccessorKeys,
-        right: rightPinnedAccessorKeys,
+        right: actions ? [...(rightPinnedAccessorKeys ?? []), "actions"] : rightPinnedAccessorKeys,
       },
       columnVisibility: columnVisibility,
     },

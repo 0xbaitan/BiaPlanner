@@ -1,3 +1,4 @@
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import TabbedViewsTable, { TabbedViewDef, TabbedViewsTableWithoutDataProps } from "@/components/tables/TabbedViewsTable";
 
 import { IProduct } from "@biaplanner/shared";
@@ -38,5 +39,37 @@ export const productsTableConfig: TabbedViewsTableWithoutDataProps<IProduct> = {
 
 export default function ProductsTable(props: ProductsTableProps) {
   const { data } = props;
-  return <TabbedViewsTable<IProduct> {...productsTableConfig} data={data} />;
+  return (
+    <TabbedViewsTable<IProduct>
+      {...productsTableConfig}
+      data={data}
+      actions={[
+        {
+          label: "View Product",
+          type: "view",
+          icon: FaEye,
+          onClick: (row) => {
+            console.log("View product clicked", row.name);
+          },
+        },
+        {
+          label: "Edit Product",
+          type: "edit",
+          icon: FaPencilAlt,
+          onClick: (row) => {
+            console.log("Edit product clicked", row.name);
+          },
+        },
+
+        {
+          label: "Delete Product",
+          type: "delete",
+          icon: FaTrash,
+          onClick: (row) => {
+            console.log("Delete product clicked", row.name);
+          },
+        },
+      ]}
+    />
+  );
 }

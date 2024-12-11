@@ -30,5 +30,5 @@ export default function AdminProductsPage() {
 
 function NavigateToAddProductPageButton() {
   const navigate = useNavigate();
-  return <Button onClick={() => navigate("./add-product")}>Add New Product</Button>;
+  return <Button onClick={() => navigate("./create")}>Add New Product</Button>;
 }

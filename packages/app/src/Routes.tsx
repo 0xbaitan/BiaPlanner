@@ -13,6 +13,7 @@ import PantryInventoryPagesContainer from "./features/pantry-management/componen
 import Protected from "./features/authentication/components/Protected";
 import React from "react";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
+import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
 
 export default function Routes() {
   return (
@@ -38,7 +39,8 @@ export default function Routes() {
         <Route path="/admin" element={<AdminPagesContainer />}>
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="product-categories" element={<AdminProductCategoriesPage />} />
-          <Route path="products/add-product" element={<AddProductPage />} />
+          <Route path="products/create" element={<AddProductPage />} />
+          <Route path="products/update/:id" element={<UpdateProductPage />} />
         </Route>
       </RoutingTable>
     </Router>
