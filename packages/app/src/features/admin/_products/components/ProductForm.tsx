@@ -2,9 +2,11 @@ import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { IBrand, ICreateProductDto, IProductCategory, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useEffect, useState } from "react";
 
+import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import MultiselectInput from "@/components/forms/MultiselectInput";
+import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
 import VolumeInput from "@/components/forms/VolumeInput";
@@ -20,18 +22,19 @@ export type ProductFormValues = ICreateProductDto | IUpdateProductDto;
 export type ProductFormProps = {
   initialValues?: ProductFormValues;
   onSubmit: (values: ProductFormValues) => void;
+  submitButtonText?: string;
 };
 
 const ProductFormValidationSchema = z.object({
   name: z.string().min(1, "Product name is required"),
-  brandId: z.number().int().positive("Brand is required"),
+  // brandId: z.number().int().positive("Brand is required"),
   // productCategoryIds: z.array(z.number()).min(1, "At least one product category is required"),
   canExpire: z.boolean().optional(),
   canQuicklyExpireAfterOpening: z.boolean().optional(),
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit } = props;
+  const { initialValues, onSubmit, submitButtonText = "Add Product" } = props;
   const formMethods = useForm<ProductFormValues>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
@@ -40,6 +43,7 @@ export default function ProductForm(props: ProductFormProps) {
   const onSubmitForm = useCallback(
     (_values: ProductFormValues) => {
       const values = formMethods.getValues();
+      console.log(values);
       onSubmit(values);
     },
     [formMethods, onSubmit]
@@ -48,14 +52,16 @@ export default function ProductForm(props: ProductFormProps) {
   return (
     <FormProvider {...formMethods}>
       <Form onSubmit={formMethods.handleSubmit(onSubmitForm)}>
-        <RequiredDetails />
-        <Button type="submit">Add Product</Button>
+        <RequiredDetails initialValues={initialValues} />
+        <Button type="submit">{submitButtonText}</Button>
       </Form>
     </FormProvider>
   );
 }
 
-function RequiredDetails() {
+function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
+  console.log("initialValues", props.initialValues);
+  const { initialValues } = props;
   const formMethods = useFormContext<ProductFormValues>();
   const {
     register,
@@ -63,13 +69,14 @@ function RequiredDetails() {
     setValue,
   } = formMethods;
   const [canExpire, setCanExpire] = useState<boolean>(false);
-  const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(false);
+  const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(initialValues?.canQuicklyExpireAfterOpening ?? false);
   const [getProductCategories] = useLazyGetProductCategoriesQuery();
-  const [isLoose, setIsLoose] = useState<boolean>(false);
+  const [isLoose, setIsLoose] = useState<boolean>(initialValues?.isLoose ?? false);
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [metric, setMetric] = useState<"volume" | "weight" | undefined>("volume");
   const [productCategories, setProductCategories] = useState<IProductCategory[]>([]);
-
+  // const [selectedProductCategories, setSelectedProductCategories] = useState<IProductCategory[]>(initialValues?.productCategories ?? []);
+  const [brandId, setBrandId] = useState(initialValues?.brandId ?? brands[0]?.id);
   const [getBrands] = useLazyGetBrandsQuery();
 
   const onMetricChange = useCallback(
@@ -99,37 +106,25 @@ function RequiredDetails() {
         <Form.Control {...formMethods.register("name")} isInvalid={!!errors.name} />
         {formMethods.formState.errors.name && <Form.Control.Feedback type="invalid">{errors?.name?.message}</Form.Control.Feedback>}
       </Form.Group>
-      <Form.Group>
-        <Form.Label>Brand</Form.Label>
-        <Form.Select
-          {...register("brandId", {
-            valueAsNumber: true,
-          })}
-          isInvalid={!!errors.brandId}
-        >
-          {brands.map((brand) => (
-            <option key={brand.id} value={brand.id}>
-              {brand.name}
-            </option>
-          ))}
-        </Form.Select>
-        {errors.brandId && <Form.Control.Feedback type="invalid">{errors?.brandId?.message}</Form.Control.Feedback>}
-        <Form.Group>
-          <Form.Label>Product Categories</Form.Label>
-          <MultiselectInput<IProductCategory>
-            list={productCategories}
-            idSelector={(category) => Number(category.id)}
-            nameSelector={(category) => category.name}
-            onChange={(values) => {
-              const productCategoriesSelected = values.map((value) => ({
-                id: Number(value.id),
-                name: value.name,
-              }));
-              setValue("productCategories", productCategoriesSelected);
-            }}
-          />
-        </Form.Group>
-      </Form.Group>
+      <BrandSingleSelect
+        error={errors.brandId?.message}
+        initialValue={initialValues?.brand}
+        onChange={(brand) => {
+          setValue("brandId", Number(brand.id));
+        }}
+      />
+
+      <ProductCategoryMultiselect
+        error={errors.productCategoryIds?.message}
+        initialValues={initialValues?.productCategories}
+        onSelectionChange={(productCategories) => {
+          setValue(
+            "productCategoryIds",
+            productCategories.map((category) => Number(category.id))
+          );
+        }}
+      />
+
       <Form.Group>
         <Form.Switch {...register("canExpire")} checked={canExpire} onChange={(e) => setCanExpire(e.target.checked)} label="Can this product have an expiry date?" />
         {canExpire && (
@@ -139,6 +134,8 @@ function RequiredDetails() {
               <Form.Group className="my-3">
                 <Form.Label>How long will the product remain consumable after opening?</Form.Label>
                 <TimeInput
+                  defaultMagnitude={initialValues?.millisecondsToExpiryAfterOpening}
+                  defaultUnit={Time.MILLISECOND}
                   magnitudeControlProps={{
                     min: 0,
                   }}

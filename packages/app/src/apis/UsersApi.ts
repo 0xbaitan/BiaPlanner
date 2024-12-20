@@ -1,5 +1,3 @@
-import { ResultDescription, createApi } from "@reduxjs/toolkit/query";
-
 import { IUser } from "@biaplanner/shared";
 import { rootApi } from ".";
 

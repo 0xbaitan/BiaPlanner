@@ -12,5 +12,5 @@ export default function useAccessTokenChangeWatch(asyncFunction: () => Promise<v
       .catch((error) => {
         console.error("Failed to execute async function", error);
       });
-  }, [accessTokenObject]);
+  }, [accessTokenObject, asyncFunction]);
 }

@@ -1,4 +1,4 @@
-import { CreateProductDto, IProduct, ReadProductDto } from "@biaplanner/shared";
+import { ICreateProductDto, IProduct, IUpdateProductDto, ReadProductDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -13,7 +13,15 @@ export const productsApi = rootApi.injectEndpoints({
       providesTags: ["Product"],
     }),
 
-    createProduct: build.mutation<IProduct, CreateProductDto>({
+    getProductById: build.query<IProduct, number>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [{ type: "Product", id: result.id }] : []),
+    }),
+
+    createProduct: build.mutation<IProduct, ICreateProductDto>({
       query: (dto) => ({
         url: "/products",
         method: "POST",
@@ -22,7 +30,7 @@ export const productsApi = rootApi.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
 
-    updateProduct: build.mutation<IProduct, { id: number; dto: CreateProductDto }>({
+    updateProduct: build.mutation<IProduct, { id: number; dto: IUpdateProductDto }>({
       query: ({ id, dto }) => ({
         url: `/products/${id}`,
         method: "PUT",
@@ -33,4 +41,4 @@ export const productsApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useGetProductsQuery, useLazyGetProductsQuery, useCreateProductMutation, useUpdateProductMutation } = productsApi;
+export const { useGetProductsQuery, useLazyGetProductsQuery, useCreateProductMutation, useUpdateProductMutation, useGetProductByIdQuery, useLazyGetProductByIdQuery } = productsApi;

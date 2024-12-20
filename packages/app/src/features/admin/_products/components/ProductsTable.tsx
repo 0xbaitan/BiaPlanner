@@ -2,6 +2,7 @@ import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import TabbedViewsTable, { TabbedViewDef, TabbedViewsTableWithoutDataProps } from "@/components/tables/TabbedViewsTable";
 
 import { IProduct } from "@biaplanner/shared";
+import { useNavigate } from "react-router-dom";
 
 export type ProductsTableProps = {
   data: IProduct[];
@@ -38,6 +39,7 @@ export const productsTableConfig: TabbedViewsTableWithoutDataProps<IProduct> = {
 };
 
 export default function ProductsTable(props: ProductsTableProps) {
+  const navigate = useNavigate();
   const { data } = props;
   return (
     <TabbedViewsTable<IProduct>
@@ -57,7 +59,7 @@ export default function ProductsTable(props: ProductsTableProps) {
           type: "edit",
           icon: FaPencilAlt,
           onClick: (row) => {
-            console.log("Edit product clicked", row.name);
+            navigate(`./update/${row.id}`);
           },
         },
 
