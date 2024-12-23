@@ -1,10 +1,9 @@
 import MultiselectInput, { MultiselectInputProps } from "./MultiselectInput";
-import { useCallback, useEffect, useState } from "react";
 
 import Form from "react-bootstrap/Form";
 import { IProductCategory } from "@biaplanner/shared";
-import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
-import { useLazyGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
+import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
+import { useState } from "react";
 
 export type ProductCategoryMultiselectProps = Omit<MultiselectInputProps<IProductCategory>, "list" | "idSelector" | "nameSelector" | "selectedValues" | "onSelect"> & {
   initialValues?: IProductCategory[];
@@ -14,19 +13,11 @@ export type ProductCategoryMultiselectProps = Omit<MultiselectInputProps<IProduc
 
 export default function ProductCategoryMultiselect(props: ProductCategoryMultiselectProps) {
   const { initialValues, onSelectionChange, error } = props;
-  const [getProductCategories, { isError }] = useLazyGetProductCategoriesQuery();
-  const [productCategories, setProductCategories] = useState<IProductCategory[]>([]);
+  const { data: productCategories, isError } = useGetProductCategoriesQuery({});
+
   const [selectedProductCategories, setSelectedProductCategories] = useState<IProductCategory[]>(() => (initialValues ? [...initialValues] : []));
-  const watchState = useCallback(async () => {
-    if (!(productCategories && productCategories.length > 0)) {
-      const { data: fetchedCategories } = await getProductCategories({});
-      productCategories && setProductCategories(fetchedCategories ?? []);
-    }
-  }, [getProductCategories, productCategories]);
 
-  useAccessTokenChangeWatch(watchState);
-
-  if (isError || productCategories.length === 0) return <div>Failed to fetch product categories</div>;
+  if (isError || !productCategories || productCategories.length === 0) return <div>Failed to fetch product categories</div>;
 
   return (
     <Form.Group>

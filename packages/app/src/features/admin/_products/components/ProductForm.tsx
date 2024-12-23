@@ -1,20 +1,16 @@
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { IBrand, ICreateProductDto, IProductCategory, IUpdateProductDto } from "@biaplanner/shared";
-import { useCallback, useEffect, useState } from "react";
+import { ICreateProductDto, IUpdateProductDto } from "@biaplanner/shared";
+import { useCallback, useState } from "react";
 
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
-import MultiselectInput from "@/components/forms/MultiselectInput";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
 import VolumeInput from "@/components/forms/VolumeInput";
 import WeightInput from "@/components/forms/WeightInput";
 import { convertDurationStringToMilli } from "@biaplanner/shared/build/util";
-import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
-import { useLazyGetBrandsQuery } from "@/apis/BrandsApi";
-import { useLazyGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -70,14 +66,10 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
   } = formMethods;
   const [canExpire, setCanExpire] = useState<boolean>(false);
   const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(initialValues?.canQuicklyExpireAfterOpening ?? false);
-  const [getProductCategories] = useLazyGetProductCategoriesQuery();
+
   const [isLoose, setIsLoose] = useState<boolean>(initialValues?.isLoose ?? false);
-  const [brands, setBrands] = useState<IBrand[]>([]);
+
   const [metric, setMetric] = useState<"volume" | "weight" | undefined>("volume");
-  const [productCategories, setProductCategories] = useState<IProductCategory[]>([]);
-  // const [selectedProductCategories, setSelectedProductCategories] = useState<IProductCategory[]>(initialValues?.productCategories ?? []);
-  const [brandId, setBrandId] = useState(initialValues?.brandId ?? brands[0]?.id);
-  const [getBrands] = useLazyGetBrandsQuery();
 
   const onMetricChange = useCallback(
     (value: "volume" | "weight" | undefined) => {
@@ -87,18 +79,6 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
     [setValue]
   );
 
-  const onAuthChange = useCallback(async () => {
-    const brands = await getBrands({}).unwrap();
-    const productCategories = await getProductCategories({}).unwrap();
-    setBrands(brands);
-    setProductCategories(productCategories);
-  }, [getBrands, getProductCategories]);
-
-  useEffect(() => {
-    setValue("brandId", brands[0]?.id);
-  }, [brands, setValue]);
-
-  useAccessTokenChangeWatch(onAuthChange);
   return (
     <>
       <Form.Group>
@@ -118,6 +98,7 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
         error={errors.productCategoryIds?.message}
         initialValues={initialValues?.productCategories}
         onSelectionChange={(productCategories) => {
+          console.log("productCategories", productCategories);
           setValue(
             "productCategoryIds",
             productCategories.map((category) => Number(category.id))

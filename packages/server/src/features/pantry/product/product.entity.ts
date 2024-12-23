@@ -36,6 +36,9 @@ export class ProductEntity implements IProduct {
   @ManyToMany(
     () => ProductCategoryEntity,
     (productCategory) => productCategory.products,
+    {
+      cascade: true
+    }
   )
   @JoinTable({
     name: 'products_product-categories',
