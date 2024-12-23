@@ -13,7 +13,7 @@ export class BrandService {
 
   public async readBrands(dto: ReadBrandDto) {
     const brands = this.brandRepository.find({
-      where: dto,
+      where: {},
     });
 
     return brands;

@@ -96,7 +96,7 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
 
       <ProductCategoryMultiselect
         error={errors.productCategoryIds?.message}
-        initialValues={initialValues?.productCategories}
+        initialValues={initialValues?.productCategories ?? []}
         onSelectionChange={(productCategories) => {
           console.log("productCategories", productCategories);
           setValue(

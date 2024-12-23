@@ -1,4 +1,4 @@
-import { IPantryItem, PhoneEntry } from "@biaplanner/shared";
+import { CreatePantryItemDto, ICreatePantryItemDto, IPantryItem, PhoneEntry } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -13,7 +13,15 @@ export const pantryItemsApi = rootApi.injectEndpoints({
 
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PantryItem" as const, id })), { type: "PantryItem" as const, id: "LIST" }] : [{ type: "PantryItem" as const, id: "LIST" }]),
     }),
+    createPantryItem: build.mutation<IPantryItem, ICreatePantryItemDto>({
+      query: (dto) => ({
+        url: "/pantry/items",
+        method: "POST",
+        body: dto,
+      }),
+      invalidatesTags: [{ type: "PantryItem" as const, id: "LIST" }],
+    }),
   }),
 });
 
-export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery } = pantryItemsApi;
+export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation } = pantryItemsApi;

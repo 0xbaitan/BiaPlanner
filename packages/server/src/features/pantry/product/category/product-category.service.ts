@@ -17,7 +17,7 @@ export class ProductCategoryService {
 
   async readProductCategory(dto: ReadProductCategoryDto) {
     return this.productCategoryRepository.find({
-      where: dto,
+      where: {},
       relations: ['products'],
     });
   }

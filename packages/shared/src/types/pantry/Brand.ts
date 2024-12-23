@@ -25,7 +25,14 @@ export class Brand {
 }
 
 export class CreateBrandDto extends Brand {}
-export class ReadBrandDto extends PartialType(PickType<Brand, keyof Brand>(Brand, ["id", "name"])) {}
+export class ReadBrandDto {
+  @IsString()
+  @IsNotEmpty({
+    message: "Brand name is required",
+  })
+  @ApiProperty()
+  name: string;
+}
 export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
 export class DeleteBrandDto extends PickType<Brand, keyof Brand>(Brand, ["id"]) {}
 

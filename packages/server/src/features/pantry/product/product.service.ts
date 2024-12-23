@@ -33,7 +33,7 @@ export class ProductService {
 
   async readProducts(dto: ReadProductDto): Promise<IProduct[]> {
     return this.productRepository.find({
-      where: dto,
+      where: {},
       relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
   }

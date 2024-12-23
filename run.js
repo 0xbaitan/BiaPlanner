@@ -93,8 +93,12 @@ function endDocker(prod, dev) {
 }
 
 function buildSharedForDocker() {
-  result = shell.exec("docker exec server pnpm --filter shared run build");
+  let result;
   result = shell.exec("docker exec app pnpm --filter shared run build");
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  result = shell.exec("docker exec server pnpm --filter shared run build");
   if (result.code !== 0) {
     exitWithError(result.stderr);
   }

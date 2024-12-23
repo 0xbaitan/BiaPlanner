@@ -27,7 +27,12 @@ export class Product {
   @IsOptional()
   @IsArray()
   @ApiProperty()
-  productCategories?: Partial<ProductCategory>[];
+  productCategoryIds?: number[];
+
+  @IsOptional()
+  @IsArray()
+  @ApiProperty()
+  productCategories?: ProductCategory[];
 
   @IsOptional()
   @IsObject()
@@ -113,7 +118,15 @@ export class Product {
 export type MeasurementMetric = "weight" | "volume";
 
 export class CreateProductDto extends Product {}
-export class ReadProductDto extends PartialType(PickType<Product, keyof Product>(Product, ["id", "isGlobal"])) {}
+export class ReadProductDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1, {
+    message: "ID must be a positive number",
+  })
+  @ApiProperty()
+  id?: number;
+}
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 export class DeleteProductDto extends Product {}
 

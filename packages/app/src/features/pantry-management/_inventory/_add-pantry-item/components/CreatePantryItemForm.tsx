@@ -1,12 +1,10 @@
-import { CreatePantryItemDto, IPantryItem, IProduct, UpdatePantryItemDto } from "@biaplanner/shared";
-import { FormProvider, useForm } from "react-hook-form";
-import { ZodType, z } from "zod";
-import { useCallback, useState } from "react";
-import { useGetProductsQuery, useLazyGetProductsQuery } from "@/apis/ProductsApi";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 
+import Button from "react-bootstrap/esm/Button";
+import { CreatePantryItemDto } from "@biaplanner/shared";
 import Form from "react-bootstrap/esm/Form";
-import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
-import { useLazyGetPantryItemsQuery } from "@/apis/PantryItemsApi";
+import ProductsSingleSelect from "@/components/forms/ProductsSingleSelect";
+import { useCallback } from "react";
 
 export type CreatePantryItemFormData = CreatePantryItemDto;
 
@@ -16,42 +14,64 @@ export type CreatePantryItemFormProps = {
 };
 
 export default function CreatePantryItemForm(props: CreatePantryItemFormProps) {
+  const { onSubmit } = props;
   const pantryItemForm = useForm<CreatePantryItemFormData>({
     defaultValues: props.initialValues,
     shouldFocusError: true,
     mode: "onBlur",
   });
+
+  const onSubmitForm = useCallback(
+    (_values) => {
+      const values = pantryItemForm.getValues();
+      console.log(values);
+      onSubmit(values);
+    },
+    [onSubmit, pantryItemForm]
+  );
+
   return (
     <FormProvider {...pantryItemForm}>
-      <RequiredPantryItemDetailsSection />
+      <Form onSubmit={pantryItemForm.handleSubmit(onSubmitForm)}>
+        <RequiredPantryItemDetailsSection />
+      </Form>
     </FormProvider>
   );
 }
 
 function RequiredPantryItemDetailsSection() {
-  const [getProducts] = useLazyGetProductsQuery();
-  const [products, setProducts] = useState<IProduct[]>([]);
-
-  const gettersAndSetters = useCallback(async () => {
-    const { data: fetchedProducts } = await getProducts({});
-    setProducts(fetchedProducts ?? []);
-  }, [getProducts, setProducts]);
-
-  useAccessTokenChangeWatch(gettersAndSetters);
+  const { setValue, register } = useFormContext();
 
   return (
     <section id="required-pantry-item-details-section">
       <h3>Required Pantry Item Details</h3>
+      <ProductsSingleSelect
+        onChange={(product) => {
+          setValue("productId", Number(product.id));
+        }}
+      />
       <Form.Group>
-        <Form.Label>Select Product</Form.Label>
-        <Form.Select>
-          {products.map((product) => (
-            <option key={product.id} value={product.id}>
-              {product.name}
-            </option>
-          ))}
-        </Form.Select>
+        <Form.Label htmlFor="quantity">Quantity</Form.Label>
+        <Form.Control
+          type="number"
+          id="quantity"
+          {...register("quantity", {
+            valueAsNumber: true,
+          })}
+        />
       </Form.Group>
+      <Form.Group>
+        <Form.Label htmlFor="expirationDate">Expiration Date</Form.Label>
+        <Form.Control
+          type="date"
+          id="expirationDate"
+          {...register("expirationDate", {
+            valueAsDate: true,
+          })}
+        />
+      </Form.Group>
+
+      <Button type="submit">Add Pantry Item</Button>
     </section>
   );
 }

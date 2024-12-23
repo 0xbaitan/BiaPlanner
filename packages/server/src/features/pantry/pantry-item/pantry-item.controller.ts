@@ -1,6 +1,10 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
-import { IPantryItem, PantryItem } from '@biaplanner/shared';
+import {
+  CreatePantryItemDto,
+  IPantryItem,
+  PantryItem,
+} from '@biaplanner/shared';
 import { plainToInstance } from 'class-transformer';
 
 @Controller('/pantry/items')
@@ -18,5 +22,13 @@ export default class PantryItemController {
     );
 
     return plainToInstance(PantryItem, pantryItems);
+  }
+
+  @Post('/')
+  async createPantryItem(
+    @Body() dto: CreatePantryItemDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await this.pantryItemService.createPantryItem(dto);
+    return plainToInstance(PantryItem, pantryItem);
   }
 }
