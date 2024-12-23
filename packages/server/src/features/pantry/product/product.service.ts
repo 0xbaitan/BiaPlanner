@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './product.entity';
 import {
@@ -8,17 +8,27 @@ import {
   UpdateProductDto,
 } from '@biaplanner/shared';
 import { Repository } from 'typeorm';
+import { ProductCategoryJoinService } from './product-category-join.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
+    @Inject(ProductCategoryJoinService)
+    private productCategoryJoinService: ProductCategoryJoinService,
   ) {}
 
   async createProduct(dto: CreateProductDto): Promise<IProduct> {
-    const product = this.productRepository.create(dto);
-    return this.productRepository.save(product);
+    const { productCategoryIds, ...rest } = dto;
+
+    const product = await this.productRepository.save(dto);
+    await this.productCategoryJoinService.createProductCategoryJoin(
+      product.id,
+      productCategoryIds,
+    );
+    const updatedProduct = await this.readProductById(product.id);
+    return updatedProduct;
   }
 
   async readProducts(dto: ReadProductDto): Promise<IProduct[]> {
