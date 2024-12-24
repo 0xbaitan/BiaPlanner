@@ -31,7 +31,7 @@ export class ReadBrandDto {
     message: "Brand name is required",
   })
   @ApiProperty()
-  name: string;
+  name?: string;
 }
 export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
 export class DeleteBrandDto extends PickType<Brand, keyof Brand>(Brand, ["id"]) {}

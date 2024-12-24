@@ -31,7 +31,7 @@ export class ReadProductCategoryDto {
     message: "Product category name is required",
   })
   @ApiProperty()
-  name: string;
+  name?: string;
 }
 export class UpdateProductCategoryDto extends PartialType(CreateProductCategoryDto) {}
 export class DeleteProductCategoryDto extends ProductCategory {}
