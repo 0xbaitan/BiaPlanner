@@ -2,9 +2,12 @@ import { Environment } from 'src/environment';
 import { ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
+import { UserService } from '../user/user.service';
+import { Inject } from '@nestjs/common';
+import { ITokenPayload, IUser } from '@biaplanner/shared';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(@Inject(UserService) private userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -12,7 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
-    return { userId: payload.sub, username: payload.username };
+  async validate(payload: ITokenPayload): Promise<IUser> {
+    const user = await this.userService.readUser({
+      id: payload.sub,
+    });
+    return user;
   }
 }

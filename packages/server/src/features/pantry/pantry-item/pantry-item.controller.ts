@@ -3,9 +3,11 @@ import PantryItemService from './pantry-item.service';
 import {
   CreatePantryItemDto,
   IPantryItem,
+  IUser,
   PantryItem,
 } from '@biaplanner/shared';
 import { plainToInstance } from 'class-transformer';
+import { User } from 'src/features/user-info/authentication/user.decorator';
 
 @Controller('/pantry/items')
 export default class PantryItemController {
@@ -27,8 +29,13 @@ export default class PantryItemController {
   @Post('/')
   async createPantryItem(
     @Body() dto: CreatePantryItemDto,
+    @User() user: IUser,
   ): Promise<IPantryItem> {
-    const pantryItem = await this.pantryItemService.createPantryItem(dto);
+    console.log('user', user);
+    const pantryItem = await this.pantryItemService.createPantryItem({
+      ...dto,
+      createdById: user.id,
+    });
     return plainToInstance(PantryItem, pantryItem);
   }
 }

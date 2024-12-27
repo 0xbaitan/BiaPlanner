@@ -7,6 +7,7 @@ import {
   IRefreshJWTObject,
   ISanitisedUser,
   isDevelopment,
+  IUser,
   LoginRequestUserDto,
   SanitisedUser,
 } from '@biaplanner/shared';
@@ -18,6 +19,7 @@ import { plainToInstance } from 'class-transformer';
 import { Response } from 'express';
 import { Cookies } from './features/user-info/authentication/cookies.decorator';
 import CustomAuthenticationError from './errors/CustomAuthenticationError';
+import { User } from './features/user-info/authentication/user.decorator';
 @Controller()
 export class AppController {
   constructor(
@@ -32,10 +34,12 @@ export class AppController {
     @Req() req: any,
     @Body() _dto: LoginRequestUserDto,
     @Res({ passthrough: true }) res: Response,
+    @User() user: IUser,
   ): Promise<{
     accessTokenObj: IAccessJWTObject;
     refreshTokenObj: IRefreshJWTObject;
   }> {
+    console.log('Logging in user:', user);
     const { accessTokenObj, refreshTokenObj } =
       await this.authService.loginUser(req.user);
     res.cookie('refreshToken', refreshTokenObj.refreshToken, {

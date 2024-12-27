@@ -7,6 +7,7 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -27,6 +28,7 @@ import { Util } from 'src/util';
 @Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
   constructor(
+    @Inject(AuthenticationService)
     private readonly authService: AuthenticationService,
     private readonly reflector: Reflector,
   ) {
@@ -41,33 +43,14 @@ export class JwtGuard extends AuthGuard('jwt') {
     if (canEvadeJWT) {
       return true;
     }
+
     const request = context.switchToHttp().getRequest() as Request;
-    const response = context.switchToHttp().getResponse() as Response;
 
     const accessToken = Util.extractTokenFromHeader(request);
-    const refreshToken = request.cookies?.refreshToken;
 
-    if (!accessToken && !refreshToken) {
-      throw new CustomAuthenticationError(
-        AuthenticationErrorCodes.NEITHER_ACCESS_NOR_REFRESH_TOKEN_PROVIDED,
-        'Neither access nor refresh token provided',
-      );
-    }
+    await this.authService.validateAccessToken(accessToken);
 
-    if (!accessToken && refreshToken) {
-      const accessTokenObj =
-        await this.authService.refreshAccessToken(refreshToken);
-      response.header('X-New-Access-Token', JSON.stringify(accessTokenObj));
-      request.headers['authorization'] = `Bearer ${accessTokenObj.accessToken}`;
-      request.user = accessTokenObj;
-      return true;
-    }
-
-    const accessTokenObj =
-      await this.authService.validateAccessToken(accessToken);
-    request.user = accessTokenObj;
-    console.log(accessTokenObj);
-
-    return true;
+    const result = (await super.canActivate(context)) as boolean;
+    return result;
   }
 }
