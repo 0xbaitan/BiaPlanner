@@ -6,6 +6,7 @@ import {
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { Inject, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
+import { SentMessageInfo } from 'nodemailer';
 import PantryItemService from 'src/features/pantry/pantry-item/pantry-item.service';
 
 @Injectable()
@@ -43,7 +44,7 @@ export class EmailService {
   async sendDailyReminderEmails(log: DailyReminderLog) {
     const emailIds = Object.keys(log);
     const statuses = await Promise.all(
-      emailIds.map(async (emailId) => {
+      emailIds.map(async (emailId): Promise<SentMessageInfo> => {
         const entries = log[emailId];
         const mailOptions = await this.createReminderMailOptions(entries);
         return this.mailerService.sendMail(mailOptions);
