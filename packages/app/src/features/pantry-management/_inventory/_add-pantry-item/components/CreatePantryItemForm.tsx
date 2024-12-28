@@ -61,14 +61,8 @@ function RequiredPantryItemDetailsSection() {
         />
       </Form.Group>
       <Form.Group>
-        <Form.Label htmlFor="expirationDate">Expiration Date</Form.Label>
-        <Form.Control
-          type="date"
-          id="expirationDate"
-          {...register("expirationDate", {
-            valueAsDate: true,
-          })}
-        />
+        <Form.Label htmlFor="expiryDate">Expiration Date</Form.Label>
+        <Form.Control type="date" id="expiryDate" {...register("expiryDate")} />
       </Form.Group>
 
       <Button type="submit">Add Pantry Item</Button>
