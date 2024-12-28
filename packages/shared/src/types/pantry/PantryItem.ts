@@ -4,6 +4,7 @@ import { OmitType, PartialType, PickType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
 import { Brand } from "./Brand";
 import { Product } from "./Product";
+import { Reminder } from "../reminder";
 import { User } from "../User";
 
 export class PantryItem {
@@ -30,9 +31,11 @@ export class PantryItem {
   openedDate?: string;
 
   isExpired?: boolean;
+
+  reminders?: Reminder[];
 }
 
-export class CreatePantryItemDto extends OmitType(PantryItem, ["id", "product"]) {}
+export class CreatePantryItemDto extends OmitType(PantryItem, ["id", "product", "reminders"]) {}
 export class UpdatePantryItemDto extends PartialType(PantryItem) {}
 export class DeletePantryItemDto extends PickType<PantryItem, keyof PantryItem>(PantryItem, ["id"]) {}
 export class ReadSinglePantryItemDto extends PickType<PantryItem, keyof PantryItem>(PantryItem, ["id"]) {}

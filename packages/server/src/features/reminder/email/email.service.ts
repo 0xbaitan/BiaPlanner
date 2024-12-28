@@ -1,10 +1,14 @@
 import { IUser } from '@biaplanner/shared';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Inject, Injectable } from '@nestjs/common';
+import PantryItemService from 'src/features/pantry/pantry-item/pantry-item.service';
 
 @Injectable()
 export class EmailService {
-  constructor(@Inject(MailerService) private mailerService: MailerService) {}
+  constructor(
+    @Inject(MailerService) private mailerService: MailerService,
+    @Inject(PantryItemService) private pantryItemService: PantryItemService,
+  ) {}
 
   async testSendEmail(user: IUser) {
     if (!user.email) {
@@ -19,4 +23,6 @@ export class EmailService {
 
     console.log('Email sent');
   }
+
+  private async findPantryItemsNearingExpiration(numberOfDays: number) {}
 }

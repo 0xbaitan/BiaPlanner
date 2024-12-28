@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import {
   CreatePantryItemDto,
   ICreatePantryItemDto,

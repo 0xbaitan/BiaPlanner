@@ -2,6 +2,7 @@ import {
   Brand,
   IPantryItem,
   Product,
+  Reminder,
   User,
   Volumes,
   Weights,
@@ -10,6 +11,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -18,6 +20,7 @@ import {
 
 import { BrandEntity } from '../brand/brand.entity';
 import { ProductEntity } from '../product/product.entity';
+import { ReminderEntity } from 'src/features/reminder/reminder.entity';
 import { UserEntity } from '../../user-info/user/user.entity';
 
 @Entity('pantry-items')
@@ -45,4 +48,7 @@ export class PantryItemEntity implements IPantryItem {
 
   @Column({ type: 'timestamp', nullable: true })
   isExpired?: boolean;
+
+  @OneToMany(() => ReminderEntity, (reminder) => reminder.pantryItem)
+  reminders?: Reminder[];
 }
