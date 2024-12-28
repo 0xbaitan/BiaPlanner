@@ -16,7 +16,7 @@ export const rootApi = createApi({
   }),
 
   endpoints: () => ({}),
-  tagTypes: ["User", "PhoneEntry", "PantryItem", "Product", "ProductCategory", "Brand"],
+  tagTypes: ["User", "PhoneEntry", "PantryItem", "Product", "ProductCategory", "Brand", "Reminder"],
 });
 
 export default rootApi.reducer;

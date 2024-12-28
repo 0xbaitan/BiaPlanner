@@ -7,7 +7,7 @@ import { IUser } from '@biaplanner/shared';
 export class EmailController {
   constructor(@Inject(EmailService) private emailService: EmailService) {}
 
-  @Post()
+  @Post('/test')
   async testEmailSending(@User() user: IUser) {
     console.log('Sending email');
     return this.emailService.testSendEmail(user);
