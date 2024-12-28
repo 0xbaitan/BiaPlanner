@@ -40,4 +40,8 @@
   Charity, D.T. (2024). How to Hash Passwords with bcrypt in Node.js. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/how-to-hash-passwords-with-bcrypt-in-nodejs/ [Accessed 27 Oct. 2024].
 
 - **Understanding how I can implement Redis to my system**:
+
   1. Por, P. (2024). How to Use Docker Redis with NestJS - Panat Por - Medium. [online] Medium. Available at: https://medium.com/@panat.siriwong/how-to-use-docker-redis-with-nestjs-7543bd17f39e [Accessed 29 Oct. 2024].
+
+- **Understanding how to send emails with NodeMailer for email reminders**:
+  1. Web Wizard (2023). Sending Emails in Node.js with Nodemailer & Gmail | Step-by-Step Tutorial. [online] YouTube. Available at: https://www.youtube.com/watch?v=QDIOBsMBEI0 [Accessed 28 Dec. 2024].

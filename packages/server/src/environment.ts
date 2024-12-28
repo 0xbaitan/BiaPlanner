@@ -27,4 +27,19 @@ export class Environment {
 
     return [redisHost, redisPort];
   }
+
+  public static getSMTPGmailCredentials(): [string, string] {
+    const email = process.env.GMAIL_ID;
+    const password = process.env.GMAIL_APP_PASSWORD;
+
+    if (!email || email.trim().length === 0) {
+      throw new Error('GMAIL_ID is not set');
+    }
+
+    if (!password || password.trim().length === 0) {
+      throw new Error('GMAIL_APP_PASSWORD is not set');
+    }
+
+    return [email, password];
+  }
 }
