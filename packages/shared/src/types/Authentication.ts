@@ -25,7 +25,7 @@ export enum AuthenticationCacheIndices {
 }
 
 export enum AuthenticationCacheTTLs {
-  ACCESS_TOKEN = "15m",
+  ACCESS_TOKEN = "90m",
   REFRESH_TOKEN = "3d",
 }
 
