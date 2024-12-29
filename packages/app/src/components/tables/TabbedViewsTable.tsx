@@ -2,14 +2,15 @@ import { ColumnDef, flexRender, getCoreRowModel, useReactTable, VisibilityState 
 import Tabs, { TabsProps } from "react-bootstrap/Tabs";
 import Dropdown from "react-bootstrap/Dropdown";
 import Tab from "react-bootstrap/Tab";
-import Popup from "reactjs-popup";
-import "reactjs-popup/dist/index.css";
+
 import { useCallback, useMemo, useState } from "react";
 import { IconBase } from "react-icons";
 import { FaEllipsisV as KebabIcon } from "react-icons/fa";
 import BootstrapTable from "react-bootstrap/Table";
 import { IconType } from "react-icons";
 import Button from "react-bootstrap/esm/Button";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 
 export type TabbedViewsTableActionType = "update" | "delete" | "view" | string;
 export type TabbedViewsTableAction<T> = {
@@ -88,7 +89,7 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
               <KebabIcon size={"16px"} />
             </Button>
           }
-          position="right top"
+          position="right center"
           on="click"
           closeOnDocumentClick={true}
         >

@@ -1,22 +1,10 @@
-import { useCallback, useState } from "react";
-import { useGetProductsQuery, useLazyGetProductsQuery } from "@/apis/ProductsApi";
-
 import Button from "react-bootstrap/esm/Button";
-import { IProduct } from "@biaplanner/shared";
 import ProductsTable from "../components/ProductsTable";
-import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
+import { useGetProductsQuery } from "@/apis/ProductsApi";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminProductsPage() {
-  const [getProducts, { isError, isSuccess }] = useLazyGetProductsQuery();
-  const [products, setProducts] = useState<IProduct[]>([]);
-
-  useAccessTokenChangeWatch(async () => {
-    const { data } = await getProducts({});
-    if (data) {
-      setProducts(data);
-    }
-  });
+  const { data: products, isError, isSuccess } = useGetProductsQuery({});
 
   return (
     <div>

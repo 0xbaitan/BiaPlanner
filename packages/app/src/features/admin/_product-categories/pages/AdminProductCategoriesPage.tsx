@@ -1,25 +1,13 @@
-import { IProductCategory } from "@biaplanner/shared";
 import ProductCategoriesTable from "../components/ProductCategoriesTable";
-import useAccessTokenChangeWatch from "@/hooks/useAccessTokenChangeWatch";
-import { useLazyGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
-import { useState } from "react";
-export default function AdminProductCategoriesPage() {
-  const [getProductClassifications, { isError, isSuccess }] = useLazyGetProductCategoriesQuery();
-  const [productClassifications, setProductClassifications] = useState<IProductCategory[]>([]);
+import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 
-  useAccessTokenChangeWatch(async () => {
-    const { data } = await getProductClassifications({});
-    if (data) {
-      setProductClassifications(data);
-    } else {
-      setProductClassifications([]);
-    }
-  });
+export default function AdminProductCategoriesPage() {
+  const { data: productCategories, isSuccess, isError } = useGetProductCategoriesQuery({});
 
   return (
     <div>
       <h1>Admin Product Categories</h1>
-      {isSuccess && productClassifications && <ProductCategoriesTable data={productClassifications} />}
+      {isSuccess && productCategories && <ProductCategoriesTable data={productCategories} />}
       {isError && <div>Failed to fetch product categories</div>}
     </div>
   );
