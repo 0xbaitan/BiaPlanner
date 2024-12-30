@@ -1,5 +1,5 @@
 import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
-import { PartialType, PickType } from "@nestjs/mapped-types";
+import { OmitType, PartialType, PickType } from "@nestjs/mapped-types";
 import { Volumes, Weights } from "../units";
 
 import { ApiProperty } from "@nestjs/swagger";
@@ -127,7 +127,7 @@ export class ReadProductDto {
   @ApiProperty()
   id?: number;
 }
-export class UpdateProductDto extends PartialType(CreateProductDto) {}
+export class UpdateProductDto extends PartialType(OmitType(CreateProductDto, ["createdBy", "createdById", "pantryItems", "productCategories"])) {}
 export class DeleteProductDto extends Product {}
 
 export interface IProduct extends Product {}

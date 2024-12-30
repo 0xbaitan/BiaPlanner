@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConsoleLogger, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './product.entity';
 import {
@@ -8,25 +8,23 @@ import {
   UpdateProductDto,
 } from '@biaplanner/shared';
 import { Repository } from 'typeorm';
-import { ProductCategoryJoinService } from './product-category-join.service';
+import { ProductCategoryService } from './category/product-category.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
-    @Inject(ProductCategoryJoinService)
-    private productCategoryJoinService: ProductCategoryJoinService,
+    @Inject(ProductCategoryService)
+    private productCategoryService: ProductCategoryService,
   ) {}
 
   async createProduct(dto: CreateProductDto): Promise<IProduct> {
     const { productCategoryIds, ...rest } = dto;
 
     const product = await this.productRepository.save(dto);
-    await this.productCategoryJoinService.createProductCategoryJoin(
-      product.id,
-      productCategoryIds,
-    );
+
     const updatedProduct = await this.readProductById(product.id);
     return updatedProduct;
   }
@@ -46,9 +44,17 @@ export class ProductService {
   }
 
   async updateProduct(id: number, dto: UpdateProductDto): Promise<IProduct> {
-    const product = await this.readProductById(id);
-    const updatedProduct = { ...product, ...dto };
-    return this.productRepository.save(updatedProduct);
+    console.log(JSON.stringify(dto, null, 2));
+    const cleanedDto = plainToInstance(UpdateProductDto, dto, {
+      excludeExtraneousValues: true,
+    });
+
+    const product = await this.productRepository.save({
+      id,
+      ...cleanedDto,
+    });
+
+    return product;
   }
 
   async deleteProduct(id: number): Promise<void> {

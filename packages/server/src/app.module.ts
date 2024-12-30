@@ -13,6 +13,8 @@ import { modules } from './modules';
       ...dataSourceOptions,
       autoLoadEntities: true,
       keepConnectionAlive: true,
+      logging: true,
+      logger: 'advanced-console',
     }),
 
     ...modules,

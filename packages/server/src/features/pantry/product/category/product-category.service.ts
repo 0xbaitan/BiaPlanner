@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductCategoryEntity } from './product-category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   CreateProductCategoryDto,
   ReadProductCategoryDto,
@@ -28,6 +28,15 @@ export class ProductCategoryService {
         id,
       },
     });
+  }
+
+  async findProductCategoriesByIds(ids: number[]) {
+    const productCategories = await this.productCategoryRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+    return productCategories;
   }
 
   async createProductClassification(dto: CreateProductCategoryDto) {

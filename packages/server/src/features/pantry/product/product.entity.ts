@@ -37,16 +37,15 @@ export class ProductEntity implements IProduct {
     () => ProductCategoryEntity,
     (productCategory) => productCategory.products,
     {
-      cascade: true
-    }
+      eager: true,
+      cascade: ['insert', 'update'],
+    },
   )
   @JoinTable({
     name: 'products_product-categories',
     joinColumn: { name: 'productId' },
     inverseJoinColumn: {
       name: 'productCategoryId',
-
-      referencedColumnName: 'id',
     },
   })
   productCategories?: ProductCategory[];
