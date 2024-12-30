@@ -26,11 +26,6 @@ export class ProductCategory {
 
 export class CreateProductCategoryDto extends ProductCategory {}
 export class ReadProductCategoryDto {
-  @IsString()
-  @IsNotEmpty({
-    message: "Product category name is required",
-  })
-  @ApiProperty()
   name?: string;
 }
 export class UpdateProductCategoryDto extends PartialType(CreateProductCategoryDto) {}

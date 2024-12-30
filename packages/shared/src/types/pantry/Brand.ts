@@ -26,11 +26,6 @@ export class Brand {
 
 export class CreateBrandDto extends Brand {}
 export class ReadBrandDto {
-  @IsString()
-  @IsNotEmpty({
-    message: "Brand name is required",
-  })
-  @ApiProperty()
   name?: string;
 }
 export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
