@@ -1,10 +1,10 @@
-import { IAccessJWTObject, ICreateRequestUserDto, ILoginRequestUserDto, IRefreshJWTObject, ISanitisedUser } from "@biaplanner/shared";
+import { IAccessJWTObject, ICreateUserDto, ILoginUserDto, IRefreshJWTObject, IUser } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
 export const authenticationApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
-    registerUser: build.mutation<ISanitisedUser, ICreateRequestUserDto>({
+    registerUser: build.mutation<IUser, ICreateUserDto>({
       query: (dto) => ({
         url: `/auth/register`,
         method: "POST",
@@ -13,7 +13,7 @@ export const authenticationApi = rootApi.injectEndpoints({
       invalidatesTags: ["User", "PhoneEntry"],
     }),
 
-    loginUser: build.mutation<{ accessTokenObj: IAccessJWTObject; refreshTokenObj: IRefreshJWTObject }, ILoginRequestUserDto>({
+    loginUser: build.mutation<{ accessTokenObj: IAccessJWTObject; refreshTokenObj: IRefreshJWTObject }, ILoginUserDto>({
       query: (dto) => ({
         url: `/auth/login`,
         method: "POST",

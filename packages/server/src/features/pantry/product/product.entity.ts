@@ -1,15 +1,7 @@
 import {
-  Brand,
-  IProduct,
-  MeasurementMetric,
-  PantryItem,
-  ProductCategory,
-  User,
-  Volumes,
-  Weights,
-} from '@biaplanner/shared';
-import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -18,7 +10,17 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import {
+  IBrand,
+  IPantryItem,
+  IProduct,
+  IProductCategory,
+  IUser,
+  Volumes,
+  Weights,
+} from '@biaplanner/shared';
 
 import { BrandEntity } from '../brand/brand.entity';
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
@@ -28,7 +30,7 @@ import { UserEntity } from 'src/features/user-info/user/user.entity';
 @Entity('products')
 export class ProductEntity implements IProduct {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id?: number;
+  id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   name: string;
@@ -48,13 +50,13 @@ export class ProductEntity implements IProduct {
       name: 'productCategoryId',
     },
   })
-  productCategories?: ProductCategory[];
+  productCategories?: IProductCategory[];
 
   @ManyToOne(() => BrandEntity, (brand) => brand.products)
-  brand?: Brand;
+  brand?: IBrand;
 
   @Column({ type: 'bigint' })
-  brandId?: number;
+  brandId?: string;
 
   @Column({ type: 'boolean', default: false })
   canQuicklyExpireAfterOpening?: boolean;
@@ -66,13 +68,13 @@ export class ProductEntity implements IProduct {
     cascade: true,
   })
   @JoinColumn({ name: 'productId' })
-  pantryItems?: PantryItem[];
+  pantryItems?: IPantryItem[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
-  createdBy?: User;
+  createdBy?: IUser;
 
   @Column({ type: 'bigint', nullable: true })
-  createdById?: number;
+  createdById?: string;
 
   @Column({ type: 'boolean', default: false })
   isGlobal?: boolean;
@@ -91,7 +93,7 @@ export class ProductEntity implements IProduct {
     length: 255,
     nullable: true,
   })
-  useMeasurementMetric?: MeasurementMetric;
+  useMeasurementMetric?: 'weight' | 'volume';
 
   @Column({ type: 'integer', nullable: true })
   volumePerContainerOrPacket?: number;
@@ -104,4 +106,22 @@ export class ProductEntity implements IProduct {
 
   @Column({ type: 'enum', enum: Weights, nullable: true })
   weightUnit?: Weights;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  createdAt: string;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  updatedAt: string;
+
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+  })
+  deletedAt?: string;
 }

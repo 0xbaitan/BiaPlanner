@@ -13,7 +13,7 @@ export type ProductCategoryMultiselectProps = Omit<MultiselectInputProps<IProduc
 
 export default function ProductCategoryMultiselect(props: ProductCategoryMultiselectProps) {
   const { initialValues, onSelectionChange, error } = props;
-  const { data: productCategories, isError } = useGetProductCategoriesQuery({});
+  const { data: productCategories, isError } = useGetProductCategoriesQuery();
 
   const [selectedProductCategories, setSelectedProductCategories] = useState<IProductCategory[]>(() => (initialValues ? [...initialValues] : []));
 

@@ -1,7 +1,7 @@
 import MagnitudeAndUnitInput, { CustomisedMagnitudeAndUnitProps } from "./MagnitudeAndUnitInput";
 
 import { Weights } from "@biaplanner/shared/build/types/units/Weights";
-import normaliseEnumKey from "@/features/phone-directory/util/normaliseEnumKey";
+import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useMemo } from "react";
 
 export type WeightInputProps = CustomisedMagnitudeAndUnitProps<typeof Weights>;

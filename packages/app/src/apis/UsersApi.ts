@@ -1,4 +1,5 @@
-import { IUser } from "@biaplanner/shared";
+import { ICreateUserDto, IUpdateUserDto, IUser } from "@biaplanner/shared";
+
 import { rootApi } from ".";
 
 export const usersApi = rootApi.injectEndpoints({
@@ -17,20 +18,20 @@ export const usersApi = rootApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: "User", id }],
     }),
-    addUser: build.mutation<IUser, IUser>({
-      query: (user: IUser) => ({
+    addUser: build.mutation<IUser, ICreateUserDto>({
+      query: (dto) => ({
         url: "/users",
         method: "POST",
-        body: user,
+        body: dto,
       }),
 
       invalidatesTags: ["User", "PhoneEntry"],
     }),
     updateUser: build.mutation({
-      query: ({ id, user }: { id: number; user: Partial<IUser> }) => ({
+      query: ({ id, dto }: { id: string; dto: IUpdateUserDto }) => ({
         url: `/users/${id}`,
         method: "PUT",
-        body: user,
+        body: dto,
       }),
 
       invalidatesTags: ["User", "PhoneEntry"],

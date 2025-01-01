@@ -3,8 +3,8 @@ import {
   AuthenticationCacheTTLs,
   AuthenticationErrorCodes,
   IAccessJWTObject,
-  ICreateRequestUserDto,
-  ILoginRequestUserDto,
+  ICreateUserDto,
+  ILoginUserDto,
   IRefreshJWTObject,
   ITokenPayload,
   IUser,
@@ -42,7 +42,7 @@ export class AuthenticationService {
     return bcrypt.compare(password, hash);
   }
 
-  async registerUser(dto: ICreateRequestUserDto): Promise<IUser> {
+  async registerUser(dto: ICreateUserDto): Promise<IUser> {
     const hashedPassword = await this.hashPassword(dto.password);
     const newUser = await this.userService.createUser({
       ...dto,
@@ -50,27 +50,18 @@ export class AuthenticationService {
     });
     return newUser;
   }
-  async validateUser(dto: ILoginRequestUserDto): Promise<IUser | null> {
-    const user = await this.userService.readUser({
-      username: dto.login,
-      email: dto.login,
-    });
-
-    if (!user) {
-      throw new CustomValidationError({
-        property: 'login',
-        constraints: {
-          userExists: 'User does not exist',
-        },
-      });
-    }
+  async validateUser(dto: ILoginUserDto): Promise<IUser | null> {
+    const user = await this.userService.verifyUserExists(dto.login);
 
     const isUserValid = await this.validatePassword(
       dto.password,
       user.password,
     );
     if (!isUserValid) {
-      return null;
+      throw new CustomAuthenticationError(
+        AuthenticationErrorCodes.UNKNOWN_ERROR,
+        'Invalid credentials',
+      );
     }
     return user;
   }

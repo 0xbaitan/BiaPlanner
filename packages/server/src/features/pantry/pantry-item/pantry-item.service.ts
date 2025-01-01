@@ -15,25 +15,20 @@ export default class PantryItemService {
     private pantryItemRepository: Repository<PantryItemEntity>,
   ) {}
 
-  async createPantryItem(dto: ICreatePantryItemDto) {
-    const pantryItem = this.pantryItemRepository.create(dto);
+  async createPantryItem(
+    dto: ICreatePantryItemDto,
+    createdById: string,
+  ): Promise<IPantryItem> {
+    const pantryItem = this.pantryItemRepository.create({
+      ...dto,
+      createdById,
+    });
     return await this.pantryItemRepository.save(pantryItem);
   }
 
-  async readAllPantryItems(userId?: number): Promise<IPantryItem[]> {
-    if (!userId) {
-      const allPantryItems = this.pantryItemRepository.find({
-        relations: [
-          'createdBy',
-          'product',
-          'product.brand',
-          'product.productCategories',
-        ],
-      });
-      return allPantryItems;
-    }
+  async findAllPantryItems(createdById: string): Promise<IPantryItem[]> {
     const userScopedPantryItems = await this.pantryItemRepository.find({
-      where: { createdById: userId },
+      where: { createdById },
       relations: [
         'createdBy',
         'product',

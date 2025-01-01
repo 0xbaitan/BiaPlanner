@@ -1,5 +1,5 @@
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { ICreateProductDto, IUpdateProductDto } from "@biaplanner/shared";
+import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
 
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
@@ -14,9 +14,13 @@ import { convertDurationStringToMilli } from "@biaplanner/shared/build/util";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+export type FormAction = "create" | "update";
+
 export type ProductFormValues = ICreateProductDto | IUpdateProductDto;
+
 export type ProductFormProps = {
-  initialValues?: ProductFormValues;
+  type: FormAction;
+  initialValues?: IProduct;
   onSubmit: (values: ProductFormValues) => void;
   submitButtonText?: string;
 };
@@ -30,20 +34,17 @@ const ProductFormValidationSchema = z.object({
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit, submitButtonText = "Add Product" } = props;
-  const formMethods = useForm<ProductFormValues>({
+  const { initialValues, onSubmit, type, submitButtonText = "Add Product" } = props;
+  const formMethods = useForm<IProduct>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
   });
 
-  const onSubmitForm = useCallback(
-    (_values: ProductFormValues) => {
-      const values = formMethods.getValues();
-      console.log(values);
-      onSubmit(values);
-    },
-    [formMethods, onSubmit]
-  );
+  const onSubmitForm = useCallback(() => {
+    const values = formMethods.getValues();
+    console.log(values);
+    onSubmit(values);
+  }, [formMethods, onSubmit]);
 
   return (
     <FormProvider {...formMethods}>
@@ -88,9 +89,9 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
       </Form.Group>
       <BrandSingleSelect
         error={errors.brandId?.message}
-        initialValue={initialValues?.brand}
+        initialValueId={initialValues?.brandId}
         onChange={(brand) => {
-          setValue("brandId", Number(brand.id));
+          setValue("brandId", brand.id);
         }}
       />
 
@@ -101,7 +102,7 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
           console.log("productCategories", productCategories);
           setValue(
             "productCategoryIds",
-            productCategories.map((category) => Number(category.id))
+            productCategories.map((category) => String(category.id))
           );
         }}
       />

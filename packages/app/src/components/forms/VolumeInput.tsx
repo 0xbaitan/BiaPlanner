@@ -1,7 +1,7 @@
-import MagnitudeAndUnitInput, { CustomisedMagnitudeAndUnitProps, MagnitudeAndUnitProps } from "./MagnitudeAndUnitInput";
+import MagnitudeAndUnitInput, { CustomisedMagnitudeAndUnitProps } from "./MagnitudeAndUnitInput";
 
 import { Volumes } from "@biaplanner/shared/build/types/units/Volumes";
-import normaliseEnumKey from "@/features/phone-directory/util/normaliseEnumKey";
+import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useMemo } from "react";
 
 export type VolumeInputProps = CustomisedMagnitudeAndUnitProps<typeof Volumes>;

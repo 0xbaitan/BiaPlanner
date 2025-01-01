@@ -4,7 +4,6 @@ import { ProductCategoryEntity } from './product-category.entity';
 import { In, Repository } from 'typeorm';
 import {
   CreateProductCategoryDto,
-  ReadProductCategoryDto,
   UpdateProductCategoryDto,
 } from '@biaplanner/shared';
 
@@ -15,14 +14,13 @@ export class ProductCategoryService {
     private readonly productCategoryRepository: Repository<ProductCategoryEntity>,
   ) {}
 
-  async readProductCategory(dto: ReadProductCategoryDto) {
+  async findAllProductCategories() {
     return this.productCategoryRepository.find({
-      where: {},
       relations: ['products'],
     });
   }
 
-  async readProductClassificationById(id: number) {
+  async readProductClassificationById(id: string) {
     return this.productCategoryRepository.findOneOrFail({
       where: {
         id,
@@ -30,7 +28,7 @@ export class ProductCategoryService {
     });
   }
 
-  async findProductCategoriesByIds(ids: number[]) {
+  async findProductCategoriesByIds(ids: string[]) {
     const productCategories = await this.productCategoryRepository.find({
       where: {
         id: In(ids),
@@ -44,7 +42,7 @@ export class ProductCategoryService {
     return this.productCategoryRepository.save(productClassification);
   }
 
-  async updateProductClassification(id: number, dto: UpdateProductCategoryDto) {
+  async updateProductClassification(id: string, dto: UpdateProductCategoryDto) {
     const productClassification =
       await this.productCategoryRepository.findOneOrFail({
         where: {
@@ -57,7 +55,7 @@ export class ProductCategoryService {
     });
   }
 
-  async deleteProductClassification(id: number) {
+  async deleteProductClassification(id: string) {
     const productClassification =
       await this.productCategoryRepository.findOneOrFail({
         where: {

@@ -1,6 +1,5 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
-import { ReadProductCategoryDto } from '@biaplanner/shared';
 
 @Controller('/product-categories/')
 export class ProductCategoryController {
@@ -10,7 +9,7 @@ export class ProductCategoryController {
   ) {}
 
   @Get('/')
-  async getProductCategories(@Query() dto: ReadProductCategoryDto) {
-    return this.productCategoriesService.readProductCategory(dto);
+  async findAllProductCategories() {
+    return this.productCategoriesService.findAllProductCategories();
   }
 }

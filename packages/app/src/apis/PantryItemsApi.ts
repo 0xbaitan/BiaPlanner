@@ -1,4 +1,4 @@
-import { CreatePantryItemDto, ICreatePantryItemDto, IPantryItem, PhoneEntry } from "@biaplanner/shared";
+import { ICreatePantryItemDto, IPantryItem } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 

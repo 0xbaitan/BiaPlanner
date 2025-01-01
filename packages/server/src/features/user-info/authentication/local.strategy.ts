@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ILoginRequestUserDto, IUser } from '@biaplanner/shared';
+import { ILoginUserDto, IUser } from '@biaplanner/shared';
 
 import { AuthenticationService } from './authentication.service';
 import { PassportStrategy } from '@nestjs/passport';
@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(login: string, password: string): Promise<IUser> {
-    const dto: ILoginRequestUserDto = {
+    const dto: ILoginUserDto = {
       login,
       password,
     };

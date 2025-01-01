@@ -1,7 +1,7 @@
+import { IBaseEntity } from "./BaseEntity";
 import { IUser } from "./User";
 
-export interface PhoneEntry {
-  id?: number;
+export interface IPhoneEntry extends IBaseEntity {
   countryCode: string;
   countryCallingCode: string;
   phoneNumber: string;
@@ -10,4 +10,5 @@ export interface PhoneEntry {
   isMobile?: boolean;
   isLandline?: boolean;
   user?: IUser;
+  userId?: string;
 }

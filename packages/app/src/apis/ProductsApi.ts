@@ -1,19 +1,18 @@
-import { ICreateProductDto, IProduct, IUpdateProductDto, ReadProductDto } from "@biaplanner/shared";
+import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
 export const productsApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
-    getProducts: build.query<IProduct[], ReadProductDto>({
-      query: (params: ReadProductDto) => ({
+    getProducts: build.query<IProduct[], void>({
+      query: () => ({
         url: "/products",
         method: "GET",
-        params,
       }),
       providesTags: ["Product"],
     }),
 
-    getProductById: build.query<IProduct, number>({
+    getProductById: build.query<IProduct, string>({
       query: (id) => ({
         url: `/products/${id}`,
         method: "GET",
@@ -30,7 +29,7 @@ export const productsApi = rootApi.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
 
-    updateProduct: build.mutation<IProduct, { id: number; dto: IUpdateProductDto }>({
+    updateProduct: build.mutation<IProduct, { id: string; dto: IUpdateProductDto }>({
       query: ({ id, dto }) => ({
         url: `/products/${id}`,
         method: "PUT",

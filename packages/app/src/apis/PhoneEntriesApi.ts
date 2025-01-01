@@ -1,20 +1,14 @@
-import { PhoneEntry } from "@biaplanner/shared";
+import { IPhoneEntry } from "@biaplanner/shared";
 import { rootApi } from ".";
 
 export const phoneEntriesApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
-    getPhoneEntries: build.query<PhoneEntry[], void>({
+    getPhoneEntries: build.query<IPhoneEntry[], void>({
       query: () => ({
         url: "/phone-entries",
         method: "GET",
       }),
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({ type: "PhoneEntry" as const, id })),
-              { type: "PhoneEntry", id: "LIST" },
-            ]
-          : [{ type: "PhoneEntry", id: "LIST" }],
+      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PhoneEntry" as const, id })), { type: "PhoneEntry", id: "LIST" }] : [{ type: "PhoneEntry", id: "LIST" }]),
     }),
 
     deletePhoneEntry: build.mutation<void, number>({
@@ -27,5 +21,4 @@ export const phoneEntriesApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useGetPhoneEntriesQuery, useDeletePhoneEntryMutation } =
-  phoneEntriesApi;
+export const { useGetPhoneEntriesQuery, useDeletePhoneEntryMutation } = phoneEntriesApi;

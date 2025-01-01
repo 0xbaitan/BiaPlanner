@@ -1,137 +1,51 @@
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min } from "class-validator";
-import { OmitType, PartialType, PickType } from "@nestjs/mapped-types";
 import { Volumes, Weights } from "../units";
 
-import { ApiProperty } from "@nestjs/swagger";
-import { Brand } from "./Brand";
-import { PantryItem } from "./PantryItem";
-import { ProductCategory } from "./ProductCategory";
-import { User } from "../User";
+import { IBaseEntity } from "../BaseEntity";
+import { IBrand } from "./Brand";
+import { IPantryItem } from "./PantryItem";
+import { IProductCategory } from "./ProductCategory";
+import { IUser } from "../User";
 
-export class Product {
-  @IsOptional()
-  @IsNumber()
-  @Min(1, {
-    message: "ID must be a positive number",
-  })
-  @ApiProperty()
-  id?: number;
-
-  @IsString()
-  @IsNotEmpty({
-    message: "Product name is required",
-  })
-  @ApiProperty()
+export interface IProduct extends IBaseEntity {
   name: string;
 
-  @IsOptional()
-  @IsArray()
-  @ApiProperty()
-  productCategoryIds?: number[];
-
-  @IsOptional()
-  @IsArray()
-  @ApiProperty()
-  productCategories?: ProductCategory[];
-
-  @IsOptional()
-  @IsObject()
-  @ApiProperty()
-  brand?: Brand;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(1, {
-    message: "Brand ID must be a positive number",
-  })
-  @ApiProperty()
-  brandId?: number;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty()
+  productCategories?: IProductCategory[];
+  brand?: IBrand;
+  brandId?: string;
   canExpire?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty()
   canQuicklyExpireAfterOpening?: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
   millisecondsToExpiryAfterOpening?: number;
-
-  @IsOptional()
-  @IsArray()
-  @ApiProperty()
-  pantryItems?: PantryItem[];
-
-  @IsOptional()
-  @IsObject()
-  @ApiProperty()
-  createdBy?: User;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  createdById?: number;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty()
+  pantryItems?: IPantryItem[];
+  createdBy?: IUser;
+  createdById?: string;
   isGlobal?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty()
   isLoose?: boolean;
-
-  @IsOptional()
-  @ApiProperty()
-  useMeasurementMetric?: MeasurementMetric;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
+  useMeasurementMetric?: "weight" | "volume";
   numberOfServingsOrPieces?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
   weightPerContainerOrPacket?: number;
-
-  @IsOptional()
-  @ApiProperty()
   weightUnit?: Weights;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
   volumePerContainerOrPacket?: number;
-
-  @IsOptional()
-  @ApiProperty()
   volumeUnit?: Volumes;
 }
 
-export type MeasurementMetric = "weight" | "volume";
-
-export class CreateProductDto extends Product {}
-export class ReadProductDto {
-  @IsOptional()
-  @IsNumber()
-  @Min(1, {
-    message: "ID must be a positive number",
-  })
-  @ApiProperty()
-  id?: number;
+export interface ICreateProductDto
+  extends Pick<
+    IProduct,
+    | "brandId"
+    | "canExpire"
+    | "canQuicklyExpireAfterOpening"
+    | "millisecondsToExpiryAfterOpening"
+    | "numberOfServingsOrPieces"
+    | "useMeasurementMetric"
+    | "volumePerContainerOrPacket"
+    | "volumeUnit"
+    | "weightPerContainerOrPacket"
+    | "weightUnit"
+    | "isLoose"
+    | "name"
+    | "createdById"
+  > {
+  productCategoryIds?: string[];
 }
-export class UpdateProductDto extends PartialType(OmitType(CreateProductDto, ["createdBy", "createdById", "pantryItems", "productCategories"])) {}
-export class DeleteProductDto extends Product {}
 
-export interface IProduct extends Product {}
-export interface ICreateProductDto extends CreateProductDto {}
-export interface IReadProductDto extends ReadProductDto {}
-export interface IUpdateProductDto extends UpdateProductDto {}
-export interface IDeleteProductDto extends DeleteProductDto {}
+export interface IUpdateProductDto extends Partial<ICreateProductDto> {}

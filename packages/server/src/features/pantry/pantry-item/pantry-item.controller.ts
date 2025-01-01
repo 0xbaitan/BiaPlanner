@@ -1,11 +1,6 @@
 import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
-import {
-  CreatePantryItemDto,
-  IPantryItem,
-  IUser,
-  PantryItem,
-} from '@biaplanner/shared';
+import { CreatePantryItemDto, IPantryItem, IUser } from '@biaplanner/shared';
 import { plainToInstance } from 'class-transformer';
 import { User } from 'src/features/user-info/authentication/user.decorator';
 
@@ -16,26 +11,24 @@ export default class PantryItemController {
   ) {}
 
   @Get('/')
-  async getAllPantryItems(
-    @Query('userId') userId?: number,
+  async findAllPantryItems(
+    @User() { id: createdById }: IUser,
   ): Promise<IPantryItem[]> {
-    const pantryItems = await this.pantryItemService.readAllPantryItems(
-      Number(userId),
-    );
+    const pantryItems =
+      await this.pantryItemService.findAllPantryItems(createdById);
 
-    return plainToInstance(PantryItem, pantryItems);
+    return pantryItems;
   }
 
   @Post('/')
   async createPantryItem(
     @Body() dto: CreatePantryItemDto,
-    @User() user: IUser,
+    @User() { id: createdById }: IUser,
   ): Promise<IPantryItem> {
-    console.log('user', user);
-    const pantryItem = await this.pantryItemService.createPantryItem({
-      ...dto,
-      createdById: user.id,
-    });
-    return plainToInstance(PantryItem, pantryItem);
+    const pantryItem = await this.pantryItemService.createPantryItem(
+      dto,
+      createdById,
+    );
+    return pantryItem;
   }
 }

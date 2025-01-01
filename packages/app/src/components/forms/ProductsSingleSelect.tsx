@@ -12,7 +12,7 @@ export type ProductsSingleSelectProps = {
 export default function ProductsSingleSelect(props: ProductsSingleSelectProps) {
   const { initialValue, onChange, error } = props;
 
-  const { data: productOptions, isError } = useGetProductsQuery({});
+  const { data: productOptions, isError } = useGetProductsQuery();
 
   if (isError || !productOptions || productOptions.length === 0) return <div>Failed to fetch products</div>;
 

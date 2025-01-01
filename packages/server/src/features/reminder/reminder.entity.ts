@@ -1,36 +1,36 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
+  IPantryItem,
   IReminder,
-  IUser,
-  PantryItem,
   ReminderMedium,
   ReminderStatus,
-  User,
 } from '@biaplanner/shared';
 
 import { PantryItemEntity } from '../pantry/pantry-item/pantry-item.entity';
-import { UserEntity } from '../user-info/user/user.entity';
 
 @Entity('reminders')
 export class ReminderEntity implements IReminder {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id?: number;
+  id: string;
 
-  @Column({ type: 'number', nullable: false })
-  pantryItemId?: number;
+  @Column({ type: 'bigint', nullable: false })
+  pantryItemId: string;
 
   @ManyToOne(() => PantryItemEntity, (pantryItem) => pantryItem.reminders)
   @JoinColumn({ name: 'pantryItemId' })
-  pantryItem?: PantryItem;
+  pantryItem?: IPantryItem;
 
   @Column({ type: 'timestamp', nullable: false })
-  reminderDate?: string;
+  reminderDate: string;
 
   @Column({
     type: 'enum',
@@ -38,7 +38,7 @@ export class ReminderEntity implements IReminder {
     nullable: false,
     default: ReminderMedium.EMAIL,
   })
-  medium?: ReminderMedium;
+  medium: ReminderMedium;
 
   @Column({
     type: 'enum',
@@ -46,5 +46,23 @@ export class ReminderEntity implements IReminder {
     nullable: false,
     default: ReminderStatus.PENDING,
   })
-  status?: ReminderStatus;
+  status: ReminderStatus;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  createdAt: string;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  updatedAt: string;
+
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+  })
+  deletedAt?: string;
 }

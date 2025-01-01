@@ -4,7 +4,6 @@ import { ProductEntity } from './product.entity';
 import {
   CreateProductDto,
   IProduct,
-  ReadProductDto,
   UpdateProductDto,
 } from '@biaplanner/shared';
 import { Repository } from 'typeorm';
@@ -23,38 +22,54 @@ export class ProductService {
   async createProduct(dto: CreateProductDto): Promise<IProduct> {
     const { productCategoryIds, ...rest } = dto;
 
-    const product = await this.productRepository.save(dto);
+    const productCategories =
+      await this.productCategoryService.findProductCategoriesByIds(
+        productCategoryIds,
+      );
 
-    const updatedProduct = await this.readProductById(product.id);
-    return updatedProduct;
+    const product = this.productRepository.create({
+      ...rest,
+      productCategories,
+    });
+
+    return this.productRepository.save(product);
   }
 
-  async readProducts(dto: ReadProductDto): Promise<IProduct[]> {
+  async findAllProducts(): Promise<IProduct[]> {
     return this.productRepository.find({
-      where: {},
       relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
   }
 
-  async readProductById(id: number): Promise<IProduct> {
+  async readProductById(id: string): Promise<IProduct> {
     return this.productRepository.findOneOrFail({
       where: { id },
       relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
   }
 
-  async updateProduct(id: number, dto: UpdateProductDto): Promise<IProduct> {
-    console.log(JSON.stringify(dto, null, 2));
-    const cleanedDto = plainToInstance(UpdateProductDto, dto, {
-      excludeExtraneousValues: true,
+  async updateProduct(id: string, dto: UpdateProductDto): Promise<IProduct> {
+    const { productCategoryIds, ...rest } = dto;
+    let productCategories = [];
+    if (productCategoryIds && productCategoryIds.length > 0) {
+      productCategories =
+        await this.productCategoryService.findProductCategoriesByIds(
+          productCategoryIds,
+        );
+    }
+    const product = await this.productRepository.findOneOrFail({
+      where: { id },
+      relations: ['productCategories', 'pantryItems', 'createdBy'],
     });
 
-    const product = await this.productRepository.save({
-      id,
-      ...cleanedDto,
+    return this.productRepository.save({
+      ...product,
+      ...rest,
+      productCategories:
+        productCategories.length > 0
+          ? productCategories
+          : product.productCategories,
     });
-
-    return product;
   }
 
   async deleteProduct(id: number): Promise<void> {

@@ -1,38 +1,15 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { PartialType, PickType } from "@nestjs/swagger";
+import { IBaseEntity } from "../BaseEntity";
+import { IProduct } from "./Product";
 
-import { ApiProperty } from "@nestjs/swagger";
-import { PantryItem } from "./PantryItem";
-import { Product } from "./Product";
-
-export class Brand {
-  @IsNumber()
-  @IsOptional()
-  @Min(1, {
-    message: "ID must be a positive number",
-  })
-  @ApiProperty()
-  id?: number;
-
-  @ApiProperty()
-  @IsString()
+export interface IBrand extends IBaseEntity {
   name: string;
-
-  @IsOptional()
-  @ApiProperty()
-  @IsArray()
-  products?: Product[];
+  products?: IProduct[];
 }
 
-export class CreateBrandDto extends Brand {}
-export class ReadBrandDto {
+export interface ICreateBrandDto {
+  name: string;
+}
+
+export interface IUpdateBrandDto {
   name?: string;
 }
-export class UpdateBrandDto extends PartialType(CreateBrandDto) {}
-export class DeleteBrandDto extends PickType<Brand, keyof Brand>(Brand, ["id"]) {}
-
-export interface IBrand extends Brand {}
-export interface ICreateBrandDto extends CreateBrandDto {}
-export interface IReadBrandDto extends ReadBrandDto {}
-export interface IUpdateBrandDto extends UpdateBrandDto {}
-export interface IDeleteBrandDto extends DeleteBrandDto {}

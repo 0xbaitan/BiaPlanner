@@ -2,7 +2,7 @@ import ProductCategoriesTable from "../components/ProductCategoriesTable";
 import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 
 export default function AdminProductCategoriesPage() {
-  const { data: productCategories, isSuccess, isError } = useGetProductCategoriesQuery({});
+  const { data: productCategories, isSuccess, isError } = useGetProductCategoriesQuery();
 
   return (
     <div>

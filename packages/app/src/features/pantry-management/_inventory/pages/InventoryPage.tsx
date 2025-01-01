@@ -1,32 +1,11 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-import BasicLayout from "@/layouts/BasicLayout";
 import Button from "react-bootstrap/esm/Button";
-import { IPantryItem } from "@biaplanner/shared";
 import PantryItemsTable from "../components/PantryItemsTable";
-import Protected from "@/features/authentication/components/Protected";
-import useAuthenticationState from "@/features/authentication/hooks/useAuthenticationState";
-import { useLazyGetPantryItemsQuery } from "@/apis/PantryItemsApi";
+import { useGetPantryItemsQuery } from "@/apis/PantryItemsApi";
+import { useNavigate } from "react-router-dom";
 
 export default function InventoryPage() {
-  const authenticationState = useAuthenticationState();
-  const [getPantryItems, {}] = useLazyGetPantryItemsQuery();
-  const [pantryItems, setPantryItems] = useState<IPantryItem[]>([]);
-
-  useEffect(() => {
-    let userId: number | undefined;
-    if ((userId = authenticationState?.accessTokenObject?.id)) {
-      getPantryItems({ userId }).then(({ data }) => {
-        if (data) {
-          setPantryItems(data);
-        }
-      });
-    } else {
-      console.error("No user id found in access token object");
-    }
-  }, [authenticationState.accessTokenObject, getPantryItems]);
-
+  const { data: pantryItems, isError } = useGetPantryItemsQuery({});
+  if (isError || !pantryItems) return <div>Failed to fetch pantry items</div>;
   return (
     <>
       <h1>Inventory</h1>

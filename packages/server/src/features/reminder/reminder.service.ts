@@ -47,7 +47,7 @@ export class ReminderService {
   }
 
   async updateReminder(
-    id: number,
+    id: string,
     dto: IUpdateReminderDto,
   ): Promise<IReminder> {
     const reminder = await this.reminderRepository.findOne({

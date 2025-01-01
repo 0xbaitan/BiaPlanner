@@ -1,17 +1,14 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import {
-  IUser,
-  PantryItem,
-  PhoneEntry,
-  Product,
-  User,
-} from '@biaplanner/shared';
+import { IPantryItem, IPhoneEntry, IProduct, IUser } from '@biaplanner/shared';
 
 import { PantryItemEntity } from 'src/features/pantry/pantry-item/pantry-item.entity';
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
@@ -20,7 +17,7 @@ import { ProductEntity } from 'src/features/pantry/product/product.entity';
 @Entity('users')
 export class UserEntity implements IUser {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id?: number;
+  id: string;
 
   @Column()
   firstName: string;
@@ -44,17 +41,35 @@ export class UserEntity implements IUser {
     cascade: true,
   })
   @JoinColumn({ name: 'userId' })
-  phoneEntries?: PhoneEntry[];
+  phoneEntries?: IPhoneEntry[];
 
   @OneToMany(() => ProductEntity, (product) => product.createdBy, {
     cascade: true,
   })
   @JoinColumn({ name: 'createdById' })
-  products?: Product[];
+  products?: IProduct[];
 
   @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.createdBy, {
     cascade: true,
   })
   @JoinColumn({ name: 'createdById' })
-  pantryItems?: PantryItem[];
+  pantryItems?: IPantryItem[];
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  createdAt: string;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  updatedAt: string;
+
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+  })
+  deletedAt?: string;
 }

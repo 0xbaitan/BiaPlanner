@@ -1,7 +1,6 @@
 import BasicLayout from "@/layouts/BasicLayout";
 import Button from "react-bootstrap/esm/Button";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
-import PhoneDirectoryTable from "@/features/phone-directory/components/PhoneDirectoryTable";
 import Protected from "@/features/authentication/components/Protected";
 import SideNavigationBar from "../components/SideNavigationBar";
 import { useSendTestReminderMutation } from "@/apis/RemindersApi";

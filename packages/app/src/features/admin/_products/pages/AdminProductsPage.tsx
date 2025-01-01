@@ -4,7 +4,7 @@ import { useGetProductsQuery } from "@/apis/ProductsApi";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminProductsPage() {
-  const { data: products, isError, isSuccess } = useGetProductsQuery({});
+  const { data: products, isError, isSuccess } = useGetProductsQuery();
 
   return (
     <div>

@@ -3,12 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import {
-  DeleteRequestUserDto,
-  ICreateRequestUserDto,
-  IReadRequestUserDto,
-  IUpdateRequestUserDto,
+  CreateUserDto,
   IUser,
   IValidationError,
+  UpdateUserDto,
 } from '@biaplanner/shared';
 import CustomValidationError from 'src/errors/CustomValidationError';
 
@@ -52,6 +50,23 @@ export class UserService {
     return;
   }
 
+  public async verifyUserExists(login: string): Promise<IUser> {
+    const user = await this.userRepository.findOne({
+      where: [{ username: login }, { email: login }],
+    });
+
+    if (!user) {
+      throw new CustomValidationError({
+        property: 'login',
+        constraints: {
+          userExists: 'User does not exist',
+        },
+      });
+    }
+
+    return user;
+  }
+
   public async getPasswordForUser(username: string): Promise<string> {
     const user = await this.userRepository.findOneOrFail({
       where: [{ username }],
@@ -59,32 +74,29 @@ export class UserService {
     return user.password;
   }
 
-  public async readAllUsers(): Promise<IUser[]> {
+  public async findAllUsers(): Promise<IUser[]> {
     const users = await this.userRepository.find({
       relations: ['phoneEntries'],
     });
     return users;
   }
 
-  public async readUser(dto: IReadRequestUserDto): Promise<IUser> {
+  public async findUser(id: string): Promise<IUser> {
     const user = await this.userRepository.findOne({
-      where: [{ id: dto.id }, { username: dto.username }, { email: dto.email }],
+      where: { id },
       relations: ['phoneEntries'],
     });
     return user;
   }
 
-  public async createUser(dto: ICreateRequestUserDto): Promise<IUser> {
+  public async createUser(dto: CreateUserDto): Promise<IUser> {
     await this.validateUniqueUserFields(dto.username, dto.email);
     const newUser = this.userRepository.create(dto);
     return this.userRepository.save(newUser);
   }
 
-  public async updateUser(dto: IUpdateRequestUserDto): Promise<IUser> {
-    const existingUser = this.readUser({
-      id: dto.id,
-    });
-
+  public async updateUser(id: string, dto: UpdateUserDto): Promise<IUser> {
+    const existingUser = await this.findUser(id);
     const updateUser = this.userRepository.save({
       ...existingUser,
       ...dto,
@@ -93,11 +105,9 @@ export class UserService {
     return updateUser;
   }
 
-  public async deleteUser(dto: DeleteRequestUserDto): Promise<IUser> {
-    const user = await this.userRepository.findOneOrFail({
-      where: [{ id: dto.id }],
-    });
-
-    return await this.userRepository.remove(user);
+  public async deleteUser(id: string): Promise<IUser> {
+    const user = await this.findUser(id);
+    await this.userRepository.softDelete(id);
+    return user;
   }
 }

@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { ICreateRequestUserDto, IValidationError } from "@biaplanner/shared";
+import { ICreateUserDto, IValidationError } from "@biaplanner/shared";
 import { ZodType, z } from "zod";
 import { useCallback, useMemo } from "react";
 
@@ -10,7 +10,7 @@ import { useRegisterUserMutation } from "@/apis/AuthenticationApi";
 import useValidationErrors from "@/features/authentication/hooks/useValidationErrors";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type SignUpFormData = Omit<ICreateRequestUserDto, "id"> & {
+export type SignUpFormData = Omit<ICreateUserDto, "id"> & {
   confirmPassword: string;
 };
 
@@ -96,11 +96,14 @@ export default function SignUpForm(props: SignUpFormProps) {
     register,
   } = methods;
 
-  const onSubmit = useCallback(async (values: SignUpFormData) => {
-    const { confirmPassword, ...user } = values;
-    const registeredUser = await registerUser(user).unwrap();
-    console.log(registeredUser);
-  }, []);
+  const onSubmit = useCallback(
+    async (values: SignUpFormData) => {
+      const { confirmPassword, ...user } = values;
+      const registeredUser = await registerUser(user).unwrap();
+      console.log(registeredUser);
+    },
+    [registerUser]
+  );
 
   return (
     <FormProvider {...methods}>

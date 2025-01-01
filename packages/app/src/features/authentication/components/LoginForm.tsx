@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { IAccessJWTObject, ILoginRequestUserDto, IRefreshJWTObject } from "@biaplanner/shared";
+import { ILoginUserDto, IRefreshJWTObject } from "@biaplanner/shared";
 import { ZodType, z } from "zod";
 
 import Button from "react-bootstrap/esm/Button";
@@ -12,7 +12,7 @@ import { useSetAcessTokenObject } from "../hooks/useAuthenticationState";
 import useValidationErrors from "@/features/authentication/hooks/useValidationErrors";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type LoginFormData = Omit<ILoginRequestUserDto, "id">;
+export type LoginFormData = Omit<ILoginUserDto, "id">;
 
 export type LoginFormProps = {
   initialValues?: Partial<LoginFormData>;

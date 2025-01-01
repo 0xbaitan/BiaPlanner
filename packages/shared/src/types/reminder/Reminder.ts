@@ -1,6 +1,5 @@
-import { PantryItem } from "../pantry";
-import { PickType } from "@nestjs/mapped-types";
-import { User } from "../User";
+import { IBaseEntity } from "../BaseEntity";
+import { IPantryItem } from "../pantry";
 
 export enum ReminderMedium {
   SMS = "SMS",
@@ -12,22 +11,24 @@ export enum ReminderStatus {
   PENDING = "PENDING",
   CANCELLED = "CANCELLED",
 }
-export class Reminder {
-  id?: number;
-  pantryItemId?: number;
-  pantryItem?: PantryItem;
+
+export interface IReminder extends IBaseEntity {
+  pantryItemId: string;
+  pantryItem?: IPantryItem;
+  reminderDate: string;
+  medium: ReminderMedium;
+  status: ReminderStatus;
+}
+
+export interface ICreateReminderDto {
+  pantryItemId: string;
+  reminderDate: string;
+  medium: ReminderMedium;
+  status: ReminderStatus;
+}
+
+export interface IUpdateReminderDto {
   reminderDate?: string;
   medium?: ReminderMedium;
   status?: ReminderStatus;
 }
-
-export class CreateReminderDto extends PickType(Reminder, ["pantryItemId", "reminderDate", "medium", "status"]) {}
-
-export class UpdateReminderDto extends PickType(Reminder, ["reminderDate", "medium", "status"]) {}
-
-export class DeleteReminderDto extends PickType(Reminder, ["id"]) {}
-
-export interface IReminder extends Reminder {}
-export interface ICreateReminderDto extends CreateReminderDto {}
-export interface IUpdateReminderDto extends UpdateReminderDto {}
-export interface IDeleteReminderDto extends DeleteReminderDto {}

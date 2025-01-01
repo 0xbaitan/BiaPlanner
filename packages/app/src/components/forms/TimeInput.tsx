@@ -1,7 +1,7 @@
 import MagnitudeAndUnitInput, { CustomisedMagnitudeAndUnitProps } from "./MagnitudeAndUnitInput";
 
 import { Time } from "@biaplanner/shared/build/types/units/Time";
-import normaliseEnumKey from "@/features/phone-directory/util/normaliseEnumKey";
+import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useMemo } from "react";
 
 export type TimeInputProps = CustomisedMagnitudeAndUnitProps<typeof Time>;

@@ -1,5 +1,5 @@
 interface ICommonJWTObject {
-  id?: number;
+  id?: string;
   username: string;
   expiryTime?: string;
 }
@@ -13,7 +13,7 @@ export interface IRefreshJWTObject extends ICommonJWTObject {
 }
 
 export interface ITokenPayload {
-  sub: number;
+  sub: string;
   username: string;
   accessToken?: string;
 }

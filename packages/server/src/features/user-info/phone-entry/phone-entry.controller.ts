@@ -1,4 +1,4 @@
-import { PhoneEntry } from '@biaplanner/shared';
+import { IPhoneEntry } from '@biaplanner/shared';
 import {
   Body,
   Controller,
@@ -18,19 +18,19 @@ export class PhoneEntryController {
   ) {}
 
   @Get()
-  public async getPhoneEntries(): Promise<PhoneEntry[]> {
-    return this.phoneEntryService.getAllPhoneEntries();
+  public async findPhoneEntries(): Promise<IPhoneEntry[]> {
+    return this.phoneEntryService.findAllPhoneEntries();
   }
 
   @Post()
-  public async addPhoneEntry(
-    @Body() phoneEntry: PhoneEntry,
-  ): Promise<PhoneEntry> {
-    return this.phoneEntryService.addPhoneEntry(phoneEntry);
+  public async createPhoneEntry(
+    @Body() phoneEntry: IPhoneEntry,
+  ): Promise<IPhoneEntry> {
+    return this.phoneEntryService.createPhoneEntry(phoneEntry);
   }
 
   @Delete('/:id')
-  public async deletePhoneEntry(@Param('id') id: number): Promise<void> {
+  public async deletePhoneEntry(@Param('id') id: string): Promise<void> {
     return this.phoneEntryService.deletePhoneEntry(id);
   }
 }

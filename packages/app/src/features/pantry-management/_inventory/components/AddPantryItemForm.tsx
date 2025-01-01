@@ -37,6 +37,12 @@ export const AddPantryItemFormValidationSchema: ZodType<AddPantryItemFormData> =
     .optional(),
   millisecondsToExpiryAfterOpening: z.number().optional(),
   quantity: z.number().min(1, "Quantity must be at least 1"),
+  createdAt: z.string().datetime({
+    message: "Created at must be a valid date",
+  }),
+  updatedAt: z.string().datetime({
+    message: "Updated at must be a valid date",
+  }),
 });
 
 export default function AddPantryItemForm() {}

@@ -6,19 +6,10 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  IUser,
-  UpdateRequestUserDto,
-  CreateRequestUserDto,
-  ISanitisedUser,
-  SanitisedUser,
-} from '@biaplanner/shared';
-import { LocalGuard } from '../authentication/local.guard';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { CreateUserDto, IUser, UpdateUserDto } from '@biaplanner/shared';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -26,26 +17,29 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAll(): Promise<ISanitisedUser[]> {
-    const users = await this.userService.readAllUsers();
-    return plainToInstance(SanitisedUser, users);
+  async findAll(): Promise<IUser[]> {
+    const users = await this.userService.findAllUsers();
+    return users;
   }
 
   @Get('/:id')
-  async readUser(@Param('id') id: number): Promise<ISanitisedUser> {
-    const user = await this.userService.readUser({ id });
-    return plainToInstance(SanitisedUser, user);
+  async readUser(@Param('id') id: string): Promise<IUser> {
+    const user = await this.userService.findUser(id);
+    return user;
   }
 
   @Post()
-  async createUser(@Body() dto: CreateRequestUserDto): Promise<ISanitisedUser> {
+  async createUser(@Body() dto: CreateUserDto): Promise<IUser> {
     const user = await this.userService.createUser(dto);
-    return plainToInstance(SanitisedUser, user);
+    return user;
   }
 
-  @Put()
-  async updateUser(@Body() dto: UpdateRequestUserDto): Promise<ISanitisedUser> {
-    const user = await this.userService.readUser({ id: dto.id });
-    return plainToInstance(SanitisedUser, user);
+  @Put('/:id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<IUser> {
+    const user = await this.userService.updateUser(id, dto);
+    return user;
   }
 }

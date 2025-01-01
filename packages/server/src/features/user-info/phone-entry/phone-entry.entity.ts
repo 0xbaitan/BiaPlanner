@@ -1,18 +1,22 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { IPhoneEntry, IUser } from '@biaplanner/shared';
 
-import { PhoneEntry } from '@biaplanner/shared';
 import { UserEntity } from '../user/user.entity';
 
 @Entity('phone-entries')
-export class PhoneEntryEntity implements PhoneEntry {
+export class PhoneEntryEntity implements IPhoneEntry {
+  userId?: string;
+
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: string;
 
   @Column()
   countryCode: string;
@@ -36,8 +40,23 @@ export class PhoneEntryEntity implements PhoneEntry {
   isLandline?: boolean;
 
   @ManyToOne(() => UserEntity, (user) => user.phoneEntries)
-  user?: UserEntity;
+  user?: IUser;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  @CreateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  createdAt: string;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    nullable: false,
+  })
+  updatedAt: string;
+
+  @DeleteDateColumn({
+    type: 'timestamp',
+    nullable: true,
+  })
+  deletedAt?: string;
 }

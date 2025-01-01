@@ -2,12 +2,10 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 
 import authenticationReducer from "@/features/authentication/reducers/AuthenticationReducer";
-import phoneDirectoryReducer from "@/features/phone-directory/reducers/PhoneDirectoryReducer";
 import { rootApi } from "@/apis";
 
 const store = configureStore({
   reducer: {
-    phoneDirectory: phoneDirectoryReducer.reducer,
     authentication: authenticationReducer.reducer,
     [rootApi.reducerPath]: rootApi.reducer,
   },

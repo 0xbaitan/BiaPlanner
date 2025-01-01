@@ -2,10 +2,9 @@ import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { plainToClass, plainToInstance } from 'class-transformer';
 
 import {
-  CreateProductDto,
   IProduct,
-  Product,
-  ReadProductDto,
+  CreateProductDto,
+  IUpdateProductDto,
   UpdateProductDto,
 } from '@biaplanner/shared';
 import { ProductService } from './product.service';
@@ -15,29 +14,29 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get('/')
-  async getAllProducts(@Query() dto: ReadProductDto): Promise<IProduct[]> {
-    const products = await this.productService.readProducts(dto);
-    return plainToInstance(Product, products);
+  async findAllProducts(): Promise<IProduct[]> {
+    const products = await this.productService.findAllProducts();
+    return products;
   }
 
   @Get('/:id')
-  async getProductById(@Param('id') id: number): Promise<IProduct> {
+  async getProductById(@Param('id') id: string): Promise<IProduct> {
     const product = await this.productService.readProductById(id);
-    return plainToInstance(Product, product);
+    return product;
   }
 
   @Post('/')
   async createProduct(@Body() dto: CreateProductDto): Promise<IProduct> {
     const product = await this.productService.createProduct(dto);
-    return plainToInstance(Product, product);
+    return product;
   }
 
   @Put('/:id')
   async updateProduct(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() dto: UpdateProductDto,
   ): Promise<IProduct> {
     const product = await this.productService.updateProduct(id, dto);
-    return plainToInstance(Product, product);
+    return product;
   }
 }

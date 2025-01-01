@@ -2,14 +2,11 @@ import { Controller, Req, Res, Post, UseGuards, Body } from '@nestjs/common';
 import { AppService } from './app.service';
 import {
   AuthenticationErrorCodes,
-  CreateRequestUserDto,
+  CreateUserDto,
   IAccessJWTObject,
   IRefreshJWTObject,
-  ISanitisedUser,
   isDevelopment,
   IUser,
-  LoginRequestUserDto,
-  SanitisedUser,
 } from '@biaplanner/shared';
 import { LocalGuard } from './features/user-info/authentication/local.guard';
 import { AuthenticationService } from './features/user-info/authentication/authentication.service';
@@ -32,7 +29,6 @@ export class AppController {
   @Post('/auth/login')
   async loginUser(
     @Req() req: any,
-    @Body() _dto: LoginRequestUserDto,
     @Res({ passthrough: true }) res: Response,
     @User() user: IUser,
   ): Promise<{
@@ -60,11 +56,9 @@ export class AppController {
   }
   @EvadeJWTGuard()
   @Post('/auth/register')
-  async registerUser(
-    @Body() dto: CreateRequestUserDto,
-  ): Promise<ISanitisedUser> {
+  async registerUser(@Body() dto: CreateUserDto): Promise<IUser> {
     const user = await this.authService.registerUser(dto);
-    return plainToInstance(SanitisedUser, user);
+    return user;
   }
 
   @EvadeJWTGuard()
