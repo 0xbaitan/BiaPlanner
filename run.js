@@ -14,7 +14,7 @@ function succeedWithMessage(message) {
   process.exit(0);
 }
 function generateMigration(migrationName, inDocker = false) {
-  const migrationPath = path.join("src", "db", "migrations", migrationName);
+  const migrationPath = path.posix.join("src", "db", "migrations", migrationName);
   const command = `${inDocker ? "docker exec server" : ""} pnpm --filter server run migration:generate ${migrationPath}`;
   const result = shell.exec(command);
   if (result.code !== 0) {
@@ -140,6 +140,15 @@ function startProject(project) {
     result = shell.exec("pnpm --filter app run start");
   }
 
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
+}
+
+
+function dropSchema() {
+  const result = shell.exec("docker exec server pnpm --filter server run schema:drop");
   if (result.code !== 0) {
     exitWithError(result.stderr);
   }
@@ -349,6 +358,14 @@ async function main() {
       (_yargs) => {},
       (_argv) => {
         buildSharedForDocker();
+      }
+    )
+    .command(
+      "schema:drop",
+      "Drop the schema",
+      (_yargs) => {},
+      (_argv) => {
+        dropSchema();
       }
     )
     .help()

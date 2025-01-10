@@ -13,6 +13,8 @@ services:
       - ./packages/shared/:/usr/src/packages/shared/
       - ./run.js:/usr/src/run.js
       - /usr/src/node_modules
+      - /usr/src/packages/app/node_modules
+      - /usr/src/packages/shared/node_modules
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
@@ -40,8 +42,10 @@ services:
       - ./packages/shared/:/usr/src/packages/shared/
       - ./run.js:/usr/src/run.js
       - /usr/src/node_modules
+      - /usr/src/packages/server/node_modules
+      - /usr/src/packages/shared/node_modules
     env_file:
-      - .env.prod
+      - .env.dev
     environment:
       - CHOKIDAR_USEPOLLING=true
     stdin_open: true
