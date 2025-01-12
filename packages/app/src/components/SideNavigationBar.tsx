@@ -38,7 +38,9 @@ export default function SideNavigationBar() {
         </SubMenu>
         <SubMenu title="Meal Planning" label="Meal Planning" className="+primary">
           <MenuItem>Meal Plans</MenuItem>
-          <MenuItem>Recipes</MenuItem>
+          <MenuItem>
+            <Link to={"/meal-planning/recipes"}>Recipes</Link>
+          </MenuItem>
         </SubMenu>
         <SubMenu title="Admin" label="Admin" className="+primary">
           <MenuItem>
