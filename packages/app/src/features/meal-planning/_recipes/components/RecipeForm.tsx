@@ -3,6 +3,7 @@ import { ICreateRecipeDto, IRecipe, IUpdateRecipeDto } from "@biaplanner/shared"
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import Form from "react-bootstrap/Form";
+import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
 
 export type RecipeFormValues = ICreateRecipeDto | IUpdateRecipeDto;
@@ -16,6 +17,7 @@ export default function RecipeForm(props: RecipeFormProps) {
   return (
     <div>
       <h1>Recipe Form</h1>
+      <TextInput label="Recipe Title" defaultValue={initialValue?.title} onChange={(e) => console.log(e.target.value)} />
       <DifficultyLevelSelect onChange={(value) => console.log(value)} />
       <CuisineSelect onChange={(value) => console.log(value)} />
       <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />

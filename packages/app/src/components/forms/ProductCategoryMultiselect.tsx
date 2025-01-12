@@ -1,11 +1,11 @@
-import MultiselectInput, { MultiselectInputProps } from "./MultiselectInput";
+import SelectInput, { SelectInputProps } from "./SelectInput";
 
 import Form from "react-bootstrap/Form";
 import { IProductCategory } from "@biaplanner/shared";
 import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 import { useState } from "react";
 
-export type ProductCategoryMultiselectProps = Omit<MultiselectInputProps<IProductCategory>, "list" | "idSelector" | "nameSelector" | "selectedValues" | "onSelect"> & {
+export type ProductCategoryMultiselectProps = Omit<SelectInputProps<IProductCategory>, "list" | "idSelector" | "nameSelector" | "selectedValues" | "onSelect"> & {
   initialValues?: IProductCategory[];
   onSelectionChange: (productCategories: IProductCategory[]) => void | Promise<void>;
   error?: string;
@@ -22,13 +22,13 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
   return (
     <Form.Group>
       <Form.Label>Product Categories</Form.Label>
-      <MultiselectInput<IProductCategory>
+      <SelectInput<IProductCategory>
         {...props}
         list={productCategories}
         idSelector={(productCategory) => Number(productCategory.id)}
         nameSelector={(productCategory) => productCategory.name}
         selectedValues={selectedProductCategories}
-        onChange={(selectedList) => {
+        onChange={(selectedList: IProductCategory[]) => {
           setSelectedProductCategories(selectedList);
           onSelectionChange(selectedList);
         }}
