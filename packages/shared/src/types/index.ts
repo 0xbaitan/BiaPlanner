@@ -6,3 +6,4 @@ export * from "./units";
 export * from "./pantry";
 export * from "./reminder";
 export * from "./BaseEntity";
+export * from "./meal-plans";
