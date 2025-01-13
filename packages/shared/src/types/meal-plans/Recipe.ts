@@ -8,7 +8,7 @@ import { IRecipeTag } from "./RecipeTag";
 export interface IRecipe extends IBaseEntity {
   title: string;
   description?: string;
-  instructions: string[];
+  instructions: string;
   ingredients: IRecipeIngredient[];
   difficultyLevel: DifficultyLevels;
   cuisineId: string;
@@ -17,7 +17,7 @@ export interface IRecipe extends IBaseEntity {
   prepTimeUnit: Time;
   cookTimeMagnitude: number;
   cookTimeUnit: Time;
-  defaultNumberOfServings: [number, number | null];
+  defaultNumberOfServings?: [number, number];
 
   notes?: string;
   source?: string;
@@ -27,6 +27,7 @@ export interface IRecipe extends IBaseEntity {
 export interface ICreateRecipeDto extends Omit<IRecipe, "id" | "createdAt" | "updatedAt" | "deletedAt" | "ingredients" | "tags"> {
   ingredientIds: string[];
   tagIds: string[];
+  newTags?: Pick<IRecipeTag, "name">[];
 }
 
 export interface IUpdateRecipeDto extends Partial<ICreateRecipeDto> {}
@@ -34,9 +35,10 @@ export interface IUpdateRecipeDto extends Partial<ICreateRecipeDto> {}
 export class CreateRecipeDto implements ICreateRecipeDto {
   ingredientIds: string[];
   tagIds: string[];
+
   title: string;
   description?: string | undefined;
-  instructions: string[];
+  instructions: string;
   difficultyLevel: DifficultyLevels;
   cuisineId: string;
   cuisine: ICuisine;
@@ -44,7 +46,7 @@ export class CreateRecipeDto implements ICreateRecipeDto {
   prepTimeUnit: Time;
   cookTimeMagnitude: number;
   cookTimeUnit: Time;
-  defaultNumberOfServings: [number, number | null];
+  defaultNumberOfServings?: [number, number];
   notes?: string | undefined;
   source?: string | undefined;
 }
@@ -52,7 +54,7 @@ export class CreateRecipeDto implements ICreateRecipeDto {
 export class UpdateRecipeDto implements IUpdateRecipeDto {
   title?: string | undefined;
   description?: string | undefined;
-  instructions?: string[] | undefined;
+  instructions?: string | undefined;
   difficultyLevel?: DifficultyLevels | undefined;
   cuisineId?: string | undefined;
   cuisine?: ICuisine | undefined;
@@ -60,7 +62,7 @@ export class UpdateRecipeDto implements IUpdateRecipeDto {
   prepTimeUnit?: Time | undefined;
   cookTimeMagnitude?: number | undefined;
   cookTimeUnit?: Time | undefined;
-  defaultNumberOfServings?: [number, number | null] | undefined;
+  defaultNumberOfServings?: [number, number] | undefined;
   notes?: string | undefined;
   source?: string | undefined;
 }

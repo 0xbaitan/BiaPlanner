@@ -114,15 +114,15 @@ export class RecipeEntity implements IRecipe {
   cookTimeUnit: Time;
   @Column({
     type: 'simple-array',
-    nullable: false,
+    nullable: true,
   })
   defaultNumberOfServings: [number, number];
 
   @Column({
-    type: 'simple-array',
+    type: 'text',
     nullable: false,
   })
-  instructions: string[];
+  instructions: string;
 
   @Column({
     type: 'text',

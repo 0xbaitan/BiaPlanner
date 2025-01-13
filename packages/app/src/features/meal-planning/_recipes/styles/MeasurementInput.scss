@@ -1,0 +1,19 @@
+.bp-measurement-input {
+  &__grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.bp-option {
+  display: flex;
+  &:hover {
+    background-color: lightgray;
+  }
+}

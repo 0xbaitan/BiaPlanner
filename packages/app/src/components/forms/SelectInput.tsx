@@ -1,17 +1,26 @@
-import Select, { SelectProps } from "react-dropdown-select";
+import Select, { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
 import { useCallback, useMemo, useState } from "react";
 
-type Option = { id: number; name: string };
+export type Option = { id: string; name: string };
 
-export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange"> & {
+export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer"> & {
   list: T[];
-  idSelector: (item: T) => number;
+  idSelector: (item: T) => string;
   nameSelector: (item: T) => string;
   selectedValues?: T[];
   onChange?: (selectedList: T[], selectedOptions: Option[]) => void | Promise<void>;
+  dropdownRenderer?: (rendererProps: {
+    props: SelectProps<Option>;
+    state: SelectState<Option>;
+    methods: SelectMethods<Option>;
+
+    additionalMethods: {
+      getValueCounterPart: (option: Option) => T;
+    };
+  }) => JSX.Element;
 };
 export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
-  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, onChange: onCustomChange, ...rest } = props;
+  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, onChange: onCustomChange, dropdownRenderer: customDropdownRender, ...rest } = props;
   const options: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
@@ -20,7 +29,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
 
   const getValueCounterPart = useCallback(
     (option: Option) => {
-      return list.find((item) => idSelector(item) === option.id);
+      return list.find((item) => idSelector(item) === option.id)!;
     },
     [list, idSelector]
   );
@@ -34,5 +43,12 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     [getValueCounterPart, onCustomChange]
   );
 
-  return <Select {...rest} options={options} values={selectedOptions} onChange={onChange} labelField="name" valueField="id" />;
+  const dropdownRenderer = useCallback(
+    ({ props, state, methods }: { props: SelectProps<Option>; state: SelectState<Option>; methods: SelectMethods<Option> }) => {
+      return customDropdownRender?.({ props, state, methods, additionalMethods: { getValueCounterPart } })!;
+    },
+    [customDropdownRender, getValueCounterPart]
+  );
+
+  return <Select {...rest} {...(customDropdownRender ? { dropdownRenderer } : {})} options={options} values={selectedOptions} onChange={onChange} labelField="name" valueField="id" />;
 }

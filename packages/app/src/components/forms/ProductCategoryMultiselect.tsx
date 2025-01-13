@@ -9,10 +9,11 @@ export type ProductCategoryMultiselectProps = Omit<SelectInputProps<IProductCate
   initialValues?: IProductCategory[];
   onSelectionChange: (productCategories: IProductCategory[]) => void | Promise<void>;
   error?: string;
+  label?: string;
 };
 
 export default function ProductCategoryMultiselect(props: ProductCategoryMultiselectProps) {
-  const { initialValues, onSelectionChange, error } = props;
+  const { initialValues, onSelectionChange, error, label } = props;
   const { data: productCategories, isError } = useGetProductCategoriesQuery();
 
   const [selectedProductCategories, setSelectedProductCategories] = useState<IProductCategory[]>(() => (initialValues ? [...initialValues] : []));
@@ -21,11 +22,12 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
 
   return (
     <Form.Group>
-      <Form.Label>Product Categories</Form.Label>
+      <Form.Label>{label ?? "Product Categories"}</Form.Label>
       <SelectInput<IProductCategory>
         {...props}
+        multi
         list={productCategories}
-        idSelector={(productCategory) => Number(productCategory.id)}
+        idSelector={(productCategory) => productCategory.id}
         nameSelector={(productCategory) => productCategory.name}
         selectedValues={selectedProductCategories}
         onChange={(selectedList: IProductCategory[]) => {
