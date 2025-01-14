@@ -6,11 +6,13 @@ import AddProductPage from "./features/admin/_products/pages/AddProductPage";
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
+import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
 import HomePage from "@/pages/HomePage";
 import InventoryPage from "./features/pantry-management/_inventory/pages/InventoryPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MealPlanningPagesContainer from "./features/meal-planning/components/MealPlanningPagesContainer";
+import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
 import RecipesPage from "./features/meal-planning/_recipes/pages/RecipesPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
@@ -47,6 +49,8 @@ export default function Routes() {
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>
           <Route path="recipes" element={<RecipesPage />} />
           <Route path="recipes/create" element={<CreateRecipePage />} />
+          <Route path="meal-plans" element={<MealPlansPage />} />
+          <Route path="meal-plans/create" element={<CreateMealPlanPage />} />
         </Route>
       </RoutingTable>
     </Router>
