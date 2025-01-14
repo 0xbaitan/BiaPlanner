@@ -1,5 +1,5 @@
-import { CreateRecipeDto, IRecipe, IRecipeIngredient, UpdateRecipeDto } from "@biaplanner/shared";
 import { DeepPartial, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
 import CuisineSelect from "./CuisineSelect";
@@ -10,7 +10,7 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
 
-export type RecipeFormValues = (UpdateRecipeDto | CreateRecipeDto) & { ingredients: DeepPartial<IRecipeIngredient>[] };
+export type RecipeFormValues = (IUpdateRecipeDto | ICreateRecipeDto) & { ingredients: DeepPartial<IRecipeIngredient>[] };
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
@@ -70,8 +70,10 @@ export default function RecipeForm(props: RecipeFormProps) {
           initialValues={initialValue?.tags}
           onChange={(tags) => {
             setValue(
-              "tagIds",
-              tags.map((tag) => tag.id)
+              "tags",
+              tags.map((tag) => ({
+                id: tag.id,
+              }))
             );
           }}
         />

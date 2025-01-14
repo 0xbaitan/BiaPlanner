@@ -65,6 +65,11 @@ export class RecipeEntity implements IRecipe {
   @OneToMany(
     () => RecipeIngredientEntity,
     (recipeIngredient) => recipeIngredient.recipe,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+      eager: true,
+    },
   )
   ingredients: IRecipeIngredient[];
 
@@ -81,7 +86,11 @@ export class RecipeEntity implements IRecipe {
   })
   cuisineId: string;
 
-  @ManyToOne(() => CuisineEntity, (cuisine) => cuisine.recipes)
+  @ManyToOne(() => CuisineEntity, (cuisine) => cuisine.recipes, {
+    eager: true,
+    cascade: true,
+    onDelete: 'NO ACTION',
+  })
   @JoinColumn({
     name: 'cuisineId',
   })
@@ -136,7 +145,11 @@ export class RecipeEntity implements IRecipe {
   })
   source?: string;
 
-  @ManyToMany(() => RecipeTagEntity, (tag) => tag.recipes)
+  @ManyToMany(() => RecipeTagEntity, (tag) => tag.recipes, {
+    cascade: true,
+    onDelete: 'NO ACTION',
+    eager: true,
+  })
   @JoinTable({
     name: 'recipes_recipe_tags',
     joinColumn: { name: 'recipeId', referencedColumnName: 'id' },

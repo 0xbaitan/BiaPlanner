@@ -48,7 +48,10 @@ export class RecipeIngredientEntity implements IRecipeIngredient {
   })
   deletedAt?: string;
 
-  @ManyToMany(() => ProductCategoryEntity)
+  @ManyToMany(() => ProductCategoryEntity, {
+    cascade: true,
+    eager: true,
+  })
   @JoinTable({
     name: 'recipe_ingredients_product_categories',
     joinColumn: {

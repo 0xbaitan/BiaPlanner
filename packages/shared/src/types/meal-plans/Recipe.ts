@@ -26,15 +26,14 @@ export interface IRecipe extends IBaseEntity {
 
 export interface ICreateRecipeDto extends Omit<IRecipe, "id" | "createdAt" | "updatedAt" | "deletedAt" | "ingredients" | "tags"> {
   ingredientIds: string[];
-  tagIds: string[];
   newTags?: Pick<IRecipeTag, "name">[];
+  tags?: Pick<IRecipeTag, "id">[];
 }
 
 export interface IUpdateRecipeDto extends Partial<ICreateRecipeDto> {}
 
 export class CreateRecipeDto implements ICreateRecipeDto {
   ingredientIds: string[];
-  tagIds: string[];
 
   title: string;
   description?: string | undefined;
