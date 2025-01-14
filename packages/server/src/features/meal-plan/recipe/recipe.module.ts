@@ -1,3 +1,5 @@
+import { ConcretRecipeModule } from './concrete-recipe/concrete-recipe.module';
+import { ConcreteIngredientModule } from './concrete-ingredient/concrete-ingredient.module';
 import { Module } from '@nestjs/common';
 import { RecipeController } from './recipe.controller';
 import { RecipeEntity } from './recipe.entity';
@@ -11,6 +13,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forFeature([RecipeEntity]),
     RecipeTagModule,
     RecipeIngredientModule,
+    ConcreteIngredientModule,
+    ConcretRecipeModule,
   ],
   controllers: [RecipeController],
   providers: [RecipeService],

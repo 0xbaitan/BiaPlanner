@@ -1,11 +1,12 @@
 import { IBaseEntity } from "../BaseEntity";
+import { IConcreteRecipe } from "./ConcreteRecipe";
 import { IPantryItem } from "../pantry";
 import { IRecipe } from "./Recipe";
 import { IRecipeIngredient } from "./RecipeIngredient";
 
 export interface IConcreteIngredient extends IBaseEntity {
-  recipeId: string;
-  recipe: IRecipe;
+  concreteRecipeId: string;
+  concreteRecipe: IConcreteRecipe;
   ingredientId: string;
   ingredient: IRecipeIngredient;
   pantryId: IPantryItem;
