@@ -2,11 +2,13 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 
 import authenticationReducer from "@/features/authentication/reducers/AuthenticationReducer";
+import mealPlanningReducer from "@/features/meal-planning/reducers";
 import { rootApi } from "@/apis";
 
 const store = configureStore({
   reducer: {
     authentication: authenticationReducer.reducer,
+    mealPlanning: mealPlanningReducer,
     [rootApi.reducerPath]: rootApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(rootApi.middleware),

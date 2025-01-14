@@ -13,7 +13,7 @@ export class RecipeService {
 
   async findAll(): Promise<IRecipe[]> {
     return this.recipeRepository.find({
-      relations: ['cuisine', 'recipeIngredients'],
+      relations: ['cuisine', 'ingredients', 'tags'],
     });
   }
 
