@@ -8,6 +8,7 @@ export * from "./Currencies";
 export * from "./Time";
 export * from "./Approximates";
 export * from "./DifficultyLevels";
+export * from "./MealTypes";
 
 export type CookingMeasurementUnit = Weights | Volumes | Approximates;
 
