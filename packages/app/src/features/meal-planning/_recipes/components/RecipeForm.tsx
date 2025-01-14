@@ -1,5 +1,5 @@
+import { CreateRecipeDto, IRecipe, IRecipeIngredient, UpdateRecipeDto } from "@biaplanner/shared";
 import { DeepPartial, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
-import { IRecipe, IRecipeIngredient } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
 import CuisineSelect from "./CuisineSelect";
@@ -10,14 +10,14 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
 
-export type RecipeFormValues = DeepPartial<IRecipe>;
+export type RecipeFormValues = (UpdateRecipeDto | CreateRecipeDto) & { ingredients: DeepPartial<IRecipeIngredient>[] };
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
   onSubmit: (values: RecipeFormValues) => void;
 };
 export default function RecipeForm(props: RecipeFormProps) {
-  const { initialValue } = props;
+  const { initialValue, onSubmit } = props;
   const formMethods = useForm<RecipeFormValues>({
     mode: "onSubmit",
     shouldUnregister: false,
@@ -35,36 +35,89 @@ export default function RecipeForm(props: RecipeFormProps) {
     },
   });
 
-  const { handleSubmit } = formMethods;
+  const { handleSubmit, setValue, getValues } = formMethods;
 
   return (
     <FormProvider {...formMethods}>
-      <Form onSubmit={handleSubmit((values) => console.log(values))}>
+      <Form
+        onSubmit={handleSubmit(() => {
+          const dto = getValues();
+          onSubmit(dto);
+        })}
+      >
         <h1>Recipe Form</h1>
-        <TextInput label="Recipe Title" defaultValue={initialValue?.title} onChange={(e) => console.log(e.target.value)} />
-        <DifficultyLevelSelect onChange={(value) => console.log(value)} />
-        <CuisineSelect onChange={(value) => console.log(value)} />
+        <TextInput
+          label="Recipe Title"
+          defaultValue={initialValue?.title}
+          onChange={(e) => {
+            const { value } = e.target;
+            setValue("title", value);
+          }}
+        />
+        <DifficultyLevelSelect
+          onChange={(value) => {
+            setValue("difficultyLevel", value);
+          }}
+        />
+        <CuisineSelect
+          onChange={(value) => {
+            setValue("cuisineId", value.id);
+          }}
+        />
         <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />
         <PreparationTimeInput prepTimeMagnitude={initialValue?.prepTimeMagnitude} prepTimeUnit={initialValue?.prepTimeUnit} />
-        <RecipeTagsMultiselect initialValues={initialValue?.tags} onChange={(tags) => console.log(tags)} />
-        <TextInput label="Recipe Description" defaultValue={initialValue?.description} onChange={(e) => console.log(e.target.value)} as="textarea" />
+        <RecipeTagsMultiselect
+          initialValues={initialValue?.tags}
+          onChange={(tags) => {
+            setValue(
+              "tagIds",
+              tags.map((tag) => tag.id)
+            );
+          }}
+        />
+        <TextInput
+          label="Recipe Description"
+          defaultValue={initialValue?.description}
+          onChange={(e) => {
+            const { value } = e.target;
+            setValue("description", value);
+          }}
+          as="textarea"
+        />
         <IngredientListInput />
-        <TextInput label="Instructions" defaultValue={initialValue?.instructions} onChange={(e) => console.log(e.target.value)} as="textarea" />
+        <TextInput
+          label="Instructions"
+          defaultValue={initialValue?.instructions}
+          onChange={(e) => {
+            const { value } = e.target;
+            setValue("instructions", value);
+          }}
+          as="textarea"
+        />
+        <Button type="submit">Submit</Button>
       </Form>
     </FormProvider>
   );
 }
 
 function IngredientListInput() {
-  const { control } = useFormContext<RecipeFormValues>();
+  const { control, setValue } = useFormContext<RecipeFormValues>();
   const { fields, append, remove } = useFieldArray({ control, name: "ingredients", keyName: "ingredientFieldId" });
 
   return (
     <div>
       <div>
-        {fields.map((field) => {
+        {fields.map((field, index) => {
           const { ingredientFieldId, ...ingredient } = field;
-          return <IngredientInput key={ingredientFieldId} initialValue={ingredient as IRecipeIngredient} onChange={(value) => console.log(value)} />;
+          return (
+            <IngredientInput
+              key={ingredientFieldId}
+              initialValue={ingredient as IRecipeIngredient}
+              onChange={(value) => {
+                setValue(`ingredients.${index}`, value);
+              }}
+            />
+          );
         })}
       </div>
       <Button
@@ -95,11 +148,18 @@ function IngredientListInput() {
 
 function CookingTimeInput(props: Partial<Pick<IRecipe, "cookTimeMagnitude" | "cookTimeUnit">>) {
   const { cookTimeMagnitude, cookTimeUnit } = props;
-
+  const { setValue } = useFormContext<RecipeFormValues>();
   return (
     <Form.Group>
       <Form.Label>Cooking Time</Form.Label>
-      <TimeInput defaultMagnitude={cookTimeMagnitude} defaultUnit={cookTimeUnit} onChange={(magnitude, unit) => console.log(magnitude, unit)} />
+      <TimeInput
+        defaultMagnitude={cookTimeMagnitude}
+        defaultUnit={cookTimeUnit}
+        onChange={(magnitude, unit) => {
+          setValue("cookTimeMagnitude", magnitude);
+          setValue("cookTimeUnit", unit);
+        }}
+      />
       <Form.Control.Feedback type="invalid">Error</Form.Control.Feedback>
     </Form.Group>
   );
@@ -107,11 +167,18 @@ function CookingTimeInput(props: Partial<Pick<IRecipe, "cookTimeMagnitude" | "co
 
 function PreparationTimeInput(props: Partial<Pick<IRecipe, "prepTimeMagnitude" | "prepTimeUnit">>) {
   const { prepTimeMagnitude, prepTimeUnit } = props;
-
+  const { setValue } = useFormContext<RecipeFormValues>();
   return (
     <Form.Group>
       <Form.Label>Preparation Time</Form.Label>
-      <TimeInput defaultMagnitude={prepTimeMagnitude} defaultUnit={prepTimeUnit} onChange={(magnitude, unit) => console.log(magnitude, unit)} />
+      <TimeInput
+        defaultMagnitude={prepTimeMagnitude}
+        defaultUnit={prepTimeUnit}
+        onChange={(magnitude, unit) => {
+          setValue("prepTimeMagnitude", magnitude);
+          setValue("prepTimeUnit", unit);
+        }}
+      />
       <Form.Control.Feedback type="invalid">Error</Form.Control.Feedback>
     </Form.Group>
   );
