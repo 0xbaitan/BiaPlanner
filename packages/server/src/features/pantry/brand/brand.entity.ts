@@ -5,11 +5,13 @@ import {
   Entity,
   JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IBrand, IProduct } from '@biaplanner/shared';
+import { IBrand, IFile, IProduct } from '@biaplanner/shared';
 
+import { FileEntity } from '@/features/files/file.entity';
 import { ProductEntity } from '../product/product.entity';
 
 @Entity('brands')
@@ -41,4 +43,19 @@ export class BrandEntity implements IBrand {
     nullable: true,
   })
   deletedAt?: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
+  @Column({ type: 'bigint', nullable: true })
+  logoId?: string;
+
+  @OneToOne(() => FileEntity, {
+    eager: true,
+    nullable: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'logoId' })
+  logo?: IFile;
 }

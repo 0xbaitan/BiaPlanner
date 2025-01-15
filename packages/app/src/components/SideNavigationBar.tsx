@@ -46,6 +46,9 @@ export default function SideNavigationBar() {
         </SubMenu>
         <SubMenu title="Admin" label="Admin" className="+primary">
           <MenuItem>
+            <Link to={"/admin/brands"}>Brands</Link>
+          </MenuItem>
+          <MenuItem>
             <Link to={"/admin/products"}>Products</Link>
           </MenuItem>
           <MenuItem>
