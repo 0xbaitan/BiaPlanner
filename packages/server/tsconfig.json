@@ -10,6 +10,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@uploads/*": ["uploads/*"]
+    },
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,

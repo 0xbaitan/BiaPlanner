@@ -10,4 +10,5 @@ export const modules = [
   CacheModule,
   PantryModule,
   ReminderModule,
+  FilesModule,
 ];
