@@ -3,6 +3,7 @@ import { IBrand, ICreateBrandDto, IUpdateBrandDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
+import ImageDropzone from "@/components/forms/ImageDropzone";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 
@@ -46,6 +47,11 @@ export default function BrandForm(props: BrandFormProps) {
             setValue("description", value);
           }}
           as="textarea"
+        />
+        <ImageDropzone
+        // onChange={(files) => {
+        //   console.log(files);
+        // }}
         />
 
         <Button type="submit">Submit</Button>
