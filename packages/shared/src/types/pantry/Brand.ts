@@ -10,10 +10,18 @@ export interface IBrand extends IBaseEntity {
   products?: IProduct[];
 }
 
-export interface ICreateBrandDto {
+export interface ICreateBrandDto extends Pick<IBrand, "name" | "logoId" | "description"> {}
+
+export interface IUpdateBrandDto extends Partial<ICreateBrandDto> {}
+
+export class CreateBrandDto implements ICreateBrandDto {
   name: string;
+  logoId?: string;
+  description?: string;
 }
 
-export interface IUpdateBrandDto {
+export class UpdateBrandDto implements IUpdateBrandDto {
   name?: string;
+  logoId?: string;
+  description?: string;
 }
