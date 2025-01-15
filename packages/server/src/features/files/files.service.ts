@@ -21,4 +21,12 @@ export class FilesService {
 
     return this.fileRepository.save(newFile);
   }
+
+  async getFile(id: string): Promise<IFile> {
+    return this.fileRepository.findOneOrFail({
+      where: {
+        id,
+      },
+    });
+  }
 }

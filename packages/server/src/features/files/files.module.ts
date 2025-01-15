@@ -3,6 +3,7 @@ import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { diskStorage } from 'multer';
 import mime from 'mime-types';
@@ -12,6 +13,10 @@ import { v6 as uuuidv6 } from 'uuid';
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileEntity]),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve('uploads'),
+      serveRoot: '/uploads',
+    }),
     MulterModule.register({
       storage: diskStorage({
         destination: path.resolve('uploads'),

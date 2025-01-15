@@ -1,9 +1,12 @@
 import {
   Controller,
+  Get,
   Inject,
+  Param,
   ParseFilePipe,
   ParseFilePipeBuilder,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -11,7 +14,7 @@ import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IFile } from '@biaplanner/shared';
 import path from 'path';
-
+import { Response as ExpressResponse } from 'express';
 @Controller('/files')
 export class FilesController {
   constructor(
@@ -45,5 +48,22 @@ export class FilesController {
     file: Express.Multer.File,
   ) {
     return this.filesService.registerFile(file);
+  }
+
+  @Get('/:id')
+  async getFile(
+    @Param('id') id: string,
+    @Res() res: ExpressResponse,
+  ): Promise<void> {
+    const metadata = await this.filesService.getFile(id);
+    const filePath = path.resolve(metadata.filePath);
+    return res.sendFile(filePath, {
+      headers: { 'Content-Type': metadata.mimeType },
+    });
+  }
+
+  @Get('/metadata/:id')
+  async getFileMetadata(@Param('id') id: string): Promise<IFile> {
+    return this.filesService.getFile(id);
   }
 }
