@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import MeasurementInput from "./MeasurementInput";
 import { PayloadAction } from "@reduxjs/toolkit";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
+import TextInput from "@/components/forms/TextInput";
 
 export type IngredientInputProps = {
   initialValue?: Partial<IRecipeIngredient>;
@@ -13,7 +14,7 @@ export type IngredientInputProps = {
 
 export type IngredientInputState = Partial<IRecipeIngredient>;
 export type IngredientInputAction = {
-  type: "UPDATE_PRODUCT_CATEGORIES" | "UPDATE_QUANTITY" | "UPDATE_UNIT";
+  type: "UPDATE_PRODUCT_CATEGORIES" | "UPDATE_QUANTITY" | "UPDATE_UNIT" | "UPDATE_TITLE";
   payload: Partial<IRecipeIngredient & Pick<ICookingMeasurement, "type" | "unit">>;
 };
 
@@ -33,6 +34,8 @@ function RecipeIngredientReducer(state: IngredientInputState, action: Ingredient
       } else {
         return state;
       }
+    case "UPDATE_TITLE":
+      return { ...state, title: action.payload.title };
     default:
       return state;
   }
@@ -48,6 +51,13 @@ export default function IngredientInput(props: IngredientInputProps) {
 
   return (
     <>
+      <TextInput
+        label="Ingredient Title"
+        defaultValue={initialValue?.title}
+        onChange={(e) => {
+          setIngredient({ type: "UPDATE_TITLE", payload: { title: e.target.value } });
+        }}
+      />
       <ProductCategoryMultiselect
         label="Choose category/categories for a single ingredient"
         initialValues={initialValue?.productCategories}

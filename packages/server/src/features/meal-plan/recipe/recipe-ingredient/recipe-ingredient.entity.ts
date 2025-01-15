@@ -48,6 +48,13 @@ export class RecipeIngredientEntity implements IRecipeIngredient {
   })
   deletedAt?: string;
 
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  title?: string;
+
   @ManyToMany(() => ProductCategoryEntity, {
     cascade: true,
     eager: true,

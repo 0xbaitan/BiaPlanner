@@ -5,6 +5,7 @@ import { IProductCategory } from "../pantry";
 import { IRecipe } from "./Recipe";
 
 export interface IRecipeIngredient extends IBaseEntity {
+  title?: string;
   productCategories: IProductCategory[];
   quantity: number;
   volumeUnit: Volumes | null;
