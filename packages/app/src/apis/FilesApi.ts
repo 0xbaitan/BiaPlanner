@@ -11,7 +11,15 @@ export const FilesApi = rootApi.injectEndpoints({
         responseType: "json",
       }),
     }),
+    uploadImageFile: build.mutation<IFile, FormData>({
+      query: (data) => ({
+        url: `/files/image`,
+        method: "POST",
+        body: data,
+        responseType: "json",
+      }),
+    }),
   }),
 });
 
-export const { useUploadFileMutation } = FilesApi;
+export const { useUploadFileMutation, useUploadImageFileMutation } = FilesApi;

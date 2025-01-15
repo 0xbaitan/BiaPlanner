@@ -11,10 +11,10 @@ export type FileWithPreview = FileWithPath & {
 };
 
 export type ImageDropzoneProps = Omit<DropzoneInputProps, "onChange"> & {
-  //   onChange: (files: FileWithPreview[]) => void;
+  onChange: (files: FileWithPath[]) => void;
 };
 export default function ImageDropzone(props: ImageDropzoneProps) {
-  const { ...rest } = props;
+  const { onChange, ...rest } = props;
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
@@ -38,9 +38,9 @@ export default function ImageDropzone(props: ImageDropzoneProps) {
     onDrop,
   });
 
-  //   useEffect(() => {
-  //     onChange(files);
-  //   }, [files, onChange]);
+  useEffect(() => {
+    onChange(files);
+  }, [files, onChange]);
 
   useEffect(() => {
     return () => {

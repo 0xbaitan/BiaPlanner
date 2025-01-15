@@ -1,11 +1,12 @@
 import { DeepPartial, useForm } from "react-hook-form";
 import { IBrand, ICreateBrandDto, IUpdateBrandDto } from "@biaplanner/shared";
+import { useCallback, useState } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
 import ImageDropzone from "@/components/forms/ImageDropzone";
 import TextInput from "@/components/forms/TextInput";
-import { useCallback } from "react";
+import useUploadImageFile from "@/hooks/useUploadImageFile";
 
 export type BrandFormValues = ICreateBrandDto | IUpdateBrandDto;
 
@@ -16,6 +17,8 @@ export type BrandFormProps = {
 
 export default function BrandForm(props: BrandFormProps) {
   const { initialValue, onSubmit } = props;
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const uploadImage = useUploadImageFile();
 
   const methods = useForm<BrandFormValues>({
     defaultValues: initialValue,
@@ -24,10 +27,14 @@ export default function BrandForm(props: BrandFormProps) {
 
   const { handleSubmit, getValues, setValue } = methods;
 
-  const initiateSubmit = useCallback(() => {
+  const initiateSubmit = useCallback(async () => {
     const values = getValues();
+    if (logoFile) {
+      const fileMetadata = await uploadImage(logoFile);
+      values.logoId = fileMetadata.id;
+    }
     onSubmit(values);
-  }, [getValues, onSubmit]);
+  }, [getValues, logoFile, onSubmit, uploadImage]);
 
   return (
     <div>
@@ -49,9 +56,9 @@ export default function BrandForm(props: BrandFormProps) {
           as="textarea"
         />
         <ImageDropzone
-        // onChange={(files) => {
-        //   console.log(files);
-        // }}
+          onChange={([logo]) => {
+            setLogoFile(logo);
+          }}
         />
 
         <Button type="submit">Submit</Button>
