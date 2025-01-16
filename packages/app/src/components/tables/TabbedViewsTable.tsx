@@ -207,7 +207,7 @@ export default function TabbedViewsTable<T>(props: TabbedViewsTableProps<T>) {
   return (
     <div>
       {tabs}
-      <BootstrapTable striped bordered hover>
+      <BootstrapTable striped bordered hover responsive>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
