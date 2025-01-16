@@ -1,6 +1,7 @@
 import { FaPencilAlt } from "react-icons/fa";
 import { IBrand } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
 
 export type BrandsTableProps = {
@@ -10,6 +11,12 @@ export type BrandsTableProps = {
 export default function BrandsTable(props: BrandsTableProps) {
   const { data } = props;
   const navigate = useNavigate();
+  const { notify } = useDeletionToast<IBrand>({
+    identifierSelector: (brand) => brand.name,
+    onConfirm: async (item) => {
+      console.log("Deleting brand", item);
+    },
+  });
 
   return (
     <TabbedViewsTable<IBrand>
@@ -46,6 +53,15 @@ export default function BrandsTable(props: BrandsTableProps) {
           type: "edit",
           onClick: (row) => {
             navigate(`./update/${row.id}`);
+          },
+        },
+
+        {
+          icon: FaPencilAlt,
+          label: "Delete Brand",
+          type: "delete",
+          onClick: (row) => {
+            notify(row);
           },
         },
       ]}
