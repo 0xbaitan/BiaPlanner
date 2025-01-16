@@ -1,19 +1,19 @@
 import Button from "react-bootstrap/esm/Button";
-import { IRefreshJWTObject } from "@biaplanner/shared";
 import { useLogoutUserMutation } from "@/apis/AuthenticationApi";
-import useSessionStorageState from "use-session-storage-state";
+import { useNavigate } from "react-router-dom";
+import { useSetAcessTokenObject } from "../hooks/useAuthenticationState";
 
 export default function LogoutButton() {
   const [logoutUser] = useLogoutUserMutation();
-  const [, setRefreshTokenObj] = useSessionStorageState<IRefreshJWTObject>("refreshTokenObj");
+
+  const setAccessToken = useSetAcessTokenObject();
+  const navigate = useNavigate();
   return (
     <Button
       onClick={async () => {
-        await logoutUser().unwrap();
-        if (process.env.NODE_ENV === "development") {
-          setRefreshTokenObj(undefined);
-        }
-        window.location.reload();
+        await logoutUser();
+        setAccessToken(null);
+        navigate("/login");
       }}
     >
       Logout

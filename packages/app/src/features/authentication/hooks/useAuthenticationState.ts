@@ -13,7 +13,7 @@ export default function useAuthenticationState() {
 export function useSetAcessTokenObject() {
   const dispatch = useStoreDispatch();
   const setAccessTokenObject = useCallback(
-    (accessTokenObject: IAccessJWTObject) => {
+    (accessTokenObject: IAccessJWTObject | null) => {
       dispatch(authenticationActions.setAccessTokenObject(accessTokenObject));
     },
     [dispatch]

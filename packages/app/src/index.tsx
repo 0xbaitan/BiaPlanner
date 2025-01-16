@@ -2,13 +2,15 @@ import "./index.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/main.scss";
 
+import store, { persistor } from "./store";
+
 import App from "./App";
+import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import setupLocatorUI from "@locator/runtime";
-import store from "./store";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
@@ -19,7 +21,9 @@ if (process.env.NODE_ENV === "development") {
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );
