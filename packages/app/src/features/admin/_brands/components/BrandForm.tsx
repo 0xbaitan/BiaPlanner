@@ -15,7 +15,7 @@ export type BrandFormValues = ICreateBrandDto | IUpdateBrandDto;
 export type BrandFormProps = {
   type: "create" | "update";
   disableSubmit?: boolean;
-  initialValue?: DeepPartial<IBrand>;
+  initialValue?: Partial<IBrand>;
   onSubmit: (values: BrandFormValues) => void;
 };
 
@@ -26,6 +26,7 @@ export const CreateBrandValidationSchema: z.ZodType<ICreateBrandDto> = z.object(
 });
 
 export const UpdateBrandValidationSchema: z.ZodType<IUpdateBrandDto> = z.object({
+  id: z.string().min(1, { message: "Brand id is required" }),
   name: z.string().optional(),
   description: z.string().optional(),
   logoId: z.string().optional(),
@@ -33,6 +34,7 @@ export const UpdateBrandValidationSchema: z.ZodType<IUpdateBrandDto> = z.object(
 
 export default function BrandForm(props: BrandFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
+
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const uploadImage = useUploadImageFile();
 
@@ -64,6 +66,7 @@ export default function BrandForm(props: BrandFormProps) {
       <Form onSubmit={handleSubmit(initiateSubmit)}>
         <TextInput
           label="Brand Name"
+          defaultValue={initialValue?.name ?? undefined}
           error={errors.name ? errors.name.message : undefined}
           onChange={(e) => {
             const value = e.target.value;
@@ -72,6 +75,7 @@ export default function BrandForm(props: BrandFormProps) {
         />
         <TextInput
           label="Description"
+          defaultValue={initialValue?.description ?? undefined}
           error={errors.description ? errors.description.message : undefined}
           onChange={(e) => {
             const value = e.target.value;
@@ -80,6 +84,7 @@ export default function BrandForm(props: BrandFormProps) {
           as="textarea"
         />
         <ImageDropzone
+          initialImages={initialValue?.logo ? [initialValue.logo] : undefined}
           onChange={([logo]) => {
             setLogoFile(logo);
           }}

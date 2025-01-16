@@ -2,8 +2,8 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 
 export function isSerializedError(value: unknown): value is SerializedError {
-  const candidate = value as SerializedError;
-  return !!candidate.code && (!!candidate.message || !!candidate.name || !!candidate.stack);
+  const candidate = value as SerializedError & { statusCode?: number | string };
+  return !!candidate && (!!candidate.code || !!candidate.statusCode) && (!!candidate.message || !!candidate.name || !!candidate.stack);
 }
 
 export function isString(value: unknown): value is string {

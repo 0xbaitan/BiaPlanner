@@ -8,6 +8,7 @@ import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBran
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
+import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
 import HomePage from "@/pages/HomePage";
@@ -45,6 +46,7 @@ export default function Routes() {
           {/* Brands */}
           <Route path="brands" element={<AdminBrandsPage />} />
           <Route path="brands/create" element={<AdminCreateBrandPage />} />
+          <Route path="brands/update/:id" element={<AdminUpdateBrandPage />} />
 
           {/* Products */}
           <Route path="products" element={<AdminProductsPage />} />

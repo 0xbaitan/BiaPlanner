@@ -3,6 +3,7 @@ import "@/styles/forms/ImageDropzone.scss";
 import { DropzoneInputProps, FileWithPath, useDropzone } from "react-dropzone";
 import { useCallback, useEffect, useState } from "react";
 
+import { IFile } from "@biaplanner/shared";
 import { URL } from "url";
 import { createBlobUrlFromArrayBuffer } from "@/util/imageFunctions";
 
@@ -12,9 +13,10 @@ export type FileWithPreview = FileWithPath & {
 
 export type ImageDropzoneProps = Omit<DropzoneInputProps, "onChange"> & {
   onChange: (files: FileWithPath[]) => void;
+  initialImages?: IFile[];
 };
 export default function ImageDropzone(props: ImageDropzoneProps) {
-  const { onChange, ...rest } = props;
+  const { onChange, initialImages, ...rest } = props;
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
@@ -58,6 +60,15 @@ export default function ImageDropzone(props: ImageDropzoneProps) {
         {files.map((file, index) => (
           <ImageThumbnail file={file} index={index} />
         ))}
+      </aside>
+      <aside>
+        {initialImages?.map((image) => {
+          return (
+            <div key={image.id} className="bp-image-card">
+              <img src={`http://localhost:4000/uploads/${image.fileName}`} alt={image.originalFileName} style={{ width: 50, height: 50 }} />
+            </div>
+          );
+        })}
       </aside>
     </section>
   );

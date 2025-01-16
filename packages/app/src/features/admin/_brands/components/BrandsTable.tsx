@@ -1,6 +1,7 @@
 import { FaPencilAlt } from "react-icons/fa";
 import { IBrand } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useNavigate } from "react-router-dom";
 
 export type BrandsTableProps = {
   data: IBrand[];
@@ -8,6 +9,7 @@ export type BrandsTableProps = {
 
 export default function BrandsTable(props: BrandsTableProps) {
   const { data } = props;
+  const navigate = useNavigate();
 
   return (
     <TabbedViewsTable<IBrand>
@@ -40,10 +42,10 @@ export default function BrandsTable(props: BrandsTableProps) {
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Edit Brand Details",
+          label: "Update Brand Details",
           type: "edit",
           onClick: (row) => {
-            console.log("Edit brand clicked", row.name);
+            navigate(`./update/${row.id}`);
           },
         },
       ]}
