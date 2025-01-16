@@ -10,7 +10,7 @@ export const authenticationApi = rootApi.injectEndpoints({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["User", "PhoneEntry"],
+      invalidatesTags: ["User", "PhoneEntry", "Brand", "Product", "ProductCategory", "Reminder", "Cuisine", "Recipe", "RecipeTag"],
     }),
 
     loginUser: build.mutation<{ accessTokenObj: IAccessJWTObject; refreshTokenObj: IRefreshJWTObject }, ILoginUserDto>({
@@ -19,7 +19,7 @@ export const authenticationApi = rootApi.injectEndpoints({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["User", "PhoneEntry"],
+      invalidatesTags: ["User", "PhoneEntry", "Brand", "Product", "ProductCategory", "Reminder", "Cuisine", "Recipe", "RecipeTag"],
     }),
 
     logoutUser: build.mutation<void, void>({
@@ -27,7 +27,7 @@ export const authenticationApi = rootApi.injectEndpoints({
         url: `/auth/logout`,
         method: "POST",
       }),
-      invalidatesTags: ["User", "PhoneEntry"],
+      invalidatesTags: ["User", "PhoneEntry", "Brand", "Product", "ProductCategory", "Reminder", "Cuisine", "Recipe", "RecipeTag"],
     }),
 
     refreshToken: build.mutation({
@@ -36,7 +36,7 @@ export const authenticationApi = rootApi.injectEndpoints({
         method: "POST",
         body: refreshTokenObj ?? {},
       }),
-      invalidatesTags: ["User", "PhoneEntry"],
+      invalidatesTags: ["User", "PhoneEntry", "Brand", "Product", "ProductCategory", "Reminder", "Cuisine", "Recipe", "RecipeTag"],
     }),
   }),
 });

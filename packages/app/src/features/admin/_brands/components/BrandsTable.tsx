@@ -1,8 +1,13 @@
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+
 import { IBrand } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useDeleteBrandMutation } from "@/apis/BrandsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
+import { useEffect } from "react";
+import { useErrorToast } from "@/components/toasts/ErrorToast";
 import { useNavigate } from "react-router-dom";
+import { useSuccessToast } from "@/components/toasts/SuccessToast";
 
 export type BrandsTableProps = {
   data: IBrand[];
@@ -11,10 +16,26 @@ export type BrandsTableProps = {
 export default function BrandsTable(props: BrandsTableProps) {
   const { data } = props;
   const navigate = useNavigate();
-  const { notify } = useDeletionToast<IBrand>({
+  const [deleteBrand, { isSuccess, isError, error }] = useDeleteBrandMutation();
+
+  const { notify: notifyDeletionFailure, setPauseNotificationStatus: setDeletionFailureToastPauseStatus } = useErrorToast({ error });
+  const { notify: notifyDeletionSuccess, setPauseNotificationStatus: setDeletionSuccessToastPauseStatus } = useSuccessToast({ message: "Brand deleted successfully" });
+  useEffect(() => {
+    if (isSuccess) {
+      setDeletionSuccessToastPauseStatus(true);
+      notifyDeletionSuccess();
+    } else if (isError) {
+      setDeletionFailureToastPauseStatus(true);
+      notifyDeletionFailure();
+    }
+  }, [isSuccess, isError, deleteBrand, notifyDeletionSuccess, notifyDeletionFailure, setDeletionSuccessToastPauseStatus, setDeletionFailureToastPauseStatus]);
+
+  const { notify: notifyDeletion } = useDeletionToast<IBrand>({
     identifierSelector: (brand) => brand.name,
     onConfirm: async (item) => {
-      console.log("Deleting brand", item);
+      await deleteBrand(item.id);
+      setDeletionFailureToastPauseStatus(false);
+      setDeletionSuccessToastPauseStatus(false);
     },
   });
 
@@ -57,11 +78,11 @@ export default function BrandsTable(props: BrandsTableProps) {
         },
 
         {
-          icon: FaPencilAlt,
+          icon: FaTrashAlt,
           label: "Delete Brand",
           type: "delete",
           onClick: (row) => {
-            notify(row);
+            notifyDeletion(row);
           },
         },
       ]}

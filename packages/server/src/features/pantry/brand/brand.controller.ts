@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -33,5 +34,10 @@ export class BrandController {
   @Put('/:id')
   async updateBrand(@Param('id') id: string, @Body() dto: UpdateBrandDto) {
     return this.brandService.updateBrand(id, dto);
+  }
+
+  @Delete('/:id')
+  async deleteBrand(@Param('id') id: string) {
+    return this.brandService.deleteBrand(id);
   }
 }

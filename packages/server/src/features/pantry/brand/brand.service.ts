@@ -34,4 +34,11 @@ export class BrandService {
     const updatedBrand = this.brandRepository.merge(brand, dto);
     return this.brandRepository.save(updatedBrand);
   }
+
+  public async deleteBrand(id: string) {
+    const brand = await this.findBrandById(id);
+    return this.brandRepository.softDelete({
+      id: brand.id,
+    });
+  }
 }

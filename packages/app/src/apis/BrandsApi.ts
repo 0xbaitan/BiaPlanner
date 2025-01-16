@@ -33,9 +33,19 @@ export const brandsApi = rootApi.injectEndpoints({
         method: "PUT",
         body: dto,
       }),
-      invalidatesTags: (result, _error, { id }) => [{ type: "Brand", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Brand", id }],
+    }),
+    deleteBrand: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/brands/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, _error, id) => [
+        { type: "Brand", id },
+        { type: "Brand", id: "LIST" },
+      ],
     }),
   }),
 });
 
-export const { useGetBrandsQuery, useLazyGetBrandsQuery, useCreateBrandMutation, useGetBrandQuery, useLazyGetBrandQuery, useUpdateBrandMutation } = brandsApi;
+export const { useGetBrandsQuery, useLazyGetBrandsQuery, useCreateBrandMutation, useGetBrandQuery, useLazyGetBrandQuery, useUpdateBrandMutation, useDeleteBrandMutation } = brandsApi;
