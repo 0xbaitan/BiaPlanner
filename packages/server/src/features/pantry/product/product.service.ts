@@ -21,24 +21,14 @@ export class ProductService {
   ) {}
 
   async createProduct(dto: CreateProductDto): Promise<IProduct> {
-    const { productCategoryIds, ...rest } = dto;
-
-    const productCategories =
-      await this.productCategoryService.findProductCategoriesByIds(
-        productCategoryIds,
-      );
-
-    const product = this.productRepository.create({
-      ...rest,
-      productCategories,
-    });
+    const product = this.productRepository.create(dto);
 
     return this.productRepository.save(product);
   }
 
   async findAllProducts(): Promise<IProduct[]> {
     return this.productRepository.find({
-      relations: ['productCategories', 'pantryItems', 'createdBy'],
+      relations: ['productCategories', 'pantryItems', 'createdBy', 'brand'],
     });
   }
 
@@ -50,20 +40,18 @@ export class ProductService {
   }
 
   async updateProduct(id: string, dto: UpdateProductDto): Promise<IProduct> {
-    const { productCategoryIds, ...rest } = dto;
-    const productCategories: IProductCategory[] = productCategoryIds.map(
-      (id) => ({ id }) as IProductCategory,
-    );
     const product = await this.productRepository.findOneOrFail({
       where: { id },
-      relations: ['productCategories', 'pantryItems', 'createdBy'],
+      relations: ['productCategories', 'pantryItems', 'createdBy', 'brand'],
     });
 
-    return this.productRepository.save({
-      ...product,
-      ...rest,
-      productCategories,
-    });
+    const updatedProduct = this.productRepository.merge(product, dto);
+
+    if (dto.productCategories.length === 0) {
+      updatedProduct.productCategories = [];
+    }
+
+    return this.productRepository.save(updatedProduct);
   }
 
   async deleteProduct(id: number): Promise<void> {

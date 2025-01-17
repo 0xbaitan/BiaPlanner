@@ -88,13 +88,15 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
       />
 
       <ProductCategoryMultiselect
-        error={errors.productCategoryIds?.message}
+        error={errors.productCategories?.message}
         initialValues={initialValues?.productCategories ?? []}
         onSelectionChange={(productCategories) => {
           console.log("productCategories", productCategories);
           setValue(
-            "productCategoryIds",
-            productCategories.map((category) => String(category.id))
+            "productCategories",
+            productCategories.map((category) => {
+              return { id: category.id };
+            })
           );
         }}
       />
