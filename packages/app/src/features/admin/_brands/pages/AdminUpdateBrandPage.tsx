@@ -1,34 +1,33 @@
+import { IBrand, IUpdateBrandDto } from "@biaplanner/shared";
+import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetBrandQuery, useUpdateBrandMutation } from "@/apis/BrandsApi";
 
 import BrandForm from "../components/BrandForm";
-import { IUpdateBrandDto } from "@biaplanner/shared";
-import { isSerializedError } from "@/util/checkTypes";
-import { useEffect } from "react";
-import { useErrorToast } from "@/components/toasts/ErrorToast";
+import { Status } from "@/hooks/useStatusToast";
 import { useParams } from "react-router-dom";
-import { useSuccessWithRedirectToast } from "@/components/toasts/SuccessWithRedirectToast";
 
 export default function AdminUpdateBrandPage() {
   const { id } = useParams();
   const { data: brand } = useGetBrandQuery(String(id));
-  const [updateBrand, { isSuccess: isUpdateSuccess, isError: isUpdateError, error: updateError }] = useUpdateBrandMutation();
+  const [updateBrand, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading }] = useUpdateBrandMutation();
 
-  const { notify: notifyOnSuccess, setPauseNotificationStatus } = useSuccessWithRedirectToast({
-    redirectUrl: "/admin/brands",
-    message: `Successfully updated the brand which was named ${brand?.name}`,
-    redirectButtonText: "Return to Brands",
+  const { setItem } = useDefaultStatusToast<IBrand>({
+    idSelector: (brand) => brand.id,
+    action: Action.UPDATE,
+    entityIdentifier: (brand) => brand.name,
+    isSuccess: isUpdateSuccess,
+    isError: isUpdateError,
+    idPrefix: "brand",
+    isLoading,
+    toastProps: {
+      autoClose: 5000,
+    },
+    redirectContent: {
+      applicableStatuses: [Status.SUCCESS],
+      redirectButtonText: "Return to Brands",
+      redirectUrl: "/admin/brands",
+    },
   });
-
-  const { notify: notifyOnError } = useErrorToast({ error: `Failed to update the brand. \n Cause: ${isSerializedError(updateError) ? updateError.message : "Unknown error"}` });
-
-  useEffect(() => {
-    if (isUpdateSuccess) {
-      notifyOnSuccess();
-      setPauseNotificationStatus(true);
-    } else if (isUpdateError) {
-      notifyOnError();
-    }
-  }, [isUpdateError, isUpdateSuccess, notifyOnError, notifyOnSuccess, setPauseNotificationStatus]);
 
   console.log("brand", brand);
   if (!brand) return <div>Could not find brand</div>;
@@ -37,7 +36,8 @@ export default function AdminUpdateBrandPage() {
       type="update"
       initialValue={brand}
       onSubmit={async (brandDto) => {
-        setPauseNotificationStatus(false);
+        // setPauseNotificationStatus(false);
+        setItem(brandDto as IBrand);
         await updateBrand(brandDto as IUpdateBrandDto);
       }}
     />

@@ -1,6 +1,7 @@
+import { useCallback, useEffect } from "react";
+
 import { ToastContentProps } from "react-toastify";
 import { toast } from "react-toastify";
-import { useCallback } from "react";
 
 export type DeletionToastProps<T> = Partial<ToastContentProps> & {
   item: T;
@@ -50,6 +51,13 @@ export function useDeletionToast<T>(props: Omit<DeletionToastProps<T>, "item">) 
     },
     [props]
   );
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss("deletion-toast");
+    };
+  }, []);
+
   return {
     notify,
   };
