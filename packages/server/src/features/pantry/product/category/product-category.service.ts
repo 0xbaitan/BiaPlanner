@@ -4,6 +4,7 @@ import { ProductCategoryEntity } from './product-category.entity';
 import { In, Repository } from 'typeorm';
 import {
   CreateProductCategoryDto,
+  ICreateProductCategoryDto,
   UpdateProductCategoryDto,
 } from '@biaplanner/shared';
 
@@ -18,6 +19,11 @@ export class ProductCategoryService {
     return this.productCategoryRepository.find({
       relations: ['products'],
     });
+  }
+
+  async createProductCategory(dto: ICreateProductCategoryDto) {
+    const productCategory = this.productCategoryRepository.create(dto);
+    return this.productCategoryRepository.save(productCategory);
   }
 
   async readProductClassificationById(id: string) {

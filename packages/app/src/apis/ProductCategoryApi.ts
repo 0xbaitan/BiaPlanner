@@ -1,4 +1,5 @@
-import { IProductCategory } from "@biaplanner/shared";
+import { ICreateProductCategoryDto, IProductCategory } from "@biaplanner/shared";
+
 import { rootApi } from ".";
 
 const productClassificationApi = rootApi.injectEndpoints({
@@ -10,7 +11,15 @@ const productClassificationApi = rootApi.injectEndpoints({
       }),
       providesTags: ["ProductCategory"],
     }),
+    createProductCategory: build.mutation<IProductCategory, ICreateProductCategoryDto>({
+      query: (data) => ({
+        url: "/product-categories",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["ProductCategory"],
+    }),
   }),
 });
 
-export const { useGetProductCategoriesQuery, useLazyGetProductCategoriesQuery } = productClassificationApi;
+export const { useGetProductCategoriesQuery, useLazyGetProductCategoriesQuery, useCreateProductCategoryMutation } = productClassificationApi;

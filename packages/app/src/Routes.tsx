@@ -5,6 +5,7 @@ import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pant
 import AddProductPage from "./features/admin/_products/pages/AddProductPage";
 import AdminBrandsPage from "./features/admin/_brands/pages/AdminBrandsPage";
 import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBrandPage";
+import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
@@ -50,9 +51,14 @@ export default function Routes() {
 
           {/* Products */}
           <Route path="products" element={<AdminProductsPage />} />
-          <Route path="product-categories" element={<AdminProductCategoriesPage />} />
+
           <Route path="products/create" element={<AddProductPage />} />
           <Route path="products/update/:id" element={<UpdateProductPage />} />
+
+          {/* Product Categories */}
+
+          <Route path="product-categories" element={<AdminProductCategoriesPage />} />
+          <Route path="product-categories/create" element={<AdminCreateProductCategoryPage />} />
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>

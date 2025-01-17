@@ -9,7 +9,7 @@ export default function AdminBrandsPage() {
 
   return (
     <div>
-      <h1>Admin Brands Page</h1>
+      <h1>Brands</h1>
 
       <Button onClick={() => navigate("./create")}>Create Brand</Button>
       <BrandsTable data={brands ?? []} />

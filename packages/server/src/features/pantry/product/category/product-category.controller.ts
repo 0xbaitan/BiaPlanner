@@ -1,5 +1,6 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
+import { CreateProductCategoryDto } from '@biaplanner/shared';
 
 @Controller('/product-categories/')
 export class ProductCategoryController {
@@ -11,5 +12,10 @@ export class ProductCategoryController {
   @Get('/')
   async findAllProductCategories() {
     return this.productCategoriesService.findAllProductCategories();
+  }
+
+  @Post()
+  async createProductCategory(@Body() dto: CreateProductCategoryDto) {
+    return this.productCategoriesService.createProductCategory(dto);
   }
 }
