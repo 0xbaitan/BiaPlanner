@@ -10,14 +10,13 @@ export interface ICreateProductCategoryDto {
   name: string;
 }
 
-export interface IUpdateProductCategoryDto {
-  name?: string;
-}
+export interface IUpdateProductCategoryDto extends Partial<ICreateProductCategoryDto>, Pick<IProductCategory, "id"> {}
 
 export class CreateProductCategoryDto implements ICreateProductCategoryDto {
   name: string;
 }
 
 export class UpdateProductCategoryDto implements IUpdateProductCategoryDto {
+  id: string;
   name?: string | undefined;
 }

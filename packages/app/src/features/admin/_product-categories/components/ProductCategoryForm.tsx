@@ -31,6 +31,7 @@ export default function BrandForm(props: ProductCategoryFormProps) {
 
   const methods = useForm<ProductCategoryFormValues>({
     defaultValues: {
+      ...initialValue,
       name: initialValue?.name ?? "",
     },
     mode: "onBlur",

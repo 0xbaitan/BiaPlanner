@@ -10,6 +10,7 @@ import AdminPagesContainer from "./features/admin/components/AdminPagesContainer
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
+import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
 import HomePage from "@/pages/HomePage";
@@ -59,6 +60,7 @@ export default function Routes() {
 
           <Route path="product-categories" element={<AdminProductCategoriesPage />} />
           <Route path="product-categories/create" element={<AdminCreateProductCategoryPage />} />
+          <Route path="product-categories/update/:id" element={<AdminUpdateProductCategoryPage />} />
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>

@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import {
   CreateProductCategoryDto,
   ICreateProductCategoryDto,
+  IUpdateProductCategoryDto,
   UpdateProductCategoryDto,
 } from '@biaplanner/shared';
 
@@ -21,9 +22,34 @@ export class ProductCategoryService {
     });
   }
 
+  async findProductCategoryById(id: string) {
+    return this.productCategoryRepository.findOneOrFail({
+      where: {
+        id,
+      },
+      relations: ['products'],
+    });
+  }
+
   async createProductCategory(dto: ICreateProductCategoryDto) {
     const productCategory = this.productCategoryRepository.create(dto);
     return this.productCategoryRepository.save(productCategory);
+  }
+
+  async updateProductCategory(id: string, dto: IUpdateProductCategoryDto) {
+    const productCategory = await this.findProductCategoryById(id);
+    const updatedProductCategory = this.productCategoryRepository.merge(
+      productCategory,
+      dto,
+    );
+    return this.productCategoryRepository.save(updatedProductCategory);
+  }
+
+  async deleteProductCategory(id: string) {
+    const productCategory = await this.findProductCategoryById(id);
+    return this.productCategoryRepository.softDelete({
+      id: productCategory.id,
+    });
   }
 
   async readProductClassificationById(id: string) {
