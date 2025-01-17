@@ -46,14 +46,14 @@ export default function ProductsTable(props: ProductsTableProps) {
       {...productsTableConfig}
       data={data}
       actions={[
-        {
-          label: "View Product",
-          type: "view",
-          icon: FaEye,
-          onClick: (row) => {
-            console.log("View product clicked", row.name);
-          },
-        },
+        // {
+        //   label: "View Product",
+        //   type: "view",
+        //   icon: FaEye,
+        //   onClick: (row) => {
+        //     console.log("View product clicked", row.name);
+        //   },
+        // },
         {
           label: "Edit Product",
           type: "edit",

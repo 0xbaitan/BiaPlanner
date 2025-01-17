@@ -8,3 +8,5 @@ export * from "./reminder";
 export * from "./BaseEntity";
 export * from "./meal-plans";
 export * from "./File";
+export * from "./TimeMeasurement";
+export * from "./CookingMeasurement";

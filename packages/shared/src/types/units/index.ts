@@ -24,3 +24,8 @@ export function getCookingMeasurementList(): ICookingMeasurement[] {
   const approximates = Object.entries(Approximates).map(([key, value]) => ({ unit: value, id: key, type: "approximate" as const }));
   return [...weights, ...volumes, ...approximates];
 }
+
+export function getCookingMeasurement(unit: CookingMeasurementUnit): ICookingMeasurement {
+  const allMeasurements = getCookingMeasurementList();
+  return allMeasurements.find((measurement) => measurement.unit === unit) as ICookingMeasurement;
+}

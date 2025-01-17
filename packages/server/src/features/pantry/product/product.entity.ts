@@ -13,11 +13,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import {
+  CookingMeasurement,
   IBrand,
   IPantryItem,
   IProduct,
   IProductCategory,
   IUser,
+  TimeMeasurement,
   Volumes,
   Weights,
 } from '@biaplanner/shared';
@@ -61,9 +63,6 @@ export class ProductEntity implements IProduct {
   @Column({ type: 'boolean', default: false })
   canQuicklyExpireAfterOpening?: boolean;
 
-  @Column({ type: 'integer', nullable: true })
-  millisecondsToExpiryAfterOpening?: number;
-
   @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product, {
     cascade: true,
   })
@@ -85,27 +84,17 @@ export class ProductEntity implements IProduct {
   @Column({ type: 'boolean', default: false })
   isLoose?: boolean;
 
-  @Column({ type: 'integer', nullable: true, scale: 0 })
-  numberOfServingsOrPieces?: number;
+  @Column({
+    type: 'json',
+    default: null,
+  })
+  measurements?: CookingMeasurement[];
 
   @Column({
-    type: 'varchar',
-    length: 255,
-    nullable: true,
+    type: 'json',
+    default: null,
   })
-  useMeasurementMetric?: 'weight' | 'volume';
-
-  @Column({ type: 'integer', nullable: true })
-  volumePerContainerOrPacket?: number;
-
-  @Column({ type: 'enum', enum: Volumes, nullable: true })
-  volumeUnit?: Volumes;
-
-  @Column({ type: 'integer', nullable: true })
-  weightPerContainerOrPacket?: number;
-
-  @Column({ type: 'enum', enum: Weights, nullable: true })
-  weightUnit?: Weights;
+  timeTillExpiryAfterOpening?: TimeMeasurement;
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -1,10 +1,12 @@
+import { Approximates, ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
 
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
+import CookingMeasurementInput from "./CookingMeasurementInput";
 import Form from "react-bootstrap/esm/Form";
+import MeasurementInput from "@/features/meal-planning/_recipes/components/MeasurementInput";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
@@ -70,16 +72,6 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
 
   const [isLoose, setIsLoose] = useState<boolean>(initialValues?.isLoose ?? false);
 
-  const [metric, setMetric] = useState<"volume" | "weight" | undefined>("volume");
-
-  const onMetricChange = useCallback(
-    (value: "volume" | "weight" | undefined) => {
-      setMetric(value);
-      setValue("useMeasurementMetric", value);
-    },
-    [setValue]
-  );
-
   return (
     <>
       <Form.Group>
@@ -108,23 +100,42 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
       />
 
       <Form.Group>
-        <Form.Switch {...register("canExpire")} checked={canExpire} onChange={(e) => setCanExpire(e.target.checked)} label="Can this product have an expiry date?" />
+        <Form.Switch
+          checked={canExpire}
+          onChange={(e) => {
+            setCanExpire(e.target.checked);
+            setValue("canExpire", e.target.checked);
+            if (!e.target.checked) {
+              setValue("canQuicklyExpireAfterOpening", false);
+              setValue("timeTillExpiryAfterOpening", undefined);
+            }
+          }}
+          label="Can this product have an expiry date?"
+        />
         {canExpire && (
           <Form.Group>
-            <Form.Switch {...register("canQuicklyExpireAfterOpening")} checked={canQuicklyExpireAfterOpening} onChange={(e) => setCanQuicklyExpireAfterOpening(e.target.checked)} label="Can this product expire at a quicker rate after opening?" />
+            <Form.Switch
+              {...register("canQuicklyExpireAfterOpening")}
+              checked={canQuicklyExpireAfterOpening}
+              onChange={(e) => {
+                setCanQuicklyExpireAfterOpening(e.target.checked);
+                if (!e.target.checked) {
+                  setValue("timeTillExpiryAfterOpening", undefined);
+                }
+              }}
+              label="Can this product expire at a quicker rate after opening?"
+            />
             {canQuicklyExpireAfterOpening && (
               <Form.Group className="my-3">
                 <Form.Label>How long will the product remain consumable after opening?</Form.Label>
                 <TimeInput
-                  defaultMagnitude={initialValues?.millisecondsToExpiryAfterOpening}
-                  defaultUnit={Time.MILLISECOND}
+                  defaultMagnitude={initialValues?.timeTillExpiryAfterOpening?.magnitude}
+                  defaultUnit={Time.MINUTE}
                   magnitudeControlProps={{
                     min: 0,
                   }}
                   onChange={(magnitude, unit) => {
-                    const millisecondsToExpiryAfterOpening = convertDurationStringToMilli(`${magnitude}${unit}`);
-                    setValue("millisecondsToExpiryAfterOpening", millisecondsToExpiryAfterOpening);
-                    console.log(millisecondsToExpiryAfterOpening);
+                    setValue("timeTillExpiryAfterOpening", { magnitude, unit });
                   }}
                   filter={{
                     units: [Time.MINUTE, Time.HOUR, Time.DAY, Time.WEEK, Time.MONTH],
@@ -167,72 +178,25 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
           onChange={(e) => {
             setIsLoose(e.target.checked);
             if (!e.target.checked) {
-              setValue("numberOfServingsOrPieces", undefined);
-              setValue("useMeasurementMetric", undefined);
+              setValue("measurements", []);
             }
           }}
         />
         {!isLoose && (
-          <>
-            <Form.Group>
-              <Form.Label>Number of servings/pieces per package</Form.Label>
-              <Form.Control
-                {...register("numberOfServingsOrPieces", {
-                  valueAsNumber: true,
-                })}
-                type="number"
-                min={0}
-                step={1}
-                isInvalid={!!errors.numberOfServingsOrPieces}
-              />
-              {errors.numberOfServingsOrPieces && <Form.Control.Feedback type="invalid">{errors?.numberOfServingsOrPieces?.message}</Form.Control.Feedback>}
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Choose the metric for measurement of the product</Form.Label>
-              <Form.Check
-                type="radio"
-                checked={metric === "volume"}
-                onChange={(e) => {
-                  if (e.target.checked) onMetricChange("volume");
-                }}
-                label="Volume"
-              />
-              <Form.Check
-                type="radio"
-                checked={metric === "weight"}
-                onChange={(e) => {
-                  if (e.target.checked) onMetricChange("weight");
-                }}
-                label="Weight"
-              />
-              {metric === "volume" && (
-                <Form.Group>
-                  <Form.Label>Volume</Form.Label>
-                  <VolumeInput
-                    onChange={(magnitude, unit) => {
-                      setValue("volumeUnit", unit);
-                      setValue("volumePerContainerOrPacket", magnitude);
-                      setValue("weightPerContainerOrPacket", undefined);
-                      setValue("weightUnit", undefined);
-                    }}
-                  />
-                </Form.Group>
-              )}
-              {metric === "weight" && (
-                <Form.Group>
-                  <Form.Label>Weight</Form.Label>
-                  <WeightInput
-                    onChange={(magnitude, unit) => {
-                      setValue("weightUnit", unit);
-                      setValue("weightPerContainerOrPacket", magnitude);
-                      setValue("volumePerContainerOrPacket", undefined);
-                      setValue("volumeUnit", undefined);
-                    }}
-                  />
-                </Form.Group>
-              )}
-            </Form.Group>
-          </>
+          <CookingMeasurementInput
+            initialValue={
+              initialValues?.measurements?.[0]
+                ? {
+                    magnitude: initialValues.measurements[0].magnitude,
+                    unit: initialValues.measurements[0].unit,
+                  }
+                : undefined
+            }
+            onChange={(value) => {
+              console.log("cooking measurement", value);
+              setValue("measurements", [value]);
+            }}
+          />
         )}
       </Form.Group>
     </>
