@@ -4,9 +4,10 @@ import { ProductEntity } from './product.entity';
 import {
   CreateProductDto,
   IProduct,
+  IProductCategory,
   UpdateProductDto,
 } from '@biaplanner/shared';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { ProductCategoryService } from './category/product-category.service';
 import { plainToInstance } from 'class-transformer';
 
@@ -50,13 +51,9 @@ export class ProductService {
 
   async updateProduct(id: string, dto: UpdateProductDto): Promise<IProduct> {
     const { productCategoryIds, ...rest } = dto;
-    let productCategories = [];
-    if (productCategoryIds && productCategoryIds.length > 0) {
-      productCategories =
-        await this.productCategoryService.findProductCategoriesByIds(
-          productCategoryIds,
-        );
-    }
+    const productCategories: IProductCategory[] = productCategoryIds.map(
+      (id) => ({ id }) as IProductCategory,
+    );
     const product = await this.productRepository.findOneOrFail({
       where: { id },
       relations: ['productCategories', 'pantryItems', 'createdBy'],
@@ -65,10 +62,7 @@ export class ProductService {
     return this.productRepository.save({
       ...product,
       ...rest,
-      productCategories:
-        productCategories.length > 0
-          ? productCategories
-          : product.productCategories,
+      productCategories,
     });
   }
 

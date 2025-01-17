@@ -26,7 +26,7 @@ export const productsApi = rootApi.injectEndpoints({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["Product"],
+      invalidatesTags: ["Product", { type: "Product", id: "LIST" }, "ProductCategory"],
     }),
 
     updateProduct: build.mutation<IProduct, { id: string; dto: IUpdateProductDto }>({
@@ -35,7 +35,7 @@ export const productsApi = rootApi.injectEndpoints({
         method: "PUT",
         body: dto,
       }),
-      invalidatesTags: ["Product"],
+      invalidatesTags: (result, error, { id }) => [{ type: "Product", id }, "Product", "ProductCategory"],
     }),
   }),
 });

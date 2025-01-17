@@ -25,11 +25,11 @@ const GENERAL_DETAILS_VIEW_DEF: TabbedViewDef<IProduct> = {
       accessorFn: (row) => row.productCategories?.map((category) => category.name).join(", ") ?? "N/A",
       accessorKey: "categories",
     },
-    {
-      header: "Created By",
-      accessorFn: (row) => row.createdBy?.username ?? "N/A",
-      accessorKey: "createdBy",
-    },
+    // {
+    //   header: "Created By",
+    //   accessorFn: (row) => row.createdBy?.username ?? "N/A",
+    //   accessorKey: "createdBy",
+    // },
   ],
 };
 
