@@ -47,7 +47,7 @@ function RequiredPantryItemDetailsSection() {
       <h3>Required Pantry Item Details</h3>
       <ProductsSingleSelect
         onChange={(product) => {
-          setValue("productId", Number(product.id));
+          setValue("productId", product.id);
         }}
       />
       <Form.Group>
