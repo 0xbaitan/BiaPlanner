@@ -10,13 +10,12 @@ export type RecipeTagsSelectProps = Omit<SelectInputProps<IRecipeTag>, "list" | 
 };
 export default function RecipeTagsMultiselect(props: RecipeTagsSelectProps) {
   const { data: recipeTags, isError } = useGetRecipeTagsQuery();
-
-  if (isError || !recipeTags || recipeTags.length === 0) return <div>Failed to fetch recipe tags</div>;
+  const noReceipeTags = isError || !recipeTags || recipeTags.length === 0;
 
   return (
     <Form.Group>
       <Form.Label>Recipe Tags</Form.Label>
-      <SelectInput<IRecipeTag> {...props} idSelector={(tag) => tag.id} list={recipeTags} nameSelector={(tag) => tag.name} multi create />
+      <SelectInput<IRecipeTag> {...props} idSelector={(tag) => tag.id} list={!noReceipeTags ? recipeTags : []} nameSelector={(tag) => tag.name} multi create noDataLabel="No recipe tags available" />
       <Form.Control.Feedback type="invalid">{props.error}</Form.Control.Feedback>
     </Form.Group>
   );

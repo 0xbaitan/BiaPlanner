@@ -1,6 +1,7 @@
+import Form from "react-bootstrap/esm/Form";
 import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { ICuisine } from "@biaplanner/shared";
-import SingleSelect from "@/components/forms/SingleSelect";
+import SelectInput from "@/components/forms/SelectInput";
 import { useGetCuisinesQuery } from "@/apis/CuisinesApi";
 
 export type CuisineSelectProps = {
@@ -10,10 +11,23 @@ export type CuisineSelectProps = {
 } & Omit<FormSelectProps, "value" | "onChange">;
 
 export default function CuisineSelect(props: CuisineSelectProps) {
-  const { initialValueId, onChange, error } = props;
-  const { data: cuisineOptions, isError } = useGetCuisinesQuery();
-  const initialValue = cuisineOptions?.find((cuisine) => cuisine.id === initialValueId);
-  if (isError || !cuisineOptions || cuisineOptions.length === 0) return <div>Failed to fetch cuisines</div>;
+  const { onChange, error } = props;
+  const { data: cuisineOptions, isSuccess } = useGetCuisinesQuery();
 
-  return <SingleSelect<ICuisine> initialValue={initialValue} error={error} onChange={onChange} options={cuisineOptions} idSelector={(brand) => Number(brand?.id)} nameSelector={(brand) => brand?.name} label="Cuisine" />;
+  return (
+    <Form.Group>
+      <Form.Label>Cuisines</Form.Label>
+      <SelectInput<ICuisine>
+        list={isSuccess ? cuisineOptions : []}
+        onChange={([selectedCuisine]) => {
+          onChange(selectedCuisine);
+        }}
+        idSelector={(cuisine) => String(cuisine?.id)}
+        nameSelector={(cuisine) => cuisine?.name}
+        noDataLabel="No cuisines available"
+        multi={false}
+      />
+      {error && <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>}
+    </Form.Group>
+  );
 }
