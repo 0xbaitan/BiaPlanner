@@ -34,3 +34,21 @@ export interface IUpdatePantryItemDto {
   manufacturedDate?: string;
   isExpired?: boolean;
 }
+
+export class CreatePantryItemDto implements ICreatePantryItemDto {
+  productId: string;
+  quantity: number;
+  expiryDate?: string;
+  bestBeforeDate?: string;
+  openedDate?: string;
+  manufacturedDate?: string;
+}
+
+export class UpdatePantryItemDto implements IUpdatePantryItemDto {
+  quantity?: number;
+  expiryDate?: string;
+  bestBeforeDate?: string;
+  openedDate?: string;
+  manufacturedDate?: string;
+  isExpired?: boolean;
+}
