@@ -11,4 +11,5 @@ export const modules = [
   PantryModule,
   ReminderModule,
   FilesModule,
+  MealPlanModule,
 ];

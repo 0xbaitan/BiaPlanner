@@ -5,11 +5,14 @@ import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pant
 import AddProductPage from "./features/admin/_products/pages/AddProductPage";
 import AdminBrandsPage from "./features/admin/_brands/pages/AdminBrandsPage";
 import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBrandPage";
+import AdminCreateCuisinePage from "./features/admin/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
+import AdminCuisinesPage from "./features/admin/_cuisines/pages/AdminCuisinesPage";
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
+import AdminUpdateCuisinePage from "./features/admin/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
@@ -61,6 +64,11 @@ export default function Routes() {
           <Route path="product-categories" element={<AdminProductCategoriesPage />} />
           <Route path="product-categories/create" element={<AdminCreateProductCategoryPage />} />
           <Route path="product-categories/update/:id" element={<AdminUpdateProductCategoryPage />} />
+
+          {/* Cuisine */}
+          <Route path="cuisines" element={<AdminCuisinesPage />} />
+          <Route path="cuisines/create" element={<AdminCreateCuisinePage />} />
+          <Route path="cuisines/update/:id" element={<AdminUpdateCuisinePage />} />
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>

@@ -54,6 +54,9 @@ export default function SideNavigationBar() {
           <MenuItem>
             <Link to={"/admin/product-categories"}>Product Categories</Link>
           </MenuItem>
+          <MenuItem>
+            <Link to={"/admin/cuisines"}>Cuisines</Link>
+          </MenuItem>
         </SubMenu>
         <MenuItem>Community </MenuItem>
         <MenuItem>Settings</MenuItem>
