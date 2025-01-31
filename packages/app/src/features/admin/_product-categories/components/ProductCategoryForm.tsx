@@ -35,7 +35,7 @@ export default function BrandForm(props: ProductCategoryFormProps) {
       name: initialValue?.name ?? "",
     },
     mode: "onBlur",
-    resolver: zodResolver(CreateBrandValidationSchema),
+    resolver: zodResolver(type === "create" ? CreateBrandValidationSchema : UpdateBrandValidationSchema),
   });
 
   const {

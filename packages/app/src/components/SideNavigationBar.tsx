@@ -1,4 +1,4 @@
-import { Menu, MenuItem, Sidebar, SubMenu, menuClasses, sidebarClasses } from "react-pro-sidebar";
+import { Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar";
 
 import { Link } from "react-router-dom";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
@@ -56,6 +56,9 @@ export default function SideNavigationBar() {
           </MenuItem>
           <MenuItem>
             <Link to={"/admin/cuisines"}>Cuisines</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={"/admin/recipe-tags"}>Recipe Tags</Link>
           </MenuItem>
         </SubMenu>
         <MenuItem>Community </MenuItem>

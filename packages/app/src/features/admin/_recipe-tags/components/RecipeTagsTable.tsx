@@ -1,27 +1,27 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { IProductCategory } from "@biaplanner/shared";
+import { IRecipeTag } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
-import { useDeleteProductCategoryMutation } from "@/apis/ProductCategoryApi";
+import { useDeleteRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
 
-export type ProductCategoriesTableProps = {
-  data: IProductCategory[];
+export type RecipeTagsTableProps = {
+  data: IRecipeTag[];
 };
 
-export default function ProductCategoriesTable(props: ProductCategoriesTableProps) {
+export default function RecipeTagsTable(props: RecipeTagsTableProps) {
   const { data } = props;
   const navigate = useNavigate();
 
-  const [deleteProductCategory, { isSuccess, isError, isLoading }] = useDeleteProductCategoryMutation();
+  const [deleteRecipeTag, { isSuccess, isError, isLoading }] = useDeleteRecipeTagMutation();
 
-  const { setItem } = useDefaultStatusToast<IProductCategory>({
+  const { setItem } = useDefaultStatusToast<IRecipeTag>({
     isSuccess,
     isError,
     isLoading,
-    idPrefix: "product-category",
+    idPrefix: "recipe-tag",
     idSelector: (entity) => entity.id,
     toastProps: {
       autoClose: 5000,
@@ -30,34 +30,34 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
     entityIdentifier: (entity) => entity.name,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IProductCategory>({
+  const { notify: notifyDeletion } = useDeletionToast<IRecipeTag>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
       setItem(item);
-      await deleteProductCategory(item.id);
+      await deleteRecipeTag(item.id);
     },
   });
 
   return (
-    <TabbedViewsTable<IProductCategory>
+    <TabbedViewsTable<IRecipeTag>
       data={data}
       views={[
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["category", "productCount"],
+          columnAccessorKeys: ["category", "recipeCount"],
           default: true,
 
           columnDefs: [
             {
-              header: "Category Name",
+              header: "Recipe Tag Name",
               accessorFn: (row) => row.name,
               accessorKey: "category",
             },
             {
-              header: "Product Count",
-              accessorFn: (row) => row.products?.length ?? 0,
-              accessorKey: "productCount",
+              header: "Recipe Count",
+              accessorFn: (row) => row.recipes?.length ?? 0,
+              accessorKey: "recipe",
             },
           ],
         },
@@ -65,7 +65,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Edit Category",
+          label: "Edit Recipe Tag",
           type: "edit",
           onClick: (row) => {
             navigate(`./update/${row.id}`);
@@ -74,7 +74,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
 
         {
           icon: FaTrashAlt,
-          label: "Delete Category",
+          label: "Delete Receipe Tag",
           type: "delete",
           onClick: (row) => {
             notifyDeletion(row);

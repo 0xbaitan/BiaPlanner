@@ -11,6 +11,7 @@ import AdminCuisinesPage from "./features/admin/_cuisines/pages/AdminCuisinesPag
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
+import AdminRecipeTagsPage from "./features/admin/_recipe-tags/pages/AdminRecipeTagsPage";
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import AdminUpdateCuisinePage from "./features/admin/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
@@ -69,6 +70,9 @@ export default function Routes() {
           <Route path="cuisines" element={<AdminCuisinesPage />} />
           <Route path="cuisines/create" element={<AdminCreateCuisinePage />} />
           <Route path="cuisines/update/:id" element={<AdminUpdateCuisinePage />} />
+
+          {/* Recipe Tags */}
+          <Route path="recipe-tags" element={<AdminRecipeTagsPage />} />
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>
