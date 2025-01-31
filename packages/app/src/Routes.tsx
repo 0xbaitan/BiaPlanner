@@ -7,6 +7,7 @@ import AdminBrandsPage from "./features/admin/_brands/pages/AdminBrandsPage";
 import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBrandPage";
 import AdminCreateCuisinePage from "./features/admin/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
+import AdminCreateRecipeTagPage from "./features/admin/_recipe-tags/pages/AdminCreateRecipeTagPage";
 import AdminCuisinesPage from "./features/admin/_cuisines/pages/AdminCuisinesPage";
 import AdminPagesContainer from "./features/admin/components/AdminPagesContainer";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
@@ -15,6 +16,7 @@ import AdminRecipeTagsPage from "./features/admin/_recipe-tags/pages/AdminRecipe
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import AdminUpdateCuisinePage from "./features/admin/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
+import AdminUpdateRecipeTagPage from "./features/admin/_recipe-tags/pages/AdminUpdateRecipeTagPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
 import HomePage from "@/pages/HomePage";
@@ -73,6 +75,8 @@ export default function Routes() {
 
           {/* Recipe Tags */}
           <Route path="recipe-tags" element={<AdminRecipeTagsPage />} />
+          <Route path="recipe-tags/create" element={<AdminCreateRecipeTagPage />} />
+          <Route path="recipe-tags/update/:id" element={<AdminUpdateRecipeTagPage />} />
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>

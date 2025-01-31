@@ -1,9 +1,11 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { IRecipe, IRecipeTag } from '@biaplanner/shared';
 
@@ -22,13 +24,13 @@ export class RecipeTagEntity implements IRecipeTag {
   })
   createdAt: string;
 
-  @CreateDateColumn({
+  @UpdateDateColumn({
     type: 'timestamp',
     nullable: false,
   })
   updatedAt: string;
 
-  @CreateDateColumn({
+  @DeleteDateColumn({
     type: 'timestamp',
     nullable: true,
   })

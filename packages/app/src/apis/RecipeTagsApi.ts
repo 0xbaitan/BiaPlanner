@@ -9,7 +9,7 @@ const recipeTagsApi = rootApi.injectEndpoints({
         url: "/meal-plan/recipe-tags",
         method: "GET",
       }),
-      providesTags: ["RecipeTag"],
+      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "RecipeTag" as const, id })), { type: "RecipeTag", id: "LIST" }] : [{ type: "RecipeTag", id: "LIST" }]),
     }),
 
     getRecipeTag: build.query<IRecipeTag, string>({

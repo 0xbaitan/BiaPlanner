@@ -4,9 +4,7 @@ import { useGetProductCategoryQuery, useUpdateProductCategoryMutation } from "@/
 
 import ProductCategoryForm from "../components/ProductCategoryForm";
 import { Status } from "@/hooks/useStatusToast";
-import { useGetProductByIdQuery } from "@/apis/ProductsApi";
 import { useParams } from "react-router-dom";
-import { useUpdateBrandMutation } from "@/apis/BrandsApi";
 
 export default function AdminUpdateProductCategoryPage() {
   const { id } = useParams();
