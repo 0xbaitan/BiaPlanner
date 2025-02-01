@@ -146,9 +146,16 @@ function startProject(project) {
   succeedWithMessage(result.stdout);
 }
 
-
 function dropSchema() {
   const result = shell.exec("docker exec server pnpm --filter server run schema:drop");
+  if (result.code !== 0) {
+    exitWithError(result.stderr);
+  }
+  succeedWithMessage(result.stdout);
+}
+
+function generateZodTypes(input, output) {
+  const result = shell.exec(`pnpm --filter shared run generate:zod ${input} ${output}`);
   if (result.code !== 0) {
     exitWithError(result.stderr);
   }
@@ -366,6 +373,28 @@ async function main() {
       (_yargs) => {},
       (_argv) => {
         dropSchema();
+      }
+    )
+    .command(
+      "generate:zod",
+      "Generate zod types",
+      (yargs) => {
+        yargs
+          .option("i", {
+            alias: "input",
+            describe: "The input file to generate types from",
+            type: "string",
+            demandOption: true,
+          })
+          .option("o", {
+            alias: "output",
+            describe: "The output file to generate types to",
+            type: "string",
+            demandOption: true,
+          });
+      },
+      (argv) => {
+        generateZodTypes(argv.i, argv.o);
       }
     )
     .help()

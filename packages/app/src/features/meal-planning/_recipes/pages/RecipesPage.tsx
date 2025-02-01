@@ -1,13 +1,30 @@
 import Button from "react-bootstrap/esm/Button";
+import RecipesTable from "../components/RecipesTable";
+import { useGetRecipesQuery } from "@/apis/RecipeApi";
 import { useNavigate } from "react-router-dom";
 
 export default function RecipesPage() {
   const navigate = useNavigate();
+  const {
+    data: recipes,
+
+    isError,
+    isLoading,
+  } = useGetRecipesQuery();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isError || !recipes) {
+    return <div>Failed to fetch recipes</div>;
+  }
+
   return (
     <div>
       <h1>Recipes Page</h1>
 
       <Button onClick={() => navigate("./create")}>Create Recipe</Button>
+      <RecipesTable data={recipes} />
     </div>
   );
 }

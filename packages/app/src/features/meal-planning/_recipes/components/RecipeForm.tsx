@@ -1,4 +1,4 @@
-import { DeepPartial, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
@@ -9,15 +9,46 @@ import IngredientInput from "./IngredientInput";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export type RecipeFormValues = (IUpdateRecipeDto | ICreateRecipeDto) & { ingredients: DeepPartial<IRecipeIngredient>[] };
+export type RecipeFormValues = IUpdateRecipeDto | ICreateRecipeDto;
+
+const ingredientsSchema = z.object({
+  productCategories: z.array(z.string()),
+  quantity: z.number(),
+  weightUnit: z.string().nullable(),
+  volumeUnit: z.string().nullable(),
+  approximateUnit: z.string().nullable(),
+});
+
+export const CreateRecipeValidationSchema = z.object({
+  ingredients: z.array(ingredientsSchema),
+  newTags: z.array(z.object({ name: z.string() })),
+  tags: z.array(z.object({ id: z.string() })),
+  title: z.string().min(1, { message: "Recipe title is required" }),
+  description: z.string().nullable(),
+  instructions: z.string().min(1, { message: "Recipe instructions are required" }),
+  difficultyLevel: z.string().min(1, { message: "Recipe difficulty level is required" }),
+  cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
+  prepTimeMagnitude: z.number().min(1, { message: "Recipe prep time magnitude is required" }),
+  prepTimeUnit: z.string().min(1, { message: "Recipe prep time unit is required" }),
+  cookTimeMagnitude: z.number().min(1, { message: "Recipe cook time magnitude is required" }),
+  cookTimeUnit: z.string().min(1, { message: "Recipe cook time unit is required" }),
+});
+
+export const UpdateRecipeTagValidationSchema = z.object({
+  id: z.string().min(1, { message: "Recipe tag id is required" }),
+});
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
+  type: "create" | "update";
   onSubmit: (values: RecipeFormValues) => void;
+  disableSubmit?: boolean;
 };
 export default function RecipeForm(props: RecipeFormProps) {
-  const { initialValue, onSubmit } = props;
+  const { initialValue, onSubmit, type, disableSubmit } = props;
   const formMethods = useForm<RecipeFormValues>({
     mode: "onSubmit",
     shouldUnregister: false,
@@ -33,6 +64,7 @@ export default function RecipeForm(props: RecipeFormProps) {
         },
       ],
     },
+    resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
 
   const { handleSubmit, setValue, getValues } = formMethods;
@@ -96,7 +128,9 @@ export default function RecipeForm(props: RecipeFormProps) {
           }}
           as="textarea"
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={disableSubmit}>
+          Submit
+        </Button>
       </Form>
     </FormProvider>
   );

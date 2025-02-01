@@ -125,7 +125,7 @@ export class RecipeEntity implements IRecipe {
     type: 'simple-array',
     nullable: true,
   })
-  defaultNumberOfServings: [number, number];
+  defaultNumberOfServings?: [number, number];
 
   @Column({
     type: 'text',

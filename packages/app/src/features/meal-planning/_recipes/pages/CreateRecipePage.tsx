@@ -14,6 +14,7 @@ export default function CreateRecipePage() {
 
       {isSuccess && <div>Recipe created successfully</div>}
       <RecipeForm
+        type="create"
         onSubmit={async (values) => {
           await createRecipeMutation(values as ICreateRecipeDto);
         }}
