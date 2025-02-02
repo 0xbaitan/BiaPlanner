@@ -21,7 +21,14 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "PantryItem" as const, id: "LIST" }],
     }),
+    getIngredientCompatiblePantryItems: build.query<IPantryItem[], { ingredientId: string }>({
+      query: ({ ingredientId }) => ({
+        url: `/pantry/items/ingredient-compatible/${ingredientId}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PantryItem" as const, id })), { type: "PantryItem" as const, id: "LIST" }] : [{ type: "PantryItem" as const, id: "LIST" }]),
+    }),
   }),
 });
 
-export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation } = pantryItemsApi;
+export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation, useGetIngredientCompatiblePantryItemsQuery } = pantryItemsApi;

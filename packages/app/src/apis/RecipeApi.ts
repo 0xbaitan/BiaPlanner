@@ -27,7 +27,7 @@ export const RecipeApi = rootApi.injectEndpoints({
         body,
       }),
 
-      invalidatesTags: (result, error) => [{ type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }],
+      invalidatesTags: (result, error) => [{ type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
 
     updateRecipe: build.mutation<IRecipe, IUpdateRecipeDto>({
@@ -37,7 +37,7 @@ export const RecipeApi = rootApi.injectEndpoints({
         body: dto,
       }),
 
-      invalidatesTags: (result, error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }],
+      invalidatesTags: (result, error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
 
     deleteRecipe: build.mutation<void, string>({
@@ -45,7 +45,7 @@ export const RecipeApi = rootApi.injectEndpoints({
         url: `/meal-plan/recipes/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }],
+      invalidatesTags: (result, error, id) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
   }),
 });

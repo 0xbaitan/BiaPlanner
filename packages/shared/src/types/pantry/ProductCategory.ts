@@ -1,9 +1,11 @@
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
+import { IRecipeIngredient } from "../meal-plans";
 
 export interface IProductCategory extends IBaseEntity {
   name: string;
   products?: IProduct[];
+  recipeIngredients?: IRecipeIngredient[];
 }
 
 export interface ICreateProductCategoryDto {

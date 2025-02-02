@@ -35,7 +35,25 @@ export const productsApi = rootApi.injectEndpoints({
         method: "PUT",
         body: dto,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Product", id }, "Product", "ProductCategory"],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Product", id },
+        {
+          type: "Product",
+          id: "LIST",
+        },
+        {
+          type: "ProductCategory",
+          id: "LIST",
+        },
+        {
+          type: "PantryItem",
+          id: "LIST",
+        },
+        {
+          type: "RecipeIngredient",
+          id: "LIST",
+        },
+      ],
     }),
   }),
 });

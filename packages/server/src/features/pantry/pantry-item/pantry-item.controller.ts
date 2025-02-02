@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
 import { CreatePantryItemDto, IPantryItem, IUser } from '@biaplanner/shared';
 import { plainToInstance } from 'class-transformer';
@@ -30,5 +38,17 @@ export default class PantryItemController {
       createdById,
     );
     return pantryItem;
+  }
+
+  @Get('/ingredient-compatible/:ingredientId')
+  async findIngredientCompatiblePantryItems(
+    @Param('ingredientId') ingredientId: string,
+  ): Promise<IPantryItem[]> {
+    const pantryItems =
+      await this.pantryItemService.findIngredientCompatiblePantryItems(
+        ingredientId,
+      );
+
+    return pantryItems;
   }
 }

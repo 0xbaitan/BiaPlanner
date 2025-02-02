@@ -9,9 +9,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IProduct, IProductCategory } from '@biaplanner/shared';
+import {
+  IProduct,
+  IProductCategory,
+  IRecipeIngredient,
+} from '@biaplanner/shared';
 
 import { ProductEntity } from '../product.entity';
+import { RecipeIngredientEntity } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.entity';
 
 @Entity('product-categories')
 export class ProductCategoryEntity implements IProductCategory {
@@ -23,6 +28,12 @@ export class ProductCategoryEntity implements IProductCategory {
 
   @ManyToMany(() => ProductEntity, (product) => product.productCategories)
   products?: IProduct[];
+
+  @ManyToMany(
+    () => RecipeIngredientEntity,
+    (recipeIngredient) => recipeIngredient.productCategories,
+  )
+  recipeIngredients?: IRecipeIngredient[];
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -96,4 +96,20 @@ export class ProductCategoryService {
       });
     return this.productCategoryRepository.remove(productClassification);
   }
+
+  async findIngredientCompatibleProductCategories(ingredientId: string) {
+    try {
+      return this.productCategoryRepository.find({
+        where: {
+          recipeIngredients: {
+            id: ingredientId,
+          },
+        },
+        relations: ['products'],
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
 }
