@@ -74,4 +74,10 @@ export class ConcreteRecipeEntity implements IConcreteRecipe {
     nullable: true,
   })
   numberOfServings?: [number, number];
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  planDate?: string;
 }
