@@ -28,6 +28,7 @@ import PantryInventoryPagesContainer from "./features/pantry-management/componen
 import RecipesPage from "./features/meal-planning/_recipes/pages/RecipesPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
+import UpdateRecipePage from "./features/meal-planning/_recipes/pages/UpdateRecipePage";
 
 export default function Routes() {
   return (
@@ -82,6 +83,7 @@ export default function Routes() {
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>
           <Route path="recipes" element={<RecipesPage />} />
           <Route path="recipes/create" element={<CreateRecipePage />} />
+          <Route path="recipes/update/:id" element={<UpdateRecipePage />} />
           <Route path="meal-plans" element={<MealPlansPage />} />
           <Route path="meal-plans/create" element={<CreateMealPlanPage />} />
         </Route>

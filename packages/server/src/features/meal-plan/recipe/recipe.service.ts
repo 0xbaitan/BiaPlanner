@@ -18,11 +18,7 @@ export class RecipeService {
   async findOne(id: string): Promise<IRecipe> {
     return this.recipeRepository.findOneOrFail({
       where: { id },
-      relations: {
-        cuisine: true,
-        ingredients: true,
-        tags: true,
-      },
+      relations: ['cuisine', 'ingredients', 'tags'],
     });
   }
   async findAll(): Promise<IRecipe[]> {
@@ -38,7 +34,10 @@ export class RecipeService {
 
   async updateRecipe(id: string, dto: IUpdateRecipeDto): Promise<IRecipe> {
     const recipe = await this.findOne(id);
+    delete recipe.ingredients;
+    delete recipe.tags;
     const updatedRecipe = this.recipeRepository.merge(recipe, dto);
+
     return this.recipeRepository.save(updatedRecipe);
   }
 

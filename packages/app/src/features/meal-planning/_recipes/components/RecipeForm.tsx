@@ -68,6 +68,7 @@ export default function RecipeForm(props: RecipeFormProps) {
   });
 
   const { handleSubmit, setValue, getValues } = formMethods;
+  console.log("initialValue", initialValue?.tags);
 
   return (
     <FormProvider {...formMethods}>
@@ -98,6 +99,7 @@ export default function RecipeForm(props: RecipeFormProps) {
         />
         <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />
         <PreparationTimeInput prepTimeMagnitude={initialValue?.prepTimeMagnitude} prepTimeUnit={initialValue?.prepTimeUnit} />
+
         <RecipeTagsMultiselect
           initialValues={initialValue?.tags}
           onChange={(tags) => {

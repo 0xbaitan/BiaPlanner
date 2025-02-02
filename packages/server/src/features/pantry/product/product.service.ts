@@ -45,11 +45,8 @@ export class ProductService {
       relations: ['productCategories', 'pantryItems', 'createdBy', 'brand'],
     });
 
+    delete product.productCategories;
     const updatedProduct = this.productRepository.merge(product, dto);
-
-    if (dto.productCategories.length === 0) {
-      updatedProduct.productCategories = [];
-    }
 
     return this.productRepository.save(updatedProduct);
   }

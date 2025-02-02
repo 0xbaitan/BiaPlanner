@@ -31,10 +31,10 @@ export const RecipeApi = rootApi.injectEndpoints({
     }),
 
     updateRecipe: build.mutation<IRecipe, IUpdateRecipeDto>({
-      query: (body) => ({
-        url: "/meal-plan/recipes",
+      query: (dto) => ({
+        url: `/meal-plan/recipes/${dto.id}`,
         method: "PUT",
-        body,
+        body: dto,
       }),
 
       invalidatesTags: (result, error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }],

@@ -22,6 +22,11 @@ export class RecipeController {
     return this.recipeService.findAll();
   }
 
+  @Get('/:id')
+  async findOne(@Param('id') id: string) {
+    return this.recipeService.findOne(id);
+  }
+
   @Post()
   async createRecipe(@Body() dto: CreateRecipeDto) {
     return this.recipeService.createRecipe(dto);
