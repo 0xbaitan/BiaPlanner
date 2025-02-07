@@ -1,5 +1,6 @@
 import { Approximates, CookingMeasurementUnit, Volumes, Weights } from "../units";
 
+import { CookingMeasurement } from "../CookingMeasurement";
 import { IBaseEntity } from "../BaseEntity";
 import { IProductCategory } from "../pantry";
 import { IRecipe } from "./Recipe";
@@ -7,10 +8,7 @@ import { IRecipe } from "./Recipe";
 export interface IRecipeIngredient extends IBaseEntity {
   title?: string;
   productCategories: IProductCategory[];
-  quantity: number;
-  volumeUnit: Volumes | null;
-  weightUnit: Weights | null;
-  approximateUnit: Approximates | null;
+  measurement?: CookingMeasurement;
   recipeId?: string;
   recipe?: IRecipe;
 }

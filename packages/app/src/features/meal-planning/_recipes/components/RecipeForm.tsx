@@ -1,5 +1,5 @@
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
-import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto } from "@biaplanner/shared";
+import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto, Weights } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
 import CuisineSelect from "./CuisineSelect";
@@ -57,10 +57,10 @@ export default function RecipeForm(props: RecipeFormProps) {
       ingredients: initialValue?.ingredients ?? [
         {
           productCategories: [],
-          quantity: 0,
-          weightUnit: null,
-          volumeUnit: null,
-          approximateUnit: null,
+          measurement: {
+            unit: Weights.GRAM,
+            magnitude: 0,
+          },
         },
       ],
     },
@@ -163,10 +163,10 @@ function IngredientListInput() {
         onClick={() =>
           append({
             productCategories: [],
-            quantity: 0,
-            weightUnit: null,
-            volumeUnit: null,
-            approximateUnit: null,
+            measurement: {
+              unit: Weights.GRAM,
+              magnitude: 0,
+            },
           })
         }
       >

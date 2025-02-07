@@ -1,5 +1,6 @@
 import {
   Approximates,
+  CookingMeasurement,
   CookingMeasurementUnit,
   IProductCategory,
   IRecipe,
@@ -73,34 +74,14 @@ export class RecipeIngredientEntity implements IRecipeIngredient {
   productCategories: IProductCategory[];
 
   @Column({
-    type: 'int',
-    default: 0,
-  })
-  quantity: number;
-
-  @Column({
-    type: 'enum',
-    enum: Volumes,
+    type: 'json',
     nullable: true,
   })
-  volumeUnit: Volumes | null;
-
-  @Column({
-    type: 'enum',
-    enum: Weights,
-    nullable: true,
-  })
-  weightUnit: Weights | null;
-
-  @Column({
-    type: 'enum',
-    enum: Approximates,
-    nullable: true,
-  })
-  approximateUnit: Approximates | null;
+  measurement?: CookingMeasurement;
 
   @Column({
     type: 'bigint',
+    nullable: true,
   })
   recipeId?: string;
 
