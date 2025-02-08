@@ -19,8 +19,37 @@ export default class PantryItemService {
     private pantryItemRepository: Repository<PantryItemEntity>,
     @Inject(RecipeIngredientService)
     private recipeIngredientService: RecipeIngredientService,
+
+    @Inject(ProductService) private productService: ProductService,
   ) {}
 
+  private async populatePantryItemMeasurements(pantryItem: IPantryItem) {
+    const product = await this.productService.readProductById(
+      String(pantryItem.productId),
+    );
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    pantryItem.totalMeasurements = {
+      magnitude: product.measurement.magnitude * pantryItem.quantity,
+      unit: product.measurement.unit,
+    };
+    pantryItem.consumedMeasurements = {
+      magnitude: 0,
+      unit: product.measurement.unit,
+    };
+    pantryItem.availableMeasurements = {
+      ...pantryItem.totalMeasurements,
+    };
+    pantryItem.reservedMeasurements = {
+      magnitude: 0,
+      unit: product.measurement.unit,
+    };
+
+    return pantryItem;
+  }
   async createPantryItem(
     dto: ICreatePantryItemDto,
     createdById: string,
@@ -29,7 +58,11 @@ export default class PantryItemService {
       ...dto,
       createdById,
     });
-    return await this.pantryItemRepository.save(pantryItem);
+
+    const pantryItemWithMeasurements =
+      await this.populatePantryItemMeasurements(pantryItem);
+
+    return await this.pantryItemRepository.save(pantryItemWithMeasurements);
   }
 
   async findAllPantryItems(createdById: string): Promise<IPantryItem[]> {

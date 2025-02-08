@@ -24,6 +24,7 @@ export default function CreatePantryItemForm(props: CreatePantryItemFormProps) {
   const onSubmitForm = useCallback(
     (_values) => {
       const values = pantryItemForm.getValues();
+
       console.log(values);
       onSubmit(values);
     },

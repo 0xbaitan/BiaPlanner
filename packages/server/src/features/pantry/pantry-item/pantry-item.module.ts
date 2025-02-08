@@ -12,6 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forFeature([PantryItemEntity]),
     ProductCategoryModule,
+    ProductModule,
     RecipeIngredientModule,
   ],
   controllers: [PantryItemController],

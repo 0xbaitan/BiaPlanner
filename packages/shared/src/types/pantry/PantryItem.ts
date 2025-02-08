@@ -16,6 +16,10 @@ export interface IPantryItem extends IBaseEntity {
   manufacturedDate?: string;
   isExpired?: boolean;
   reminders?: IReminder[];
+  totalMeasurements?: CookingMeasurement;
+  availableMeasurements?: CookingMeasurement;
+  consumedMeasurements?: CookingMeasurement;
+  reservedMeasurements?: CookingMeasurement;
 }
 
 export interface IPantryItemExtended extends IPantryItem {
@@ -31,6 +35,7 @@ export interface ICreatePantryItemDto {
   bestBeforeDate?: string;
   openedDate?: string;
   manufacturedDate?: string;
+  totalMeasurements?: CookingMeasurement;
 }
 
 export interface IUpdatePantryItemDto {
@@ -40,6 +45,7 @@ export interface IUpdatePantryItemDto {
   openedDate?: string;
   manufacturedDate?: string;
   isExpired?: boolean;
+  totalMeasurements?: CookingMeasurement;
 }
 
 export class CreatePantryItemDto implements ICreatePantryItemDto {
@@ -49,6 +55,7 @@ export class CreatePantryItemDto implements ICreatePantryItemDto {
   bestBeforeDate?: string;
   openedDate?: string;
   manufacturedDate?: string;
+  totalMeasurements?: CookingMeasurement | undefined;
 }
 
 export class UpdatePantryItemDto implements IUpdatePantryItemDto {
@@ -58,4 +65,5 @@ export class UpdatePantryItemDto implements IUpdatePantryItemDto {
   openedDate?: string;
   manufacturedDate?: string;
   isExpired?: boolean;
+  totalMeasurements?: CookingMeasurement | undefined;
 }

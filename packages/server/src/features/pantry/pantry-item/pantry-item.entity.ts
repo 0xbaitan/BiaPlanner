@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import {
+  CookingMeasurement,
   IBrand,
   IPantryItem,
   IProduct,
@@ -65,13 +66,13 @@ export class PantryItemEntity implements IPantryItem {
 
   @CreateDateColumn({
     type: 'timestamp',
-    nullable: false
+    nullable: false,
   })
   createdAt: string;
 
   @UpdateDateColumn({
     type: 'timestamp',
-    nullable: false
+    nullable: false,
   })
   updatedAt: string;
 
@@ -80,4 +81,16 @@ export class PantryItemEntity implements IPantryItem {
     nullable: true,
   })
   deletedAt?: string;
+
+  @Column({ type: 'json', nullable: true })
+  totalMeasurements?: CookingMeasurement;
+
+  @Column({ type: 'json', nullable: true })
+  availableMeasurements?: CookingMeasurement;
+
+  @Column({ type: 'json', nullable: true })
+  consumedMeasurements?: CookingMeasurement;
+
+  @Column({ type: 'json', nullable: true })
+  reservedMeasurements?: CookingMeasurement;
 }
