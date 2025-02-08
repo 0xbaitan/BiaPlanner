@@ -1,3 +1,4 @@
+import { CookingMeasurement } from "../CookingMeasurement";
 import { IBaseEntity } from "../BaseEntity";
 import { IConcreteRecipe } from "./ConcreteRecipe";
 import { IPantryItem } from "../pantry";
@@ -11,4 +12,5 @@ export interface IConcreteIngredient extends IBaseEntity {
   ingredient: IRecipeIngredient;
   pantryId: IPantryItem;
   pantryItem: IPantryItem;
+  measurement?: CookingMeasurement;
 }

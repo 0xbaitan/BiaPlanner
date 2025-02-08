@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import {
+  CookingMeasurement,
   IConcreteIngredient,
   IConcreteRecipe,
   IPantryItem,
@@ -84,4 +85,10 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
     onDelete: 'NO ACTION',
   })
   pantryItem: IPantryItem;
+
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  measurement: CookingMeasurement;
 }

@@ -1,6 +1,7 @@
 import { Approximates, IConcreteIngredient, ICookingMeasurement, IRecipeIngredient, Volumes, Weights } from "@biaplanner/shared";
 import { useEffect, useReducer } from "react";
 
+import ConcreteIngredientPantryItemSelect from "./ConcreteIngredientPantryItemSelect";
 import Form from "react-bootstrap/Form";
 import { PayloadAction } from "@reduxjs/toolkit";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
@@ -37,6 +38,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     <div>
       Ingredient: {recipeIngredient.title}
       Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
+      <ConcreteIngredientPantryItemSelect list={applicablePantryItems ?? []} onChange={(value) => console.log(value)} />
     </div>
   );
 }
