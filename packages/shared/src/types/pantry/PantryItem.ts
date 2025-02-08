@@ -1,3 +1,4 @@
+import { CookingMeasurement } from "../CookingMeasurement";
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
@@ -15,6 +16,12 @@ export interface IPantryItem extends IBaseEntity {
   manufacturedDate?: string;
   isExpired?: boolean;
   reminders?: IReminder[];
+}
+
+export interface IPantryItemExtended extends IPantryItem {
+  totalMeasurements?: CookingMeasurement;
+  availableMeasurements?: CookingMeasurement;
+  consumedMeasurements?: CookingMeasurement;
 }
 
 export interface ICreatePantryItemDto {

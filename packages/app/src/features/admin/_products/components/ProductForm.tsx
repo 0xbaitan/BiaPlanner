@@ -1,18 +1,14 @@
-import { Approximates, ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
 
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
 import CookingMeasurementInput from "./CookingMeasurementInput";
 import Form from "react-bootstrap/esm/Form";
-import MeasurementInput from "@/features/meal-planning/_recipes/components/MeasurementInput";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
-import VolumeInput from "@/components/forms/VolumeInput";
-import WeightInput from "@/components/forms/WeightInput";
-import { convertDurationStringToMilli } from "@biaplanner/shared/build/util";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -36,7 +32,7 @@ const ProductFormValidationSchema = z.object({
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit, type, submitButtonText = "Add Product" } = props;
+  const { initialValues, onSubmit, submitButtonText = "Add Product" } = props;
   const formMethods = useForm<IProduct>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
@@ -180,23 +176,23 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
           onChange={(e) => {
             setIsLoose(e.target.checked);
             if (!e.target.checked) {
-              setValue("measurements", []);
+              setValue("measurement", undefined);
             }
           }}
         />
         {!isLoose && (
           <CookingMeasurementInput
             initialValue={
-              initialValues?.measurements?.[0]
+              initialValues?.measurement
                 ? {
-                    magnitude: initialValues.measurements[0].magnitude,
-                    unit: initialValues.measurements[0].unit,
+                    magnitude: initialValues.measurement.magnitude,
+                    unit: initialValues.measurement.unit,
                   }
                 : undefined
             }
             onChange={(value) => {
               console.log("cooking measurement", value);
-              setValue("measurements", [value]);
+              setValue("measurement", value);
             }}
           />
         )}

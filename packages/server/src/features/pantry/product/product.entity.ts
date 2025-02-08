@@ -88,7 +88,7 @@ export class ProductEntity implements IProduct {
     type: 'json',
     default: null,
   })
-  measurements?: CookingMeasurement[];
+  measurement: CookingMeasurement;
 
   @Column({
     type: 'json',

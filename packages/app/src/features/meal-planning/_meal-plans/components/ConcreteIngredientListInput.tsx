@@ -1,3 +1,4 @@
+import ConcreteIngredientInput from "./ConcreteIngredientInput";
 import { IRecipe } from "@biaplanner/shared";
 import RecipeSelect from "./RecipeSelect";
 import { useState } from "react";
@@ -8,5 +9,10 @@ export default function ConcreteIngredientListInput(props: ConcreteIngredientInp
   const [recipe, setRecipe] = useState<IRecipe>();
   console.log(recipe);
 
-  return <RecipeSelect onChange={([selectedRecipe]) => setRecipe(selectedRecipe)} />;
+  return (
+    <>
+      <RecipeSelect onChange={([selectedRecipe]) => setRecipe(selectedRecipe)} />
+      {recipe && recipe.ingredients.map((ingredient) => <ConcreteIngredientInput key={ingredient.id} recipeIngredient={ingredient} onChange={(value) => console.log(value)} />)}
+    </>
+  );
 }

@@ -22,10 +22,10 @@ export interface IProduct extends IBaseEntity {
   createdById?: string;
   isGlobal?: boolean;
   isLoose?: boolean;
-  measurements?: CookingMeasurement[];
+  measurement: CookingMeasurement;
 }
 
-export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurements"> {
+export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement"> {
   productCategories: Pick<IProductCategory, "id">[];
 }
 
@@ -39,7 +39,7 @@ export class CreateProductDto implements ICreateProductDto {
   isLoose: boolean;
   name: string;
   createdById: string;
-  measurements: CookingMeasurement[];
+  measurement: CookingMeasurement;
   productCategories: Pick<IProductCategory, "id">[];
 }
 
@@ -50,6 +50,6 @@ export class UpdateProductDto implements IUpdateProductDto {
   timeTillExpiryAfterOpening?: TimeMeasurement;
   isLoose?: boolean;
   name?: string;
-  measurements?: CookingMeasurement[];
+  measurement: CookingMeasurement;
   productCategories?: Pick<IProductCategory, "id">[];
 }

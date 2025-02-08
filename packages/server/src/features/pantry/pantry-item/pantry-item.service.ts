@@ -6,6 +6,7 @@ import {
   CreatePantryItemDto,
   ICreatePantryItemDto,
   IPantryItem,
+  IPantryItemExtended,
 } from '@biaplanner/shared';
 import { ProductService } from '../product/product.service';
 import { ProductCategoryService } from '../product/category/product-category.service';
@@ -46,23 +47,45 @@ export default class PantryItemService {
 
   async findIngredientCompatiblePantryItems(
     ingredientId: string,
-  ): Promise<IPantryItem[]> {
+  ): Promise<IPantryItemExtended[]> {
     const ingredient =
       await this.recipeIngredientService.getRecipeIngredient(ingredientId);
     const productCategories = ingredient.productCategories;
 
     console.log('productCategories', productCategories);
-    const applicablePantryItems = await this.pantryItemRepository.find({
-      where: {
-        product: {
-          productCategories: {
-            id: In(productCategories.map((category) => category.id)),
+    try {
+      const applicablePantryItems = await this.pantryItemRepository.find({
+        where: {
+          product: {
+            productCategories: {
+              id: In(productCategories.map((category) => category.id)),
+            },
           },
         },
-      },
-      relations: ['product', 'product.brand', 'product.productCategories'],
-    });
+        relations: ['product', 'product.brand', 'product.productCategories'],
+      });
 
-    return applicablePantryItems;
+      return Promise.all(
+        applicablePantryItems.map(
+          async (pantryItem) => await this.extendPantryItem(pantryItem),
+        ),
+      );
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
+  private async extendPantryItem(
+    pantryItem: IPantryItem,
+  ): Promise<IPantryItemExtended> {
+    let extendedPantryItem = pantryItem as IPantryItemExtended;
+    extendedPantryItem.totalMeasurements = {
+      magnitude:
+        extendedPantryItem.product.measurement.magnitude *
+        extendedPantryItem.quantity,
+      unit: extendedPantryItem.product.measurement.unit,
+    };
+    return extendedPantryItem;
   }
 }

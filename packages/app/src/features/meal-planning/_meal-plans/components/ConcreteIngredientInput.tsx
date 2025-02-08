@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import { PayloadAction } from "@reduxjs/toolkit";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import TextInput from "@/components/forms/TextInput";
+import { useGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 export type ConcreteIngredientInputProps = {
   recipeIngredient: IRecipeIngredient;
@@ -13,19 +14,29 @@ export type ConcreteIngredientInputProps = {
 };
 
 export default function ConcreteIngredientInput(props: ConcreteIngredientInputProps) {
-  const { recipeIngredient} = props;
+  const { recipeIngredient } = props;
+  const {
+    data: applicablePantryItems,
+    isLoading,
+    isError,
+  } = useGetIngredientCompatiblePantryItemsQuery({
+    ingredientId: recipeIngredient.id,
+  });
+
+  console.log(applicablePantryItems);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
+  }
 
   return (
-
     <div>
       Ingredient: {recipeIngredient.title}
-      Requirement: {recipeIngredient.quantity} {recipeIngredient.approximateUnit}
+      Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
     </div>
-
-
-  )
-
+  );
 }
-
-
-

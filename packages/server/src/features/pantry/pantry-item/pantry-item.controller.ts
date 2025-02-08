@@ -8,7 +8,12 @@ import {
   Query,
 } from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
-import { CreatePantryItemDto, IPantryItem, IUser } from '@biaplanner/shared';
+import {
+  CreatePantryItemDto,
+  IPantryItem,
+  IPantryItemExtended,
+  IUser,
+} from '@biaplanner/shared';
 import { plainToInstance } from 'class-transformer';
 import { User } from 'src/features/user-info/authentication/user.decorator';
 
@@ -43,7 +48,7 @@ export default class PantryItemController {
   @Get('/ingredient-compatible/:ingredientId')
   async findIngredientCompatiblePantryItems(
     @Param('ingredientId') ingredientId: string,
-  ): Promise<IPantryItem[]> {
+  ): Promise<IPantryItemExtended[]> {
     const pantryItems =
       await this.pantryItemService.findIngredientCompatiblePantryItems(
         ingredientId,
