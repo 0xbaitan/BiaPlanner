@@ -19,7 +19,7 @@ export class BrandEntity implements IBrand {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
   @OneToMany(() => ProductEntity, (product) => product.brand)

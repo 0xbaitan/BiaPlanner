@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
-import { Between, In, Repository } from 'typeorm';
+import { Between, In, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import {
   CreatePantryItemDto,
   ICreatePantryItemDto,
@@ -80,7 +80,7 @@ export default class PantryItemService {
 
   async findIngredientCompatiblePantryItems(
     ingredientId: string,
-  ): Promise<IPantryItemExtended[]> {
+  ): Promise<IPantryItem[]> {
     const ingredient =
       await this.recipeIngredientService.getRecipeIngredient(ingredientId);
     const productCategories = ingredient.productCategories;
@@ -94,31 +94,15 @@ export default class PantryItemService {
               id: In(productCategories.map((category) => category.id)),
             },
           },
+          isExpired: false,
         },
         relations: ['product', 'product.brand', 'product.productCategories'],
       });
 
-      return Promise.all(
-        applicablePantryItems.map(
-          async (pantryItem) => await this.extendPantryItem(pantryItem),
-        ),
-      );
+      return applicablePantryItems;
     } catch (e) {
       console.error(e);
       return [];
     }
-  }
-
-  private async extendPantryItem(
-    pantryItem: IPantryItem,
-  ): Promise<IPantryItemExtended> {
-    let extendedPantryItem = pantryItem as IPantryItemExtended;
-    extendedPantryItem.totalMeasurements = {
-      magnitude:
-        extendedPantryItem.product.measurement.magnitude *
-        extendedPantryItem.quantity,
-      unit: extendedPantryItem.product.measurement.unit,
-    };
-    return extendedPantryItem;
   }
 }

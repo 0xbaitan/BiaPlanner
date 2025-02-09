@@ -58,7 +58,7 @@ export class PantryItemEntity implements IPantryItem {
   @Column({ type: 'timestamp', nullable: true })
   manufacturedDate?: string;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ default: false })
   isExpired?: boolean;
 
   @OneToMany(() => ReminderEntity, (reminder) => reminder.pantryItem)
