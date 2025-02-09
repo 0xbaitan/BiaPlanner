@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,10 +15,12 @@ import {
   IConcreteIngredient,
   IConcreteRecipe,
   IPantryItem,
+  IPantryItemPortion,
   IRecipeIngredient,
 } from '@biaplanner/shared';
 
 import { ConcreteRecipeEntity } from '../concrete-recipe/concrete-recipe.entity';
+import { PantryItemPortionEntity } from '../pantry-item-portion/pantry-item-portion.entity';
 import { RecipeIngredientEntity } from '../recipe-ingredient/recipe-ingredient.entity';
 
 @Entity('concrete-ingredients')
@@ -91,4 +94,10 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
     nullable: true,
   })
   measurement: CookingMeasurement;
+
+  @OneToMany(
+    () => PantryItemPortionEntity,
+    (portion) => portion.concreteIngredient,
+  )
+  pantryItemsWithPortions: IPantryItemPortion[];
 }

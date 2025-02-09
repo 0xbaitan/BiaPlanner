@@ -16,6 +16,7 @@ export type ConcreteIngredientInputProps = {
 
 export default function ConcreteIngredientInput(props: ConcreteIngredientInputProps) {
   const { recipeIngredient } = props;
+  
   const {
     data: applicablePantryItems,
     isLoading,
@@ -38,7 +39,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     <div>
       Ingredient: {recipeIngredient.title}
       Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
-      <ConcreteIngredientPantryItemSelect list={applicablePantryItems ?? []} onChange={(value) => console.log(value)} />
+      <ConcreteIngredientPantryItemSelect list={applicablePantryItems ?? []} onChange={({ pantryItem, measurement }) => console.log("Wee", pantryItem)} />
     </div>
   );
 }

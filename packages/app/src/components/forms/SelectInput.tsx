@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 
 export type Option = { id: string; name: string };
 
-export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer" | "itemRenderer"> & {
+export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer" | "itemRenderer" | "contentRenderer"> & {
   list: T[];
   idSelector: (item: T) => string;
   nameSelector: (item: T) => string;
@@ -14,6 +14,14 @@ export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "opti
     state: SelectState<Option>;
     methods: SelectMethods<Option>;
 
+    additionalMethods: {
+      getValueCounterPart: (option: Option) => T;
+    };
+  }) => JSX.Element;
+  contentRenderer?: (renderProps: {
+    state: SelectState<Option>;
+    props: SelectProps<Option>;
+    methods: SelectMethods<Option>;
     additionalMethods: {
       getValueCounterPart: (option: Option) => T;
     };
@@ -30,7 +38,7 @@ export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "opti
   }) => JSX.Element;
 };
 export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
-  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, onChange: onCustomChange, dropdownRenderer: customDropdownRender, itemRenderer: customItemRenderer, ...rest } = props;
+  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, onChange: onCustomChange, dropdownRenderer: customDropdownRender, itemRenderer: customItemRenderer, contentRenderer: customContentRenderer, ...rest } = props;
   const options: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
@@ -74,5 +82,29 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     [customItemRenderer, getValueCounterPart]
   );
 
-  return <Select {...rest} {...(customDropdownRender ? { dropdownRenderer } : {})} {...(customItemRenderer ? { itemRenderer } : {})} options={options} values={selectedOptions} onChange={onChange} labelField="name" valueField="id" />;
+  const contentRenderer = useCallback(
+    ({ state, props, methods }: { state: SelectState<Option>; props: SelectProps<Option>; methods: SelectMethods<Option> }) => {
+      return customContentRenderer?.({
+        state,
+        props,
+        methods,
+        additionalMethods: { getValueCounterPart },
+      })!;
+    },
+    [customContentRenderer, getValueCounterPart]
+  );
+
+  return (
+    <Select
+      {...rest}
+      {...(customDropdownRender ? { dropdownRenderer } : {})}
+      {...(customItemRenderer ? { itemRenderer } : {})}
+      {...(customContentRenderer ? { contentRenderer } : {})}
+      options={options}
+      values={selectedOptions}
+      onChange={onChange}
+      labelField="name"
+      valueField="id"
+    />
+  );
 }
