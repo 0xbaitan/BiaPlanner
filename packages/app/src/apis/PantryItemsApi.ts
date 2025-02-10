@@ -1,4 +1,4 @@
-import { ICreatePantryItemDto, IPantryItem } from "@biaplanner/shared";
+import { CookingMeasurementType, ICreatePantryItemDto, IPantryItem } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -21,10 +21,11 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "PantryItem" as const, id: "LIST" }],
     }),
-    getIngredientCompatiblePantryItems: build.query<IPantryItem[], { ingredientId: string }>({
-      query: ({ ingredientId }) => ({
-        url: `/pantry/items/ingredient-compatible/${ingredientId}`,
+    getIngredientCompatiblePantryItems: build.query<IPantryItem[], { ingredientId: string; measurementType: CookingMeasurementType }>({
+      query: ({ ingredientId, measurementType }) => ({
+        url: `/pantry/items/compatible`,
         method: "GET",
+        params: { ingredientId, measurementType },
       }),
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PantryItem" as const, id })), { type: "PantryItem" as const, id: "LIST" }] : [{ type: "PantryItem" as const, id: "LIST" }]),
     }),

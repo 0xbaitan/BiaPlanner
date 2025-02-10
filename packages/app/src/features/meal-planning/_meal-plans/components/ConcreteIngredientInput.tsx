@@ -1,10 +1,11 @@
-import { CookingMeasurement, IConcreteIngredient, ICreateConcreteIngredientDto, ICreatePantryItemPortionDto, IPantryItemPortion, IRecipeIngredient, Weights } from "@biaplanner/shared";
-import { DeepPartial, useFieldArray, useFormContext } from "react-hook-form";
+import { CookingMeasurement, IConcreteIngredient, ICreatePantryItemPortionDto, IRecipeIngredient, Weights, getCookingMeasurement } from "@biaplanner/shared";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { useMemo, useReducer } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import ConcreteIngredientPantryItemSelect from "./ConcreteIngredientPantryItemSelect";
 import { ConcreteRecipeFormValues } from "./MealPlanForm";
+import convertCookingMeasurement from "@biaplanner/shared/build/util/CookingMeasurementConversion";
 import { useGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 export type ConcreteIngredientInputProps = {
@@ -12,7 +13,6 @@ export type ConcreteIngredientInputProps = {
   initialValue?: Partial<IConcreteIngredient>;
   onChange: (value: Partial<IConcreteIngredient>) => void;
   index: number;
- 
 };
 
 export default function ConcreteIngredientInput(props: ConcreteIngredientInputProps) {
@@ -45,7 +45,17 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     }
   }, {});
 
-  console.log("Aggregate", pantryItemsWithPortions);
+  const summedPortion = useMemo(() => {
+    const totalMagnitude = Object.values(pantryItemsWithPortions)
+      .map(({ portion }) => convertCookingMeasurement(portion, targetMeasurement?.unit!))
+      .reduce((acc, curr) => acc + curr.magnitude, 0);
+
+    const summedPortion: CookingMeasurement = {
+      magnitude: totalMagnitude,
+      unit: targetMeasurement?.unit!,
+    };
+    return summedPortion;
+  }, [pantryItemsWithPortions, targetMeasurement]);
 
   const {
     data: applicablePantryItems,
@@ -53,6 +63,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     isError,
   } = useGetIngredientCompatiblePantryItemsQuery({
     ingredientId: recipeIngredient.id,
+    measurementType: getCookingMeasurement(targetMeasurement?.unit ?? Weights.GRAM).type,
   });
 
   const pantryItemPortionComponents = useMemo(() => {
@@ -75,7 +86,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
         </div>
       );
     });
-  }, [applicablePantryItems, pantryItemPortionFields]);
+  }, [applicablePantryItems, index, pantryItemPortionFields, removePantryItemPortionField, setValue]);
 
   console.log(applicablePantryItems);
 
@@ -91,6 +102,9 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     <div>
       Ingredient: {recipeIngredient.title}
       Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
+      <div>
+        Summed portion: {summedPortion.magnitude} {summedPortion.unit}
+      </div>
       {pantryItemPortionComponents}
       <Button
         onClick={() =>

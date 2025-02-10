@@ -15,12 +15,18 @@ export default function convertCookingMeasurement(currentMeasurement: CookingMea
 
   const currentUnitType = currentCookingMeasurement.type;
   const targetUnitType = targetCookingMeasurement.type;
-  if (currentUnitType === targetUnitType) {
-    throw new Error("Cannot convert between different types of measurements");
+  if (currentUnitType !== targetUnitType) {
+    return {
+      magnitude: 0,
+      unit: targetUnit,
+    };
   }
 
   if (currentUnitType === "approximate") {
-    throw new Error("Cannot convert approximate measurements");
+    return {
+      magnitude: 0,
+      unit: targetUnit,
+    };
   }
 
   const convertedMagnitude = convert(magnitude)
@@ -29,7 +35,10 @@ export default function convertCookingMeasurement(currentMeasurement: CookingMea
     .toFixed(4);
 
   if (isNaN(Number(convertedMagnitude))) {
-    throw new Error("Conversion failed");
+    return {
+      magnitude: 0,
+      unit: targetUnit,
+    };
   }
 
   return {

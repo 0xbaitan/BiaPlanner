@@ -1,5 +1,6 @@
-import { Approximates, CookingMeasurement, getCookingMeasurement } from "@biaplanner/shared";
+import { Approximates, CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import MeasurementInput, { MeasurementInputProps } from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import ScopedMeasurementSelect, { ScopedMeasurementSelectProps } from "@/features/meal-planning/_meal-plans/components/ScopedMeasurementSelect";
 import { useEffect, useReducer } from "react";
 
 import Form from "react-bootstrap/Form";
@@ -7,6 +8,7 @@ import Form from "react-bootstrap/Form";
 export type CookingMeasurementInputProps = {
   initialValue?: CookingMeasurement;
   onChange: (value: CookingMeasurement) => void;
+  scoped?: CookingMeasurementType | false;
 };
 
 type CookingMeasurementInputState = CookingMeasurement;
@@ -20,7 +22,7 @@ type CookingMeasurementInputAction = {
 
 const initialState: CookingMeasurementInputState = {
   magnitude: 0,
-  unit: Approximates.PIECE,
+  unit: Weights.GRAM,
 };
 
 function CookingMeasurementReducer(state: CookingMeasurementInputState, action: CookingMeasurementInputAction): CookingMeasurementInputState {
@@ -32,7 +34,7 @@ function CookingMeasurementReducer(state: CookingMeasurementInputState, action: 
   }
 }
 export default function MeasurementWithMagnitudeInput(props: CookingMeasurementInputProps) {
-  const { initialValue, onChange } = props;
+  const { initialValue, onChange, scoped } = props;
   const [measurement, setMeasurement] = useReducer((state: CookingMeasurementInputState, action: CookingMeasurementInputAction) => CookingMeasurementReducer(state, action), initialValue ?? initialState);
 
   useEffect(() => {
@@ -48,12 +50,22 @@ export default function MeasurementWithMagnitudeInput(props: CookingMeasurementI
           setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: parseFloat(e.target.value) } });
         }}
       />
-      <MeasurementInput
-        selectedValues={[getCookingMeasurement(measurement.unit)]}
-        onChange={([value]) => {
-          setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit: value.unit as CookingMeasurement["unit"] } });
-        }}
-      />
+      {scoped ? (
+        <ScopedMeasurementSelect
+          type={scoped}
+          onChange={(unit) => {
+            setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit } });
+          }}
+          initialValue={measurement.unit}
+        />
+      ) : (
+        <MeasurementInput
+          selectedValues={[getCookingMeasurement(measurement.unit)]}
+          onChange={([value]) => {
+            setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit: value.unit as CookingMeasurement["unit"] } });
+          }}
+        />
+      )}
     </Form.Group>
   );
 }

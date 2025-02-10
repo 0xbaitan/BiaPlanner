@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
 import {
+  CookingMeasurementType,
   CreatePantryItemDto,
   IPantryItem,
   IPantryItemExtended,
@@ -45,13 +46,16 @@ export default class PantryItemController {
     return pantryItem;
   }
 
-  @Get('/ingredient-compatible/:ingredientId')
+  @Get('/compatible')
   async findIngredientCompatiblePantryItems(
-    @Param('ingredientId') ingredientId: string,
+    @Query('measurementType') measurementType: CookingMeasurementType,
+    @Query('ingredientId') ingredientId: string,
   ): Promise<IPantryItemExtended[]> {
     const pantryItems =
       await this.pantryItemService.findIngredientCompatiblePantryItems(
         ingredientId,
+
+        measurementType,
       );
 
     return pantryItems;

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
 import { Between, In, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import {
+  CookingMeasurementType,
   CreatePantryItemDto,
   ICreatePantryItemDto,
   IPantryItem,
@@ -80,6 +81,7 @@ export default class PantryItemService {
 
   async findIngredientCompatiblePantryItems(
     ingredientId: string,
+    measurementType: CookingMeasurementType,
   ): Promise<IPantryItem[]> {
     const ingredient =
       await this.recipeIngredientService.getRecipeIngredient(ingredientId);
@@ -93,6 +95,7 @@ export default class PantryItemService {
             productCategories: {
               id: In(productCategories.map((category) => category.id)),
             },
+            measurementType,
           },
           isExpired: false,
         },

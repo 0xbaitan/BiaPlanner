@@ -53,6 +53,9 @@ export const productsApi = rootApi.injectEndpoints({
           type: "RecipeIngredient",
           id: "LIST",
         },
+        {
+          type: "PantryItem",
+        },
       ],
     }),
   }),

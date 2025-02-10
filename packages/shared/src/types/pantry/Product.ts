@@ -1,6 +1,6 @@
+import { CookingMeasurement, CookingMeasurementType } from "../CookingMeasurement";
 import { Volumes, Weights } from "../units";
 
-import { CookingMeasurement } from "../CookingMeasurement";
 import { IBaseEntity } from "../BaseEntity";
 import { IBrand } from "./Brand";
 import { IPantryItem } from "./PantryItem";
@@ -23,6 +23,7 @@ export interface IProduct extends IBaseEntity {
   isGlobal?: boolean;
   isLoose?: boolean;
   measurement: CookingMeasurement;
+  measurementType?: CookingMeasurementType;
 }
 
 export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement"> {

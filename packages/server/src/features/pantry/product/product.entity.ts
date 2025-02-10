@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import {
   CookingMeasurement,
+  CookingMeasurementType,
   IBrand,
   IPantryItem,
   IProduct,
@@ -89,6 +90,13 @@ export class ProductEntity implements IProduct {
     default: null,
   })
   measurement: CookingMeasurement;
+
+  @Column({
+    type: 'enum',
+    enum: CookingMeasurementType,
+    nullable: true,
+  })
+  measurementType?: CookingMeasurementType;
 
   @Column({
     type: 'json',

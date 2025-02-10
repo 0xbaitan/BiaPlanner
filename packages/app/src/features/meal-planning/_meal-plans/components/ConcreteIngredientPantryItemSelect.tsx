@@ -1,4 +1,4 @@
-import { CookingMeasurement, IPantryItem, IPantryItemExtended, IRecipe } from "@biaplanner/shared";
+import { CookingMeasurement, IPantryItem } from "@biaplanner/shared";
 import SelectInput, { SelectInputProps } from "@/components/forms/SelectInput";
 import { useEffect, useState } from "react";
 
@@ -13,7 +13,7 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
   const { onChange, ...rest } = props;
   const [pantryItem, setPantryItem] = useState<IPantryItem>();
   const [measurement, setMeasurement] = useState<CookingMeasurement>();
-
+  console.log("measurement", measurement);
   useEffect(() => {
     if (pantryItem && measurement) {
       onChange({ pantryItem, measurement });
@@ -60,6 +60,7 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
         }}
       />
       <CookingMeasurementInput
+        scoped={pantryItem?.product?.measurementType ?? false}
         onChange={(value) => {
           setMeasurement(value);
         }}
