@@ -14,7 +14,7 @@ export interface IPantryItemPortion extends IBaseEntity {
 export interface ICreatePantryItemPortionDto {
   pantryItemId: string;
   portion: CookingMeasurement;
-  concreteIngredientId: string;
+  concreteIngredientId?: string;
 }
 
 export interface IUpdatePantryItemPortionDto {

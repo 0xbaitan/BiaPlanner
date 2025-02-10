@@ -12,7 +12,7 @@ export default function ConcreteIngredientListInput(props: ConcreteIngredientInp
   return (
     <>
       <RecipeSelect onChange={([selectedRecipe]) => setRecipe(selectedRecipe)} />
-      {recipe && recipe.ingredients.map((ingredient) => <ConcreteIngredientInput key={ingredient.id} recipeIngredient={ingredient} onChange={(value) => console.log(value)} />)}
+      {recipe && recipe.ingredients.map((ingredient, index) => <ConcreteIngredientInput index={index} key={ingredient.id} recipeIngredient={ingredient} onChange={(value) => console.log(value)} />)}
     </>
   );
 }

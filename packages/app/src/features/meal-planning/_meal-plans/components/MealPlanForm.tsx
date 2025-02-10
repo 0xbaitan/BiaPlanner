@@ -1,21 +1,24 @@
-import { selectRecipe, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
+import { FormProvider, useForm } from "react-hook-form";
+import { ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
 
 import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
 import Form from "react-bootstrap/Form";
-import { IRecipeIngredient } from "@biaplanner/shared";
-import PantryItemSelect from "./PantryItemSelect";
-import RecipeIngredientSelect from "./RecipeIngredientSelect";
-import RecipeSelect from "./RecipeSelect";
-import { useState } from "react";
-import { useStoreDispatch } from "@/store";
+
+export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
 
 export default function MealPlanForm() {
+  const methods = useForm<ConcreteRecipeFormValues>({
+    defaultValues: {},
+    mode: "onBlur",
+  });
   return (
     <div>
       <h2>Meal Plan Page Form</h2>
-      <Form>
-        <ConcreteIngredientListInput />
-      </Form>
+      <FormProvider {...methods}>
+        <Form>
+          <ConcreteIngredientListInput />
+        </Form>
+      </FormProvider>
     </div>
   );
 }
