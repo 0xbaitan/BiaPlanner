@@ -9,6 +9,7 @@ export type CookingMeasurementInputProps = {
   initialValue?: CookingMeasurement;
   onChange: (value: CookingMeasurement) => void;
   scoped?: CookingMeasurementType | false;
+  disabled?: boolean;
 };
 
 type CookingMeasurementInputState = CookingMeasurement;
@@ -34,7 +35,7 @@ function CookingMeasurementReducer(state: CookingMeasurementInputState, action: 
   }
 }
 export default function MeasurementWithMagnitudeInput(props: CookingMeasurementInputProps) {
-  const { initialValue, onChange, scoped } = props;
+  const { initialValue, onChange, scoped, disabled } = props;
   const [measurement, setMeasurement] = useReducer((state: CookingMeasurementInputState, action: CookingMeasurementInputAction) => CookingMeasurementReducer(state, action), initialValue ?? initialState);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function MeasurementWithMagnitudeInput(props: CookingMeasurementI
   return (
     <Form.Group>
       <Form.Control
+        disabled={disabled}
         type="number"
         value={measurement.magnitude}
         onChange={(e) => {
@@ -52,6 +54,7 @@ export default function MeasurementWithMagnitudeInput(props: CookingMeasurementI
       />
       {scoped ? (
         <ScopedMeasurementSelect
+          disabled={disabled}
           type={scoped}
           onChange={(unit) => {
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit } });
@@ -60,6 +63,7 @@ export default function MeasurementWithMagnitudeInput(props: CookingMeasurementI
         />
       ) : (
         <MeasurementInput
+          disabled={disabled}
           selectedValues={[getCookingMeasurement(measurement.unit)]}
           onChange={([value]) => {
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit: value.unit as CookingMeasurement["unit"] } });

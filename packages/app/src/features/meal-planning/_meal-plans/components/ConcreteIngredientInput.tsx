@@ -72,6 +72,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
       return (
         <div key={pantryItemPortionFieldId}>
           <ConcreteIngredientPantryItemSelect
+            ingredientMeasurementUnit={recipeIngredient.measurement?.unit!}
             list={applicablePantryItems ?? []}
             onChange={({ pantryItem, measurement }) => {
               const pantryItemWithPortion: ICreatePantryItemPortionDto = {
@@ -86,7 +87,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
         </div>
       );
     });
-  }, [applicablePantryItems, index, pantryItemPortionFields, removePantryItemPortionField, setValue]);
+  }, [applicablePantryItems, index, pantryItemPortionFields, recipeIngredient.measurement?.unit, removePantryItemPortionField, setValue]);
 
   console.log(applicablePantryItems);
 

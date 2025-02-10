@@ -1,19 +1,21 @@
-import { CookingMeasurement, IPantryItem } from "@biaplanner/shared";
+import { CookingMeasurement, CookingMeasurementUnit, IPantryItem, getCookingMeasurement } from "@biaplanner/shared";
 import SelectInput, { SelectInputProps } from "@/components/forms/SelectInput";
 import { useEffect, useState } from "react";
 
 import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
 import dayjs from "dayjs";
+import { useFormContext } from "react-hook-form";
 
 export type ConcreteIngredientPantryItemSelectProps = Omit<SelectInputProps<IPantryItem>, "idSelector" | "nameSelector" | "onChange"> & {
   onChange: ({ pantryItem, measurement }: { pantryItem: IPantryItem; measurement: CookingMeasurement }) => void | Promise<void>;
+  ingredientMeasurementUnit: CookingMeasurementUnit;
 };
 
 export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngredientPantryItemSelectProps) {
-  const { onChange, ...rest } = props;
+  const { onChange, ingredientMeasurementUnit, ...rest } = props;
   const [pantryItem, setPantryItem] = useState<IPantryItem>();
   const [measurement, setMeasurement] = useState<CookingMeasurement>();
-  console.log("measurement", measurement);
+  const formMethods = useFormContext();
   useEffect(() => {
     if (pantryItem && measurement) {
       onChange({ pantryItem, measurement });
@@ -60,7 +62,12 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
         }}
       />
       <CookingMeasurementInput
-        scoped={pantryItem?.product?.measurementType ?? false}
+        disabled={!pantryItem}
+        initialValue={{
+          magnitude: 0,
+          unit: ingredientMeasurementUnit,
+        }}
+        scoped={pantryItem?.product?.measurementType ?? getCookingMeasurement(ingredientMeasurementUnit).type ?? false}
         onChange={(value) => {
           setMeasurement(value);
         }}
