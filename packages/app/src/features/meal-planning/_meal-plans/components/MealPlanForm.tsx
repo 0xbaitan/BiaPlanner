@@ -4,6 +4,7 @@ import { ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/
 import Button from "react-bootstrap/esm/Button";
 import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
 import Form from "react-bootstrap/Form";
+import MealTypeSelect from "./MealTypeSelect";
 
 export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
 
@@ -21,6 +22,11 @@ export default function MealPlanForm() {
             console.log(methods.getValues());
           })}
         >
+          <MealTypeSelect
+            onChange={(mealType) => {
+              methods.setValue("mealType", mealType);
+            }}
+          />
           <ConcreteIngredientListInput />
           <Button type="submit">Submit</Button>
         </Form>

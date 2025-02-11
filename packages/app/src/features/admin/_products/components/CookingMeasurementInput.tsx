@@ -1,7 +1,7 @@
 import { Approximates, CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import MeasurementInput, { MeasurementInputProps } from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import React, { useCallback, useEffect, useReducer } from "react";
 import ScopedMeasurementSelect, { ScopedMeasurementSelectProps } from "@/features/meal-planning/_meal-plans/components/ScopedMeasurementSelect";
-import { useEffect, useReducer } from "react";
 
 import Form from "react-bootstrap/Form";
 
@@ -10,6 +10,8 @@ export type CookingMeasurementInputProps = {
   onChange: (value: CookingMeasurement) => void;
   scoped?: CookingMeasurementType | false;
   disabled?: boolean;
+  minMagnitude?: number;
+  maxMagnitude?: number;
 };
 
 type CookingMeasurementInputState = CookingMeasurement;
@@ -34,24 +36,30 @@ function CookingMeasurementReducer(state: CookingMeasurementInputState, action: 
       return state;
   }
 }
-export default function MeasurementWithMagnitudeInput(props: CookingMeasurementInputProps) {
-  const { initialValue, onChange, scoped, disabled } = props;
+export default function CookingMeasurementInput(props: CookingMeasurementInputProps) {
+  const { initialValue, onChange, scoped, disabled, minMagnitude, maxMagnitude } = props;
   const [measurement, setMeasurement] = useReducer((state: CookingMeasurementInputState, action: CookingMeasurementInputAction) => CookingMeasurementReducer(state, action), initialValue ?? initialState);
 
   useEffect(() => {
     onChange(measurement);
   }, [measurement, onChange]);
 
+  const onMagnitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const magnitude = parseFloat(e.target.value);
+    if (isNaN(magnitude)) {
+      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: 0 } });
+    } else if (minMagnitude && magnitude < minMagnitude) {
+      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: minMagnitude } });
+    } else if (maxMagnitude && magnitude > maxMagnitude) {
+      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: maxMagnitude } });
+    } else {
+      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude } });
+    }
+  }, []);
+
   return (
     <Form.Group>
-      <Form.Control
-        disabled={disabled}
-        type="number"
-        value={measurement.magnitude}
-        onChange={(e) => {
-          setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: parseFloat(e.target.value) } });
-        }}
-      />
+      <Form.Control disabled={disabled} type="number" min={minMagnitude} max={maxMagnitude} value={measurement.magnitude} onChange={onMagnitudeChange} />
       {scoped ? (
         <ScopedMeasurementSelect
           disabled={disabled}

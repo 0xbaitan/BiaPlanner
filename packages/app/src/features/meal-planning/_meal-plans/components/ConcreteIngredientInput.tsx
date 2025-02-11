@@ -154,10 +154,13 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
   return (
     <div>
       Ingredient: {recipeIngredient.title}
-      Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
+      <div>
+        Requirement: {recipeIngredient.measurement?.magnitude} {recipeIngredient.measurement?.unit}
+      </div>
       <div>
         Summed portion: {summedPortion.magnitude} {summedPortion.unit}
       </div>
+      <div>{summedPortion.magnitude < recipeIngredient.measurement?.magnitude! ? <p>Not enough portion</p> : summedPortion.magnitude > recipeIngredient.measurement?.magnitude! ? <p>Too much portion</p> : <p>Just right</p>}</div>
       {pantryItemPortionComponents}
       <Button disabled={checkDisableEligibity()} onClick={addPantryItem}>
         Add from another pantry item

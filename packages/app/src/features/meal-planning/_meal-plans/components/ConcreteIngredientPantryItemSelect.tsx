@@ -1,10 +1,10 @@
 import { CookingMeasurement, CookingMeasurementUnit, IPantryItem, getCookingMeasurement } from "@biaplanner/shared";
 import SelectInput, { SelectInputProps } from "@/components/forms/SelectInput";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
+import convertCookingMeasurement from "@biaplanner/shared/build/util/CookingMeasurementConversion";
 import dayjs from "dayjs";
-import { useFormContext } from "react-hook-form";
 
 export type ConcreteIngredientPantryItemSelectProps = Omit<SelectInputProps<IPantryItem>, "idSelector" | "nameSelector" | "onChange"> & {
   onChange: ({ pantryItem, measurement }: { pantryItem: IPantryItem; measurement: CookingMeasurement }) => void | Promise<void>;
@@ -16,12 +16,32 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
   const { onChange, ingredientMeasurementUnit, initialValue, ...rest } = props;
   const [pantryItem, setPantryItem] = useState<IPantryItem | undefined>(initialValue);
   const [measurement, setMeasurement] = useState<CookingMeasurement>();
-  const formMethods = useFormContext();
+
   useEffect(() => {
     if (pantryItem && measurement) {
       onChange({ pantryItem, measurement });
     }
   }, [pantryItem, measurement, onChange]);
+
+  const maxMagnitude = useMemo(() => {
+    if (!pantryItem?.availableMeasurements || !measurement?.unit) {
+      return undefined;
+    }
+
+    const maxMagnitudeInBase = pantryItem.availableMeasurements.magnitude;
+    const unitInBase = pantryItem.availableMeasurements.unit;
+    const maxMagnitudeInExpectedUnit = convertCookingMeasurement(
+      {
+        magnitude: maxMagnitudeInBase,
+        unit: unitInBase,
+      },
+      measurement?.unit
+    );
+
+    return maxMagnitudeInExpectedUnit.magnitude;
+  }, [measurement?.unit, pantryItem?.availableMeasurements]);
+
+  console.log("maxMagnitude", maxMagnitude + " " + measurement?.unit);
 
   return (
     <>
@@ -64,6 +84,8 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
         }}
       />
       <CookingMeasurementInput
+        minMagnitude={0}
+        maxMagnitude={maxMagnitude}
         disabled={!pantryItem}
         initialValue={{
           magnitude: 0,
