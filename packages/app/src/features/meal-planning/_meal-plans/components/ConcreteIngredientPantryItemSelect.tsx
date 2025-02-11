@@ -9,11 +9,12 @@ import { useFormContext } from "react-hook-form";
 export type ConcreteIngredientPantryItemSelectProps = Omit<SelectInputProps<IPantryItem>, "idSelector" | "nameSelector" | "onChange"> & {
   onChange: ({ pantryItem, measurement }: { pantryItem: IPantryItem; measurement: CookingMeasurement }) => void | Promise<void>;
   ingredientMeasurementUnit: CookingMeasurementUnit;
+  initialValue?: IPantryItem;
 };
 
 export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngredientPantryItemSelectProps) {
-  const { onChange, ingredientMeasurementUnit, ...rest } = props;
-  const [pantryItem, setPantryItem] = useState<IPantryItem>();
+  const { onChange, ingredientMeasurementUnit, initialValue, ...rest } = props;
+  const [pantryItem, setPantryItem] = useState<IPantryItem | undefined>(initialValue);
   const [measurement, setMeasurement] = useState<CookingMeasurement>();
   const formMethods = useFormContext();
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
     <>
       <SelectInput<IPantryItem>
         {...rest}
+        selectedValues={pantryItem ? [pantryItem] : []}
         idSelector={(pantryItem) => pantryItem.id}
         nameSelector={(pantryItem) => pantryItem.product?.name ?? `pantry item (id: ${pantryItem.id})`}
         itemRenderer={({ item, itemIndex, props, state, methods, additionalMethods: { getValueCounterPart } }) => {

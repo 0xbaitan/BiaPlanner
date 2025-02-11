@@ -1,6 +1,6 @@
 import { CookingMeasurement, IConcreteIngredient, ICreatePantryItemPortionDto, IRecipeIngredient, Weights, getCookingMeasurement } from "@biaplanner/shared";
+import { useCallback, useMemo, useReducer } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { useMemo, useReducer } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import ConcreteIngredientPantryItemSelect from "./ConcreteIngredientPantryItemSelect";
@@ -17,7 +17,7 @@ export type ConcreteIngredientInputProps = {
 
 export default function ConcreteIngredientInput(props: ConcreteIngredientInputProps) {
   const { recipeIngredient, index } = props;
-  const { control, setValue } = useFormContext<ConcreteRecipeFormValues>();
+  const { control, setValue, getValues } = useFormContext<ConcreteRecipeFormValues>();
   const {
     fields: pantryItemPortionFields,
     append: appendPantryItemPortionField,
@@ -30,9 +30,12 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
 
   const targetMeasurement = recipeIngredient.measurement;
 
-  const [pantryItemsWithPortions, setPantryItemsWithPortions] = useReducer((state: Record<string, ICreatePantryItemPortionDto>, action: { type: "add" | "remove"; key: string; payload: ICreatePantryItemPortionDto }) => {
+  const [pantryItemsWithPortions, setPantryItemsWithPortions] = useReducer((state: Record<string, ICreatePantryItemPortionDto>, action: { type: "add" | "remove"; key: string; payload?: ICreatePantryItemPortionDto }) => {
     switch (action.type) {
       case "add":
+        if (!action.payload) {
+          return state;
+        }
         return {
           ...state,
           [action.key]: action.payload,
@@ -66,6 +69,47 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
     measurementType: getCookingMeasurement(targetMeasurement?.unit ?? Weights.GRAM).type,
   });
 
+  const getFilteredPantryItemsList = useCallback(
+    (pantryItemFieldIndex: number) => {
+      const selectedPantryItemIdForCurrentField = getValues(`confirmedIngredients.${index}.pantryItemsWithPortions.${pantryItemFieldIndex}.pantryItemId`);
+      const selectedPantryItemIdsExcludingCurrent =
+        getValues(`confirmedIngredients.${index}.pantryItemsWithPortions`)
+          ?.map((item) => item.pantryItemId)
+          .filter((id) => id !== selectedPantryItemIdForCurrentField) ?? [];
+      const unselectedPantryItems = applicablePantryItems?.filter((item) => !selectedPantryItemIdsExcludingCurrent.includes(item.id)) ?? [];
+      return unselectedPantryItems;
+    },
+    [applicablePantryItems, getValues, index]
+  );
+
+  const checkDisableEligibity = useCallback(() => {
+    const nextPantryItemFieldIndex = pantryItemPortionFields.length;
+    return getFilteredPantryItemsList(nextPantryItemFieldIndex).length === 0 && nextPantryItemFieldIndex > 0;
+  }, [getFilteredPantryItemsList, pantryItemPortionFields.length]);
+
+  const getInitialPantryItem = useCallback(
+    (pantryItemFieldIndex: number) => {
+      const pantryItems = getFilteredPantryItemsList(pantryItemFieldIndex);
+      if (pantryItems.length === 0) {
+        return undefined;
+      }
+      const selectedPantryItem = pantryItems[0];
+      return selectedPantryItem;
+    },
+    [getFilteredPantryItemsList]
+  );
+  const addPantryItem = useCallback(() => {
+    const nextPantryItemFieldIndex = pantryItemPortionFields.length;
+    const selectedPantryItem = getInitialPantryItem(nextPantryItemFieldIndex);
+    appendPantryItemPortionField({
+      pantryItemId: selectedPantryItem?.id!,
+      portion: {
+        magnitude: 0,
+        unit: targetMeasurement?.unit!,
+      },
+    });
+  }, [appendPantryItemPortionField, getInitialPantryItem, pantryItemPortionFields.length, targetMeasurement?.unit]);
+
   const pantryItemPortionComponents = useMemo(() => {
     return pantryItemPortionFields.map((field, fieldIndex) => {
       const { pantryItemPortionFieldId } = field;
@@ -73,7 +117,8 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
         <div key={pantryItemPortionFieldId}>
           <ConcreteIngredientPantryItemSelect
             ingredientMeasurementUnit={recipeIngredient.measurement?.unit!}
-            list={applicablePantryItems ?? []}
+            initialValue={getInitialPantryItem(fieldIndex)}
+            list={getFilteredPantryItemsList(fieldIndex)}
             onChange={({ pantryItem, measurement }) => {
               const pantryItemWithPortion: ICreatePantryItemPortionDto = {
                 pantryItemId: pantryItem.id,
@@ -83,11 +128,18 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
               setPantryItemsWithPortions({ type: "add", payload: pantryItemWithPortion, key: pantryItemPortionFieldId });
             }}
           />
-          <Button onClick={() => removePantryItemPortionField(fieldIndex)}>Remove</Button>
+          <Button
+            onClick={() => {
+              removePantryItemPortionField(fieldIndex);
+              setPantryItemsWithPortions({ type: "remove", key: pantryItemPortionFieldId });
+            }}
+          >
+            Remove
+          </Button>
         </div>
       );
     });
-  }, [applicablePantryItems, index, pantryItemPortionFields, recipeIngredient.measurement?.unit, removePantryItemPortionField, setValue]);
+  }, [getFilteredPantryItemsList, getInitialPantryItem, index, pantryItemPortionFields, recipeIngredient.measurement?.unit, removePantryItemPortionField, setValue]);
 
   console.log(applicablePantryItems);
 
@@ -107,17 +159,7 @@ export default function ConcreteIngredientInput(props: ConcreteIngredientInputPr
         Summed portion: {summedPortion.magnitude} {summedPortion.unit}
       </div>
       {pantryItemPortionComponents}
-      <Button
-        onClick={() =>
-          appendPantryItemPortionField({
-            pantryItemId: "",
-            portion: {
-              magnitude: 0,
-              unit: Weights.GRAM,
-            },
-          })
-        }
-      >
+      <Button disabled={checkDisableEligibity()} onClick={addPantryItem}>
         Add from another pantry item
       </Button>
     </div>

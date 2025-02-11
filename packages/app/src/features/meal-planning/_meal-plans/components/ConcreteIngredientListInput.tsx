@@ -17,7 +17,10 @@ export default function ConcreteIngredientListInput(props: ConcreteIngredientInp
     (recipe: IRecipe) => {
       setRecipe(recipe);
       formMethods.setValue("recipeId", recipe.id);
-      formMethods.setValue("confirmedIngredients", []);
+      formMethods.setValue(
+        "confirmedIngredients",
+        recipe.ingredients.map((ingredient) => ({ ingredientId: ingredient.id }))
+      );
     },
     [formMethods, setRecipe]
   );
