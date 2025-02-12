@@ -50,9 +50,9 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
 
   @Column({
     type: 'bigint',
-    nullable: false,
+    nullable: true,
   })
-  concreteRecipeId: string;
+  concreteRecipeId?: string;
 
   @ManyToOne(
     () => ConcreteRecipeEntity,
@@ -61,39 +61,20 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
   @JoinColumn({
     name: 'concreteRecipeId',
   })
-  concreteRecipe: IConcreteRecipe;
+  concreteRecipe?: IConcreteRecipe;
 
   @Column({
     type: 'bigint',
-    nullable: false,
+    nullable: true,
   })
-  ingredientId: string;
+  ingredientId?: string;
 
   @OneToOne(() => RecipeIngredientEntity, {
     eager: true,
     cascade: true,
     onDelete: 'NO ACTION',
   })
-  ingredient: IRecipeIngredient;
-
-  @Column({
-    type: 'bigint',
-    nullable: true,
-  })
-  pantryId: IPantryItem;
-
-  @OneToOne(() => RecipeIngredientEntity, {
-    eager: true,
-    cascade: true,
-    onDelete: 'NO ACTION',
-  })
-  pantryItem: IPantryItem;
-
-  @Column({
-    type: 'json',
-    nullable: true,
-  })
-  measurement: CookingMeasurement;
+  ingredient?: IRecipeIngredient;
 
   @OneToMany(
     () => PantryItemPortionEntity,

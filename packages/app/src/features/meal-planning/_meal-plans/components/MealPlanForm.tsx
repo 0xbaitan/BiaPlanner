@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
+import { IConcreteRecipe, ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/esm/Button";
 import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
@@ -8,23 +8,33 @@ import MealTypeSelect from "./MealTypeSelect";
 
 export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
 
-export default function MealPlanForm() {
+export type MealPlanFormValues = {
+  type: "create" | "update";
+  disableSubmit?: boolean;
+  initialValue?: Partial<IConcreteRecipe>;
+  onSubmit: (values: ConcreteRecipeFormValues) => void;
+};
+
+export default function MealPlanForm(props: MealPlanFormValues) {
+  const { initialValue, onSubmit, type } = props;
   const methods = useForm<ConcreteRecipeFormValues>({
-    defaultValues: {},
+    defaultValues: initialValue ?? {},
     mode: "onBlur",
   });
+
+  const { handleSubmit, getValues, setValue } = methods;
   return (
     <div>
       <h2>Meal Plan Page Form</h2>
       <FormProvider {...methods}>
         <Form
-          onSubmit={methods.handleSubmit(() => {
-            console.log(methods.getValues());
+          onSubmit={handleSubmit(() => {
+            onSubmit(getValues());
           })}
         >
           <MealTypeSelect
             onChange={(mealType) => {
-              methods.setValue("mealType", mealType);
+              setValue("mealType", mealType);
             }}
           />
           <ConcreteIngredientListInput />

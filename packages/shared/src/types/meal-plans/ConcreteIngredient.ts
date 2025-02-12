@@ -8,10 +8,10 @@ import { IRecipe } from "./Recipe";
 import { IRecipeIngredient } from "./RecipeIngredient";
 
 export interface IConcreteIngredient extends IBaseEntity {
-  concreteRecipeId: string;
-  concreteRecipe: IConcreteRecipe;
-  ingredientId: string;
-  ingredient: IRecipeIngredient;
+  concreteRecipeId?: string;
+  concreteRecipe?: IConcreteRecipe;
+  ingredientId?: string;
+  ingredient?: IRecipeIngredient;
   pantryItemsWithPortions?: IPantryItemPortion[];
 }
 
