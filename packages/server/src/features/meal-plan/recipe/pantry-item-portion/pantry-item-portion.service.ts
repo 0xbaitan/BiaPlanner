@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { PantryItemPortionEntity } from './pantry-item-portion.entity';
 import { ICreatePantryItemPortionDto } from '@biaplanner/shared';
+import PantryItemService from '@/features/pantry/pantry-item/pantry-item.service';
 
 @Injectable()
 export class PantryItemPortionService {
   constructor(
     @InjectRepository(PantryItemPortionEntity)
     private pantryItemPortionRepository: Repository<PantryItemPortionEntity>,
+
+    @Inject(PantryItemService) private pantryItemService: PantryItemService,
   ) {}
 
   async create(dto: ICreatePantryItemPortionDto) {
-    const pantryItemPortion = this.pantryItemPortionRepository.create(dto);
-    return this.pantryItemPortionRepository.save(pantryItemPortion);
+    let pantryItemPortion = this.pantryItemPortionRepository.create(dto);
+    pantryItemPortion =
+      await this.pantryItemPortionRepository.save(pantryItemPortion);
+    await this.pantryItemService.reservePortion(pantryItemPortion);
+    return pantryItemPortion;
   }
 }

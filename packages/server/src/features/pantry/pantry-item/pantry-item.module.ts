@@ -17,6 +17,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [PantryItemController],
   providers: [PantryItemService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, PantryItemService],
 })
 export default class PantryItemModule {}

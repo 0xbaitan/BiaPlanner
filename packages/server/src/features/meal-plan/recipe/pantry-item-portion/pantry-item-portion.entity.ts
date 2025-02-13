@@ -50,7 +50,7 @@ export class PantryItemPortionEntity implements IPantryItemPortion {
   })
   pantryItemId: string;
 
-  @OneToOne(() => PantryItemEntity)
+  @ManyToOne(() => PantryItemEntity)
   @JoinColumn({
     name: 'pantryItemId',
     referencedColumnName: 'id',

@@ -8,10 +8,12 @@ import {
   ICreatePantryItemDto,
   IPantryItem,
   IPantryItemExtended,
+  IPantryItemPortion,
 } from '@biaplanner/shared';
 import { ProductService } from '../product/product.service';
 import { ProductCategoryService } from '../product/category/product-category.service';
 import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
+import convertCookingMeasurement from '@biaplanner/shared/build/util/CookingMeasurementConversion';
 
 @Injectable()
 export default class PantryItemService {
@@ -89,23 +91,76 @@ export default class PantryItemService {
 
     console.log('productCategories', productCategories);
     try {
-      const applicablePantryItems = await this.pantryItemRepository.find({
-        where: {
-          product: {
-            productCategories: {
-              id: In(productCategories.map((category) => category.id)),
-            },
-            measurementType,
+      const applicablePantryItems = await this.pantryItemRepository
+        .createQueryBuilder('pantryItem')
+        .leftJoinAndSelect('pantryItem.product', 'product')
+        .leftJoinAndSelect('product.brand', 'brand')
+        .leftJoinAndSelect('product.productCategories', 'productCategories')
+        .where('productCategories.id IN (:...productCategoryIds)', {
+          productCategoryIds: productCategories.map((category) => category.id),
+        })
+        .andWhere('product.measurementType = :measurementType', {
+          measurementType,
+        })
+        .andWhere('pantryItem.isExpired = :isExpired', { isExpired: false })
+        .andWhere('pantryItem.availableMeasurements IS NOT NULL')
+        .andWhere(
+          'JSON_EXTRACT(pantryItem.availableMeasurements, "$.magnitude") > :magnitude',
+          {
+            magnitude: 0,
           },
-          isExpired: false,
-        },
-        relations: ['product', 'product.brand', 'product.productCategories'],
-      });
+        )
+        .getMany();
 
+      console.log('applicablePantryItems', applicablePantryItems);
       return applicablePantryItems;
     } catch (e) {
       console.error(e);
       return [];
     }
+  }
+
+  async reservePortion(pantryItemPortion: IPantryItemPortion) {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: pantryItemPortion.pantryItemId },
+    });
+
+    const convertedPortion = convertCookingMeasurement(
+      pantryItemPortion.portion,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new Error('Not enough available');
+    }
+
+    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.reservedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return this.pantryItemRepository.save(pantryItem);
+  }
+
+  async consumePantryItemPortion(pantryItemPortion: IPantryItemPortion) {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: pantryItemPortion.pantryItemId },
+    });
+
+    const convertedPortion = convertCookingMeasurement(
+      pantryItemPortion.portion,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.reservedMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new Error('Not enough reserved');
+    }
+
+    pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return this.pantryItemRepository.save(pantryItem);
   }
 }

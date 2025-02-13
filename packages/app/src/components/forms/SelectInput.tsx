@@ -79,7 +79,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         additionalMethods: { getValueCounterPart },
       })!;
     },
-    [customItemRenderer, getValueCounterPart]
+    [customItemRenderer, getValueCounterPart, list]
   );
 
   const contentRenderer = useCallback(
@@ -91,7 +91,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         additionalMethods: { getValueCounterPart },
       })!;
     },
-    [customContentRenderer, getValueCounterPart]
+    [customContentRenderer, getValueCounterPart, list]
   );
 
   return (

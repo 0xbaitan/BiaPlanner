@@ -1,5 +1,5 @@
 import { CookingMeasurement, CookingMeasurementUnit, IPantryItem, getCookingMeasurement } from "@biaplanner/shared";
-import SelectInput, { SelectInputProps } from "@/components/forms/SelectInput";
+import SelectInput, { Option, SelectInputProps } from "@/components/forms/SelectInput";
 import { useEffect, useMemo, useState } from "react";
 
 import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
@@ -66,10 +66,16 @@ export default function ConcreteIngredientPantryItemSelect(props: ConcreteIngred
           );
         }}
         contentRenderer={({ state, props, methods, additionalMethods: { getValueCounterPart } }) => {
-          if (state.values.length === 0) {
+          let firstOption: Option | undefined;
+          if (!state.values || state.values.length === 0 || !(firstOption = state.values.at(0))) {
             return <div>No items available in your pantry</div>;
           }
-          const actualItem = getValueCounterPart(state.values[0]);
+          const actualItem = getValueCounterPart(firstOption);
+
+          if (!actualItem) {
+            return <div>No items available in your pantry</div>;
+          }
+
           console.log("actualItem", actualItem);
           return (
             <div>

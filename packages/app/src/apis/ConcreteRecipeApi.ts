@@ -10,7 +10,14 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["ConcreteRecipe", { type: "ConcreteRecipe", id: "LIST" }],
+      invalidatesTags: [
+        "ConcreteRecipe",
+        { type: "ConcreteRecipe", id: "LIST" },
+        {
+          type: "PantryItem",
+          id: "COMPATIBLE",
+        },
+      ],
     }),
   }),
 });

@@ -16,20 +16,22 @@ export type MealPlanFormValues = {
 };
 
 export default function MealPlanForm(props: MealPlanFormValues) {
-  const { initialValue, onSubmit, type } = props;
+  const { initialValue, onSubmit } = props;
   const methods = useForm<ConcreteRecipeFormValues>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
   });
 
-  const { handleSubmit, getValues, setValue } = methods;
+  const { handleSubmit, getValues, setValue, reset } = methods;
   return (
     <div>
       <h2>Meal Plan Page Form</h2>
       <FormProvider {...methods}>
         <Form
           onSubmit={handleSubmit(() => {
-            onSubmit(getValues());
+            const values = getValues();
+            reset();
+            onSubmit(values);
           })}
         >
           <MealTypeSelect

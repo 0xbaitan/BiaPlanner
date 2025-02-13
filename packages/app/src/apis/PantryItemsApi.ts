@@ -27,7 +27,8 @@ export const pantryItemsApi = rootApi.injectEndpoints({
         method: "GET",
         params: { ingredientId, measurementType },
       }),
-      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PantryItem" as const, id })), { type: "PantryItem" as const, id: "LIST" }] : [{ type: "PantryItem" as const, id: "LIST" }]),
+      keepUnusedDataFor: 0,
+      providesTags: [{ type: "PantryItem", id: "COMPATIBLE" }],
     }),
   }),
 });

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import ConcreteIngredientInput from "./ConcreteIngredientInput";
 import { ConcreteRecipeFormValues } from "./MealPlanForm";
@@ -25,10 +25,18 @@ export default function ConcreteIngredientListInput(props: ConcreteIngredientInp
     [formMethods, setRecipe]
   );
 
+  const ingredientInputs = useMemo(() => {
+    if (!recipe) {
+      return [];
+    }
+
+    return recipe.ingredients.map((ingredient, index) => <ConcreteIngredientInput key={ingredient.id} recipeIngredient={ingredient} index={index} onChange={(value) => console.log(value)} />);
+  }, [recipe]);
+
   return (
     <>
       <RecipeSelect onChange={([selectedRecipe]) => changeRecipe(selectedRecipe)} />
-      {recipe && recipe.ingredients.map((ingredient, index) => <ConcreteIngredientInput index={index} key={ingredient.id} recipeIngredient={ingredient} onChange={(value) => console.log(value)} />)}
+      {ingredientInputs}
     </>
   );
 }
