@@ -23,7 +23,7 @@ export class ConcreteRecipeService {
 
   async findAll() {
     return this.concreteRecipeRepository.find({
-      relations: ['recipe', 'confirmedIngredients'],
+      relations: ['recipe'],
     });
   }
 

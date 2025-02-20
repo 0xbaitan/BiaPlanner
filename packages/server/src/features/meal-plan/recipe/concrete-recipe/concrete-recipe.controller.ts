@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ConcreteRecipeService } from './concrete-recipe.service';
 import { CreateConcreteRecipeDto, IConcreteRecipe } from '@biaplanner/shared';
 
@@ -8,6 +8,11 @@ export class ConcreteRecipeController {
     @Inject(ConcreteRecipeService)
     private readonly concreteRecipeService: ConcreteRecipeService,
   ) {}
+
+  @Get()
+  async findAll(): Promise<IConcreteRecipe[]> {
+    return this.concreteRecipeService.findAll();
+  }
 
   @Post()
   async create(@Body() dto: CreateConcreteRecipeDto): Promise<IConcreteRecipe> {
