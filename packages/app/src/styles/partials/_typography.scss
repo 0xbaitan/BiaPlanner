@@ -1,23 +1,36 @@
 @font-face {
-    font-family: 'WorkSans';
-    src: url("../../../public/fonts/WorkSans/WorkSans-VariableFont_wght.ttf") format('truetype'),
-         url('../../../public/fonts/WorkSans/WorkSans-Italic-VariableFont_wght.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
+  font-family: "Mulish";
+  src:
+    url("../../../public/fonts/Mulish/Mulish-VariableFont_wght.ttf") format("truetype"),
+    url("../../../public/fonts/Mulish/Mulish-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
-  $font-family-base: 'WorkSans', sans-serif;
-  $font-family-heading: 'WorkSans', serif;
-  
-  $font-size-base: 16px;
-  $font-size-heading: 1.8rem;
-  
-  $font-weight-normal: 400;
-  $font-weight-bold: 700;
+@font-face {
+  font-family: "Lora";
+  src:
+    url("../../../public/fonts/Lora/Lora-VariableFont_wght.ttf") format("truetype"),
+    url("../../../public/fonts/Lora/Lora-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+}
 
-  @mixin work-sans-font($size, $weight: normal, $style: normal) {
-     font-family: $font-family-base;
-     font-size: $size;
-     font-weight: $weight;
-     font-style: $style;
-   }
+$font-size-base: 16px;
+$font-size-heading: 1.8rem;
+
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+
+@mixin mulish-font($size, $weight: normal, $style: normal) {
+  font-family: "Mulish", sans-serif;
+  font-size: $size;
+  font-weight: $weight;
+  font-style: $style;
+}
+
+@mixin lora-font($size, $weight: normal, $style: normal) {
+  font-family: "Lora", serif;
+  font-size: $size;
+  font-weight: $weight;
+  font-style: $style;
+}

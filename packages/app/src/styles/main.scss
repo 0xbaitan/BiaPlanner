@@ -1,5 +1,5 @@
 @use "partials/colors" as colors;
-
+@use "partials/typography" as typography;
 @import "bootstrap/scss/functions";
 
 @import "bootstrap/scss/variables";
@@ -12,6 +12,10 @@
 // .btn-primary {
 //   @include button-variant(colors.$primary, colors.$primary, $white);
 // }
+
+body {
+  @include typography.lora-font(typography.$font-size-base);
+}
 
 .\+flex {
   display: flex;
