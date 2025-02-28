@@ -264,6 +264,9 @@ importers:
       sass-loader:
         specifier: ^7.2.0
         version: 7.3.1(webpack@5.96.1)
+      sass-resources-loader:
+        specifier: ^2.2.5
+        version: 2.2.5
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -332,6 +335,9 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
+      craco-sass-resources-loader:
+        specifier: ^1.1.0
+        version: 1.1.0(@craco/craco@7.1.0(@types/node@16.18.114)(postcss@8.4.47)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5))(typescript@4.9.5))(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5))
       crypto-browserify:
         specifier: ^3.12.1
         version: 3.12.1
@@ -3969,6 +3975,12 @@ packages:
 
   country-flag-icons@1.5.13:
     resolution: {integrity: sha512-4JwHNqaKZ19doQoNcBjsoYA+I7NqCH/mC/6f5cBWvdKzcK5TMmzLpq3Z/syVHMHJuDGFwJ+rPpGizvrqJybJow==}
+
+  craco-sass-resources-loader@1.1.0:
+    resolution: {integrity: sha512-JRRpuK5xKoaH3Zch/geGhoVrE5b/b4MTV2wOUFA+otZ5ANn+58+UQmA+RYSUubJFR+62i2leo8n8RMZFNSMpLg==}
+    peerDependencies:
+      '@craco/craco': ^3.3.1
+      react-scripts: ^2.1.3
 
   create-ecdh@4.0.4:
     resolution: {integrity: sha512-mf+TCx8wWc9VpuxfP2ht0iSISLZnt0JgWlrOKZiNqyUZWnjIaCIVNQArMHnCZKfEYRg6IM7A+NeJoN8gf/Ws0A==}
@@ -8380,6 +8392,9 @@ packages:
     engines: {node: '>= 6.9.0'}
     peerDependencies:
       webpack: ^3.0.0 || ^4.0.0
+
+  sass-resources-loader@2.2.5:
+    resolution: {integrity: sha512-po8rfETH9cOQACWxubT/1CCu77KjxwRtCDm6QAXZH99aUHBydwSoxdIjC40SGp/dcS/FkSNJl0j1VEojGZqlvQ==}
 
   sass@1.80.3:
     resolution: {integrity: sha512-ptDWyVmDMVielpz/oWy3YP3nfs7LpJTHIJZboMVs8GEC9eUmtZTZhMHlTW98wY4aEorDfjN38+Wr/XjskFWcfA==}
@@ -14089,6 +14104,12 @@ snapshots:
   country-codes-list@1.6.11: {}
 
   country-flag-icons@1.5.13: {}
+
+  craco-sass-resources-loader@1.1.0(@craco/craco@7.1.0(@types/node@16.18.114)(postcss@8.4.47)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5))(typescript@4.9.5))(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5)):
+    dependencies:
+      '@craco/craco': 7.1.0(@types/node@16.18.114)(postcss@8.4.47)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5))(typescript@4.9.5)
+      react-scripts: 5.0.1(@babel/plugin-syntax-flow@7.25.7(@babel/core@7.25.8))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.25.8))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@18.3.1)(sass-embedded@1.80.3)(sass@1.80.3)(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))(type-fest@4.26.1)(typescript@4.9.5)
+      sass-resources-loader: 2.2.5
 
   create-ecdh@4.0.4:
     dependencies:
@@ -19935,6 +19956,13 @@ snapshots:
       pify: 4.0.1
       semver: 6.3.1
       webpack: 5.96.1
+
+  sass-resources-loader@2.2.5:
+    dependencies:
+      async: 3.2.6
+      chalk: 4.1.2
+      glob: 7.2.3
+      loader-utils: 2.0.4
 
   sass@1.80.3:
     dependencies:

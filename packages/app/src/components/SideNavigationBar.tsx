@@ -1,3 +1,5 @@
+import "./styles/SideNavigationBar.scss";
+
 import { Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar";
 
 import { Link } from "react-router-dom";
@@ -6,6 +8,7 @@ import LogoutButton from "@/features/authentication/components/LogoutButton";
 export default function SideNavigationBar() {
   return (
     <Sidebar
+      className="bp-sidenavigationbar"
       width="100%"
       rootStyles={{
         display: "flex",

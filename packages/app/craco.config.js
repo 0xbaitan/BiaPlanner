@@ -11,6 +11,8 @@
 const path = require("path");
 const webpack = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const sassResourcesLoader = require("craco-sass-resources-loader");
+
 require("inspector");
 
 module.exports = {
@@ -106,7 +108,7 @@ module.exports = {
             loader: "sass-loader",
             options: {
               sassOptions: {
-                includePaths: [path.resolve(__dirname, "node_modules", "bootstrap"), path.resolve(__dirname, "src"), path.resolve(__dirname, "src/styles/common.scss")],
+                includePaths: [path.resolve(__dirname, "node_modules", "bootstrap"), path.resolve(__dirname, "src")],
               },
             },
           },
@@ -114,4 +116,13 @@ module.exports = {
       },
     ],
   },
+
+  plugins: [
+    {
+      plugin: sassResourcesLoader,
+      options: {
+        resources: [path.resolve(__dirname, "src/styles/global.scss")],
+      },
+    },
+  ],
 };
