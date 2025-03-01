@@ -87,6 +87,7 @@ export default function RecipeForm(props: RecipeFormProps) {
           <Row className="bp-recipe_form_dual_panel">
             <Col className="bp-recipe_form_dual_panel__pane">
               <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe General Information</h2>
+
               <TextInput
                 label="Recipe Title"
                 defaultValue={initialValue?.title}
@@ -128,6 +129,10 @@ export default function RecipeForm(props: RecipeFormProps) {
                 }}
                 as="textarea"
               />
+            </Col>
+            <Col className="bp-recipe_form_dual_panel__pane">
+              <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe Details</h2>
+
               <IngredientListInput />
               <TextInput
                 label="Instructions"
@@ -142,7 +147,6 @@ export default function RecipeForm(props: RecipeFormProps) {
                 Submit
               </Button>
             </Col>
-            <Col className="bp-recipe_form_dual_panel__pane">Hi</Col>
           </Row>
         </Container>
       </Form>
