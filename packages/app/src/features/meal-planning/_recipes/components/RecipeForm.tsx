@@ -1,12 +1,17 @@
+import "../styles/RecipeForm.scss";
+
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto, Weights } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import Form from "react-bootstrap/Form";
 import IngredientInput from "./IngredientInput";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
+import Row from "react-bootstrap/Row";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
 import { z } from "zod";
@@ -78,61 +83,68 @@ export default function RecipeForm(props: RecipeFormProps) {
           onSubmit(dto);
         })}
       >
-        <h1>Recipe Form</h1>
-        <TextInput
-          label="Recipe Title"
-          defaultValue={initialValue?.title}
-          onChange={(e) => {
-            const { value } = e.target;
-            setValue("title", value);
-          }}
-        />
-        <DifficultyLevelSelect
-          onChange={(value) => {
-            setValue("difficultyLevel", value);
-          }}
-        />
-        <CuisineSelect
-          onChange={(value) => {
-            setValue("cuisineId", value.id);
-          }}
-        />
-        <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />
-        <PreparationTimeInput prepTimeMagnitude={initialValue?.prepTimeMagnitude} prepTimeUnit={initialValue?.prepTimeUnit} />
+        <Container fluid>
+          <Row className="bp-recipe_form_dual_panel">
+            <Col className="bp-recipe_form_dual_panel__pane">
+              <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe General Information</h2>
+              <TextInput
+                label="Recipe Title"
+                defaultValue={initialValue?.title}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setValue("title", value);
+                }}
+              />
+              <DifficultyLevelSelect
+                onChange={(value) => {
+                  setValue("difficultyLevel", value);
+                }}
+              />
+              <CuisineSelect
+                onChange={(value) => {
+                  setValue("cuisineId", value.id);
+                }}
+              />
+              <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />
+              <PreparationTimeInput prepTimeMagnitude={initialValue?.prepTimeMagnitude} prepTimeUnit={initialValue?.prepTimeUnit} />
 
-        <RecipeTagsMultiselect
-          initialValues={initialValue?.tags}
-          onChange={(tags) => {
-            setValue(
-              "tags",
-              tags.map((tag) => ({
-                id: tag.id,
-              }))
-            );
-          }}
-        />
-        <TextInput
-          label="Recipe Description"
-          defaultValue={initialValue?.description}
-          onChange={(e) => {
-            const { value } = e.target;
-            setValue("description", value);
-          }}
-          as="textarea"
-        />
-        <IngredientListInput />
-        <TextInput
-          label="Instructions"
-          defaultValue={initialValue?.instructions}
-          onChange={(e) => {
-            const { value } = e.target;
-            setValue("instructions", value);
-          }}
-          as="textarea"
-        />
-        <Button type="submit" disabled={disableSubmit}>
-          Submit
-        </Button>
+              <RecipeTagsMultiselect
+                initialValues={initialValue?.tags}
+                onChange={(tags) => {
+                  setValue(
+                    "tags",
+                    tags.map((tag) => ({
+                      id: tag.id,
+                    }))
+                  );
+                }}
+              />
+              <TextInput
+                label="Recipe Description"
+                defaultValue={initialValue?.description}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setValue("description", value);
+                }}
+                as="textarea"
+              />
+              <IngredientListInput />
+              <TextInput
+                label="Instructions"
+                defaultValue={initialValue?.instructions}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setValue("instructions", value);
+                }}
+                as="textarea"
+              />
+              <Button type="submit" disabled={disableSubmit}>
+                Submit
+              </Button>
+            </Col>
+            <Col className="bp-recipe_form_dual_panel__pane">Hi</Col>
+          </Row>
+        </Container>
       </Form>
     </FormProvider>
   );

@@ -6,7 +6,7 @@ export default function CreateRecipePage() {
   const [createRecipeMutation, { isLoading, isError, isSuccess }] = useCreateRecipeMutation();
   return (
     <div>
-      <h1>Create Recipe</h1>
+      <h1 className="bp-h1">Create Recipe</h1>
 
       {isLoading && <div>Loading...</div>}
 
