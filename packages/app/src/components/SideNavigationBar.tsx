@@ -10,6 +10,7 @@ export default function SideNavigationBar() {
     <Sidebar
       className="bp-sidenavigationbar"
       width="100%"
+      backgroundColor="transparent"
       rootStyles={{
         display: "flex",
         flexDirection: "column",
