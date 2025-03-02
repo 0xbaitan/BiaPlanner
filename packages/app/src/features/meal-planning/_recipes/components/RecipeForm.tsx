@@ -13,6 +13,7 @@ import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
+import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
 import { z } from "zod";
@@ -105,6 +106,11 @@ export default function RecipeForm(props: RecipeFormProps) {
               <CuisineSelect
                 onChange={(value) => {
                   setValue("cuisineId", value.id);
+                }}
+              />
+              <SegmentedTimeInput
+                onChange={(segmentedTime) => {
+                  console.log("segmentedTime", segmentedTime);
                 }}
               />
               <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />

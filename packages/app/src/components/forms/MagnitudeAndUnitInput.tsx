@@ -1,3 +1,5 @@
+import "../styles/MagnitudeAndUnitInput.scss";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EnumLike } from "zod";
@@ -92,11 +94,11 @@ export default function MagnitudeAndUnitInput<T extends EnumLike>(props: Magnitu
   }, [magnitude, onMagnitudeChange, unit]);
 
   return (
-    <Form.Group>
-      <Form.Control {...magnitudeControlProps} min={min} max={max} type="number" value={magnitude} onChange={(e) => onMagnitudeChange(e.target.value)} />
-      <Form.Select {...unitControlProps} value={unit} onChange={(e) => setUnit(e.target.value as T[keyof T])}>
+    <Form.Group className="bp-magnitude_unit_input">
+      <Form.Control {...magnitudeControlProps} className="bp-magnitude_unit_input__field--magnitude" min={min} max={max} type="number" value={magnitude} onChange={(e) => onMagnitudeChange(e.target.value)} />
+      <select value={unit} onChange={(e) => setUnit(e.target.value as T[keyof T])} className="bp-magnitude_unit_input__field--unit">
         {unitOptions}
-      </Form.Select>
+      </select>
     </Form.Group>
   );
 }

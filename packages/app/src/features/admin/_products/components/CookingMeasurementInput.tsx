@@ -44,18 +44,21 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
     onChange(measurement);
   }, [measurement, onChange]);
 
-  const onMagnitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const magnitude = parseFloat(e.target.value);
-    if (isNaN(magnitude)) {
-      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: 0 } });
-    } else if (minMagnitude && magnitude < minMagnitude) {
-      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: minMagnitude } });
-    } else if (maxMagnitude && magnitude > maxMagnitude) {
-      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: maxMagnitude } });
-    } else {
-      setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude } });
-    }
-  }, []);
+  const onMagnitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const magnitude = parseFloat(e.target.value);
+      if (isNaN(magnitude)) {
+        setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: 0 } });
+      } else if (minMagnitude && magnitude < minMagnitude) {
+        setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: minMagnitude } });
+      } else if (maxMagnitude && magnitude > maxMagnitude) {
+        setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude: maxMagnitude } });
+      } else {
+        setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude } });
+      }
+    },
+    [maxMagnitude, minMagnitude]
+  );
 
   return (
     <Form.Group>

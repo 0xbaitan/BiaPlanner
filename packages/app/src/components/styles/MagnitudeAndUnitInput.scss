@@ -1,0 +1,23 @@
+.bp-magnitude_unit_input {
+  display: flex;
+  width: 100%;
+  border: 1px solid silver;
+
+  &__field {
+    flex: 1 1 auto;
+    border: 0 !important;
+  }
+  &__field--magnitude {
+    @extend .bp-magnitude_unit_input__field;
+    flex-basis: 60%;
+  }
+
+  &__field--unit {
+    @extend .bp-magnitude_unit_input__field;
+    flex-basis: 40%;
+    background-color: $colors-dark-grey;
+    text-align: center;
+    padding: 0.25em;
+    color: $colors-white;
+  }
+}
