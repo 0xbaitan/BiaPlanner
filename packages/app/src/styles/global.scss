@@ -1,5 +1,9 @@
 @use "partials" as *;
 
+.btn-primary {
+  @include bootstrap-custom-button-variant($colors-main, $colors-main);
+}
+
 .\+bold {
   font-weight: bold;
 }

@@ -9,6 +9,7 @@ import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import Form from "react-bootstrap/Form";
+import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
@@ -85,9 +86,9 @@ export default function RecipeForm(props: RecipeFormProps) {
       >
         <Container fluid>
           <Row className="bp-recipe_form_dual_panel">
-            <Col className="bp-recipe_form_dual_panel__pane">
+            <Col className="bp-recipe_form_dual_panel__pane" md={4}>
               <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe General Information</h2>
-
+              <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <TextInput
                 label="Recipe Title"
                 defaultValue={initialValue?.title}
