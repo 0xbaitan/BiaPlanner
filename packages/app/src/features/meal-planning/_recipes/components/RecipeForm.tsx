@@ -177,6 +177,7 @@ function IngredientListInput() {
               onChange={(value) => {
                 setValue(`ingredients.${index}`, value);
               }}
+              onRemove={() => remove(index)}
             />
           );
         })}
@@ -198,7 +199,7 @@ function IngredientListInput() {
       <Button
         type="button"
         onClick={() => {
-          remove(fields.length - 1);
+          remove();
         }}
       >
         Remove Ingredient

@@ -1,0 +1,29 @@
+.bp-ingredient_input {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: darken($color: #fff, $amount: 0.15);
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    gap: clamp(4px, 2%, 16px);
+  }
+
+  &__remove_button {
+    background-color: transparent;
+    border-radius: 50%;
+    border-color: transparent;
+    color: $colors-dark-grey;
+
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+    z-index: 10;
+  }
+}
