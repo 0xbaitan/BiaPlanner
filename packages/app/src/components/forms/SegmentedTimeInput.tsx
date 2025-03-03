@@ -1,7 +1,9 @@
 import "../styles/SegmentedTimeInput.scss";
 
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 
+import { FaCircleCheck } from "react-icons/fa6";
+import { MdEdit } from "react-icons/md";
 import { SegmentedTime } from "@biaplanner/shared";
 
 enum SegmentedTimeActionType {
@@ -39,6 +41,10 @@ function segmentedTimeReducer(state: SegmentedTime, action: SegmentedTimeAction)
   }
 }
 
+function padWithZeroes(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
 export type SegmentedTimeInputProps = {
   initialValue?: SegmentedTime;
   onChange: (value: SegmentedTime) => void;
@@ -47,6 +53,7 @@ export type SegmentedTimeInputProps = {
 export default function SegmentedTimeInput(props: SegmentedTimeInputProps) {
   const { initialValue, onChange } = props;
   const [time, dispatch] = useReducer(segmentedTimeReducer, initialValue ?? initialTimeState);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   useEffect(() => {
     onChange(time);
@@ -70,15 +77,30 @@ export default function SegmentedTimeInput(props: SegmentedTimeInputProps) {
   }, []);
 
   return (
-    <div className="bp-segmented_time_input">
-      <input className="bp-segmented_time_input__field--days" type="number" value={String(time.days).padStart(2, "0")} min={0} max={7} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_DAYS, 7, 0)} />
-      <span className="bp-segmented_time_input__unit_text--days">d</span>
-      <input className="bp-segmented_time_input__field--hours" type="number" min={0} max={23} value={String(time.hours).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_HOURS, 23, 0)} />
-      <span className="bp-segmented_time_input__unit_text--hours">hr</span>
-      <input className="bp-segmented_time_input__field--minutes" type="number" min={0} max={59} value={String(time.minutes).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_MINUTES, 59, 0)} />
-      <span className="bp-segmented_time_input__unit_text--minutes">min</span>
-      <input className="bp-segmented_time_input__field--seconds" type="number" min={0} max={59} value={String(time.seconds).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_SECONDS, 59, 0)} />
-      <span className="bp-segmented_time_input__unit_text--seconds">s</span>
+    <div className={"bp-segmented_time_input"}>
+      <div className={["bp-segmented_time_input--edit", isEditing ? "+active" : ""].join(" ")}>
+        <input className="bp-segmented_time_input__field--days" type="number" value={String(time.days).padStart(2, "0")} min={0} max={7} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_DAYS, 7, 0)} />
+        <span className="bp-segmented_time_input__unit_text--days">d</span>
+        <input className="bp-segmented_time_input__field--hours" type="number" min={0} max={23} value={String(time.hours).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_HOURS, 23, 0)} />
+        <span className="bp-segmented_time_input__unit_text--hours">hr</span>
+        <input className="bp-segmented_time_input__field--minutes" type="number" min={0} max={59} value={String(time.minutes).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_MINUTES, 59, 0)} />
+        <span className="bp-segmented_time_input__unit_text--minutes">min</span>
+        <input className="bp-segmented_time_input__field--seconds" type="number" min={0} max={59} value={String(time.seconds).padStart(2, "0")} onChange={(e) => onMagnitudeChange(e, SegmentedTimeActionType.SET_SECONDS, 59, 0)} />
+        <span className="bp-segmented_time_input__unit_text--seconds">s</span>
+        <button className="bp-segmented_time_input__edit_button" onClick={() => setIsEditing(false)}>
+          <FaCircleCheck />
+        </button>
+      </div>
+      <div className={["bp-segmented_time_input--display", !isEditing ? "+active" : ""].join(" ")}>
+        {time.days > 0 && <span>{padWithZeroes(time.days)}d&nbsp;</span>}
+        {time.hours > 0 && <span>{padWithZeroes(time.hours)}hr&nbsp;</span>}
+        {time.minutes > 0 && <span>{padWithZeroes(time.minutes)}min&nbsp;</span>}
+        {time.seconds > 0 && <span>{padWithZeroes(time.seconds)}s&nbsp;</span>}
+        {time.days === 0 && time.hours === 0 && time.minutes === 0 && time.seconds === 0 && <span>Enter time</span>}
+        <button className="bp-segmented_time_input__edit_button" onClick={() => setIsEditing(true)}>
+          <MdEdit />
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,29 @@
 .bp-segmented_time_input {
-  display: flex;
-  border: 1px solid #ccc;
-  padding: 0.5em;
-  padding-left: 1em;
-  padding-right: 1em;
-  gap: clamp(2px, 2%, 8px);
+  border: 1px solid silver;
   justify-content: center;
   align-items: center;
-  padding-bottom: 1em;
+
   border-radius: 8px;
   width: 100%;
   overflow: scroll;
+
+  &--edit {
+    display: none;
+    padding: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    gap: clamp(2px, 2%, 8px);
+    padding-bottom: 1em;
+  }
+
+  &--display {
+    display: none;
+    padding: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    gap: clamp(2px, 2%, 8px);
+    padding-bottom: 1em;
+  }
 
   &__field {
     border: none;
@@ -63,4 +76,8 @@
   &__field--days {
     @extend .bp-segmented_time_input__field;
   }
+}
+
+.\+active {
+  display: flex;
 }
