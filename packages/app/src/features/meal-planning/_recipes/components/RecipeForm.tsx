@@ -8,6 +8,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
+import { FaPlus } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
@@ -166,8 +167,8 @@ function IngredientListInput() {
   const { fields, append, remove } = useFieldArray({ control, name: "ingredients", keyName: "ingredientFieldId" });
 
   return (
-    <div>
-      <div>
+    <div className="bp-ingredient_list_input">
+      <div className="bp-ingredient_list_input__fields">
         {fields.map((field, index) => {
           const { ingredientFieldId, ...ingredient } = field;
           return (
@@ -184,6 +185,7 @@ function IngredientListInput() {
       </div>
       <Button
         type="button"
+        className="bp-ingredient_list_input__add_ingredient_btn"
         onClick={() =>
           append({
             productCategories: [],
@@ -194,15 +196,8 @@ function IngredientListInput() {
           })
         }
       >
-        Add Ingredient
-      </Button>
-      <Button
-        type="button"
-        onClick={() => {
-          remove();
-        }}
-      >
-        Remove Ingredient
+        <FaPlus />
+        <span className="ms-3">Add ingredient</span>
       </Button>
     </div>
   );

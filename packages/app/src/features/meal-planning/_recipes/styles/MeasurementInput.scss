@@ -1,7 +1,10 @@
 .bp-measurement-input {
+  width: 100%;
+
   &__grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    width: max-content;
     gap: 1rem;
 
     .column {

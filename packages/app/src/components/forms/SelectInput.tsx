@@ -1,3 +1,5 @@
+import "../styles/SelectInput.scss";
+
 import Select, { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
 import { useCallback, useMemo, useState } from "react";
 
@@ -38,7 +40,7 @@ export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "opti
   }) => JSX.Element;
 };
 export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
-  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, onChange: onCustomChange, dropdownRenderer: customDropdownRender, itemRenderer: customItemRenderer, contentRenderer: customContentRenderer, ...rest } = props;
+  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, className, onChange: onCustomChange, dropdownRenderer: customDropdownRender, itemRenderer: customItemRenderer, contentRenderer: customContentRenderer, ...rest } = props;
   const options: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
@@ -79,7 +81,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         additionalMethods: { getValueCounterPart },
       })!;
     },
-    [customItemRenderer, getValueCounterPart, list]
+    [customItemRenderer, getValueCounterPart]
   );
 
   const contentRenderer = useCallback(
@@ -91,7 +93,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         additionalMethods: { getValueCounterPart },
       })!;
     },
-    [customContentRenderer, getValueCounterPart, list]
+    [customContentRenderer, getValueCounterPart]
   );
 
   return (
@@ -100,6 +102,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
       {...(customDropdownRender ? { dropdownRenderer } : {})}
       {...(customItemRenderer ? { itemRenderer } : {})}
       {...(customContentRenderer ? { contentRenderer } : {})}
+      className={["bp-select_input", className ?? ""].join(" ")}
       options={options}
       values={selectedOptions}
       onChange={onChange}

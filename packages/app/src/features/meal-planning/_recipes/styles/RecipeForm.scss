@@ -24,3 +24,17 @@ $pane-bg-color: #fff;
     text-transform: capitalize;
   }
 }
+
+.bp-ingredient_list_input {
+  &__fields {
+    display: flex;
+    gap: 1em;
+    padding: 0.25em;
+    flex-direction: column;
+  }
+
+  &__add_ingredient_btn {
+    margin-top: 1.25em;
+    width: 100%;
+  }
+}

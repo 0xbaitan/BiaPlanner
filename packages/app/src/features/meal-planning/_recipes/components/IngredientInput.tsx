@@ -63,6 +63,8 @@ export default function IngredientInput(props: IngredientInputProps) {
       </button>
       <div className="bp-ingredient_input__row">
         <TextInput
+          className="bp-ingredient_input__ingredient_title_field"
+          formGroupClassName="mt-1"
           label="Ingredient Title"
           defaultValue={initialValue?.title}
           onChange={(e) => {
@@ -75,6 +77,7 @@ export default function IngredientInput(props: IngredientInputProps) {
       <div className="bp-ingredient_input__row">
         <Form.Control
           type="number"
+          className="bp-ingredient_input__measurement_magnitude_field"
           placeholder="Quantity"
           value={ingredient.measurement?.magnitude ?? 0}
           onChange={(e) =>
@@ -85,15 +88,18 @@ export default function IngredientInput(props: IngredientInputProps) {
             })
           }
         />
-        <MeasurementInput
-          onChange={([{ unit }]) => {
-            setIngredientPartially({
-              measurement: {
-                unit,
-              },
-            });
-          }}
-        />
+        <span className="w-100">
+          <MeasurementInput
+            className="bp-ingredient_input__measurement_unit_field"
+            onChange={([{ unit }]) => {
+              setIngredientPartially({
+                measurement: {
+                  unit,
+                },
+              });
+            }}
+          />
+        </span>
       </div>
       <div className="bp-ingredient_input__row">
         <ProductCategoryMultiselect
