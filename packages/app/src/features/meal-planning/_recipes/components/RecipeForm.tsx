@@ -7,16 +7,20 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
+import { DeepPartial } from "react-hook-form";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import { FaPlus } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
+import IngredientItem from "./IngredientItem";
+import IngredientModal from "./IngredientModal";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
+import { useSetShowIngredientModal } from "../../reducers/RecipeFormReducer";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -74,12 +78,13 @@ export default function RecipeForm(props: RecipeFormProps) {
     },
     resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
-
+  const setShowIngredientModal = useSetShowIngredientModal();
   const { handleSubmit, setValue, getValues } = formMethods;
   console.log("initialValue", initialValue?.tags);
 
   return (
     <FormProvider {...formMethods}>
+      <IngredientModal />
       <Form
         onSubmit={handleSubmit(() => {
           const dto = getValues();
@@ -140,8 +145,16 @@ export default function RecipeForm(props: RecipeFormProps) {
             </Col>
             <Col className="bp-recipe_form_dual_panel__pane">
               <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe Details</h2>
-
-              <IngredientListInput />
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowIngredientModal(true);
+                }}
+              >
+                Add Ingredient
+              </Button>
+              {/* <IngredientListInput /> */}
+              <IngredientList />
               <TextInput
                 label="Instructions"
                 defaultValue={initialValue?.instructions}
@@ -159,6 +172,25 @@ export default function RecipeForm(props: RecipeFormProps) {
         </Container>
       </Form>
     </FormProvider>
+  );
+}
+
+function IngredientList() {
+  const { getValues } = useFormContext<RecipeFormValues>();
+  const ingredients = getValues("ingredients");
+
+  return (
+    <div>
+      {ingredients && ingredients.length > 0 ? (
+        <div className="bp-ingredient_list">
+          {ingredients.map((ingredient, index) => (
+            <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
+          ))}
+        </div>
+      ) : (
+        <div>No list</div>
+      )}
+    </div>
   );
 }
 

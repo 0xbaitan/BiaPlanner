@@ -1,3 +1,5 @@
+import "../styles/ProductCategoryMultiselect.scss";
+
 import SelectInput, { SelectInputProps } from "./SelectInput";
 
 import Form from "react-bootstrap/Form";
@@ -21,7 +23,7 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
   if (isError || !productCategories || productCategories.length === 0) return <div>Failed to fetch product categories</div>;
 
   return (
-    <Form.Group>
+    <Form.Group className="bp-product_category_multiselect">
       <Form.Label>{label ?? "Product Categories"}</Form.Label>
       <SelectInput<IProductCategory>
         {...props}
