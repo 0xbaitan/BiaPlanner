@@ -1,11 +1,10 @@
 import "../styles/IngredientInput.scss";
 
-import { Approximates, CookingMeasurement, IRecipeIngredient, Volumes, Weights } from "@biaplanner/shared";
+import { CookingMeasurement, IRecipeIngredient, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { useEffect, useReducer } from "react";
 
 import { DeepPartial } from "react-hook-form";
 import Form from "react-bootstrap/Form";
-import { MdCancel } from "react-icons/md";
 import MeasurementInput from "./MeasurementInput";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import TextInput from "@/components/forms/TextInput";
@@ -13,10 +12,19 @@ import TextInput from "@/components/forms/TextInput";
 export type IngredientInputProps = {
   initialValue?: Partial<IRecipeIngredient>;
   onChange: (value: Partial<IRecipeIngredient>) => void;
-  onRemove: () => void;
+  errors?: IngredientInputErrorState;
 };
 
 type PartialIngredient = Partial<Omit<IRecipeIngredient, "measurement">> & DeepPartial<Pick<IRecipeIngredient, "measurement">>;
+
+export type IngredientInputErrorState = {
+  title?: string;
+  measurement: {
+    magnitude?: string;
+    unit?: string;
+  };
+  productCategories?: string;
+};
 
 enum IngredientInputActionType {
   UPDATE_COOKING_MEASUREMENT_MAGNITUDE = "UPDATE_COOKING_MEASUREMENT_MAGNITUDE",
@@ -36,7 +44,7 @@ const DEFAULT_INGREDIENT_VALUE: Partial<IRecipeIngredient> = {
 };
 
 export default function IngredientInput(props: IngredientInputProps) {
-  const { initialValue, onChange, onRemove } = props;
+  const { initialValue, onChange, errors } = props;
   const [ingredient, setIngredientPartially] = useReducer(
     (state: Partial<IRecipeIngredient>, action: PartialIngredient): Partial<IRecipeIngredient> => {
       const newState: Partial<IRecipeIngredient> = {
@@ -58,13 +66,11 @@ export default function IngredientInput(props: IngredientInputProps) {
 
   return (
     <div className="bp-ingredient_input">
-      <button className="bp-ingredient_input__remove_button">
-        <MdCancel size={28} onClick={onRemove} />
-      </button>
       <div className="bp-ingredient_input__row">
         <TextInput
           className="bp-ingredient_input__ingredient_title_field"
           formGroupClassName="mt-1"
+          error={errors?.title}
           label="Ingredient Title"
           defaultValue={initialValue?.title}
           onChange={(e) => {
@@ -75,22 +81,28 @@ export default function IngredientInput(props: IngredientInputProps) {
         />
       </div>
       <div className="bp-ingredient_input__row">
-        <Form.Control
-          type="number"
-          className="bp-ingredient_input__measurement_magnitude_field"
-          placeholder="Quantity"
-          value={ingredient.measurement?.magnitude ?? 0}
-          onChange={(e) =>
-            setIngredientPartially({
-              measurement: {
-                magnitude: Number(e.target.value),
-              },
-            })
-          }
-        />
+        <Form.Group>
+          <Form.Control
+            type="number"
+            className="bp-ingredient_input__measurement_magnitude_field"
+            placeholder="Quantity"
+            value={ingredient.measurement?.magnitude ?? 0}
+            isInvalid={Boolean(errors?.measurement?.magnitude)}
+            onChange={(e) =>
+              setIngredientPartially({
+                measurement: {
+                  magnitude: Number(e.target.value),
+                },
+              })
+            }
+          />
+          <Form.Control.Feedback type="invalid">{errors?.measurement?.magnitude}</Form.Control.Feedback>
+        </Form.Group>
         <span className="w-100">
           <MeasurementInput
             className="bp-ingredient_input__measurement_unit_field"
+            selectedValues={[getCookingMeasurement(ingredient.measurement?.unit ?? Weights.GRAM)]}
+            error={errors?.measurement?.unit}
             onChange={([{ unit }]) => {
               setIngredientPartially({
                 measurement: {
@@ -105,6 +117,7 @@ export default function IngredientInput(props: IngredientInputProps) {
         <ProductCategoryMultiselect
           label="Choose category/categories for a single ingredient"
           initialValues={initialValue?.productCategories}
+          error={errors?.productCategories}
           onSelectionChange={(productCategories) => {
             setIngredientPartially({
               productCategories,

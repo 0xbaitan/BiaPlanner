@@ -27,6 +27,7 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
       <Form.Label>{label ?? "Product Categories"}</Form.Label>
       <SelectInput<IProductCategory>
         {...props}
+        error={error}
         multi
         list={productCategories}
         idSelector={(productCategory) => productCategory.id}
@@ -37,7 +38,6 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
           onSelectionChange(selectedList);
         }}
       />
-      <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
     </Form.Group>
   );
 }

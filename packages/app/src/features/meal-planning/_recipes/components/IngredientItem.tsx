@@ -8,7 +8,7 @@ export default function IngredientItem(props: IngredientItemProps) {
   const { ingredient, index } = props;
   return (
     <div>
-      <span>{index}</span>
+      <span>{index + 1}</span>
       {ingredient.title}
       {ingredient.measurement?.magnitude}
       {ingredient.measurement?.unit}

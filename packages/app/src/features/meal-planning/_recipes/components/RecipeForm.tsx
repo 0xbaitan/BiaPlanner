@@ -2,12 +2,13 @@ import "../styles/RecipeForm.scss";
 
 import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto, Weights } from "@biaplanner/shared";
+import { useConfirmedIngredientsState, useOpenCreateIngredientModal } from "../../reducers/RecipeFormReducer";
+import { useEffect, useMemo } from "react";
 
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
-import { DeepPartial } from "react-hook-form";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import { FaPlus } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
@@ -20,7 +21,6 @@ import Row from "react-bootstrap/Row";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
-import { useSetShowIngredientModal } from "../../reducers/RecipeFormReducer";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -61,6 +61,12 @@ export type RecipeFormProps = {
 };
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
+  const { resetConfirmedIngredients } = useConfirmedIngredientsState();
+
+  useEffect(() => {
+    resetConfirmedIngredients();
+  }, [resetConfirmedIngredients]);
+
   const formMethods = useForm<RecipeFormValues>({
     mode: "onSubmit",
     shouldUnregister: false,
@@ -78,9 +84,8 @@ export default function RecipeForm(props: RecipeFormProps) {
     },
     resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
-  const setShowIngredientModal = useSetShowIngredientModal();
-  const { handleSubmit, setValue, getValues } = formMethods;
-  console.log("initialValue", initialValue?.tags);
+  const openCreateIngredientModal = useOpenCreateIngredientModal();
+  const { handleSubmit, setValue, getValues, formState } = formMethods;
 
   return (
     <FormProvider {...formMethods}>
@@ -148,7 +153,12 @@ export default function RecipeForm(props: RecipeFormProps) {
               <Button
                 type="button"
                 onClick={() => {
-                  setShowIngredientModal(true);
+                  openCreateIngredientModal({
+                    index: 0,
+                    onConfirmIngredient: (ingredient) => {
+                      setValue("ingredients", (getValues("ingredients") ?? []).concat(ingredient));
+                    },
+                  });
                 }}
               >
                 Add Ingredient
@@ -176,22 +186,24 @@ export default function RecipeForm(props: RecipeFormProps) {
 }
 
 function IngredientList() {
-  const { getValues } = useFormContext<RecipeFormValues>();
-  const ingredients = getValues("ingredients");
+  const { confirmedIngredients } = useConfirmedIngredientsState();
+  const ingredientItems = useMemo(() => {
+    return (
+      <div>
+        {confirmedIngredients && confirmedIngredients.length > 0 ? (
+          <div className="bp-ingredient_list">
+            {confirmedIngredients.map((ingredient, index) => (
+              <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div>No list</div>
+        )}
+      </div>
+    );
+  }, [confirmedIngredients]);
 
-  return (
-    <div>
-      {ingredients && ingredients.length > 0 ? (
-        <div className="bp-ingredient_list">
-          {ingredients.map((ingredient, index) => (
-            <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
-          ))}
-        </div>
-      ) : (
-        <div>No list</div>
-      )}
-    </div>
-  );
+  return ingredientItems;
 }
 
 function IngredientListInput() {
@@ -210,7 +222,6 @@ function IngredientListInput() {
               onChange={(value) => {
                 setValue(`ingredients.${index}`, value);
               }}
-              onRemove={() => remove(index)}
             />
           );
         })}

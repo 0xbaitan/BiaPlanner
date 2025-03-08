@@ -13,20 +13,6 @@
     gap: clamp(4px, 2%, 16px);
   }
 
-  &__remove_button {
-    background-color: transparent;
-    border-radius: 50%;
-    border-color: transparent;
-    color: $colors-dark-grey;
-
-    width: fit-content;
-    height: fit-content;
-    position: absolute;
-    right: 0.5em;
-    top: 0.5em;
-    z-index: 10;
-  }
-
   &__ingredient_title_field {
     width: 100%;
   }

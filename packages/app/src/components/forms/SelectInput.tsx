@@ -3,10 +3,13 @@ import "../styles/SelectInput.scss";
 import Select, { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
 import { useCallback, useMemo, useState } from "react";
 
+import Form from "react-bootstrap/Form";
+
 export type Option = { id: string; name: string };
 
 export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer" | "itemRenderer" | "contentRenderer"> & {
   list: T[];
+  error?: string;
   idSelector: (item: T) => string;
   nameSelector: (item: T) => string;
   selectedValues?: T[];
@@ -40,7 +43,19 @@ export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "opti
   }) => JSX.Element;
 };
 export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
-  const { list, idSelector, nameSelector, selectedValues: defaultSelectedValues, className, onChange: onCustomChange, dropdownRenderer: customDropdownRender, itemRenderer: customItemRenderer, contentRenderer: customContentRenderer, ...rest } = props;
+  const {
+    list,
+    idSelector,
+    nameSelector,
+    selectedValues: defaultSelectedValues,
+    className,
+    error,
+    onChange: onCustomChange,
+    dropdownRenderer: customDropdownRender,
+    itemRenderer: customItemRenderer,
+    contentRenderer: customContentRenderer,
+    ...rest
+  } = props;
   const options: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
@@ -97,17 +112,20 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
   );
 
   return (
-    <Select
-      {...rest}
-      {...(customDropdownRender ? { dropdownRenderer } : {})}
-      {...(customItemRenderer ? { itemRenderer } : {})}
-      {...(customContentRenderer ? { contentRenderer } : {})}
-      className={["bp-select_input", className ?? ""].join(" ")}
-      options={options}
-      values={selectedOptions}
-      onChange={onChange}
-      labelField="name"
-      valueField="id"
-    />
+    <Form.Group className="bp-select">
+      <Select
+        {...rest}
+        {...(customDropdownRender ? { dropdownRenderer } : {})}
+        {...(customItemRenderer ? { itemRenderer } : {})}
+        {...(customContentRenderer ? { contentRenderer } : {})}
+        className={["bp-select__input", Boolean(error) ? "+invalid" : "", className ?? ""].join(" ")}
+        options={options}
+        values={selectedOptions}
+        onChange={onChange}
+        labelField="name"
+        valueField="id"
+      />
+      <span className={["bp-select__error_message", Boolean(error) ? "+visible" : ""].join(" ")}>{error}</span>
+    </Form.Group>
   );
 }
