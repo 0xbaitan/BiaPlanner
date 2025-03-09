@@ -17,6 +17,7 @@ import {
   IRecipe,
   IRecipeIngredient,
   IRecipeTag,
+  SegmentedTime,
   Time,
 } from '@biaplanner/shared';
 
@@ -97,30 +98,15 @@ export class RecipeEntity implements IRecipe {
   cuisine: ICuisine;
 
   @Column({
-    type: 'float',
-    nullable: false,
+    type: 'json',
   })
-  prepTimeMagnitude: number;
+  cookTimeUnit?: SegmentedTime;
 
   @Column({
-    type: 'enum',
-    enum: Time,
-    nullable: false,
+    type: 'json',
   })
-  prepTimeUnit: Time;
+  prepTimeUnit?: SegmentedTime;
 
-  @Column({
-    type: 'float',
-    nullable: false,
-  })
-  cookTimeMagnitude: number;
-
-  @Column({
-    type: 'enum',
-    enum: Time,
-    nullable: false,
-  })
-  cookTimeUnit: Time;
   @Column({
     type: 'simple-array',
     nullable: true,

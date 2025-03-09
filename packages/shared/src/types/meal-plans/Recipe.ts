@@ -5,6 +5,7 @@ import { IBaseEntity } from "../BaseEntity";
 import { ICuisine } from "./Cuisine";
 import { IRecipeIngredient } from "./RecipeIngredient";
 import { IRecipeTag } from "./RecipeTag";
+import { SegmentedTime } from "../TimeMeasurement";
 import z from "zod";
 
 export interface IRecipe extends IBaseEntity {
@@ -15,10 +16,8 @@ export interface IRecipe extends IBaseEntity {
   difficultyLevel: DifficultyLevels;
   cuisineId: string;
   cuisine: ICuisine;
-  prepTimeMagnitude: number;
-  prepTimeUnit: Time;
-  cookTimeMagnitude: number;
-  cookTimeUnit: Time;
+  cookingTime?: SegmentedTime;
+  prepTime?: SegmentedTime;
   defaultNumberOfServings?: [number, number];
 
   notes?: string;
@@ -43,11 +42,9 @@ export class CreateRecipeDto implements ICreateRecipeDto {
   instructions: string;
   difficultyLevel: DifficultyLevels;
   cuisineId: string;
+  cookingTime: SegmentedTime;
+  prepTime: SegmentedTime;
 
-  prepTimeMagnitude: number;
-  prepTimeUnit: Time;
-  cookTimeMagnitude: number;
-  cookTimeUnit: Time;
   defaultNumberOfServings?: [number, number];
   notes?: string | undefined;
   source?: string | undefined;
@@ -63,10 +60,8 @@ export class UpdateRecipeDto implements IUpdateRecipeDto {
   ingredients?: DeepPartial<IRecipeIngredient>[] | undefined;
   tags?: Pick<IRecipeTag, "id">[] | undefined;
   newTags?: Pick<IRecipeTag, "name">[] | undefined;
-  prepTimeMagnitude?: number | undefined;
-  prepTimeUnit?: Time | undefined;
-  cookTimeMagnitude?: number | undefined;
-  cookTimeUnit?: Time | undefined;
+  cookingTime?: SegmentedTime | undefined;
+  prepTime?: SegmentedTime | undefined;
   defaultNumberOfServings?: [number, number] | undefined;
   notes?: string | undefined;
   source?: string | undefined;

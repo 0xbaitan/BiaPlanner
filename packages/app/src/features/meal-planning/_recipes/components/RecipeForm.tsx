@@ -43,10 +43,6 @@ export const CreateRecipeValidationSchema = z.object({
   instructions: z.string().min(1, { message: "Recipe instructions are required" }),
   difficultyLevel: z.string().min(1, { message: "Recipe difficulty level is required" }),
   cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
-  prepTimeMagnitude: z.number().min(1, { message: "Recipe prep time magnitude is required" }),
-  prepTimeUnit: z.string().min(1, { message: "Recipe prep time unit is required" }),
-  cookTimeMagnitude: z.number().min(1, { message: "Recipe cook time magnitude is required" }),
-  cookTimeUnit: z.string().min(1, { message: "Recipe cook time unit is required" }),
 });
 
 export const UpdateRecipeTagValidationSchema = z.object({
@@ -124,8 +120,6 @@ export default function RecipeForm(props: RecipeFormProps) {
                   console.log("segmentedTime", segmentedTime);
                 }}
               />
-              <CookingTimeInput cookTimeMagnitude={initialValue?.cookTimeMagnitude} cookTimeUnit={initialValue?.cookTimeUnit} />
-              <PreparationTimeInput prepTimeMagnitude={initialValue?.prepTimeMagnitude} prepTimeUnit={initialValue?.prepTimeUnit} />
 
               <RecipeTagsMultiselect
                 initialValues={initialValue?.tags}
@@ -243,43 +237,5 @@ function IngredientListInput() {
         <span className="ms-3">Add ingredient</span>
       </Button>
     </div>
-  );
-}
-
-function CookingTimeInput(props: Partial<Pick<IRecipe, "cookTimeMagnitude" | "cookTimeUnit">>) {
-  const { cookTimeMagnitude, cookTimeUnit } = props;
-  const { setValue } = useFormContext<RecipeFormValues>();
-  return (
-    <Form.Group>
-      <Form.Label>Cooking Time</Form.Label>
-      <TimeInput
-        defaultMagnitude={cookTimeMagnitude}
-        defaultUnit={cookTimeUnit}
-        onChange={(magnitude, unit) => {
-          setValue("cookTimeMagnitude", magnitude);
-          setValue("cookTimeUnit", unit);
-        }}
-      />
-      <Form.Control.Feedback type="invalid">Error</Form.Control.Feedback>
-    </Form.Group>
-  );
-}
-
-function PreparationTimeInput(props: Partial<Pick<IRecipe, "prepTimeMagnitude" | "prepTimeUnit">>) {
-  const { prepTimeMagnitude, prepTimeUnit } = props;
-  const { setValue } = useFormContext<RecipeFormValues>();
-  return (
-    <Form.Group>
-      <Form.Label>Preparation Time</Form.Label>
-      <TimeInput
-        defaultMagnitude={prepTimeMagnitude}
-        defaultUnit={prepTimeUnit}
-        onChange={(magnitude, unit) => {
-          setValue("prepTimeMagnitude", magnitude);
-          setValue("prepTimeUnit", unit);
-        }}
-      />
-      <Form.Control.Feedback type="invalid">Error</Form.Control.Feedback>
-    </Form.Group>
   );
 }
