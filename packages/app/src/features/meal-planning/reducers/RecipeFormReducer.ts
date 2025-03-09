@@ -10,7 +10,7 @@ export type RecipeFormState = {
   ingredientModalType?: "create" | "update";
   ingredientIndex?: number;
   ingredient: DeepPartial<IRecipeIngredient>;
-  onConfirmIngredient?: (ingredient: DeepPartial<IRecipeIngredient>) => void;
+
   confirmedIngredients: DeepPartial<IRecipeIngredient>[];
 };
 
@@ -43,7 +43,7 @@ export const recipeSlice = createSlice({
       state.showIngredientModal = true;
       state.ingredientModalType = "create";
       state.ingredientIndex = action.payload.index;
-      state.onConfirmIngredient = action.payload.onConfirmIngredient;
+
       state.ingredient = {};
     },
     openUpdateIngredientModal: (

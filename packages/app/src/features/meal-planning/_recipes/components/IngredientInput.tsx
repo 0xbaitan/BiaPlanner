@@ -102,7 +102,7 @@ export default function IngredientInput(props: IngredientInputProps) {
           <MeasurementInput
             className="bp-ingredient_input__measurement_unit_field"
             selectedValues={[getCookingMeasurement(ingredient.measurement?.unit ?? Weights.GRAM)]}
-            error={errors?.measurement?.unit}
+            error={errors?.measurement?.magnitude}
             onChange={([{ unit }]) => {
               setIngredientPartially({
                 measurement: {

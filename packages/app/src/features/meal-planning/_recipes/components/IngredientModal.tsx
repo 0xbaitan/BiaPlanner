@@ -45,7 +45,8 @@ function useVerifyIngredient() {
 }
 
 export default function IngredientModal() {
-  const { showIngredientModal, ingredientModalType, ingredientIndex, onConfirmIngredient: onCustomConfirmIngredient } = useRecipeFormState();
+  const { showIngredientModal, ingredientModalType, ingredientIndex, ingredient: stationedIngredient } = useRecipeFormState();
+  console.log(ingredientModalType);
   const closeIngredientModal = useCloseIngredientModal();
   const [errors, setErrors] = useState<IngredientInputErrorState>();
   const [ingredient, setIngredient] = useState<DeepPartial<IRecipeIngredient>>({});
@@ -53,13 +54,14 @@ export default function IngredientModal() {
   const { insertIngredient, updateIngredient } = useConfirmedIngredientsState();
   const onConfirmIngredient = useCallback(() => {
     const errors = verifyIngredient(ingredient);
+    console.log(ingredientIndex, ingredient);
     if (errors) {
       setErrors(errors);
       return;
     }
     if (ingredientModalType === "create") {
       insertIngredient(ingredient);
-    } else if (ingredientIndex && ingredientModalType === "update") {
+    } else if (ingredientIndex !== undefined && ingredientModalType === "update") {
       updateIngredient(ingredientIndex, ingredient);
     }
     closeIngredientModal();
@@ -68,11 +70,12 @@ export default function IngredientModal() {
   return (
     <Modal show={showIngredientModal} onHide={closeIngredientModal} backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>{ingredientModalType ? "Add new ingredient" : ingredientIndex ? `Update ingredient #{ingredientIndex}` : "Update existing ingredient"}</Modal.Title>
+        <Modal.Title>{ingredientModalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <IngredientInput
+          initialValue={stationedIngredient as Partial<IRecipeIngredient>}
           errors={errors}
           onChange={(ingredient) => {
             setIngredient(ingredient);
