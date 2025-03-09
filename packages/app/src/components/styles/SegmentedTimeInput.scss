@@ -1,4 +1,11 @@
+.bp-segmented_time_input__unit_text {
+  flex-shrink: 1;
+  @include typography-mulish-font(0.925rem, bold);
+  color: $colors-dark-grey;
+}
+
 .bp-segmented_time_input {
+  cursor: pointer;
   border: 1px solid silver;
   justify-content: center;
   align-items: center;
@@ -6,23 +13,40 @@
   border-radius: 8px;
   width: 100%;
   overflow: scroll;
+  &__placeholder_text {
+    @include typography-mulish-font(0.925rem, normal);
+    color: #999999;
+    cursor: text;
+  }
+  &.\+focus {
+    border-color: $colors-main;
+    box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
+  }
 
   &--edit {
     display: none;
-    padding: 0.5em;
-    padding-left: 1em;
-    padding-right: 1em;
-    gap: clamp(2px, 2%, 8px);
-    padding-bottom: 1em;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    gap: clamp(8px, 4%, 24px);
   }
 
   &--display {
     display: none;
-    padding: 0.5em;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     gap: clamp(2px, 2%, 8px);
-    padding-bottom: 1em;
+  }
+
+  &__fields {
+    display: flex;
+    gap: clamp(2px, 2%, 8px);
+    margin-right: 2em;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 0.25em;
+    padding-top: 0.15em;
   }
 
   &__field {
@@ -30,8 +54,8 @@
     outline: none;
     border-bottom: 2px solid #ccc;
     padding-bottom: 2px;
-    margin-right: 5px;
-    flex-shrink: 1;
+
+    flex-grow: 1;
 
     &:focus {
       outline: none;
@@ -40,26 +64,20 @@
     }
   }
 
-  &__unit_text {
-    flex-shrink: 1;
-    @include typography-mulish-font(0.9rem, 600);
-    color: $colors-dark-grey;
+  &--seconds {
+    @extend .bp-segmented_time_input__unit_text;
+  }
 
-    &--seconds {
-      @extend .bp-segmented_time_input__unit_text;
-    }
+  &--minutes {
+    @extend .bp-segmented_time_input__unit_text;
+  }
 
-    &--minutes {
-      @extend .bp-segmented_time_input__unit_text;
-    }
+  &--hours {
+    @extend .bp-segmented_time_input__unit_text;
+  }
 
-    &--hours {
-      @extend .bp-segmented_time_input__unit_text;
-    }
-
-    &--days {
-      @extend .bp-segmented_time_input__unit_text;
-    }
+  &--days {
+    @extend .bp-segmented_time_input__unit_text;
   }
 
   &__field--seconds {
@@ -78,6 +96,19 @@
   }
 }
 
+.bp-segmented_time_input__confirm_button,
+.bp-segmented_time_input__edit_button {
+  background-color: transparent;
+  border: none;
+  color: $colors-main;
+
+  &:hover {
+    color: darken($color: $colors-main, $amount: 5);
+  }
+}
+
 .\+active {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
