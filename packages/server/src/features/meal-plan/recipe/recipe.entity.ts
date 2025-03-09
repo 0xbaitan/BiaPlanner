@@ -100,12 +100,12 @@ export class RecipeEntity implements IRecipe {
   @Column({
     type: 'json',
   })
-  cookTimeUnit?: SegmentedTime;
+  cookingTime?: SegmentedTime;
 
   @Column({
     type: 'json',
   })
-  prepTimeUnit?: SegmentedTime;
+  prepTime?: SegmentedTime;
 
   @Column({
     type: 'simple-array',

@@ -35,14 +35,14 @@ const ingredientsSchema = z.object({
 });
 
 export const CreateRecipeValidationSchema = z.object({
-  ingredients: z.array(ingredientsSchema),
-  newTags: z.array(z.object({ name: z.string() })),
-  tags: z.array(z.object({ id: z.string() })),
-  title: z.string().min(1, { message: "Recipe title is required" }),
-  description: z.string().nullable(),
-  instructions: z.string().min(1, { message: "Recipe instructions are required" }),
-  difficultyLevel: z.string().min(1, { message: "Recipe difficulty level is required" }),
-  cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
+  // ingredients: z.array(ingredientsSchema),
+  // newTags: z.array(z.object({ name: z.string() })),
+  // tags: z.array(z.object({ id: z.string() })),
+  // title: z.string().min(1, { message: "Recipe title is required" }),
+  // description: z.string().nullable(),
+  // instructions: z.string().min(1, { message: "Recipe instructions are required" }),
+  // difficultyLevel: z.string().min(1, { message: "Recipe difficulty level is required" }),
+  // cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
 });
 
 export const UpdateRecipeTagValidationSchema = z.object({
@@ -81,7 +81,7 @@ export default function RecipeForm(props: RecipeFormProps) {
     resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
   const openCreateIngredientModal = useOpenCreateIngredientModal();
-  const { handleSubmit, setValue, getValues, formState } = formMethods;
+  const { handleSubmit, setValue, getValues } = formMethods;
 
   return (
     <FormProvider {...formMethods}>
@@ -89,6 +89,7 @@ export default function RecipeForm(props: RecipeFormProps) {
       <Form
         onSubmit={handleSubmit(() => {
           const dto = getValues();
+          console.log(dto);
           onSubmit(dto);
         })}
       >
@@ -117,8 +118,15 @@ export default function RecipeForm(props: RecipeFormProps) {
               />
               <SegmentedTimeInput
                 onChange={(segmentedTime) => {
-                  console.log("segmentedTime", segmentedTime);
+                  setValue("prepTime", segmentedTime);
                 }}
+                initialValue={initialValue?.prepTime}
+              />
+              <SegmentedTimeInput
+                onChange={(segmentedTime) => {
+                  setValue("cookingTime", segmentedTime);
+                }}
+                initialValue={initialValue?.cookingTime}
               />
 
               <RecipeTagsMultiselect
@@ -181,6 +189,12 @@ export default function RecipeForm(props: RecipeFormProps) {
 
 function IngredientList() {
   const { confirmedIngredients } = useConfirmedIngredientsState();
+  const { setValue } = useFormContext<RecipeFormValues>();
+
+  useEffect(() => {
+    setValue("ingredients", confirmedIngredients);
+  }, [confirmedIngredients, setValue]);
+
   const ingredientItems = useMemo(() => {
     return (
       <div>
@@ -198,44 +212,4 @@ function IngredientList() {
   }, [confirmedIngredients]);
 
   return ingredientItems;
-}
-
-function IngredientListInput() {
-  const { control, setValue } = useFormContext<RecipeFormValues>();
-  const { fields, append, remove } = useFieldArray({ control, name: "ingredients", keyName: "ingredientFieldId" });
-
-  return (
-    <div className="bp-ingredient_list_input">
-      <div className="bp-ingredient_list_input__fields">
-        {fields.map((field, index) => {
-          const { ingredientFieldId, ...ingredient } = field;
-          return (
-            <IngredientInput
-              key={ingredientFieldId}
-              initialValue={ingredient as IRecipeIngredient}
-              onChange={(value) => {
-                setValue(`ingredients.${index}`, value);
-              }}
-            />
-          );
-        })}
-      </div>
-      <Button
-        type="button"
-        className="bp-ingredient_list_input__add_ingredient_btn"
-        onClick={() =>
-          append({
-            productCategories: [],
-            measurement: {
-              unit: Weights.GRAM,
-              magnitude: 0,
-            },
-          })
-        }
-      >
-        <FaPlus />
-        <span className="ms-3">Add ingredient</span>
-      </Button>
-    </div>
-  );
 }
