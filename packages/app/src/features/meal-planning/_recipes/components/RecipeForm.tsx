@@ -10,17 +10,19 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
-import { FaPlus } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
+import { MdCancel } from "react-icons/md";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import TimeInput from "@/components/forms/TimeInput";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -63,6 +65,7 @@ export default function RecipeForm(props: RecipeFormProps) {
     resetConfirmedIngredients();
   }, [resetConfirmedIngredients]);
 
+  const navigate = useNavigate();
   const formMethods = useForm<RecipeFormValues>({
     mode: "onSubmit",
     shouldUnregister: false,
@@ -87,6 +90,7 @@ export default function RecipeForm(props: RecipeFormProps) {
     <FormProvider {...formMethods}>
       <IngredientModal />
       <Form
+        className="bp-recipe_form"
         onSubmit={handleSubmit(() => {
           const dto = getValues();
           console.log(dto);
@@ -94,9 +98,24 @@ export default function RecipeForm(props: RecipeFormProps) {
         })}
       >
         <Container fluid>
-          <Row className="bp-recipe_form_dual_panel">
-            <Col className="bp-recipe_form_dual_panel__pane" md={4}>
-              <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe General Information</h2>
+          <Row>
+            <Col className="bp-recipe_form__header">
+              <h1 className="bp-recipe_form__header__title">{type === "create" ? "Create Recipe" : "Update Recipe"}</h1>
+              <div className="bp-recipe_form__header__actions">
+                <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+                  <MdCancel />
+                  <span className="ms-2">Cancel</span>
+                </Button>
+                <Button type="submit" disabled={disableSubmit}>
+                  <FaSave />
+                  <span className="ms-2">Save recipe</span>
+                </Button>
+              </div>
+            </Col>
+          </Row>
+          <Row className="bp-recipe_form__dual_panel">
+            <Col className="bp-recipe_form__dual_panel__pane" md={4}>
+              <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe General Information</h2>
               <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <TextInput
                 label="Recipe Title"
@@ -150,8 +169,8 @@ export default function RecipeForm(props: RecipeFormProps) {
                 as="textarea"
               />
             </Col>
-            <Col className="bp-recipe_form_dual_panel__pane">
-              <h2 className="bp-recipe_form_dual_panel__pane_heading">Recipe Details</h2>
+            <Col className="bp-recipe_form__dual_panel__pane">
+              <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe Details</h2>
               <Button
                 type="button"
                 onClick={() => {
@@ -176,9 +195,6 @@ export default function RecipeForm(props: RecipeFormProps) {
                 }}
                 as="textarea"
               />
-              <Button type="submit" disabled={disableSubmit}>
-                Submit
-              </Button>
             </Col>
           </Row>
         </Container>

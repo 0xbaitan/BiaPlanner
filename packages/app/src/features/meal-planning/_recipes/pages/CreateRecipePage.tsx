@@ -28,8 +28,6 @@ export default function CreateRecipePage() {
 
   return (
     <div>
-      <h1 className="bp-h1">Create Recipe</h1>
-
       <RecipeForm
         type="create"
         onSubmit={async (values) => {
