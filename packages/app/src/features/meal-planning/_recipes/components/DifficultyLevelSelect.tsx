@@ -1,6 +1,8 @@
 import { DifficultyLevels } from "@biaplanner/shared";
 import Form from "react-bootstrap/Form";
 import { FormSelectProps } from "react-bootstrap/FormSelect";
+import InputLabel from "@/components/forms/InputLabel";
+import { InputLabelProps } from "@/components/forms/InputLabel";
 import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useMemo } from "react";
 
@@ -9,10 +11,11 @@ export type DifficultyLevelSelectProps = {
   onChange: (difficultyLevel: DifficultyLevels) => void | Promise<void>;
   error?: string;
   label?: string;
+  inputLabelProps?: Omit<InputLabelProps, "children">;
 } & Omit<FormSelectProps, "value" | "onChange">;
 
 export default function DifficultyLevelSelect(props: DifficultyLevelSelectProps) {
-  const { initialValue, onChange, error, label } = props;
+  const { initialValue, inputLabelProps, onChange, error, label } = props;
   const options = useMemo(() => {
     let entries = Object.entries(DifficultyLevels).map(([key, value]) => ({ label: `${normaliseEnumKey(key)}`, value }));
     return entries;
@@ -20,7 +23,7 @@ export default function DifficultyLevelSelect(props: DifficultyLevelSelectProps)
 
   return (
     <Form.Group>
-      <Form.Label>{label ?? "Difficulty Level"}</Form.Label>
+      <InputLabel {...inputLabelProps}>{label ?? "Difficulty Level"}</InputLabel>
       <Form.Select
         value={initialValue}
         isInvalid={!!error}

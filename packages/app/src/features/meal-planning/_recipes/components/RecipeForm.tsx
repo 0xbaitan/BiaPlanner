@@ -16,6 +16,7 @@ import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientInput from "./IngredientInput";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
+import InputLabel from "@/components/forms/InputLabel";
 import { MdCancel } from "react-icons/md";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
@@ -117,57 +118,70 @@ export default function RecipeForm(props: RecipeFormProps) {
             <Col className="bp-recipe_form__dual_panel__pane" md={4}>
               <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe General Information</h2>
               <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
-              <TextInput
-                label="Recipe Title"
-                defaultValue={initialValue?.title}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setValue("title", value);
-                }}
-              />
-              <DifficultyLevelSelect
-                onChange={(value) => {
-                  setValue("difficultyLevel", value);
-                }}
-              />
-              <CuisineSelect
-                onChange={(value) => {
-                  setValue("cuisineId", value.id);
-                }}
-              />
-              <SegmentedTimeInput
-                onChange={(segmentedTime) => {
-                  setValue("prepTime", segmentedTime);
-                }}
-                initialValue={initialValue?.prepTime}
-              />
-              <SegmentedTimeInput
-                onChange={(segmentedTime) => {
-                  setValue("cookingTime", segmentedTime);
-                }}
-                initialValue={initialValue?.cookingTime}
-              />
-
-              <RecipeTagsMultiselect
-                initialValues={initialValue?.tags}
-                onChange={(tags) => {
-                  setValue(
-                    "tags",
-                    tags.map((tag) => ({
-                      id: tag.id,
-                    }))
-                  );
-                }}
-              />
-              <TextInput
-                label="Recipe Description"
-                defaultValue={initialValue?.description}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setValue("description", value);
-                }}
-                as="textarea"
-              />
+              <div className="bp-recipe_form__dual_panel__pane__general_info">
+                <TextInput
+                  label="Recipe Title"
+                  defaultValue={initialValue?.title}
+                  inputLabelProps={{ required: true }}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setValue("title", value);
+                  }}
+                />
+                <DifficultyLevelSelect
+                  onChange={(value) => {
+                    setValue("difficultyLevel", value);
+                  }}
+                  initialValue={initialValue?.difficultyLevel}
+                  inputLabelProps={{ required: true }}
+                />
+                <CuisineSelect
+                  onChange={(value) => {
+                    setValue("cuisineId", value.id);
+                  }}
+                  initialValueId={String(initialValue?.cuisine?.id)}
+                  inputLabelProps={{ required: true }}
+                />
+                <Form.Group>
+                  <InputLabel required>Preparation Time</InputLabel>
+                  <SegmentedTimeInput
+                    onChange={(segmentedTime) => {
+                      setValue("prepTime", segmentedTime);
+                    }}
+                    initialValue={initialValue?.prepTime}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <InputLabel required>Cooking Time</InputLabel>
+                  <SegmentedTimeInput
+                    onChange={(segmentedTime) => {
+                      setValue("cookingTime", segmentedTime);
+                    }}
+                    initialValue={initialValue?.cookingTime}
+                  />
+                </Form.Group>
+                <RecipeTagsMultiselect
+                  inputLabelProps={{ required: true }}
+                  initialValues={initialValue?.tags}
+                  onChange={(tags) => {
+                    setValue(
+                      "tags",
+                      tags.map((tag) => ({
+                        id: tag.id,
+                      }))
+                    );
+                  }}
+                />
+                <TextInput
+                  label="Recipe Description"
+                  defaultValue={initialValue?.description}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setValue("description", value);
+                  }}
+                  as="textarea"
+                />
+              </div>
             </Col>
             <Col className="bp-recipe_form__dual_panel__pane">
               <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe Details</h2>

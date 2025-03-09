@@ -1,0 +1,14 @@
+.bp-input_label {
+  @include typography-mulish-font(0.925rem, bold);
+  color: $colors-dark-grey;
+  margin-bottom: 0.5em;
+}
+
+.bp-input_label--required {
+  @extend .bp-input_label;
+  &::after {
+    content: "*";
+    color: $colors-danger;
+    margin-left: 0.25em;
+  }
+}

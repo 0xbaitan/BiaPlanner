@@ -1,3 +1,5 @@
+import InputLabel, { InputLabelProps } from "@/components/forms/InputLabel";
+
 import Form from "react-bootstrap/esm/Form";
 import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { ICuisine } from "@biaplanner/shared";
@@ -8,15 +10,16 @@ export type CuisineSelectProps = {
   initialValueId?: string;
   onChange: (cuisine: ICuisine) => void | Promise<void>;
   error?: string;
+  inputLabelProps?: Omit<InputLabelProps, "children">;
 } & Omit<FormSelectProps, "value" | "onChange">;
 
 export default function CuisineSelect(props: CuisineSelectProps) {
-  const { onChange, error } = props;
+  const { onChange, inputLabelProps, error } = props;
   const { data: cuisineOptions, isSuccess } = useGetCuisinesQuery();
 
   return (
     <Form.Group>
-      <Form.Label>Cuisines</Form.Label>
+      <InputLabel {...inputLabelProps}>Cuisine</InputLabel>
       <SelectInput<ICuisine>
         list={isSuccess ? cuisineOptions : []}
         onChange={([selectedCuisine]) => {
