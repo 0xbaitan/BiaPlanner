@@ -10,6 +10,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
+import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import { ImageSelector } from "@/components/forms/ImageSelector";
@@ -84,7 +85,7 @@ export default function RecipeForm(props: RecipeFormProps) {
     },
     resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
-  const openCreateIngredientModal = useOpenCreateIngredientModal();
+
   const { handleSubmit, setValue, getValues } = formMethods;
 
   return (
@@ -120,7 +121,7 @@ export default function RecipeForm(props: RecipeFormProps) {
               <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <div className="bp-recipe_form__dual_panel__pane__general_info">
                 <TextInput
-                  label="Recipe Title"
+                  label="Recipe title"
                   defaultValue={initialValue?.title}
                   inputLabelProps={{ required: true }}
                   onChange={(e) => {
@@ -143,7 +144,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                   inputLabelProps={{ required: true }}
                 />
                 <Form.Group>
-                  <InputLabel required>Preparation Time</InputLabel>
+                  <InputLabel required>Preparation time</InputLabel>
                   <SegmentedTimeInput
                     onChange={(segmentedTime) => {
                       setValue("prepTime", segmentedTime);
@@ -152,7 +153,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <InputLabel required>Cooking Time</InputLabel>
+                  <InputLabel required>Cooking time</InputLabel>
                   <SegmentedTimeInput
                     onChange={(segmentedTime) => {
                       setValue("cookingTime", segmentedTime);
@@ -185,22 +186,10 @@ export default function RecipeForm(props: RecipeFormProps) {
             </Col>
             <Col className="bp-recipe_form__dual_panel__pane">
               <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe Details</h2>
-              <Button
-                type="button"
-                onClick={() => {
-                  openCreateIngredientModal({
-                    index: 0,
-                    onConfirmIngredient: (ingredient) => {
-                      setValue("ingredients", (getValues("ingredients") ?? []).concat(ingredient));
-                    },
-                  });
-                }}
-              >
-                Add Ingredient
-              </Button>
-              {/* <IngredientListInput /> */}
+
               <IngredientList />
               <TextInput
+                formGroupClassName="mt-5"
                 label="Instructions"
                 defaultValue={initialValue?.instructions}
                 onChange={(e) => {
@@ -219,27 +208,49 @@ export default function RecipeForm(props: RecipeFormProps) {
 
 function IngredientList() {
   const { confirmedIngredients } = useConfirmedIngredientsState();
-  const { setValue } = useFormContext<RecipeFormValues>();
-
+  const { setValue, getValues } = useFormContext<RecipeFormValues>();
+  const openCreateIngredientModal = useOpenCreateIngredientModal();
   useEffect(() => {
     setValue("ingredients", confirmedIngredients);
   }, [confirmedIngredients, setValue]);
 
   const ingredientItems = useMemo(() => {
     return (
-      <div>
-        {confirmedIngredients && confirmedIngredients.length > 0 ? (
-          <div className="bp-ingredient_list">
-            {confirmedIngredients.map((ingredient, index) => (
-              <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
-            ))}
+      <div className="bp-ingredient_list">
+        <div className="bp-ingredient_list__header">
+          <div className="bp-ingredient_list__header__title">
+            <h3 className="bp-h3">Ingredient List</h3>
           </div>
-        ) : (
-          <div>No list</div>
-        )}
+          <div className="bp-ingredient_list__header__actions">
+            <Button
+              type="button"
+              onClick={() => {
+                openCreateIngredientModal({
+                  index: 0,
+                  onConfirmIngredient: (ingredient) => {
+                    setValue("ingredients", (getValues("ingredients") ?? []).concat(ingredient));
+                  },
+                });
+              }}
+            >
+              <FaPlus /> <span className="ps-2">Add ingredient</span>
+            </Button>
+          </div>
+        </div>
+        <div className="bp-ingredient_list__content">
+          {confirmedIngredients && confirmedIngredients.length > 0 ? (
+            <div className="bp-ingredient_list__content__list">
+              {confirmedIngredients.map((ingredient, index) => (
+                <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
+              ))}
+            </div>
+          ) : (
+            <div className="bp-ingredient_list__content__no_list_message">No ingredients have been added yet, add at least one ingredient.</div>
+          )}
+        </div>
       </div>
     );
-  }, [confirmedIngredients]);
+  }, [confirmedIngredients, getValues, openCreateIngredientModal, setValue]);
 
   return ingredientItems;
 }

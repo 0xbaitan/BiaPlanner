@@ -18,7 +18,7 @@ export default function RecipeTagsMultiselect(props: RecipeTagsSelectProps) {
 
   return (
     <Form.Group>
-      <InputLabel {...inputLabelProps}>Recipe Tags</InputLabel>
+      <InputLabel {...inputLabelProps}>Recipe tags</InputLabel>
       <SelectInput<IRecipeTag> {...props} selectedValues={props.initialValues ?? []} idSelector={(tag) => tag.id} list={!noReceipeTags ? recipeTags : []} nameSelector={(tag) => tag.name} multi create noDataLabel="No recipe tags available" />
       <Form.Control.Feedback type="invalid">{props.error}</Form.Control.Feedback>
     </Form.Group>

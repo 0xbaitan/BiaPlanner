@@ -3,7 +3,9 @@ import "../styles/IngredientItem.scss";
 import { useConfirmedIngredientsState, useOpenUpdateIngredientModal } from "../../reducers/RecipeFormReducer";
 
 import { DeepPartial } from "utility-types";
+import { FaTrash } from "react-icons/fa";
 import { IRecipeIngredient } from "@biaplanner/shared";
+import { MdEdit } from "react-icons/md";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 
 export type IngredientItemProps = {
@@ -24,27 +26,35 @@ export default function IngredientItem(props: IngredientItemProps) {
   return (
     <div className="bp-ingredient_item">
       <div className="bp-ingredient_item__main">
-        <div className="bp-ingredient_item__main__count">{index + 1}</div>
-        <div className="bp-ingredient_item__main__title">{ingredient.title}</div>
-        <div className="bp-ingredient_item__main__measurement">
-          <span className="bp-ingredient_item__main__measurement__magnitude">{ingredient.measurement?.magnitude}</span>
-          <span className="bp-ingredient_item__main__measurement__unit">{ingredient.measurement?.unit}</span>
+        <div className="bp-ingredient_item__main__count">
+          <div className="bp-ingredient_item__main__count__index">{index + 1}</div>
+        </div>
+        <div className="bp-ingredient_item__main__details">
+          <div className="d-flex">
+            <div className="bp-ingredient_item__main__title">{ingredient.title}</div>
+            <div className="bp-ingredient_item__main__measurement">
+              <span className="bp-ingredient_item__main__measurement__magnitude">{ingredient.measurement?.magnitude}</span>
+              <span className="bp-ingredient_item__main__measurement__unit">{ingredient.measurement?.unit}</span>
+            </div>
+          </div>
+          <div className="d-flex">
+            <div className="bp-ingredient_item__categories">
+              {ingredient.productCategories.map((category, index) => (
+                <div key={index} className="bp-ingredient_item__categories__category">
+                  {category.name}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <div className="bp-ingredient_item__main__actions">
-          <button className="bp-ingredient_item__main__actions__edit" onClick={() => openUpdateIngredientModal(index, ingredient)}>
-            Edit
+          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index, ingredient)}>
+            <MdEdit size={20} />
           </button>
-          <button className="bp-ingredient_item__main__actions__delete" onClick={() => notifyDeletion({ ingredient, index })}>
-            Delete
+          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => notifyDeletion({ ingredient, index })}>
+            <FaTrash size={20} />
           </button>
         </div>
-      </div>
-      <div className="bp-ingredient_item__categories">
-        {ingredient.productCategories.map((category, index) => (
-          <div key={index} className="bp-ingredient_item__categories__category">
-            {category.name}
-          </div>
-        ))}
       </div>
     </div>
   );

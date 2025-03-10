@@ -23,7 +23,7 @@ export default function DifficultyLevelSelect(props: DifficultyLevelSelectProps)
 
   return (
     <Form.Group>
-      <InputLabel {...inputLabelProps}>{label ?? "Difficulty Level"}</InputLabel>
+      <InputLabel {...inputLabelProps}>{label ?? "Difficulty level"}</InputLabel>
       <Form.Select
         value={initialValue}
         isInvalid={!!error}

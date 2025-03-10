@@ -9,6 +9,16 @@
 }
 
 .bp-h1 {
-  @include typography-mulish-font(2.5rem, bold);
+  @include typography-mulish-font(2.4rem, bold);
+  color: $colors-dark-grey;
+}
+
+.bp-h2 {
+  @include typography-mulish-font(1.6rem, bold);
+  color: $colors-dark-grey;
+}
+
+.bp-h3 {
+  @include typography-mulish-font(1.2rem, bold);
   color: $colors-dark-grey;
 }
