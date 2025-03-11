@@ -1,6 +1,6 @@
 import "../styles/RecipeForm.scss";
 
-import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto, Weights } from "@biaplanner/shared";
 import { useConfirmedIngredientsState, useOpenCreateIngredientModal } from "../../reducers/RecipeFormReducer";
 import { useEffect, useMemo } from "react";
@@ -14,7 +14,6 @@ import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import { ImageSelector } from "@/components/forms/ImageSelector";
-import IngredientInput from "./IngredientInput";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
 import InputLabel from "@/components/forms/InputLabel";
@@ -23,7 +22,6 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import Row from "react-bootstrap/Row";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
-import TimeInput from "@/components/forms/TimeInput";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,21 +30,57 @@ export type RecipeFormValues = IUpdateRecipeDto | ICreateRecipeDto;
 
 const ingredientsSchema = z.object({
   productCategories: z.array(z.string()),
-  quantity: z.number(),
-  weightUnit: z.string().nullable(),
-  volumeUnit: z.string().nullable(),
-  approximateUnit: z.string().nullable(),
+  title: z.string().min(1, { message: "Ingredient title is required" }),
+  measurement: z.object({
+    unit: z.string().min(1, { message: "Ingredient measurement unit is required" }),
+    magnitude: z.number().min(0, { message: "Ingredient measurement magnitude must be greater than 0" }),
+  }),
 });
 
 export const CreateRecipeValidationSchema = z.object({
-  // ingredients: z.array(ingredientsSchema),
-  // newTags: z.array(z.object({ name: z.string() })),
-  // tags: z.array(z.object({ id: z.string() })),
-  // title: z.string().min(1, { message: "Recipe title is required" }),
-  // description: z.string().nullable(),
-  // instructions: z.string().min(1, { message: "Recipe instructions are required" }),
-  // difficultyLevel: z.string().min(1, { message: "Recipe difficulty level is required" }),
-  // cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
+  ingredients: z.array(ingredientsSchema),
+  newTags: z.array(z.object({ name: z.string() })).nullable(),
+  tags: z
+    .array(
+      z.object({
+        id: z.string({
+          required_error: "Recipe tag id is required",
+          invalid_type_error: "Recipe tag id must be a string",
+        }),
+      }),
+      {
+        required_error: "Recipe must have at least one tag",
+      }
+    )
+    .length(1, { message: "Recipe must have at least one tag" }),
+
+  title: z
+    .string({
+      required_error: "Recipe title is required",
+      invalid_type_error: "Recipe title must be composed of characters",
+    })
+    .min(1),
+  description: z.string().nullable(),
+  instructions: z
+    .string({
+      required_error: "Recipe instructions are required",
+      invalid_type_error: "Recipe instructions must be composed of characters",
+    })
+    .min(1),
+  difficultyLevel: z.string().nullable(),
+  cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
+  prepTime: z.object({
+    hours: z.number().min(0).max(23),
+    minutes: z.number().min(0).max(59),
+    days: z.number().min(0).max(7),
+    seconds: z.number().min(0).max(59),
+  }),
+  cookingTime: z.object({
+    hours: z.number().min(0).max(23),
+    minutes: z.number().min(0).max(59),
+    days: z.number().min(0).max(7),
+    seconds: z.number().min(0).max(59),
+  }),
 });
 
 export const UpdateRecipeTagValidationSchema = z.object({
@@ -86,8 +120,9 @@ export default function RecipeForm(props: RecipeFormProps) {
     resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
   });
 
-  const { handleSubmit, setValue, getValues } = formMethods;
+  const { handleSubmit, setValue, getValues, formState } = formMethods;
 
+  console.log(formState.errors);
   return (
     <FormProvider {...formMethods}>
       <IngredientModal />
@@ -124,6 +159,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                   label="Recipe title"
                   defaultValue={initialValue?.title}
                   inputLabelProps={{ required: true }}
+                  error={formState.errors.title?.message}
                   onChange={(e) => {
                     const { value } = e.target;
                     setValue("title", value);
@@ -135,6 +171,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                   }}
                   initialValue={initialValue?.difficultyLevel}
                   inputLabelProps={{ required: true }}
+                  error={formState.errors.difficultyLevel?.message === "Required" ? "Difficulty level is required" : formState.errors.difficultyLevel?.message}
                 />
                 <CuisineSelect
                   onChange={(value) => {
@@ -142,6 +179,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                   }}
                   initialValueId={String(initialValue?.cuisine?.id)}
                   inputLabelProps={{ required: true }}
+                  error={formState.errors.cuisineId?.message === "Required" ? "Cuisine is required" : formState.errors.cuisineId?.message}
                 />
                 <Form.Group>
                   <InputLabel required>Preparation time</InputLabel>
@@ -172,6 +210,7 @@ export default function RecipeForm(props: RecipeFormProps) {
                       }))
                     );
                   }}
+                  error={formState.errors.tags?.message}
                 />
                 <TextInput
                   label="Recipe Description"
