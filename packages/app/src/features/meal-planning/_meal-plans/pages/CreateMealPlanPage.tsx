@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { useCreateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
 import { useEffect } from "react";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
+import { useSelectRecipe } from "../../reducers/IngredientManagementReducer";
 
 export default function CreateMealPlanPage() {
   const [searchParams] = useSearchParams();
@@ -16,7 +17,7 @@ export default function CreateMealPlanPage() {
   const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(recipeId));
 
   const [createConcreteRecipeMutation, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
-
+  const selectRecipe = useSelectRecipe();
   const { setItem } = useDefaultStatusToast<IConcreteRecipe>({
     idSelector: (entity) => entity.id,
     action: Action.CREATE,
@@ -40,6 +41,12 @@ export default function CreateMealPlanPage() {
       navigate("/meal-planning/meal-plans/select-recipe");
     }
   }, [navigate, recipeId]);
+
+  useEffect(() => {
+    if (recipeIsSuccess && recipe) {
+      selectRecipe(recipe);
+    }
+  }, [recipe, recipeIsSuccess, selectRecipe]);
 
   if (recipeIsError) {
     return <div>There was an error</div>;
