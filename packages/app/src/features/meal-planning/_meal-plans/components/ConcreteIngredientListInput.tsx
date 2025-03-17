@@ -9,6 +9,7 @@ import { useFormContext } from "react-hook-form";
 export type ConcreteIngredientInputProps = {};
 
 export default function ConcreteIngredientListInput(props: ConcreteIngredientInputProps) {
+  const {} = props;
   const [recipe, setRecipe] = useState<IRecipe>();
   console.log(recipe);
   const formMethods = useFormContext<ConcreteRecipeFormValues>();

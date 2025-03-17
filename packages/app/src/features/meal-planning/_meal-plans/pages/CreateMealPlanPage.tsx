@@ -1,12 +1,20 @@
 import { IConcreteRecipe, ICreateConcreteRecipeDto } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import MealPlanForm from "../components/MealPlanForm";
 import { Status } from "@/hooks/useStatusToast";
 import dayjs from "dayjs";
 import { useCreateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
+import { useEffect } from "react";
+import { useGetRecipeQuery } from "@/apis/RecipeApi";
 
 export default function CreateMealPlanPage() {
+  const [searchParams] = useSearchParams();
+  const recipeId = searchParams.get("recipeId");
+  const navigate = useNavigate();
+  const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(recipeId));
+
   const [createConcreteRecipeMutation, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
 
   const { setItem } = useDefaultStatusToast<IConcreteRecipe>({
@@ -26,10 +34,32 @@ export default function CreateMealPlanPage() {
       redirectUrl: "/",
     },
   });
+
+  useEffect(() => {
+    if (recipeId === null) {
+      navigate("/meal-planning/meal-plans/select-recipe");
+    }
+  }, [navigate, recipeId]);
+
+  if (recipeIsError) {
+    return <div>There was an error</div>;
+  }
+
+  if (recipeIsLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!recipeIsSuccess || !recipe) {
+    return <div>Recipe not found</div>;
+  }
   return (
     <div>
       <h1>Create Meal Plan</h1>
       <MealPlanForm
+        initialValue={{
+          recipe: recipe,
+          recipeId: recipe.id,
+        }}
         type="create"
         onSubmit={async (values) => {
           setItem(values as IConcreteRecipe);

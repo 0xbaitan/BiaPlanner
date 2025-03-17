@@ -43,6 +43,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
           <Container fluid>
             <Row className="bp-meal_plan_form__dual_panel">
               <Col md={4} className="bp-meal_plan_form__dual_panel__pane">
+                <div className="bp-meal_plan_form__dual_panel__pane__header">Recipe: {initialValue?.recipe?.title}</div>
                 <MealTypeSelect
                   onChange={(mealType) => {
                     setValue("mealType", mealType);
