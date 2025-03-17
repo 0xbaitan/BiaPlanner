@@ -7,9 +7,13 @@ import Button from "react-bootstrap/esm/Button";
 import Col from "react-bootstrap/Col";
 import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
 import Container from "react-bootstrap/Container";
+import DualPaneForm from "@/components/forms/DualPaneForm";
+import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
+import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
 import Row from "react-bootstrap/Row";
+import { useNavigate } from "react-router-dom";
 
 export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
 
@@ -26,39 +30,46 @@ export default function MealPlanForm(props: MealPlanFormValues) {
     defaultValues: initialValue ?? {},
     mode: "onBlur",
   });
+  const navigate = useNavigate();
+  const disableSubmit = props.disableSubmit ?? false;
 
   const { handleSubmit, getValues, setValue, reset } = methods;
   return (
-    <div>
-      <h2>Meal Plan Page Form</h2>
-      <FormProvider {...methods}>
-        <Form
-          className="bp-meal_plan_form"
-          onSubmit={handleSubmit(() => {
-            const values = getValues();
-            reset();
-            onSubmit(values);
-          })}
-        >
-          <Container fluid>
-            <Row className="bp-meal_plan_form__dual_panel">
-              <Col md={4} className="bp-meal_plan_form__dual_panel__pane">
-                <div className="bp-meal_plan_form__dual_panel__pane__header">Recipe: {initialValue?.recipe?.title}</div>
-                <MealTypeSelect
-                  onChange={(mealType) => {
-                    setValue("mealType", mealType);
-                  }}
-                />
-                <ConcreteIngredientListInput />
-              </Col>
-              <Col className="bp-meal_plan_form__dual_panel__pane">
-                {" "}
-                <Button type="submit">Submit</Button>
-              </Col>
-            </Row>
-          </Container>
-        </Form>
-      </FormProvider>
-    </div>
+    <FormProvider {...methods}>
+      <DualPaneForm
+        className="bp-meal_plan_form"
+        onSubmit={handleSubmit(() => {
+          const values = getValues();
+          reset();
+          onSubmit(values);
+        })}
+      >
+        <DualPaneForm.Header>
+          <DualPaneForm.Header.Title>Create Meal Plan</DualPaneForm.Header.Title>
+          <DualPaneForm.Header.Actions>
+            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+              <MdCancel />
+              <span className="ms-2">Cancel</span>
+            </Button>
+            <Button type="submit" disabled={disableSubmit}>
+              <FaSave />
+              <span className="ms-2">Save meal plan</span>
+            </Button>
+          </DualPaneForm.Header.Actions>
+        </DualPaneForm.Header>
+        <DualPaneForm.Panel>
+          <DualPaneForm.Panel.Pane>
+            <MealTypeSelect
+              onChange={(mealType) => {
+                setValue("mealType", mealType);
+              }}
+            />
+            <ConcreteIngredientListInput />
+          </DualPaneForm.Panel.Pane>
+
+          <DualPaneForm.Panel.Pane></DualPaneForm.Panel.Pane>
+        </DualPaneForm.Panel>
+      </DualPaneForm>
+    </FormProvider>
   );
 }
