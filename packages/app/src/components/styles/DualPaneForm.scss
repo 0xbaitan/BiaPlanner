@@ -6,10 +6,6 @@
     margin-bottom: 0.875em;
     padding: 0.5em;
 
-    &__title {
-      @extend .bp-h1;
-    }
-
     &__actions {
       display: flex;
       gap: 1rem;
@@ -25,18 +21,12 @@
       border: 0.5px solid $colors-silver;
       border-radius: 0.5rem;
       box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-      padding: 1.5em;
+      padding: clamp(0.5em, 2vw, 1.25em);
+
       background-color: $pane-bg-color;
       width: 100%;
       max-height: 100%;
       overflow-y: scroll;
-    }
-
-    &__pane_heading {
-      @extend .bp-h2;
-      color: $colors-dark-grey;
-      margin-bottom: 1rem;
-      text-transform: capitalize;
     }
   }
 }

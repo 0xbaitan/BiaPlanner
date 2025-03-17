@@ -1,0 +1,28 @@
+@mixin heading-style($size, $weight, $color) {
+  @include typography-mulish-font($size, $weight);
+  color: $color;
+}
+
+.bp-h1 {
+  @include heading-style(2.4rem, bold, $colors-dark-grey);
+}
+
+.bp-h2 {
+  @include heading-style(1.6rem, bold, $colors-dark-grey);
+}
+
+.bp-h3 {
+  @include heading-style(1.2rem, bold, $colors-grey);
+}
+
+.bp-h4 {
+  @include heading-style(1rem, bold, $colors-dark-grey);
+}
+
+.bp-h5 {
+  @include heading-style(0.8rem, bold, $colors-dark-grey);
+}
+
+.bp-h6 {
+  @include heading-style(0.6rem, bold, $colors-dark-grey);
+}

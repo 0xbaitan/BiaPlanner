@@ -28,10 +28,6 @@
     margin-bottom: 0.875em;
     padding: 0.5em;
 
-    &__title {
-      @extend .bp-h3;
-    }
-
     &__actions {
       display: flex;
       gap: 1rem;

@@ -1,5 +1,3 @@
-$primary: #3fbf7f;
-$secondary: #6c757d;
 $success: #28a745;
 $info: #17a2b8;
 $warning: #ffc107;
@@ -15,7 +13,27 @@ $light-blue: #688af0;
 $silver: #d9d9d9;
 $dark-grey: #313131;
 $golden-cream: #ffcc5d;
-
+$grey: #6c757d;
 $main: $saturated-blue;
 $secondary: $light-blue;
 $accent: $gold;
+
+$index: (
+  secondary: $secondary,
+  success: $success,
+  info: $info,
+  warning: $warning,
+  danger: $danger,
+  light: $light,
+  dark: $dark,
+  black: $black,
+  white: $white,
+  saturated-blue: $saturated-blue,
+  navy-blue: $navy-blue,
+  gold: $gold,
+  light-blue: $light-blue,
+  silver: $silver,
+  dark-grey: $dark-grey,
+  grey: $grey,
+  golden-cream: $golden-cream,
+);

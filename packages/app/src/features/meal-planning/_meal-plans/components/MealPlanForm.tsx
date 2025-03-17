@@ -4,15 +4,12 @@ import { FormProvider, useForm } from "react-hook-form";
 import { IConcreteRecipe, ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/esm/Button";
-import Col from "react-bootstrap/Col";
 import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
-import Container from "react-bootstrap/Container";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
-import Form from "react-bootstrap/Form";
+import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
-import Row from "react-bootstrap/Row";
 import { useNavigate } from "react-router-dom";
 
 export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
@@ -67,7 +64,12 @@ export default function MealPlanForm(props: MealPlanFormValues) {
             <ConcreteIngredientListInput />
           </DualPaneForm.Panel.Pane>
 
-          <DualPaneForm.Panel.Pane></DualPaneForm.Panel.Pane>
+          <DualPaneForm.Panel.Pane>
+            <Heading level={Heading.Level.H2}>Manage your ingredients</Heading>
+            <Heading level={Heading.Level.H3} className="+fg-main">
+              Match ingredients to your available inventory
+            </Heading>
+          </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>
     </FormProvider>

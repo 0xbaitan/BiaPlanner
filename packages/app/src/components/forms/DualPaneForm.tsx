@@ -2,22 +2,13 @@ import "../styles/DualPaneForm.scss";
 
 import Col, { ColProps } from "react-bootstrap/esm/Col";
 import Form, { FormProps } from "react-bootstrap/Form";
+import Heading, { HeadingProps } from "../Heading";
 import Row, { RowProps } from "react-bootstrap/esm/Row";
 
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/Container";
-import CuisineSelect from "@/features/meal-planning/_recipes/components/CuisineSelect";
-import DiffaicultyLevelSelect from "@/features/meal-planning/_recipes/components/DifficultyLevelSelect";
-import { FaSave } from "react-icons/fa";
 import { HTMLProps } from "react";
-import { ImageSelector } from "./ImageSelector";
-import InputLabel from "./InputLabel";
-import { MdCancel } from "react-icons/md";
 import React from "react";
-import RecipeTagsMultiselect from "@/features/meal-planning/_recipes/components/RecipeTagsMultiselect";
-import SegmentedTimeInput from "./SegmentedTimeInput";
-import TextInput from "./TextInput";
-import { type } from "os";
 
 export type DualPaneFormMainProps = FormProps;
 export type DualPaneFormTitleProps = HTMLProps<HTMLHeadingElement>;
@@ -28,9 +19,9 @@ export type DualPaneFormPanelProps = RowProps;
 function Title(props: DualPaneFormTitleProps) {
   const { className, children, ...rest } = props;
   return (
-    <h1 className={`bp-form__header__title ${className ?? " "}`} {...rest}>
+    <Heading level={Heading.Level.H1} className={`bp-form__header__title ${className ?? " "}`} {...rest}>
       {children}
-    </h1>
+    </Heading>
   );
 }
 
