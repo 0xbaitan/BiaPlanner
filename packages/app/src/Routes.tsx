@@ -26,6 +26,7 @@ import MealPlanningPagesContainer from "./features/meal-planning/components/Meal
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
 import RecipesPage from "./features/meal-planning/_recipes/pages/RecipesPage";
+import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
 import UpdateRecipePage from "./features/meal-planning/_recipes/pages/UpdateRecipePage";
@@ -85,6 +86,7 @@ export default function Routes() {
           <Route path="recipes/create" element={<CreateRecipePage />} />
           <Route path="recipes/update/:id" element={<UpdateRecipePage />} />
           <Route path="meal-plans" element={<MealPlansPage />} />
+          <Route path="meal-plans/select-recipe" element={<SelectRecipePage />} />
           <Route path="meal-plans/create" element={<CreateMealPlanPage />} />
         </Route>
       </RoutingTable>

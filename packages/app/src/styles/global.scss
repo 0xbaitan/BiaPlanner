@@ -1,5 +1,30 @@
 @use "partials" as *;
 
+$lg: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: lg,
+);
+$md: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: md,
+);
+$sm: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: sm,
+);
+$xs: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: xs,
+);
+$xl: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: xl,
+);
+$xxl: map-get(
+  $map: $bootstrap-custom-grid-breakpoints,
+  $key: xxl,
+);
+
 .btn-primary {
   @include bootstrap-custom-button-variant($colors-main, $colors-main);
 }

@@ -10,7 +10,7 @@ export default function MealPlansPage() {
   return (
     <div>
       <h1>Meal Plans</h1>
-      <Button onClick={() => navigate("./create")}>Create Meal Plan</Button>
+      <Button onClick={() => navigate("./select-recipe")}>Create Meal Plan</Button>
       <MealPlanTable data={mealPlans ?? []} />
     </div>
   );
