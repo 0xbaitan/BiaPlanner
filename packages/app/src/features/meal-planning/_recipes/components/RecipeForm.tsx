@@ -10,6 +10,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
+import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
@@ -124,123 +125,237 @@ export default function RecipeForm(props: RecipeFormProps) {
 
   console.log(formState.errors);
   return (
+    // <FormProvider {...formMethods}>
+    //   <IngredientModal />
+    //   <Form
+    //     className="bp-recipe_form"
+    //     onSubmit={handleSubmit(() => {
+    //       const dto = getValues();
+    //       console.log(dto);
+    //       onSubmit(dto);
+    //     })}
+    //   >
+    //     <Container fluid>
+    //       <Row>
+    //         <Col className="bp-recipe_form__header">
+    //           <h1 className="bp-recipe_form__header__title">{type === "create" ? "Create Recipe" : "Update Recipe"}</h1>
+    //           <div className="bp-recipe_form__header__actions">
+    //             <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+    //               <MdCancel />
+    //               <span className="ms-2">Cancel</span>
+    //             </Button>
+    //             <Button type="submit" disabled={disableSubmit}>
+    //               <FaSave />
+    //               <span className="ms-2">Save recipe</span>
+    //             </Button>
+    //           </div>
+    //         </Col>
+    //       </Row>
+    //       <Row className="bp-recipe_form__dual_panel">
+    //         <Col className="bp-recipe_form__dual_panel__pane" md={4}>
+    //           <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe General Information</h2>
+    //           <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+    //           <div className="bp-recipe_form__dual_panel__pane__general_info">
+    //             <TextInput
+    //               label="Recipe title"
+    //               defaultValue={initialValue?.title}
+    //               inputLabelProps={{ required: true }}
+    //               error={formState.errors.title?.message}
+    //               onChange={(e) => {
+    //                 const { value } = e.target;
+    //                 setValue("title", value);
+    //               }}
+    //             />
+    //             <DifficultyLevelSelect
+    //               onChange={(value) => {
+    //                 setValue("difficultyLevel", value);
+    //               }}
+    //               initialValue={initialValue?.difficultyLevel}
+    //               inputLabelProps={{ required: true }}
+    //               error={formState.errors.difficultyLevel?.message === "Required" ? "Difficulty level is required" : formState.errors.difficultyLevel?.message}
+    //             />
+    //             <CuisineSelect
+    //               onChange={(value) => {
+    //                 setValue("cuisineId", value.id);
+    //               }}
+    //               initialValueId={String(initialValue?.cuisine?.id)}
+    //               inputLabelProps={{ required: true }}
+    //               error={formState.errors.cuisineId?.message === "Required" ? "Cuisine is required" : formState.errors.cuisineId?.message}
+    //             />
+    //             <Form.Group>
+    //               <InputLabel required>Preparation time</InputLabel>
+    //               <SegmentedTimeInput
+    //                 onChange={(segmentedTime) => {
+    //                   setValue("prepTime", segmentedTime);
+    //                 }}
+    //                 initialValue={initialValue?.prepTime}
+    //               />
+    //             </Form.Group>
+    //             <Form.Group>
+    //               <InputLabel required>Cooking time</InputLabel>
+    //               <SegmentedTimeInput
+    //                 onChange={(segmentedTime) => {
+    //                   setValue("cookingTime", segmentedTime);
+    //                 }}
+    //                 initialValue={initialValue?.cookingTime}
+    //               />
+    //             </Form.Group>
+    //             <RecipeTagsMultiselect
+    //               inputLabelProps={{ required: true }}
+    //               initialValues={initialValue?.tags}
+    //               onChange={(tags) => {
+    //                 setValue(
+    //                   "tags",
+    //                   tags.map((tag) => ({
+    //                     id: tag.id,
+    //                   }))
+    //                 );
+    //               }}
+    //               error={formState.errors.tags?.message}
+    //             />
+    //             <TextInput
+    //               label="Recipe Description"
+    //               defaultValue={initialValue?.description}
+    //               onChange={(e) => {
+    //                 const { value } = e.target;
+    //                 setValue("description", value);
+    //               }}
+    //               as="textarea"
+    //             />
+    //           </div>
+    //         </Col>
+    //         <Col className="bp-recipe_form__dual_panel__pane">
+    //           <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe Details</h2>
+
+    //           <IngredientList />
+    //           <TextInput
+    //             formGroupClassName="mt-5"
+    //             label="Instructions"
+    //             defaultValue={initialValue?.instructions}
+    //             onChange={(e) => {
+    //               const { value } = e.target;
+    //               setValue("instructions", value);
+    //             }}
+    //             as="textarea"
+    //           />
+    //         </Col>
+    //       </Row>
+    //     </Container>
+    //   </Form>
+    // </FormProvider>
     <FormProvider {...formMethods}>
       <IngredientModal />
-      <Form
-        className="bp-recipe_form"
+      <DualPaneForm
         onSubmit={handleSubmit(() => {
           const dto = getValues();
           console.log(dto);
           onSubmit(dto);
         })}
+        className="bp-recipe_form"
       >
-        <Container fluid>
-          <Row>
-            <Col className="bp-recipe_form__header">
-              <h1 className="bp-recipe_form__header__title">{type === "create" ? "Create Recipe" : "Update Recipe"}</h1>
-              <div className="bp-recipe_form__header__actions">
-                <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
-                  <MdCancel />
-                  <span className="ms-2">Cancel</span>
-                </Button>
-                <Button type="submit" disabled={disableSubmit}>
-                  <FaSave />
-                  <span className="ms-2">Save recipe</span>
-                </Button>
-              </div>
-            </Col>
-          </Row>
-          <Row className="bp-recipe_form__dual_panel">
-            <Col className="bp-recipe_form__dual_panel__pane" md={4}>
-              <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe General Information</h2>
-              <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
-              <div className="bp-recipe_form__dual_panel__pane__general_info">
-                <TextInput
-                  label="Recipe title"
-                  defaultValue={initialValue?.title}
-                  inputLabelProps={{ required: true }}
-                  error={formState.errors.title?.message}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setValue("title", value);
-                  }}
-                />
-                <DifficultyLevelSelect
-                  onChange={(value) => {
-                    setValue("difficultyLevel", value);
-                  }}
-                  initialValue={initialValue?.difficultyLevel}
-                  inputLabelProps={{ required: true }}
-                  error={formState.errors.difficultyLevel?.message === "Required" ? "Difficulty level is required" : formState.errors.difficultyLevel?.message}
-                />
-                <CuisineSelect
-                  onChange={(value) => {
-                    setValue("cuisineId", value.id);
-                  }}
-                  initialValueId={String(initialValue?.cuisine?.id)}
-                  inputLabelProps={{ required: true }}
-                  error={formState.errors.cuisineId?.message === "Required" ? "Cuisine is required" : formState.errors.cuisineId?.message}
-                />
-                <Form.Group>
-                  <InputLabel required>Preparation time</InputLabel>
-                  <SegmentedTimeInput
-                    onChange={(segmentedTime) => {
-                      setValue("prepTime", segmentedTime);
-                    }}
-                    initialValue={initialValue?.prepTime}
-                  />
-                </Form.Group>
-                <Form.Group>
-                  <InputLabel required>Cooking time</InputLabel>
-                  <SegmentedTimeInput
-                    onChange={(segmentedTime) => {
-                      setValue("cookingTime", segmentedTime);
-                    }}
-                    initialValue={initialValue?.cookingTime}
-                  />
-                </Form.Group>
-                <RecipeTagsMultiselect
-                  inputLabelProps={{ required: true }}
-                  initialValues={initialValue?.tags}
-                  onChange={(tags) => {
-                    setValue(
-                      "tags",
-                      tags.map((tag) => ({
-                        id: tag.id,
-                      }))
-                    );
-                  }}
-                  error={formState.errors.tags?.message}
-                />
-                <TextInput
-                  label="Recipe Description"
-                  defaultValue={initialValue?.description}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setValue("description", value);
-                  }}
-                  as="textarea"
-                />
-              </div>
-            </Col>
-            <Col className="bp-recipe_form__dual_panel__pane">
-              <h2 className="bp-recipe_form__dual_panel__pane_heading">Recipe Details</h2>
-
-              <IngredientList />
+        <DualPaneForm.Header>
+          <DualPaneForm.Header.Title>{type === "create" ? "Create Recipe" : "Update Recipe"}</DualPaneForm.Header.Title>
+          <DualPaneForm.Header.Actions>
+            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+              <MdCancel />
+              <span className="ms-2">Cancel</span>
+            </Button>
+            <Button type="submit" disabled={disableSubmit}>
+              <FaSave />
+              <span className="ms-2">Save recipe</span>
+            </Button>
+          </DualPaneForm.Header.Actions>
+        </DualPaneForm.Header>
+        <DualPaneForm.Panel>
+          <DualPaneForm.Panel.Pane md={4}>
+            <h2 className="bp-pane_heading">Recipe General Information</h2>
+            <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+            <div className="bp-recipe_form__general_info">
               <TextInput
-                formGroupClassName="mt-5"
-                label="Instructions"
-                defaultValue={initialValue?.instructions}
+                label="Recipe title"
+                defaultValue={initialValue?.title}
+                inputLabelProps={{ required: true }}
+                error={formState.errors.title?.message}
                 onChange={(e) => {
                   const { value } = e.target;
-                  setValue("instructions", value);
+                  setValue("title", value);
+                }}
+              />
+              <DifficultyLevelSelect
+                onChange={(value) => {
+                  setValue("difficultyLevel", value);
+                }}
+                initialValue={initialValue?.difficultyLevel}
+                inputLabelProps={{ required: true }}
+                error={formState.errors.difficultyLevel?.message === "Required" ? "Difficulty level is required" : formState.errors.difficultyLevel?.message}
+              />
+              <CuisineSelect
+                onChange={(value) => {
+                  setValue("cuisineId", value.id);
+                }}
+                initialValueId={String(initialValue?.cuisine?.id)}
+                inputLabelProps={{ required: true }}
+                error={formState.errors.cuisineId?.message === "Required" ? "Cuisine is required" : formState.errors.cuisineId?.message}
+              />
+              <Form.Group>
+                <InputLabel required>Preparation time</InputLabel>
+                <SegmentedTimeInput
+                  onChange={(segmentedTime) => {
+                    setValue("prepTime", segmentedTime);
+                  }}
+                  initialValue={initialValue?.prepTime}
+                />
+              </Form.Group>
+              <Form.Group>
+                <InputLabel required>Cooking time</InputLabel>
+                <SegmentedTimeInput
+                  onChange={(segmentedTime) => {
+                    setValue("cookingTime", segmentedTime);
+                  }}
+                  initialValue={initialValue?.cookingTime}
+                />
+              </Form.Group>
+              <RecipeTagsMultiselect
+                inputLabelProps={{ required: true }}
+                initialValues={initialValue?.tags}
+                onChange={(tags) => {
+                  setValue(
+                    "tags",
+                    tags.map((tag) => ({
+                      id: tag.id,
+                    }))
+                  );
+                }}
+                error={formState.errors.tags?.message}
+              />
+              <TextInput
+                label="Recipe Description"
+                defaultValue={initialValue?.description}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setValue("description", value);
                 }}
                 as="textarea"
               />
-            </Col>
-          </Row>
-        </Container>
-      </Form>
+            </div>
+          </DualPaneForm.Panel.Pane>
+          <DualPaneForm.Panel.Pane>
+            <h2 className="bp-pane_heading">Recipe Details</h2>
+
+            <IngredientList />
+            <TextInput
+              formGroupClassName="mt-5"
+              label="Instructions"
+              defaultValue={initialValue?.instructions}
+              onChange={(e) => {
+                const { value } = e.target;
+                setValue("instructions", value);
+              }}
+              as="textarea"
+            />
+          </DualPaneForm.Panel.Pane>
+        </DualPaneForm.Panel>
+      </DualPaneForm>
     </FormProvider>
   );
 }

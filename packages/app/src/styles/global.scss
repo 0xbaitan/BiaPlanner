@@ -1,5 +1,5 @@
 @use "partials" as *;
-
+$pane-bg-color: #fff;
 $lg: map-get(
   $map: $bootstrap-custom-grid-breakpoints,
   $key: lg,
@@ -46,4 +46,11 @@ $xxl: map-get(
 .bp-h3 {
   @include typography-mulish-font(1.2rem, bold);
   color: $colors-dark-grey;
+}
+
+.bp-pane_heading {
+  @extend .bp-h2;
+  color: $colors-dark-grey;
+  margin-bottom: 1rem;
+  text-transform: capitalize;
 }
