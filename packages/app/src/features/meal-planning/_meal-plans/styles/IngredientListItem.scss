@@ -1,0 +1,36 @@
+.bp-ingredient_list_item {
+  width: calc(100% - 4em);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2em;
+  border: 0.5px solid $colors-silver;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: $colors-white;
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+}
+
+.bp-ingredient_list_item__products {
+  overflow-y: hidden;
+  width: calc(100% - 4em);
+  display: none;
+
+  transition: max-height 0.3s ease-out;
+  border: 0.5px solid $colors-silver;
+  border-top: none;
+
+  &.expanded {
+    display: block;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    max-height: max-content; // Adjust this value based on the expected content height
+    transition: max-height 2s ease-in;
+  }
+}

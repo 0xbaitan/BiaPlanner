@@ -8,6 +8,7 @@ import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
 import Heading from "@/components/Heading";
+import IngredientList from "./IngredientList";
 import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
 import { useNavigate } from "react-router-dom";
@@ -69,6 +70,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
             <Heading level={Heading.Level.H3} className="+fg-main">
               Match ingredients to your available inventory
             </Heading>
+            <IngredientList />
           </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>

@@ -1,6 +1,6 @@
-import { ICreateConcreteRecipeDto, IRecipe } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
+import { IRecipe } from "@biaplanner/shared";
 import { useStoreSelector } from "@/store";
 
 export type MealPlanFormState = {

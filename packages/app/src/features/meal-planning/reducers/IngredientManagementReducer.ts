@@ -1,7 +1,8 @@
-import { CreatePantryItemPortionDto, IRecipe, IRecipeIngredient } from "@biaplanner/shared";
+import { CreatePantryItemPortionDto, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
+import { CookingMeasurementUnit } from "@biaplanner/shared";
 import { useCallback } from "react";
 
 export type IngredientManagementState = {
@@ -59,4 +60,32 @@ export function useSelectIngredient() {
   const dispatch = useStoreDispatch();
   const selectIngredient = useCallback((ingredientId: string) => dispatch(ingredientManagementSlice.actions.selectIngredient(ingredientId)), [dispatch]);
   return selectIngredient;
+}
+
+export type PortionFulfilledStatus = {
+  required: number;
+  selected: number;
+  unit: CookingMeasurementUnit;
+  isFulfilled: boolean;
+};
+export function useGetPortionFulfilledStatus() {
+  const { selectedRecipe, mappedIngredients } = useIngredientManagementState();
+
+  const getPortionFullfilledStatus = useCallback(
+    (ingredientId: string): PortionFulfilledStatus | undefined => {
+      const recipeIngredient = selectedRecipe?.ingredients.find((ingredient) => ingredient.id === ingredientId);
+      const required = recipeIngredient?.measurement?.magnitude ?? undefined;
+      const unit = recipeIngredient?.measurement?.unit ?? Weights.GRAM;
+      if (required === undefined || unit === undefined) {
+        return undefined;
+      }
+      const selected = mappedIngredients?.[ingredientId]?.reduce((acc, curr) => acc + curr.portion.magnitude, 0) ?? 0;
+
+      const isFulfilled = selected >= required;
+      return { required, selected, unit, isFulfilled };
+    },
+    [selectedRecipe, mappedIngredients]
+  );
+
+  return getPortionFullfilledStatus;
 }
