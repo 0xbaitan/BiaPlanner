@@ -14,6 +14,7 @@ import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
+import Heading from "@/components/Heading";
 import { ImageSelector } from "@/components/forms/ImageSelector";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
@@ -150,7 +151,7 @@ export default function RecipeForm(props: RecipeFormProps) {
         </DualPaneForm.Header>
         <DualPaneForm.Panel>
           <DualPaneForm.Panel.Pane md={4}>
-            <h2 className="bp-pane_heading">Recipe General Information</h2>
+            <Heading level={Heading.Level.H2}>General Information</Heading>
             <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
             <div className="bp-recipe_form__general_info">
               <TextInput
@@ -222,7 +223,7 @@ export default function RecipeForm(props: RecipeFormProps) {
             </div>
           </DualPaneForm.Panel.Pane>
           <DualPaneForm.Panel.Pane>
-            <h2 className="bp-pane_heading">Recipe Details</h2>
+            <Heading level={Heading.Level.H2}>Ingredients</Heading>
 
             <IngredientList />
             <TextInput

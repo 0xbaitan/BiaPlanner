@@ -1,0 +1,16 @@
+.offcanvas {
+  width: 50vw !important;
+  padding: 0.5em;
+}
+.bp-ingredient_management_offcanvas {
+  &__header {
+    padding-left: clamp(1em, 2vw, 2em);
+  }
+}
+
+.bp-pantry_item_field {
+  background-color: $colors-silver;
+  border: 0.5px solid $colors-dark-grey;
+  border-radius: 0.5rem;
+  padding: 0.5em;
+}

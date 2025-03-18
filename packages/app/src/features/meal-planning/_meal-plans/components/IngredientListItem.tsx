@@ -1,11 +1,12 @@
 import "../styles/IngredientListItem.scss";
 
+import { useGetPortionFulfilledStatus, useSelectIngredient } from "../../reducers/IngredientManagementReducer";
+
 import Button from "react-bootstrap/esm/Button";
 import { FaPencil } from "react-icons/fa6";
 import { IRecipeIngredient } from "@biaplanner/shared";
 import { ImEnlarge2 } from "react-icons/im";
 import { ImShrink2 } from "react-icons/im";
-import { useGetPortionFulfilledStatus } from "../../reducers/IngredientManagementReducer";
 import { useState } from "react";
 
 export type IngredientListItemProps = {
@@ -19,6 +20,7 @@ type PortionFulfilledMeterProps = {
 export default function IngredientListItem(props: IngredientListItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { ingredient, index } = props;
+  const selectIngredient = useSelectIngredient();
   return (
     <>
       <div className="bp-ingredient_list_item">
@@ -26,7 +28,7 @@ export default function IngredientListItem(props: IngredientListItemProps) {
         <div>{ingredient?.title}</div>
         <PortionFulfilledMeter ingredientId={ingredient.id} />
         <div className="bp-ingredient_list_item__actions">
-          <Button size="sm" variant="primary">
+          <Button size="sm" variant="primary" onClick={() => selectIngredient(ingredient)}>
             <FaPencil size={20} className="pe-2" />
             <span>Update products</span>
           </Button>

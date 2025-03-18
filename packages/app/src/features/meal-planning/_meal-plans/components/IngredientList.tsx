@@ -1,4 +1,5 @@
 import IngredientListItem from "./IngredientListItem";
+import IngredientManagementOffcanvas from "./IngredientManagementOffcanvas";
 import { useIngredientManagementState } from "../../reducers/IngredientManagementReducer";
 
 export default function IngredientList() {
@@ -7,6 +8,7 @@ export default function IngredientList() {
 
   return (
     <div>
+      <IngredientManagementOffcanvas />
       {ingredients && ingredients.length > 0 ? (
         <ul>
           {ingredients.map((ingredient, i) => (

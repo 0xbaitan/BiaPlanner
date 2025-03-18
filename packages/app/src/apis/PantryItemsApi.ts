@@ -33,4 +33,4 @@ export const pantryItemsApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation, useGetIngredientCompatiblePantryItemsQuery } = pantryItemsApi;
+export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation, useGetIngredientCompatiblePantryItemsQuery, useLazyGetIngredientCompatiblePantryItemsQuery } = pantryItemsApi;

@@ -8,14 +8,14 @@ import { useCallback } from "react";
 export type IngredientManagementState = {
   selectedRecipe?: IRecipe;
   mappedIngredients?: Record<string, CreatePantryItemPortionDto[]>;
-
-  selectedIngredientId?: string;
+  showIngredientManagementOffcanvas?: boolean;
+  selectedIngredient?: IRecipeIngredient;
 };
 
 const initialState: IngredientManagementState = {
   selectedRecipe: undefined,
   mappedIngredients: {},
-  selectedIngredientId: undefined,
+  selectedIngredient: undefined,
 };
 
 export const ingredientManagementSlice = createSlice({
@@ -29,13 +29,19 @@ export const ingredientManagementSlice = createSlice({
       state.mappedIngredients = action.payload;
     },
 
-    selectIngredient: (state, action: PayloadAction<string>) => {
-      state.selectedIngredientId = action.payload;
+    selectIngredient: (state, action: PayloadAction<IRecipeIngredient>) => {
+      state.showIngredientManagementOffcanvas = true;
+      state.selectedIngredient = action.payload;
+    },
+
+    deselectIngredient: (state) => {
+      state.showIngredientManagementOffcanvas = false;
+      state.selectedIngredient = undefined;
     },
   },
 });
 
-export const { selectRecipe, mapIngredients, selectIngredient } = ingredientManagementSlice.actions;
+export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient } = ingredientManagementSlice.actions;
 
 export default ingredientManagementSlice.reducer;
 export type IngredientManagementAction = typeof ingredientManagementSlice.actions;
@@ -58,8 +64,14 @@ export function useMapIngredients() {
 
 export function useSelectIngredient() {
   const dispatch = useStoreDispatch();
-  const selectIngredient = useCallback((ingredientId: string) => dispatch(ingredientManagementSlice.actions.selectIngredient(ingredientId)), [dispatch]);
+  const selectIngredient = useCallback((ingredient: IRecipeIngredient) => dispatch(ingredientManagementSlice.actions.selectIngredient(ingredient)), [dispatch]);
   return selectIngredient;
+}
+
+export function useDeselectIngredient() {
+  const dispatch = useStoreDispatch();
+  const deselectIngredient = useCallback(() => dispatch(ingredientManagementSlice.actions.deselectIngredient()), [dispatch]);
+  return deselectIngredient;
 }
 
 export type PortionFulfilledStatus = {
