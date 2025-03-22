@@ -4,13 +4,14 @@ import { FormProvider, useForm } from "react-hook-form";
 import { IConcreteRecipe, ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/esm/Button";
-import ConcreteIngredientListInput from "./ConcreteIngredientListInput";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
+import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import IngredientList from "./IngredientList";
 import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
+import { useConfirmedIngredients } from "../../reducers/IngredientManagementReducer";
 import { useNavigate } from "react-router-dom";
 
 export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
@@ -24,20 +25,26 @@ export type MealPlanFormValues = {
 
 export default function MealPlanForm(props: MealPlanFormValues) {
   const { initialValue, onSubmit } = props;
+
   const methods = useForm<ConcreteRecipeFormValues>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
   });
   const navigate = useNavigate();
   const disableSubmit = props.disableSubmit ?? false;
-
+  const confirmedIngredients = useConfirmedIngredients();
   const { handleSubmit, getValues, setValue, reset } = methods;
   return (
     <FormProvider {...methods}>
       <DualPaneForm
         className="bp-meal_plan_form"
         onSubmit={handleSubmit(() => {
-          const values = getValues();
+          let values = getValues();
+
+          values = {
+            ...values,
+            confirmedIngredients,
+          };
           reset();
           onSubmit(values);
         })}
@@ -57,12 +64,23 @@ export default function MealPlanForm(props: MealPlanFormValues) {
         </DualPaneForm.Header>
         <DualPaneForm.Panel>
           <DualPaneForm.Panel.Pane>
-            <MealTypeSelect
-              onChange={(mealType) => {
-                setValue("mealType", mealType);
-              }}
-            />
-            <ConcreteIngredientListInput />
+            <Form.Group>
+              <Form.Label>Meal type</Form.Label>
+              <MealTypeSelect
+                onChange={(mealType) => {
+                  setValue("mealType", mealType);
+                }}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Date of cooking</Form.Label>
+              <Form.Control
+                type="date"
+                onChange={(e) => {
+                  setValue("planDate", e.target.value);
+                }}
+              />
+            </Form.Group>
           </DualPaneForm.Panel.Pane>
 
           <DualPaneForm.Panel.Pane>

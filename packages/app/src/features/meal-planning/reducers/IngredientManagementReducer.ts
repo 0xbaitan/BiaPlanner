@@ -1,6 +1,5 @@
-import { ICreatePantryItemPortionDto, IPantryItem, IPantryItemPortion, IRecipe, IRecipeIngredient, Weights, getCookingMeasurement } from "@biaplanner/shared";
+import { ICreateConcreteIngredientDto, ICreatePantryItemPortionDto, IPantryItem, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { useGetIngredientCompatiblePantryItemsQuery, useGetPantryItemsByIdsQuery, useLazyGetIngredientCompatiblePantryItemsQuery, useLazyGetPantryItemsByIdsQuery } from "@/apis/PantryItemsApi";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { CookingMeasurementUnit } from "@biaplanner/shared";
@@ -32,6 +31,11 @@ export const ingredientManagementSlice = createSlice({
       state.selectedRecipe = action.payload;
     },
 
+    resetMealPlanForm: (state) => {
+      state.mappedIngredients = {};
+      state.selectedIngredient = undefined;
+      state.showIngredientManagementOffcanvas = false;
+    },
     deselectRecipe: (state) => {
       state.selectedRecipe = undefined;
       state.mappedIngredients = {};
@@ -86,7 +90,7 @@ export const ingredientManagementSlice = createSlice({
   },
 });
 
-export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient, addPantryItemPortionToIngredient, deselectRecipe, removePantryItemPortionFromIngredient } = ingredientManagementSlice.actions;
+export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient, addPantryItemPortionToIngredient, deselectRecipe, removePantryItemPortionFromIngredient, resetMealPlanForm } = ingredientManagementSlice.actions;
 
 export default ingredientManagementSlice.reducer;
 export type IngredientManagementAction = typeof ingredientManagementSlice.actions;
@@ -220,4 +224,21 @@ export function useSelectedPantryItems(ingredientId: string) {
   const { mappedIngredients } = useIngredientManagementState();
   const selectedPantryItems = mappedIngredients[ingredientId]?.filter((portion) => portion.portion.magnitude > 0) ?? [];
   return selectedPantryItems;
+}
+
+export function useConfirmedIngredients() {
+  const { mappedIngredients } = useIngredientManagementState();
+  const confirmedIngredients: ICreateConcreteIngredientDto[] = Object.entries(mappedIngredients).map(([ingredientId, portions]) => {
+    return {
+      ingredientId,
+      pantryItemsWithPortions: portions,
+    };
+  });
+  return confirmedIngredients;
+}
+
+export function useResetMealPlanForm() {
+  const dispatch = useStoreDispatch();
+  const resetMealPlanForm = useCallback(() => dispatch(ingredientManagementSlice.actions.resetMealPlanForm()), [dispatch]);
+  return resetMealPlanForm;
 }

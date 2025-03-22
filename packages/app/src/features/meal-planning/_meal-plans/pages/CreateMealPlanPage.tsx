@@ -1,6 +1,7 @@
 import { IConcreteRecipe, ICreateConcreteRecipeDto } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useResetMealPlanForm, useSelectRecipe } from "../../reducers/IngredientManagementReducer";
 
 import MealPlanForm from "../components/MealPlanForm";
 import { Status } from "@/hooks/useStatusToast";
@@ -8,14 +9,13 @@ import dayjs from "dayjs";
 import { useCreateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
 import { useEffect } from "react";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
-import { useSelectRecipe } from "../../reducers/IngredientManagementReducer";
 
 export default function CreateMealPlanPage() {
   const [searchParams] = useSearchParams();
   const recipeId = searchParams.get("recipeId");
   const navigate = useNavigate();
   const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(recipeId));
-
+  const resetMealPlanForm = useResetMealPlanForm();
   const [createConcreteRecipeMutation, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
   const selectRecipe = useSelectRecipe();
   const { setItem } = useDefaultStatusToast<IConcreteRecipe>({
@@ -47,6 +47,18 @@ export default function CreateMealPlanPage() {
       selectRecipe(recipe);
     }
   }, [recipe, recipeIsSuccess, selectRecipe]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      resetMealPlanForm();
+    }
+  }, [isSuccess, resetMealPlanForm]);
+
+  useEffect(() => {
+    return () => {
+      resetMealPlanForm();
+    };
+  }, [resetMealPlanForm]);
 
   if (recipeIsError) {
     return <div>There was an error</div>;

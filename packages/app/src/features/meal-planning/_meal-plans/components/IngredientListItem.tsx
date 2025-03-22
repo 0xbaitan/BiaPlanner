@@ -1,6 +1,6 @@
 import "../styles/IngredientListItem.scss";
 
-import { ICreatePantryItemPortionExtendedDto, useGetPortionFulfilledStatus, useIngredientPantryPortionItemActions, useSelectIngredient, useSelectedPantryItems } from "../../reducers/IngredientManagementReducer";
+import { useGetPortionFulfilledStatus, useSelectIngredient, useSelectedPantryItems } from "../../reducers/IngredientManagementReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import { FaPencil } from "react-icons/fa6";
