@@ -34,6 +34,16 @@ export default class PantryItemController {
     return pantryItems;
   }
 
+  @Get('/group')
+  async findPantryItemsByIds(
+    @Query('pantryItemIds') pantryItemIds: string[],
+  ): Promise<IPantryItem[]> {
+    const pantryItems =
+      await this.pantryItemService.findPantryItemsByIds(pantryItemIds);
+
+    return pantryItems;
+  }
+
   @Post('/')
   async createPantryItem(
     @Body() dto: CreatePantryItemDto,

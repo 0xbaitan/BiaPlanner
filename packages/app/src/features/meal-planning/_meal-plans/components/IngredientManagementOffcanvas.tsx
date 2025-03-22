@@ -86,7 +86,7 @@ function PantryItemField(props: PantryItemFieldProps) {
             if (measurement.magnitude === 0) {
               removePantryItemPortionFromIngredient(ingredientId, pantryItem.id);
             } else {
-              addPantryItemPortionToIngredient(ingredientId, { pantryItemId: pantryItem.id, portion: measurement });
+              addPantryItemPortionToIngredient(ingredientId, { pantryItemId: pantryItem.id, portion: measurement, pantryItem });
             }
           }}
         />
@@ -95,18 +95,7 @@ function PantryItemField(props: PantryItemFieldProps) {
         </div>
       </>
     );
-  }, [
-    pantryItem.availableMeasurements?.magnitude,
-    pantryItem.id,
-    portionMagnitude,
-    portionUnit,
-    measurementType,
-    convertedPortionMagnitude,
-    convertedPortionUnit,
-    removePantryItemPortionFromIngredient,
-    ingredientId,
-    addPantryItemPortionToIngredient,
-  ]);
+  }, [pantryItem, portionMagnitude, portionUnit, measurementType, convertedPortionMagnitude, convertedPortionUnit, removePantryItemPortionFromIngredient, ingredientId, addPantryItemPortionToIngredient]);
 
   return (
     <>

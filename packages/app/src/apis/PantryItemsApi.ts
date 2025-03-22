@@ -13,6 +13,16 @@ export const pantryItemsApi = rootApi.injectEndpoints({
 
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "PantryItem" as const, id })), { type: "PantryItem" as const, id: "LIST" }] : [{ type: "PantryItem" as const, id: "LIST" }]),
     }),
+
+    getPantryItemsByIds: build.query<IPantryItem[], { pantryItemIds: string[] }>({
+      query: ({ pantryItemIds }) => ({
+        url: "/pantry/items/group",
+        method: "GET",
+        params: { pantryItemIds },
+      }),
+      providesTags: (result) => (result ? result.map(({ id }) => ({ type: "PantryItem" as const, id })) : []),
+    }),
+
     createPantryItem: build.mutation<IPantryItem, ICreatePantryItemDto>({
       query: (dto) => ({
         url: "/pantry/items",
@@ -33,4 +43,12 @@ export const pantryItemsApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useGetPantryItemsQuery, useLazyGetPantryItemsQuery, useCreatePantryItemMutation, useGetIngredientCompatiblePantryItemsQuery, useLazyGetIngredientCompatiblePantryItemsQuery } = pantryItemsApi;
+export const {
+  useGetPantryItemsQuery,
+  useLazyGetPantryItemsQuery,
+  useCreatePantryItemMutation,
+  useGetIngredientCompatiblePantryItemsQuery,
+  useLazyGetIngredientCompatiblePantryItemsQuery,
+  useGetPantryItemsByIdsQuery,
+  useLazyGetPantryItemsByIdsQuery,
+} = pantryItemsApi;

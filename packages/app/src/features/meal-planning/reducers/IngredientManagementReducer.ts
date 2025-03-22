@@ -1,5 +1,6 @@
-import { ICreatePantryItemPortionDto, IPantryItemPortion, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
+import { ICreatePantryItemPortionDto, IPantryItem, IPantryItemPortion, IRecipe, IRecipeIngredient, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { useGetIngredientCompatiblePantryItemsQuery, useGetPantryItemsByIdsQuery, useLazyGetIngredientCompatiblePantryItemsQuery, useLazyGetPantryItemsByIdsQuery } from "@/apis/PantryItemsApi";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { CookingMeasurementUnit } from "@biaplanner/shared";
@@ -8,10 +9,14 @@ import { useCallback } from "react";
 
 export type IngredientManagementState = {
   selectedRecipe?: IRecipe;
-  mappedIngredients: Record<string, ICreatePantryItemPortionDto[]>;
+  mappedIngredients: Record<string, ICreatePantryItemPortionExtendedDto[]>;
   showIngredientManagementOffcanvas?: boolean;
   selectedIngredient?: IRecipeIngredient;
 };
+
+export interface ICreatePantryItemPortionExtendedDto extends ICreatePantryItemPortionDto {
+  pantryItem: IPantryItem;
+}
 
 const initialState: IngredientManagementState = {
   selectedRecipe: undefined,
@@ -34,7 +39,7 @@ export const ingredientManagementSlice = createSlice({
       state.showIngredientManagementOffcanvas = false;
     },
 
-    addPantryItemPortionToIngredient(state, action: PayloadAction<{ ingredientId: string; portion: ICreatePantryItemPortionDto }>) {
+    addPantryItemPortionToIngredient(state, action: PayloadAction<{ ingredientId: string; portion: ICreatePantryItemPortionExtendedDto }>) {
       const { ingredientId, portion } = action.payload;
 
       if (portion.portion.magnitude <= 0) {
@@ -64,7 +69,7 @@ export const ingredientManagementSlice = createSlice({
       state.mappedIngredients[ingredientId].splice(indexOfPortion, 1);
     },
 
-    mapIngredients: (state, action: PayloadAction<Record<string, ICreatePantryItemPortionDto[]>>) => {
+    mapIngredients: (state, action: PayloadAction<Record<string, ICreatePantryItemPortionExtendedDto[]>>) => {
       state.mappedIngredients = action.payload;
     },
 
@@ -98,7 +103,7 @@ export function useSelectRecipe() {
 
 export function useMapIngredients() {
   const dispatch = useStoreDispatch();
-  const mapIngredients = useCallback((ingredients: Record<string, ICreatePantryItemPortionDto[]>) => dispatch(ingredientManagementSlice.actions.mapIngredients(ingredients)), [dispatch]);
+  const mapIngredients = useCallback((ingredients: Record<string, ICreatePantryItemPortionExtendedDto[]>) => dispatch(ingredientManagementSlice.actions.mapIngredients(ingredients)), [dispatch]);
   return mapIngredients;
 }
 
@@ -146,7 +151,7 @@ export function useIngredientPantryPortionItemActions() {
   const dispatch = useStoreDispatch();
   const { mappedIngredients, selectedIngredient } = useIngredientManagementState();
 
-  const addPantryItemPortionToIngredient = useCallback((ingredientId: string, portion: ICreatePantryItemPortionDto) => dispatch(ingredientManagementSlice.actions.addPantryItemPortionToIngredient({ ingredientId, portion })), [dispatch]);
+  const addPantryItemPortionToIngredient = useCallback((ingredientId: string, portion: ICreatePantryItemPortionExtendedDto) => dispatch(ingredientManagementSlice.actions.addPantryItemPortionToIngredient({ ingredientId, portion })), [dispatch]);
 
   const removePantryItemPortionFromIngredient = useCallback((ingredientId: string, pantryItemId: string) => dispatch(ingredientManagementSlice.actions.removePantryItemPortionFromIngredient({ ingredientId, pantryItemId })), [dispatch]);
 
@@ -209,4 +214,10 @@ export function useIngredientPantryPortionItemActions() {
   );
 
   return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSumedPortionQuantity, getSelectedPantryItemPortion };
+}
+
+export function useSelectedPantryItems(ingredientId: string) {
+  const { mappedIngredients } = useIngredientManagementState();
+  const selectedPantryItems = mappedIngredients[ingredientId]?.filter((portion) => portion.portion.magnitude > 0) ?? [];
+  return selectedPantryItems;
 }

@@ -81,6 +81,18 @@ export default class PantryItemService {
     return userScopedPantryItems;
   }
 
+  async findPantryItemsByIds(pantryItemIds: string[]): Promise<IPantryItem[]> {
+    return this.pantryItemRepository.find({
+      where: { id: In(pantryItemIds) },
+      relations: [
+        'createdBy',
+        'product',
+        'product.brand',
+        'product.productCategories',
+      ],
+    });
+  }
+
   async findIngredientCompatiblePantryItems(
     ingredientId: string,
     measurementType: CookingMeasurementType,
