@@ -1,0 +1,16 @@
+.bp-cooking_measurement_input {
+  display: flex;
+  width: 100%;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em;
+
+  &__magnitude {
+    flex-basis: 60%;
+  }
+
+  &__unit {
+    flex-basis: 40%;
+  }
+}

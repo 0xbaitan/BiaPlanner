@@ -159,7 +159,7 @@ export function useIngredientPantryPortionItemActions() {
 
   const removePantryItemPortionFromIngredient = useCallback((ingredientId: string, pantryItemId: string) => dispatch(ingredientManagementSlice.actions.removePantryItemPortionFromIngredient({ ingredientId, pantryItemId })), [dispatch]);
 
-  const getSumedPortionQuantity = useCallback(
+  const getSummedPortion = useCallback(
     (ingredientId: string) => {
       const targetIngredientMeasurementUnit = selectedIngredient?.measurement?.unit;
       if (!targetIngredientMeasurementUnit) {
@@ -217,7 +217,7 @@ export function useIngredientPantryPortionItemActions() {
     [mappedIngredients, selectedIngredient?.measurement?.unit]
   );
 
-  return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSumedPortionQuantity, getSelectedPantryItemPortion };
+  return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSummedPortion, getSelectedPantryItemPortion };
 }
 
 export function useSelectedPantryItems(ingredientId: string) {

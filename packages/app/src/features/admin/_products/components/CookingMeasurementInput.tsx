@@ -1,9 +1,11 @@
-import { Approximates, CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurement } from "@biaplanner/shared";
-import MeasurementInput, { MeasurementInputProps } from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import "../styles/CookingMeasurementInput.scss";
+
+import { CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import React, { useCallback, useEffect, useReducer } from "react";
-import ScopedMeasurementSelect, { ScopedMeasurementSelectProps } from "@/features/meal-planning/_meal-plans/components/ScopedMeasurementSelect";
 
 import Form from "react-bootstrap/Form";
+import MeasurementInput from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import ScopedMeasurementSelect from "@/features/meal-planning/_meal-plans/components/ScopedMeasurementSelect";
 
 export type CookingMeasurementInputProps = {
   initialValue?: CookingMeasurement;
@@ -12,7 +14,7 @@ export type CookingMeasurementInputProps = {
   disabled?: boolean;
   minMagnitude?: number;
   maxMagnitude?: number;
-};
+} & React.HTMLAttributes<HTMLDivElement>;
 
 type CookingMeasurementInputState = CookingMeasurement;
 enum CookingMeasurementInputActionType {
@@ -37,7 +39,7 @@ function CookingMeasurementReducer(state: CookingMeasurementInputState, action: 
   }
 }
 export default function CookingMeasurementInput(props: CookingMeasurementInputProps) {
-  const { initialValue, onChange, scoped, disabled, minMagnitude, maxMagnitude } = props;
+  const { initialValue, onChange, scoped, disabled, minMagnitude, maxMagnitude, className, ...rest } = props;
   const [measurement, setMeasurement] = useReducer((state: CookingMeasurementInputState, action: CookingMeasurementInputAction) => CookingMeasurementReducer(state, action), initialValue ?? initialState);
 
   useEffect(() => {
@@ -61,10 +63,11 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
   );
 
   return (
-    <Form.Group>
-      <Form.Control disabled={disabled} type="number" min={minMagnitude} max={maxMagnitude} value={measurement.magnitude} onChange={onMagnitudeChange} />
+    <Form.Group className={["bp-cooking_measurement_input", className].join(" ")} {...rest}>
+      <Form.Control className="bp-cooking_measurement_input__magnitude" disabled={disabled} type="number" min={minMagnitude} max={maxMagnitude} value={measurement.magnitude} onChange={onMagnitudeChange} />
       {scoped ? (
         <ScopedMeasurementSelect
+          className="bp-cooking_measurement_input__unit"
           disabled={disabled}
           type={scoped}
           onChange={(unit) => {
@@ -74,6 +77,7 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
         />
       ) : (
         <MeasurementInput
+          className="bp-cooking_measurement_input__unit"
           disabled={disabled}
           selectedValues={[getCookingMeasurement(measurement.unit)]}
           onChange={([value]) => {

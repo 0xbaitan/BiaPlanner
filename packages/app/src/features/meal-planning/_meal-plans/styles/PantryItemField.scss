@@ -1,0 +1,52 @@
+.bp-pantry_item_field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $colors-white;
+  border: 0.5px solid $colors-silver;
+  border-radius: 0.5rem;
+  padding: 0.5em 2em;
+
+  input.form-check-input {
+    border-color: $colors-dark-grey;
+  }
+
+  &__measurement_input {
+    flex-grow: 4;
+  }
+
+  &__converted_measurement {
+    flex-grow: 1;
+    font-size: 1rem;
+    padding: 0.5em;
+    border-radius: 1rem;
+    text-align: center;
+    background-color: $colors-dark-grey;
+    color: $colors-white;
+  }
+
+  &__details {
+    flex-grow: 8;
+    padding-left: 0.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+
+    &__name {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    &__expiry {
+      font-size: 1rem;
+      font-style: italic;
+      color: $colors-dark-grey;
+    }
+
+    &__availability {
+      font-size: 0.9rem;
+
+      color: $colors-dark-grey;
+    }
+  }
+}

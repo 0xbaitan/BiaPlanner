@@ -1,23 +1,23 @@
 import "../styles/IngredientManagementOffcanvas.scss";
 
-import { IPantryItem, Weights, getCookingMeasurement } from "@biaplanner/shared";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import { Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { useDeselectIngredient, useIngredientManagementState, useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";
-import { useEffect, useMemo, useState } from "react";
 
-import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
-import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import dayjs from "dayjs";
+import PantryItemField from "./PantryItemField";
+import { useEffect } from "react";
 import { useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 export default function IngredientManagementOffcanvas() {
   const { selectedIngredient, showIngredientManagementOffcanvas: show } = useIngredientManagementState();
   const targetMeasurement = selectedIngredient?.measurement;
   const [getIngredientCompatiblePantryItems, { data: pantryItems, isLoading, isError, isSuccess }] = useLazyGetIngredientCompatiblePantryItemsQuery();
-  const { getSumedPortionQuantity } = useIngredientPantryPortionItemActions();
+  const { getSummedPortion } = useIngredientPantryPortionItemActions();
   const delesectIngredient = useDeselectIngredient();
-  const portionQuanity = getSumedPortionQuantity(selectedIngredient?.id ?? "");
+  const selectedPortion = getSummedPortion(selectedIngredient?.id ?? "");
+  const requiredPortion = selectedIngredient?.measurement;
 
   useEffect(() => {
     if (selectedIngredient) {
@@ -34,14 +34,15 @@ export default function IngredientManagementOffcanvas() {
         <Offcanvas.Title>
           <Heading level={Heading.Level.H2}>Select portions from your pantry</Heading>
           <Heading level={Heading.Level.H3}>For {selectedIngredient?.title ?? "N/A"}</Heading>
-          <Heading level={Heading.Level.H4}>
-            Summed: {portionQuanity.magnitude} {portionQuanity.unit}{" "}
-          </Heading>
+          <div className="bp-ingredient_management_offcanvas__header__pills">
+            <div className="bp-ingredient_management_offcanvas__header__portion_status_pill">
+              {selectedPortion.magnitude} / {requiredPortion?.magnitude} {selectedPortion.unit} selected
+            </div>
+            <PortionFullfilmentStatusPill required={requiredPortion?.magnitude ?? 0} selected={selectedPortion.magnitude} />
+          </div>
         </Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        {selectedIngredient?.title ?? "Empty"}
-
         <div>
           {isLoading && <div>Loading...</div>}
           {isError && <div>Error</div>}
@@ -52,74 +53,33 @@ export default function IngredientManagementOffcanvas() {
   );
 }
 
-type PantryItemFieldProps = {
-  pantryItem: IPantryItem;
-  ingredientId: string;
+type PortionFullfilmentStatusPillProps = {
+  required: number;
+  selected: number;
 };
-
-function PantryItemField(props: PantryItemFieldProps) {
-  const { pantryItem, ingredientId } = props;
-  const measurementType = getCookingMeasurement(pantryItem.availableMeasurements?.unit ?? Weights.GRAM).type;
-
-  const { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSelectedPantryItemPortion } = useIngredientPantryPortionItemActions();
-
-  const { convertedPortionMagnitude, convertedPortionUnit, portionMagnitude, portionUnit } = useMemo(() => {
-    return getSelectedPantryItemPortion(ingredientId, pantryItem.id);
-  }, [getSelectedPantryItemPortion, pantryItem.id, ingredientId]);
-
-  console.log(portionMagnitude, portionUnit);
-
-  const [selected, setSelected] = useState<boolean>(() => portionMagnitude > 0);
-
-  const cookingMeasurementInput = useMemo(() => {
-    return (
-      <>
-        <CookingMeasurementInput
-          minMagnitude={0}
-          maxMagnitude={pantryItem.availableMeasurements?.magnitude ?? 0}
-          initialValue={{
-            magnitude: portionMagnitude,
-            unit: portionUnit,
-          }}
-          scoped={measurementType}
-          onChange={(measurement) => {
-            if (measurement.magnitude === 0) {
-              removePantryItemPortionFromIngredient(ingredientId, pantryItem.id);
-            } else {
-              addPantryItemPortionToIngredient(ingredientId, { pantryItemId: pantryItem.id, portion: measurement, pantryItem });
-            }
-          }}
-        />
-        <div>
-          {convertedPortionMagnitude} {convertedPortionUnit}
-        </div>
-      </>
-    );
-  }, [pantryItem, portionMagnitude, portionUnit, measurementType, convertedPortionMagnitude, convertedPortionUnit, removePantryItemPortionFromIngredient, ingredientId, addPantryItemPortionToIngredient]);
-
+function PortionFullfilmentStatusPill(props: PortionFullfilmentStatusPillProps) {
+  const { required, selected } = props;
+  const status = selected < required ? "unfulfilled" : selected === required ? "fulfilled" : "overfulfilled";
   return (
-    <>
-      <Form.Check
-        type="checkbox"
-        checked={selected}
-        onChange={(e) => {
-          setSelected(e.target.checked);
-          if (!e.target.checked) {
-            removePantryItemPortionFromIngredient(ingredientId, pantryItem.id);
-          }
-        }}
-        className="bp-pantry_item_field"
-        label={
-          <div>
-            <div>{pantryItem.product?.name}</div>
-            <div>Expires on {dayjs(pantryItem.expiryDate).format("DD/MM/YYYY HH:mm:ss")}</div>
-            <div>
-              Available: {pantryItem.availableMeasurements?.magnitude} {pantryItem.availableMeasurements?.unit}
-            </div>
-          </div>
-        }
-      />
-      {selected && cookingMeasurementInput}
-    </>
+    <div className={["bp-portion_status_pill", status].join(" ")}>
+      {status === "unfulfilled" && (
+        <div>
+          <FaExclamationTriangle />
+          <span className="bp-portion_status_pill__status_text">Insufficient portions selected</span>
+        </div>
+      )}
+      {status === "fulfilled" && (
+        <div>
+          <FaCheckCircle />
+          <span className="bp-portion_status_pill__status_text">Sufficient portions selected</span>
+        </div>
+      )}
+      {status === "overfulfilled" && (
+        <div>
+          <FaExclamationTriangle />
+          <span className="bp-portion_status_pill__status_text">Excessive portions selected</span>
+        </div>
+      )}
+    </div>
   );
 }

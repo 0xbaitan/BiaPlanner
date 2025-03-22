@@ -5,12 +5,45 @@
 .bp-ingredient_management_offcanvas {
   &__header {
     padding-left: clamp(1em, 2vw, 2em);
+
+    &__pills {
+      display: flex;
+      gap: 0.5em;
+    }
+
+    &__portion_status_pill {
+      padding: 0.5em 1em;
+      border-radius: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: $colors-dark-grey;
+      color: $colors-white;
+      width: max-content;
+    }
   }
 }
+.bp-portion_status_pill {
+  padding: 0.5em 1em;
+  border-radius: 1rem;
+  font-size: 1rem;
 
-.bp-pantry_item_field {
-  background-color: $colors-silver;
-  border: 0.5px solid $colors-dark-grey;
-  border-radius: 0.5rem;
-  padding: 0.5em;
+  color: $colors-white;
+  width: max-content;
+
+  &.fulfilled {
+    background-color: darken($colors-success, 10%);
+  }
+
+  &.unfulfilled {
+    background-color: darken($colors-danger, 10%);
+  }
+
+  &.exceeded {
+    background-color: darken($colors-warning, 10%);
+  }
+
+  &__status_text {
+    font-weight: 600;
+    margin-inline-start: 0.25em;
+  }
 }
