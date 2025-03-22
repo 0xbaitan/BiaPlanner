@@ -3,11 +3,13 @@ import "../styles/IngredientListItem.scss";
 import { useGetPortionFulfilledStatus, useSelectIngredient, useSelectedPantryItems } from "../../reducers/IngredientManagementReducer";
 
 import Button from "react-bootstrap/esm/Button";
+import { FaExclamationTriangle } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import Heading from "@/components/Heading";
 import { IRecipeIngredient } from "@biaplanner/shared";
 import { ImEnlarge2 } from "react-icons/im";
 import { ImShrink2 } from "react-icons/im";
+import ProgressBar from "react-bootstrap/ProgressBar";
 import dayjs from "dayjs";
 import { useState } from "react";
 
@@ -53,16 +55,22 @@ export default function IngredientListItem(props: IngredientListItemProps) {
       </div>
       <div className={["bp-ingredient_list_item__products", isExpanded ? "expanded" : ""].join(" ")}>
         <Heading level={Heading.Level.H4}>Selected products and measurements from your pantry</Heading>
-        {selectedPantryItems.map((portion, index) => (
-          <div key={index}>
-            <div>{index + 1}</div>
-            <div>{portion.pantryItem?.product?.name ?? "N/A"}</div>
-            <div>
-              {portion.portion.magnitude} {portion.portion.unit}
-            </div>
-            <div> (expires in {dayjs(portion.pantryItem?.expiryDate).diff(dayjs(), "days")} days)</div>
-          </div>
-        ))}
+        <ol className="bp-ingredient_list_item__products__list">
+          {selectedPantryItems.length === 0 && <div className="bp-ingredient_list_item__products__list__no_products_selected">No products selected</div>}
+          {selectedPantryItems.length > 0 &&
+            selectedPantryItems.map((portion, index) => (
+              <li key={index} className="bp-ingredient_list_item__products__list__item">
+                <div>{index + 1}.</div>
+                <div className="bp-ingredient_list_item__products__list__item__details">
+                  <div className="bp-ingredient_list_item__products__list__item__details__name">{portion.pantryItem?.product?.name ?? "N/A"}</div>
+                  <div className="bp-ingredient_list_item__products__list__item__details__date_info"> (expires in {dayjs(portion.pantryItem?.expiryDate).diff(dayjs(), "days")} days)</div>
+                </div>
+                <div>
+                  {portion.portion.magnitude} {portion.portion.unit}
+                </div>
+              </li>
+            ))}
+        </ol>
       </div>
     </>
   );
@@ -77,11 +85,23 @@ function PortionFulfilledMeter(props: PortionFulfilledMeterProps) {
 
   const { required, selected, unit } = status;
   const remaining = required - selected;
-  const fulfilled = `${selected}/${required} ${unit} ${remaining > 0 ? `(${remaining} remaining)` : ""}`;
 
+  const percentage = (selected / required) * 100;
   return (
     <div className="bp-portion_fulfilled_meter">
-      <div>{fulfilled}</div>
+      {remaining > 0 && (
+        <div>
+          {remaining}
+          {unit}&nbsp; remaining
+        </div>
+      )}
+      <ProgressBar now={percentage} visuallyHidden />
+      {remaining > 0 && (
+        <div>
+          <FaExclamationTriangle />
+          <span className="ms-2">Insufficient portion selected</span>
+        </div>
+      )}
     </div>
   );
 }

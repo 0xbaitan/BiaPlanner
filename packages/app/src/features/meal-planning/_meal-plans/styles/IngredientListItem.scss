@@ -21,10 +21,55 @@
   overflow-y: hidden;
   width: calc(100% - 4em);
   display: none;
+  padding: 1.2em;
 
   transition: max-height 0.3s ease-out;
   border: 0.5px solid $colors-silver;
   border-top: none;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-top: 1.2em;
+
+    &__no_products_selected {
+      font-size: 1rem;
+      font-style: italic;
+      color: $colors-dark-grey;
+      text-align: center;
+      padding: 1em;
+    }
+
+    &__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5em;
+      border: 0.5px solid $colors-silver;
+      border-radius: 0.5rem;
+      background-color: $colors-white;
+
+      &__details {
+        justify-content: center;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15em;
+
+        &__name {
+          font-size: 1rem;
+          font-weight: 600;
+        }
+
+        &__date_info {
+          font-size: 0.9rem;
+          font-style: italic;
+          color: $colors-dark-grey;
+        }
+      }
+    }
+  }
 
   &.expanded {
     display: block;
