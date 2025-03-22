@@ -1,13 +1,14 @@
-import { CreatePantryItemPortionDto, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
+import { ICreatePantryItemPortionDto, IPantryItemPortion, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { CookingMeasurementUnit } from "@biaplanner/shared";
+import convertCookingMeasurement from "@biaplanner/shared/build/util/CookingMeasurementConversion";
 import { useCallback } from "react";
 
 export type IngredientManagementState = {
   selectedRecipe?: IRecipe;
-  mappedIngredients?: Record<string, CreatePantryItemPortionDto[]>;
+  mappedIngredients: Record<string, ICreatePantryItemPortionDto[]>;
   showIngredientManagementOffcanvas?: boolean;
   selectedIngredient?: IRecipeIngredient;
 };
@@ -25,7 +26,45 @@ export const ingredientManagementSlice = createSlice({
     selectRecipe: (state, action: PayloadAction<IRecipe>) => {
       state.selectedRecipe = action.payload;
     },
-    mapIngredients: (state, action: PayloadAction<Record<string, CreatePantryItemPortionDto[]>>) => {
+
+    deselectRecipe: (state) => {
+      state.selectedRecipe = undefined;
+      state.mappedIngredients = {};
+      state.selectedIngredient = undefined;
+      state.showIngredientManagementOffcanvas = false;
+    },
+
+    addPantryItemPortionToIngredient(state, action: PayloadAction<{ ingredientId: string; portion: ICreatePantryItemPortionDto }>) {
+      const { ingredientId, portion } = action.payload;
+
+      if (portion.portion.magnitude <= 0) {
+        return;
+      }
+
+      if (!Object.keys(state.mappedIngredients).includes(ingredientId)) {
+        state.mappedIngredients[ingredientId] = [];
+      }
+      const indexOfPortionIfExists = state.mappedIngredients[ingredientId].findIndex((p) => p.pantryItemId === portion.pantryItemId);
+      if (indexOfPortionIfExists !== -1) {
+        state.mappedIngredients[ingredientId][indexOfPortionIfExists] = portion;
+      } else {
+        state.mappedIngredients[ingredientId].push(portion);
+      }
+    },
+
+    removePantryItemPortionFromIngredient(state, action: PayloadAction<{ ingredientId: string; pantryItemId: string }>) {
+      const { ingredientId, pantryItemId } = action.payload;
+      if (!Object.keys(state.mappedIngredients).includes(ingredientId)) {
+        return;
+      }
+      const indexOfPortion = state.mappedIngredients[ingredientId].findIndex((p) => p.pantryItemId === pantryItemId);
+      if (indexOfPortion === -1) {
+        return;
+      }
+      state.mappedIngredients[ingredientId].splice(indexOfPortion, 1);
+    },
+
+    mapIngredients: (state, action: PayloadAction<Record<string, ICreatePantryItemPortionDto[]>>) => {
       state.mappedIngredients = action.payload;
     },
 
@@ -37,11 +76,12 @@ export const ingredientManagementSlice = createSlice({
     deselectIngredient: (state) => {
       state.showIngredientManagementOffcanvas = false;
       state.selectedIngredient = undefined;
+      console.log(state.mappedIngredients);
     },
   },
 });
 
-export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient } = ingredientManagementSlice.actions;
+export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient, addPantryItemPortionToIngredient, deselectRecipe, removePantryItemPortionFromIngredient } = ingredientManagementSlice.actions;
 
 export default ingredientManagementSlice.reducer;
 export type IngredientManagementAction = typeof ingredientManagementSlice.actions;
@@ -58,7 +98,7 @@ export function useSelectRecipe() {
 
 export function useMapIngredients() {
   const dispatch = useStoreDispatch();
-  const mapIngredients = useCallback((ingredients: Record<string, CreatePantryItemPortionDto[]>) => dispatch(ingredientManagementSlice.actions.mapIngredients(ingredients)), [dispatch]);
+  const mapIngredients = useCallback((ingredients: Record<string, ICreatePantryItemPortionDto[]>) => dispatch(ingredientManagementSlice.actions.mapIngredients(ingredients)), [dispatch]);
   return mapIngredients;
 }
 
@@ -100,4 +140,73 @@ export function useGetPortionFulfilledStatus() {
   );
 
   return getPortionFullfilledStatus;
+}
+
+export function useIngredientPantryPortionItemActions() {
+  const dispatch = useStoreDispatch();
+  const { mappedIngredients, selectedIngredient } = useIngredientManagementState();
+
+  const addPantryItemPortionToIngredient = useCallback((ingredientId: string, portion: ICreatePantryItemPortionDto) => dispatch(ingredientManagementSlice.actions.addPantryItemPortionToIngredient({ ingredientId, portion })), [dispatch]);
+
+  const removePantryItemPortionFromIngredient = useCallback((ingredientId: string, pantryItemId: string) => dispatch(ingredientManagementSlice.actions.removePantryItemPortionFromIngredient({ ingredientId, pantryItemId })), [dispatch]);
+
+  const getSumedPortionQuantity = useCallback(
+    (ingredientId: string) => {
+      const targetIngredientMeasurementUnit = selectedIngredient?.measurement?.unit;
+      if (!targetIngredientMeasurementUnit) {
+        return {
+          magnitude: 0,
+          unit: Weights.GRAM,
+        };
+      }
+      const summedPortion =
+        mappedIngredients[ingredientId]?.reduce((acc, curr) => {
+          if (!curr.portion) {
+            return acc;
+          }
+          const convertedPortion = convertCookingMeasurement(curr.portion, targetIngredientMeasurementUnit);
+          return acc + convertedPortion.magnitude;
+        }, 0) ?? 0;
+      return {
+        magnitude: summedPortion,
+        unit: targetIngredientMeasurementUnit,
+      };
+    },
+    [mappedIngredients, selectedIngredient?.measurement?.unit]
+  );
+
+  const getSelectedPantryItemPortion = useCallback(
+    (
+      ingredientId: string,
+      pantryItemId: string
+    ): {
+      portionMagnitude: number;
+      portionUnit: CookingMeasurementUnit;
+      convertedPortionMagnitude: number;
+      convertedPortionUnit: CookingMeasurementUnit;
+    } => {
+      const targetIngredientMeasurementUnit = selectedIngredient?.measurement?.unit;
+      console.log(mappedIngredients);
+      const item = mappedIngredients[ingredientId]?.find((p) => p.pantryItemId === pantryItemId);
+      if (!item) {
+        return {
+          portionMagnitude: 0,
+          portionUnit: targetIngredientMeasurementUnit ?? Weights.GRAM,
+          convertedPortionMagnitude: 0,
+          convertedPortionUnit: targetIngredientMeasurementUnit ?? Weights.GRAM,
+        };
+      }
+      const convertedPortion = convertCookingMeasurement(item.portion, targetIngredientMeasurementUnit ?? Weights.GRAM);
+      console.log(item.portion, convertedPortion);
+      return {
+        portionMagnitude: item.portion.magnitude,
+        portionUnit: item.portion.unit,
+        convertedPortionMagnitude: convertedPortion.magnitude,
+        convertedPortionUnit: convertedPortion.unit,
+      };
+    },
+    [mappedIngredients, selectedIngredient?.measurement?.unit]
+  );
+
+  return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSumedPortionQuantity, getSelectedPantryItemPortion };
 }

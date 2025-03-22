@@ -1,23 +1,23 @@
 import "../styles/IngredientManagementOffcanvas.scss";
 
 import { IPantryItem, Weights, getCookingMeasurement } from "@biaplanner/shared";
-import { selectIngredient, useDeselectIngredient, useIngredientManagementState } from "../../reducers/IngredientManagementReducer";
-import { useGetIngredientCompatiblePantryItemsQuery, useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
+import { useDeselectIngredient, useIngredientManagementState, useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";
+import { useEffect, useMemo, useState } from "react";
 
 import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
 import Form from "react-bootstrap/Form";
-import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 export default function IngredientManagementOffcanvas() {
   const { selectedIngredient, showIngredientManagementOffcanvas: show } = useIngredientManagementState();
   const targetMeasurement = selectedIngredient?.measurement;
   const [getIngredientCompatiblePantryItems, { data: pantryItems, isLoading, isError, isSuccess }] = useLazyGetIngredientCompatiblePantryItemsQuery();
-
+  const { getSumedPortionQuantity } = useIngredientPantryPortionItemActions();
   const delesectIngredient = useDeselectIngredient();
+  const portionQuanity = getSumedPortionQuantity(selectedIngredient?.id ?? "");
 
   useEffect(() => {
     if (selectedIngredient) {
@@ -34,6 +34,9 @@ export default function IngredientManagementOffcanvas() {
         <Offcanvas.Title>
           <Heading level={Heading.Level.H2}>Select portions from your pantry</Heading>
           <Heading level={Heading.Level.H3}>For {selectedIngredient?.title ?? "N/A"}</Heading>
+          <Heading level={Heading.Level.H4}>
+            Summed: {portionQuanity.magnitude} {portionQuanity.unit}{" "}
+          </Heading>
         </Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
@@ -42,7 +45,7 @@ export default function IngredientManagementOffcanvas() {
         <div>
           {isLoading && <div>Loading...</div>}
           {isError && <div>Error</div>}
-          {isSuccess && pantryItems?.map((item) => <PantryItemField key={item.id} pantryItem={item} />)}
+          {isSuccess && selectedIngredient && pantryItems?.map((item) => <PantryItemField key={item.id} pantryItem={item} ingredientId={selectedIngredient.id} />)}
         </div>
       </Offcanvas.Body>
     </Offcanvas>
@@ -51,16 +54,71 @@ export default function IngredientManagementOffcanvas() {
 
 type PantryItemFieldProps = {
   pantryItem: IPantryItem;
+  ingredientId: string;
 };
 
 function PantryItemField(props: PantryItemFieldProps) {
-  const { pantryItem } = props;
+  const { pantryItem, ingredientId } = props;
   const measurementType = getCookingMeasurement(pantryItem.availableMeasurements?.unit ?? Weights.GRAM).type;
+
+  const { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSelectedPantryItemPortion } = useIngredientPantryPortionItemActions();
+
+  const { convertedPortionMagnitude, convertedPortionUnit, portionMagnitude, portionUnit } = useMemo(() => {
+    return getSelectedPantryItemPortion(ingredientId, pantryItem.id);
+  }, [getSelectedPantryItemPortion, pantryItem.id, ingredientId]);
+
+  console.log(portionMagnitude, portionUnit);
+
+  const [selected, setSelected] = useState<boolean>(() => portionMagnitude > 0);
+
+  const cookingMeasurementInput = useMemo(() => {
+    return (
+      <>
+        <CookingMeasurementInput
+          minMagnitude={0}
+          maxMagnitude={pantryItem.availableMeasurements?.magnitude ?? 0}
+          initialValue={{
+            magnitude: portionMagnitude,
+            unit: portionUnit,
+          }}
+          scoped={measurementType}
+          onChange={(measurement) => {
+            if (measurement.magnitude === 0) {
+              removePantryItemPortionFromIngredient(ingredientId, pantryItem.id);
+            } else {
+              addPantryItemPortionToIngredient(ingredientId, { pantryItemId: pantryItem.id, portion: measurement });
+            }
+          }}
+        />
+        <div>
+          {convertedPortionMagnitude} {convertedPortionUnit}
+        </div>
+      </>
+    );
+  }, [
+    pantryItem.availableMeasurements?.magnitude,
+    pantryItem.id,
+    portionMagnitude,
+    portionUnit,
+    measurementType,
+    convertedPortionMagnitude,
+    convertedPortionUnit,
+    removePantryItemPortionFromIngredient,
+    ingredientId,
+    addPantryItemPortionToIngredient,
+  ]);
 
   return (
     <>
       <Form.Check
         type="checkbox"
+        checked={selected}
+        onChange={(e) => {
+          setSelected(e.target.checked);
+          if (!e.target.checked) {
+            removePantryItemPortionFromIngredient(ingredientId, pantryItem.id);
+          }
+        }}
         className="bp-pantry_item_field"
         label={
           <div>
@@ -69,20 +127,10 @@ function PantryItemField(props: PantryItemFieldProps) {
             <div>
               Available: {pantryItem.availableMeasurements?.magnitude} {pantryItem.availableMeasurements?.unit}
             </div>
-            <div></div>
           </div>
         }
       />
-      <CookingMeasurementInput
-        minMagnitude={0}
-        maxMagnitude={pantryItem.availableMeasurements?.magnitude ?? 0}
-        initialValue={{
-          magnitude: 0,
-          unit: pantryItem.availableMeasurements?.unit ?? Weights.GRAM,
-        }}
-        scoped={measurementType}
-        onChange={(measurement) => console.log(measurement)}
-      />
+      {selected && cookingMeasurementInput}
     </>
   );
 }
