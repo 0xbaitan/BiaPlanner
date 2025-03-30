@@ -9,8 +9,10 @@ import {
 } from '@nestjs/common';
 import { ShoppingListService } from './shopping-list.service';
 import {
+  CreateShoppingListDto,
   ICreateShoppingListDto,
   IUpdateShoppingListDto,
+  UpdateShoppingListDto,
 } from '@biaplanner/shared';
 
 @Controller('/shopping-lists')
@@ -31,12 +33,12 @@ export class ShoppingListController {
   }
 
   @Post('/')
-  async create(@Body() dto: ICreateShoppingListDto) {
+  async create(@Body() dto: CreateShoppingListDto) {
     return this.shoppingListService.create(dto);
   }
 
   @Post('/:id')
-  async update(@Param('id') id: string, @Body() dto: IUpdateShoppingListDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateShoppingListDto) {
     return this.shoppingListService.update(id, dto);
   }
 
