@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IShoppingItem, IShoppingList } from '@biaplanner/shared';
 
-import { IShoppingList } from '@biaplanner/shared';
+import { ShoppingItemEntity } from './shopping-item/shopping-item.entity';
 
 @Entity('shopping-lists')
 export class ShoppingListEntity implements IShoppingList {
@@ -47,4 +49,10 @@ export class ShoppingListEntity implements IShoppingList {
 
   @Column({ type: 'boolean', nullable: true, default: false })
   isShoppingComplete?: boolean;
+
+  @OneToMany(
+    () => ShoppingItemEntity,
+    (shoppingItem) => shoppingItem.shoppingList,
+  )
+  items?: IShoppingItem[];
 }
