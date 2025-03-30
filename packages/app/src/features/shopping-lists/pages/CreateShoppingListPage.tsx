@@ -1,8 +1,5 @@
+import ShoppingListForm from "../components/ShoppingListForm";
+
 export default function CreateShoppingListPage() {
-  return (
-    <div>
-      <h1>Create Shopping List</h1>
-      <p>This is the create shopping list page.</p>
-    </div>
-  );
+  return <ShoppingListForm onSubmit={() => {}} type="create" initialValue={undefined} />;
 }
