@@ -3,6 +3,7 @@ import { FilesModule } from './features/files/files.module';
 import { MealPlanModule } from './features/meal-plan/meal-plan.module';
 import PantryModule from './features/pantry/pantry.module';
 import { ReminderModule } from './features/reminder/reminder.module';
+import { ShoppingListModule } from './features/shopping-list/shopping-list.module';
 import { UserInfoModule } from './features/user-info/user-info.module';
 
 export const modules = [
@@ -12,4 +13,5 @@ export const modules = [
   ReminderModule,
   FilesModule,
   MealPlanModule,
+  ShoppingListModule,
 ];
