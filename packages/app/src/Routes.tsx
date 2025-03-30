@@ -19,6 +19,7 @@ import AdminUpdateProductCategoryPage from "./features/admin/_product-categories
 import AdminUpdateRecipeTagPage from "./features/admin/_recipe-tags/pages/AdminUpdateRecipeTagPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
+import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import HomePage from "@/pages/HomePage";
 import InventoryPage from "./features/pantry-management/_inventory/pages/InventoryPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
@@ -27,6 +28,8 @@ import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansP
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
 import RecipesPage from "./features/meal-planning/_recipes/pages/RecipesPage";
 import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
+import ShoppingListPagesContainer from "./features/shopping-lists/components/ShoppingListPagesContainer";
+import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
 import UpdateRecipePage from "./features/meal-planning/_recipes/pages/UpdateRecipePage";
@@ -88,6 +91,11 @@ export default function Routes() {
           <Route path="meal-plans" element={<MealPlansPage />} />
           <Route path="meal-plans/select-recipe" element={<SelectRecipePage />} />
           <Route path="meal-plans/create" element={<CreateMealPlanPage />} />
+        </Route>
+
+        <Route path="/shopping-lists" element={<ShoppingListPagesContainer />}>
+          <Route path="" element={<ShoppingListsPage />} />
+          <Route path="create" element={<CreateShoppingListPage />} />
         </Route>
       </RoutingTable>
     </Router>
