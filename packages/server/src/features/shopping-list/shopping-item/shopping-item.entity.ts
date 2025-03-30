@@ -11,6 +11,8 @@ import {
 } from 'typeorm';
 import { IShoppingItem, IShoppingList } from '@biaplanner/shared';
 
+import { ShoppingListEntity } from '../shopping-list.entity';
+
 @Entity('shopping-items')
 export class ShoppingItemEntity implements IShoppingItem {
   @PrimaryGeneratedColumn({ type: 'bigint' })
@@ -50,7 +52,7 @@ export class ShoppingItemEntity implements IShoppingItem {
   @Column({ type: 'bigint', nullable: false })
   shoppingListId?: string;
 
-  @ManyToOne(() => ShoppingItemEntity, (shoppingList) => shoppingList.id)
+  @ManyToOne(() => ShoppingListEntity, (shoppingList) => shoppingList.id)
   @JoinColumn({ name: 'shoppingListId' })
   shoppingList?: IShoppingList;
 
