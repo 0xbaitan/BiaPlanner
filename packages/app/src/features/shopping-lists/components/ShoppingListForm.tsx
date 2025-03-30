@@ -1,6 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingItemDto } from "@biaplanner/shared";
 
+import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
 import Button from "react-bootstrap/esm/Button";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
@@ -8,6 +9,7 @@ import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
 import TextInput from "@/components/forms/TextInput";
 import { useNavigate } from "react-router-dom";
+import { useShoppingListItemsActions } from "../reducers/ShoppingListItemsReducer";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -35,6 +37,7 @@ const UpdateShoppingListValidationSchema = z.object({
 
 export default function ShoppingListForm(props: ShoppingListFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
+  const { showOffcanvas } = useShoppingListItemsActions();
   const navigate = useNavigate();
   const formMethods = useForm<ShoppingListFormValues>({
     defaultValues: initialValue ?? {},
@@ -44,6 +47,7 @@ export default function ShoppingListForm(props: ShoppingListFormProps) {
 
   return (
     <FormProvider {...formMethods}>
+      <BrowseProductsOffcanvas />
       <DualPaneForm>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Update current shopping list"}</DualPaneForm.Header.Title>
@@ -67,7 +71,15 @@ export default function ShoppingListForm(props: ShoppingListFormProps) {
             </div>
           </DualPaneForm.Panel.Pane>
 
-          <DualPaneForm.Panel.Pane className="p-4"></DualPaneForm.Panel.Pane>
+          <DualPaneForm.Panel.Pane className="p-4">
+            <Heading level={Heading.Level.H2}>Shopping List Items</Heading>
+            <Button variant="outline-secondary" className="mt-4">
+              <span className="ms-2" onClick={showOffcanvas}>
+                Add Shopping List Item
+              </span>
+            </Button>
+            <div className="mt-4"></div>
+          </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>
     </FormProvider>

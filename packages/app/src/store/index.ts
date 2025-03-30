@@ -7,6 +7,7 @@ import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 import { rootApi } from "@/apis";
 import sessionStorage from "redux-persist/lib/storage/session";
+import shoppingListsReducer from "@/features/shopping-lists/reducers";
 
 const persistConfig = {
   key: "root",
@@ -16,6 +17,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   authentication: authenticationReducer.reducer,
   mealPlanning: mealPlanningReducer,
+  shoppingLists: shoppingListsReducer,
   [rootApi.reducerPath]: rootApi.reducer,
 });
 
