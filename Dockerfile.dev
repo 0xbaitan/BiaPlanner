@@ -32,3 +32,10 @@ WORKDIR /usr/src/
 EXPOSE 3000
 RUN node run.js project:build --project shared --w -n
 CMD ["node", "run.js", "project:start", "--project", "server"] 
+
+# MySQL Dev Environment
+FROM mysql:8.0.41 AS database-dev
+COPY ./mysql/udf/bin/ /usr/lib64/mysql/plugin/
+COPY ./mysql/scripts /docker-entrypoint-initdb.d/
+EXPOSE 3306
+

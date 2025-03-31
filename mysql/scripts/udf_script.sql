@@ -1,0 +1,5 @@
+DROP FUNCTION IF EXISTS hello;
+CREATE FUNCTION hello RETURNS STRING SONAME 'hello_world.so';
+
+DROP FUNCTION IF EXISTS trigram_search;
+CREATE FUNCTION trigram_search RETURNS STRING SONAME 'trigram_search.so';

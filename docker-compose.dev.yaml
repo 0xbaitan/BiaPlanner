@@ -58,7 +58,10 @@ services:
 
   database:
     container_name: database
-    image: mysql:5.7
+    build:
+      context: .
+      target: database-dev
+      dockerfile: Dockerfile.dev
     restart: always
     env_file:
       - ./.env.dev
