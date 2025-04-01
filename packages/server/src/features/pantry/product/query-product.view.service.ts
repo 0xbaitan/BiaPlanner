@@ -55,6 +55,7 @@ export class QueryProductViewService {
         'product.measurementType',
         'brand.id',
         'brand.name',
+        'product.cover',
       ]);
 
     if (paginatedQuery.search) {
@@ -65,7 +66,8 @@ export class QueryProductViewService {
     }
     qb.setParameter('searchTerm', paginatedQuery.search)
       .leftJoin('product.brand', 'brand')
-      .leftJoinAndSelect('product.productCategories', 'productCategories');
+      .leftJoinAndSelect('product.productCategories', 'productCategories')
+      .leftJoinAndSelect('product.cover', 'cover');
 
     if (paginatedQuery.search) {
       qb.where(

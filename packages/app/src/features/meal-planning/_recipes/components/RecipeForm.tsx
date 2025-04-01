@@ -13,7 +13,7 @@ import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
-import { ImageSelector } from "@/components/forms/ImageSelector";
+import ImageSelector from "@/components/forms/ImageSelector";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
 import InputLabel from "@/components/forms/InputLabel";

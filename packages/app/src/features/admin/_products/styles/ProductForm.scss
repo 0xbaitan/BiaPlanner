@@ -1,0 +1,8 @@
+.bp-product_form__img_selector {
+  max-width: calc(100% - clamp(4em, 4vw, 8em));
+  justify-self: center;
+}
+
+.bp-product_form__pane {
+  padding: 1.5em !important;
+}

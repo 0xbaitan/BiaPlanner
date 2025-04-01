@@ -1,3 +1,5 @@
+import "../styles/ProductForm.scss";
+
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
@@ -5,11 +7,19 @@ import { useCallback, useState } from "react";
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
 import CookingMeasurementInput from "./CookingMeasurementInput";
+import DualPaneForm from "@/components/forms/DualPaneForm";
+import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/esm/Form";
+import Heading from "@/components/Heading";
+import { ImageListType } from "react-images-uploading";
+import ImageSelector from "@/components/forms/ImageSelector";
+import { MdCancel } from "react-icons/md";
 import ProductCategoryLazySelect from "@/components/forms/ProductCategoryLazySelect";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
+import { useNavigate } from "react-router-dom";
+import useUploadImageFile from "@/hooks/useUploadImageFile";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -21,7 +31,8 @@ export type ProductFormProps = {
   type: FormAction;
   initialValues?: IProduct;
   onSubmit: (values: ProductFormValues) => void;
-  submitButtonText?: string;
+
+  disableSubmit?: boolean;
 };
 
 const ProductFormValidationSchema = z.object({
@@ -33,73 +44,74 @@ const ProductFormValidationSchema = z.object({
 });
 
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit, submitButtonText = "Add Product" } = props;
+  const { initialValues, onSubmit, disableSubmit } = props;
   const formMethods = useForm<IProduct>({
     defaultValues: initialValues,
     resolver: zodResolver(ProductFormValidationSchema),
   });
+  const uploadImage = useUploadImageFile();
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const navigate = useNavigate();
 
-  const onSubmitForm = useCallback(() => {
+  const onSubmitForm = useCallback(async () => {
     const values = formMethods.getValues();
+    if (coverImage) {
+      const fileMetadata = await uploadImage(coverImage);
+      values.coverId = fileMetadata.id;
+    }
     console.log(values);
     onSubmit(values);
-  }, [formMethods, onSubmit]);
+  }, [coverImage, formMethods, onSubmit, uploadImage]);
 
   return (
     <FormProvider {...formMethods}>
-      <Form onSubmit={formMethods.handleSubmit(onSubmitForm)}>
-        <RequiredDetails initialValues={initialValues} />
-        <Button type="submit">{submitButtonText}</Button>
-      </Form>
+      <DualPaneForm onSubmit={formMethods.handleSubmit(onSubmitForm)}>
+        <DualPaneForm.Header>
+          <DualPaneForm.Header.Title>
+            <Heading level={Heading.Level.H1}>Create a new product</Heading>
+          </DualPaneForm.Header.Title>
+
+          <DualPaneForm.Header.Actions>
+            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+              <MdCancel />
+              <span className="ms-2">Cancel</span>
+            </Button>
+            <Button type="submit" disabled={disableSubmit}>
+              <FaSave />
+              <span className="ms-2">Save product</span>
+            </Button>
+          </DualPaneForm.Header.Actions>
+        </DualPaneForm.Header>
+      </DualPaneForm>
+      <DualPaneForm.Panel>
+        <DualPaneForm.Panel.Pane className="bp-product_form__pane">
+          <Heading level={Heading.Level.H2}>General Details</Heading>
+          <RequiredDetails initialValues={initialValues} setCoverImage={setCoverImage} />
+        </DualPaneForm.Panel.Pane>
+        <DualPaneForm.Panel.Pane className="bp-product_form__pane">
+          <Heading level={Heading.Level.H2}>Product Configuration</Heading>
+          <ProductConfiguration initialValues={initialValues} />
+        </DualPaneForm.Panel.Pane>
+      </DualPaneForm.Panel>
     </FormProvider>
   );
 }
-
-function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
-  console.log("initialValues", props.initialValues);
+function ProductConfiguration(props: Pick<ProductFormProps, "initialValues">) {
   const { initialValues } = props;
-  const formMethods = useFormContext<ProductFormValues>();
-  const {
-    register,
-    formState: { errors },
-    setValue,
-  } = formMethods;
   const [canExpire, setCanExpire] = useState<boolean>(false);
   const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(initialValues?.canQuicklyExpireAfterOpening ?? false);
 
   const [isLoose, setIsLoose] = useState<boolean>(initialValues?.isLoose ?? false);
 
+  const formMethods = useFormContext<ProductFormValues>();
+  const {
+    register,
+
+    setValue,
+  } = formMethods;
+
   return (
     <>
-      <Form.Group>
-        <Form.Label>Product Name</Form.Label>
-        <Form.Control {...formMethods.register("name")} isInvalid={!!errors.name} />
-        {formMethods.formState.errors.name && <Form.Control.Feedback type="invalid">{errors?.name?.message}</Form.Control.Feedback>}
-      </Form.Group>
-      <BrandSingleSelect
-        error={errors.brandId?.message}
-        initialValueId={initialValues?.brandId}
-        onChange={(brand) => {
-          setValue("brandId", brand.id);
-        }}
-      />
-
-      {/* <ProductCategoryLazySelect /> */}
-
-      <ProductCategoryMultiselect
-        error={errors.productCategories?.message}
-        initialValues={initialValues?.productCategories ?? []}
-        onSelectionChange={(productCategories) => {
-          console.log("productCategories", productCategories);
-          setValue(
-            "productCategories",
-            productCategories.map((category) => {
-              return { id: category.id };
-            })
-          );
-        }}
-      />
-
       <Form.Group>
         <Form.Switch
           checked={canExpire}
@@ -200,6 +212,60 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
           />
         )}
       </Form.Group>
+    </>
+  );
+}
+function RequiredDetails(
+  props: Pick<ProductFormProps, "initialValues"> & {
+    setCoverImage: (image: File | null) => void;
+  }
+) {
+  console.log("initialValues", props.initialValues);
+  const { initialValues, setCoverImage } = props;
+  const formMethods = useFormContext<ProductFormValues>();
+  const {
+    register,
+    formState: { errors },
+    setValue,
+  } = formMethods;
+
+  return (
+    <>
+      <ImageSelector
+        className="bp-product_form__img_selector"
+        helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px."
+        onChange={(imageList: ImageListType) => {
+          setCoverImage(imageList[0]?.file ?? null);
+        }}
+      />
+      <Form.Group>
+        <Form.Label>Product Name</Form.Label>
+        <Form.Control {...formMethods.register("name")} isInvalid={!!errors.name} />
+        {formMethods.formState.errors.name && <Form.Control.Feedback type="invalid">{errors?.name?.message}</Form.Control.Feedback>}
+      </Form.Group>
+      <BrandSingleSelect
+        error={errors.brandId?.message}
+        initialValueId={initialValues?.brandId}
+        onChange={(brand) => {
+          setValue("brandId", brand.id);
+        }}
+      />
+
+      {/* <ProductCategoryLazySelect /> */}
+
+      <ProductCategoryMultiselect
+        error={errors.productCategories?.message}
+        initialValues={initialValues?.productCategories ?? []}
+        onSelectionChange={(productCategories) => {
+          console.log("productCategories", productCategories);
+          setValue(
+            "productCategories",
+            productCategories.map((category) => {
+              return { id: category.id };
+            })
+          );
+        }}
+      />
     </>
   );
 }

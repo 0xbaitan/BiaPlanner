@@ -3,6 +3,7 @@ import { Volumes, Weights } from "../units";
 
 import { IBaseEntity } from "../BaseEntity";
 import { IBrand } from "./Brand";
+import { IFile } from "../File";
 import { IPantryItem } from "./PantryItem";
 import { IProductCategory } from "./ProductCategory";
 import { IUser } from "../User";
@@ -24,9 +25,11 @@ export interface IProduct extends IBaseEntity {
   isLoose?: boolean;
   measurement: CookingMeasurement;
   measurementType?: CookingMeasurementType;
+  coverId?: string;
+  cover?: IFile;
 }
 
-export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement" | "description"> {
+export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement" | "description" | "coverId"> {
   productCategories: Pick<IProductCategory, "id">[];
 }
 

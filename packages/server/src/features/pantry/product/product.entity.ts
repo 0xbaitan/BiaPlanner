@@ -17,6 +17,7 @@ import {
   CookingMeasurement,
   CookingMeasurementType,
   IBrand,
+  IFile,
   IPantryItem,
   IProduct,
   IProductCategory,
@@ -27,6 +28,7 @@ import {
 } from '@biaplanner/shared';
 
 import { BrandEntity } from '../brand/brand.entity';
+import { FileEntity } from '@/features/files/file.entity';
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 import { ProductCategoryEntity } from './category/product-category.entity';
 import { UserEntity } from 'src/features/user-info/user/user.entity';
@@ -119,6 +121,18 @@ export class ProductEntity implements IProduct {
     default: null,
   })
   timeTillExpiryAfterOpening?: TimeMeasurement;
+
+  @Column({ type: 'bigint', nullable: true })
+  coverId?: string;
+
+  @OneToOne(() => FileEntity, {
+    eager: true,
+    nullable: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'coverId' })
+  cover?: IFile;
 
   @CreateDateColumn({
     type: 'timestamp',

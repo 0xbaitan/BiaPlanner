@@ -1,7 +1,7 @@
 import "../styles/ImageSelector.scss";
 
 import ImageUploading, { ImageListType } from "react-images-uploading";
-import React, { useCallback } from "react";
+import React, { HTMLAttributes, useCallback, useEffect } from "react";
 
 import Button from "react-bootstrap/Button";
 import { FaUpload } from "react-icons/fa";
@@ -10,18 +10,25 @@ import { MdCancel } from "react-icons/md";
 export type ImageSelectorProps = {
   helpText?: string;
   uploadButtonText?: string;
-};
+  onChange?: (imageList: ImageListType) => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, "onChange">;
 
-export function ImageSelector(props: ImageSelectorProps) {
-  const { helpText, uploadButtonText } = props;
+export default function ImageSelector(props: ImageSelectorProps) {
+  const { helpText, uploadButtonText, className, onChange: onCustomChange, ...rest } = props;
   const [image, setImage] = React.useState<ImageListType>([]);
 
   const onChange = useCallback((imageList: ImageListType) => {
     setImage(() => imageList);
   }, []);
 
+  useEffect(() => {
+    if (onCustomChange) {
+      onCustomChange(image);
+    }
+  }, [image, onCustomChange]);
+
   return (
-    <div className="bp-image_selector">
+    <div {...rest} className={["bp-image_selector", className ?? ""].join(" ")}>
       <ImageUploading value={image} onChange={onChange} maxNumber={1} dataURLKey="dataUrl">
         {({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => {
           const imageUrl = imageList.length > 0 ? imageList[0].dataUrl : undefined;

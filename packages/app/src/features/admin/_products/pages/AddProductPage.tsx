@@ -26,18 +26,13 @@ export default function AddProductPage() {
   });
 
   return (
-    <div>
-      <h1>Add Product</h1>
-      <p>Fill in the form below to add a new product</p>
-      <br />
-      <ProductForm
-        type="create"
-        onSubmit={async (dto) => {
-          setItem(dto as ICreateProductDto);
-          await createProduct(dto as ICreateProductDto);
-          console.log("Product created", dto);
-        }}
-      />
-    </div>
+    <ProductForm
+      type="create"
+      onSubmit={async (dto) => {
+        setItem(dto as ICreateProductDto);
+        await createProduct(dto as ICreateProductDto);
+        console.log("Product created", dto);
+      }}
+    />
   );
 }
