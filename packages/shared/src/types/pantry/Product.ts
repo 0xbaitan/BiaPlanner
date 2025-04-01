@@ -10,7 +10,7 @@ import { TimeMeasurement } from "../TimeMeasurement";
 
 export interface IProduct extends IBaseEntity {
   name: string;
-
+  description?: string;
   productCategories?: IProductCategory[];
   brand?: IBrand;
   brandId?: string;
@@ -26,7 +26,7 @@ export interface IProduct extends IBaseEntity {
   measurementType?: CookingMeasurementType;
 }
 
-export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement"> {
+export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement" | "description"> {
   productCategories: Pick<IProductCategory, "id">[];
 }
 
@@ -42,6 +42,7 @@ export class CreateProductDto implements ICreateProductDto {
   createdById: string;
   measurement: CookingMeasurement;
   productCategories: Pick<IProductCategory, "id">[];
+  description?: string | undefined;
 }
 
 export class UpdateProductDto implements IUpdateProductDto {
@@ -53,4 +54,5 @@ export class UpdateProductDto implements IUpdateProductDto {
   name?: string;
   measurement: CookingMeasurement;
   productCategories?: Pick<IProductCategory, "id">[];
+  description?: string | undefined;
 }

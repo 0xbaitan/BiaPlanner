@@ -11,3 +11,4 @@ export * from "./shopping-lists";
 export * from "./File";
 export * from "./TimeMeasurement";
 export * from "./CookingMeasurement";
+export * from "./PaginateExtended";

@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -30,13 +31,28 @@ import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 import { ProductCategoryEntity } from './category/product-category.entity';
 import { UserEntity } from 'src/features/user-info/user/user.entity';
 
+export enum ProductEntityIndices {
+  PRODUCT_FULL_TEXT_FIELDS_IDX = 'product_full_text_fields_idx',
+}
+
+@Index(
+  ProductEntityIndices.PRODUCT_FULL_TEXT_FIELDS_IDX,
+  ['name', 'description'],
+  {
+    fulltext: true,
+  },
+)
 @Entity('products')
 export class ProductEntity implements IProduct {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
+  @Index({ fulltext: true })
   name: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
 
   @ManyToMany(
     () => ProductCategoryEntity,

@@ -11,6 +11,7 @@
     "@nestjs/swagger": "^7.4.2",
     "class-validator": "^0.14.1",
     "country-codes-list": "^1.6.11",
+    "nestjs-paginate": "^11.1.1",
     "reflect-metadata": "^0.2.2",
     "utility-types": "^3.11.0"
   },

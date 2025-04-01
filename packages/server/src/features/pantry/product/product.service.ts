@@ -17,7 +17,6 @@ import {
 import { DeepPartial, Repository } from 'typeorm';
 import { ProductCategoryService } from './category/product-category.service';
 import { plainToInstance } from 'class-transformer';
-import { FuzzyQueryBuilder } from '@/util/FuzzyQueryBuilder';
 
 @Injectable()
 export class ProductService {
@@ -32,12 +31,6 @@ export class ProductService {
     let product = this.productRepository.create(dto);
     this.populateWithAppropriateMeasurementType(product, dto.measurement);
     return this.productRepository.save(product);
-  }
-
-  async findProductsByName(name: string) {
-    const queryBuilder = new FuzzyQueryBuilder<ProductEntity>(
-      this.productRepository,
-    );
   }
 
   async findAllProducts(): Promise<IProduct[]> {

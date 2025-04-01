@@ -1,5 +1,6 @@
-import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
+import { FuzzyQuery, ICreateProductDto, IProduct, IQueryProductView, IUpdateProductDto, PaginateQuery } from "@biaplanner/shared";
 
+import { Paginated } from "nestjs-paginate/lib/paginate";
 import { rootApi } from ".";
 
 export const productsApi = rootApi.injectEndpoints({
@@ -58,7 +59,20 @@ export const productsApi = rootApi.injectEndpoints({
         },
       ],
     }),
+
+    searchProducts: build.query<Paginated<IProduct>, { paginateQuery: Omit<PaginateQuery, "path">; fuzzyQuery?: FuzzyQuery }>({
+      query: ({ paginateQuery, fuzzyQuery }) => {
+        return {
+          url: "/query/products",
+          method: "GET",
+          params: {
+            ...paginateQuery,
+            fuzzy: fuzzyQuery,
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetProductsQuery, useLazyGetProductsQuery, useCreateProductMutation, useUpdateProductMutation, useGetProductByIdQuery, useLazyGetProductByIdQuery } = productsApi;
+export const { useGetProductsQuery, useLazyGetProductsQuery, useCreateProductMutation, useUpdateProductMutation, useGetProductByIdQuery, useLazyGetProductByIdQuery, useSearchProductsQuery, useLazySearchProductsQuery } = productsApi;
