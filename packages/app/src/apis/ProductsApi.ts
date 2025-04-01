@@ -1,5 +1,6 @@
 import { FuzzyQuery, ICreateProductDto, IProduct, IQueryProductView, IUpdateProductDto, PaginateQuery } from "@biaplanner/shared";
 
+import { DeepPartial } from "react-hook-form";
 import { Paginated } from "nestjs-paginate/lib/paginate";
 import { rootApi } from ".";
 
@@ -60,7 +61,7 @@ export const productsApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchProducts: build.query<Paginated<IProduct>, { paginateQuery: Omit<PaginateQuery, "path">; fuzzyQuery?: FuzzyQuery }>({
+    searchProducts: build.query<Paginated<DeepPartial<IProduct>>, { paginateQuery: Omit<PaginateQuery, "path">; fuzzyQuery?: FuzzyQuery }>({
       query: ({ paginateQuery, fuzzyQuery }) => {
         return {
           url: "/query/products",
