@@ -6,6 +6,7 @@ import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
 import Button from "react-bootstrap/esm/Button";
 import CookingMeasurementInput from "./CookingMeasurementInput";
 import Form from "react-bootstrap/esm/Form";
+import ProductCategoryLazySelect from "@/components/forms/ProductCategoryLazySelect";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
@@ -82,6 +83,8 @@ function RequiredDetails(props: Pick<ProductFormProps, "initialValues">) {
           setValue("brandId", brand.id);
         }}
       />
+
+      {/* <ProductCategoryLazySelect /> */}
 
       <ProductCategoryMultiselect
         error={errors.productCategories?.message}

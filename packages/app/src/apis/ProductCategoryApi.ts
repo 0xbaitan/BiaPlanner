@@ -1,5 +1,7 @@
-import { ICreateProductCategoryDto, IProductCategory, IUpdateProductCategoryDto } from "@biaplanner/shared";
+import { ICreateProductCategoryDto, IProductCategory, IUpdateProductCategoryDto, PaginateQuery } from "@biaplanner/shared";
 
+import { DeepPartial } from "utility-types";
+import { Paginated } from "nestjs-paginate/lib/paginate";
 import { rootApi } from ".";
 
 const productClassificationApi = rootApi.injectEndpoints({
@@ -42,8 +44,29 @@ const productClassificationApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: ["ProductCategory", { type: "ProductCategory", id: "LIST" }],
     }),
+
+    searchProductCategories: build.query<Paginated<DeepPartial<IProductCategory>>, Omit<PaginateQuery, "path">>({
+      query: (query) => ({
+        url: "/query/product-categories",
+        method: "GET",
+        params: query,
+      }),
+      providesTags: (result) => {
+        const tags = result?.data.map((item) => ({ type: "ProductCategory" as const, id: item.id })) || [];
+        return [...tags, { type: "ProductCategory" as const, id: "LIST" }];
+      },
+    }),
   }),
 });
 
-export const { useGetProductCategoriesQuery, useGetProductCategoryQuery, useLazyGetProductCategoryQuery, useLazyGetProductCategoriesQuery, useCreateProductCategoryMutation, useDeleteProductCategoryMutation, useUpdateProductCategoryMutation } =
-  productClassificationApi;
+export const {
+  useGetProductCategoriesQuery,
+  useGetProductCategoryQuery,
+  useLazyGetProductCategoryQuery,
+  useLazyGetProductCategoriesQuery,
+  useCreateProductCategoryMutation,
+  useDeleteProductCategoryMutation,
+  useUpdateProductCategoryMutation,
+  useSearchProductCategoriesQuery,
+  useLazySearchProductCategoriesQuery,
+} = productClassificationApi;

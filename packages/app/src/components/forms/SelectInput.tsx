@@ -6,41 +6,44 @@ import { useCallback, useMemo, useState } from "react";
 import Form from "react-bootstrap/Form";
 
 export type Option = { id: string; name: string };
+export type SelectAdditionalMethods<T> = {
+  getValueCounterPart: (option: Option) => T;
+  addOption: (item: T) => void;
+  removeOption: (item: T) => void;
+};
 
-export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer" | "itemRenderer" | "contentRenderer"> & {
+export type SelectRendererProps<T> = {
+  props: SelectProps<Option>;
+  state: SelectState<Option>;
+  methods: SelectMethods<Option>;
+  additionalMethods: SelectAdditionalMethods<T>;
+};
+export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "options" | "values" | "onChange" | "dropdownRenderer" | "searchFn" | "itemRenderer" | "contentRenderer"> & {
   list: T[];
+
   error?: string;
   idSelector: (item: T) => string;
   nameSelector: (item: T) => string;
   selectedValues?: T[];
   onChange?: (selectedList: T[], selectedOptions: Option[]) => void | Promise<void>;
-  dropdownRenderer?: (rendererProps: {
-    props: SelectProps<Option>;
-    state: SelectState<Option>;
-    methods: SelectMethods<Option>;
-
-    additionalMethods: {
-      getValueCounterPart: (option: Option) => T;
-    };
-  }) => JSX.Element;
-  contentRenderer?: (renderProps: {
-    state: SelectState<Option>;
-    props: SelectProps<Option>;
-    methods: SelectMethods<Option>;
-    additionalMethods: {
-      getValueCounterPart: (option: Option) => T;
-    };
-  }) => JSX.Element;
-  itemRenderer?: (renderProps: {
+  dropdownRenderer?: (rendererProps: SelectRendererProps<T>) => JSX.Element;
+  contentRenderer?: (renderProps: SelectRendererProps<T>) => JSX.Element;
+  itemRenderer?: ({
+    item,
+    itemIndex,
+    props,
+    state,
+    methods,
+    additionalMethods,
+  }: {
     item: Option;
-    itemIndex: number;
+    itemIndex?: number;
     props: SelectProps<Option>;
     state: SelectState<Option>;
     methods: SelectMethods<Option>;
-    additionalMethods: {
-      getValueCounterPart: (option: Option) => T;
-    };
+    additionalMethods: SelectAdditionalMethods<T>;
   }) => JSX.Element;
+  searchFn?: (rendererProps: SelectRendererProps<T>) => Option[];
 };
 export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
   const {
@@ -54,9 +57,12 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     dropdownRenderer: customDropdownRender,
     itemRenderer: customItemRenderer,
     contentRenderer: customContentRenderer,
+    searchFn: customSearchFn,
+
     ...rest
   } = props;
-  const options: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
+  const defaultOptions: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
+  const [options, setOptions] = useState<Option[]>(defaultOptions);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
     return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
@@ -78,11 +84,40 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     [getValueCounterPart, onCustomChange]
   );
 
+  const addOption = useCallback(
+    (item: T) => {
+      const newOption = { id: idSelector(item), name: nameSelector(item) };
+      setOptions((prevOptions) => {
+        const existingOption = prevOptions.find((option) => option.id === newOption.id);
+        if (!existingOption) {
+          return [...prevOptions, newOption];
+        }
+        return prevOptions;
+      });
+    },
+    [idSelector, nameSelector]
+  );
+
+  const removeOption = useCallback(
+    (item: T) => {
+      const id = idSelector(item);
+      setOptions((prevOptions) => {
+        const newOptions = prevOptions.filter((option) => option.id !== id);
+        return newOptions;
+      });
+      setSelectedOptions((prevSelectedOptions) => {
+        const newSelectedOptions = prevSelectedOptions.filter((option) => option.id !== id);
+        return newSelectedOptions;
+      });
+    },
+    [idSelector]
+  );
+
   const dropdownRenderer = useCallback(
     ({ props, state, methods }: { props: SelectProps<Option>; state: SelectState<Option>; methods: SelectMethods<Option> }) => {
-      return customDropdownRender?.({ props, state, methods, additionalMethods: { getValueCounterPart } })!;
+      return customDropdownRender?.({ props, state, methods, additionalMethods: { getValueCounterPart, addOption, removeOption } })!;
     },
-    [customDropdownRender, getValueCounterPart]
+    [addOption, customDropdownRender, getValueCounterPart, removeOption]
   );
 
   const itemRenderer = useCallback(
@@ -93,10 +128,10 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         props,
         state,
         methods,
-        additionalMethods: { getValueCounterPart },
+        additionalMethods: { getValueCounterPart, addOption, removeOption },
       })!;
     },
-    [customItemRenderer, getValueCounterPart]
+    [addOption, customItemRenderer, getValueCounterPart, removeOption]
   );
 
   const contentRenderer = useCallback(
@@ -105,10 +140,22 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         state,
         props,
         methods,
-        additionalMethods: { getValueCounterPart },
+        additionalMethods: { getValueCounterPart, addOption, removeOption },
       })!;
     },
-    [customContentRenderer, getValueCounterPart]
+    [customContentRenderer, getValueCounterPart, addOption, removeOption]
+  );
+
+  const searchFn = useCallback(
+    ({ state, props, methods }: { state: SelectState<Option>; props: SelectProps<Option>; methods: SelectMethods<Option> }) => {
+      return customSearchFn?.({
+        state,
+        props,
+        methods,
+        additionalMethods: { getValueCounterPart, addOption, removeOption },
+      })!;
+    },
+    [addOption, customSearchFn, getValueCounterPart, removeOption]
   );
 
   return (
@@ -118,6 +165,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         {...(customDropdownRender ? { dropdownRenderer } : {})}
         {...(customItemRenderer ? { itemRenderer } : {})}
         {...(customContentRenderer ? { contentRenderer } : {})}
+        {...(customSearchFn ? { searchFn } : {})}
         className={["bp-select__input", Boolean(error) ? "+invalid" : "", className ?? ""].join(" ")}
         options={options}
         values={selectedOptions}
