@@ -4,7 +4,8 @@ import Button from "react-bootstrap/esm/Button";
 import { FaFilter } from "react-icons/fa6";
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
-import ProductItem from "./ProductItem";
+import ProductItemCard from "./ProductItemCard";
+import ProductItemCardList from "./ProductItemCardList";
 import { useLazySearchProductsQuery } from "@/apis/ProductsApi";
 import { useState } from "react";
 
@@ -49,15 +50,7 @@ export default function BrowseProductsOffcanvas() {
         </div>
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error loading products</div>}
-        {productsPagination && (
-          <ul>
-            {productsPagination.data.map((product) => (
-              <li key={product.id}>
-                <ProductItem product={product} />
-              </li>
-            ))}
-          </ul>
-        )}
+        {productsPagination && <ProductItemCardList products={productsPagination.data} />}
       </Offcanvas.Body>
     </Offcanvas>
   );

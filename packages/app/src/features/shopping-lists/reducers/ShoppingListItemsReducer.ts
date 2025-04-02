@@ -34,9 +34,9 @@ export const shoppingListItemsSlice = createSlice({
         state.selectedItems.push(payload);
       }
     },
-    removeShoppingListItem: (state, action: PayloadAction<ICreateShoppingItemDto>) => {
-      const { payload } = action;
-      const indexOfItem = state.selectedItems.findIndex((item) => item.productId === payload.productId);
+    removeShoppingListItem: (state, action: PayloadAction<string>) => {
+      const { payload: productId } = action;
+      const indexOfItem = state.selectedItems.findIndex((item) => item.productId === productId);
       if (indexOfItem !== -1) {
         state.selectedItems.splice(indexOfItem, 1);
       }
@@ -59,6 +59,7 @@ export function useShoppingListItemsState(): ShoppingListItemsState {
 
 export function useShoppingListItemsActions() {
   const dispatch = useStoreDispatch();
+  const state = useShoppingListItemsState();
   const resetShoppingListItemsCallback = useCallback(() => {
     dispatch(resetShoppingListItems());
   }, [dispatch]);
@@ -71,10 +72,17 @@ export function useShoppingListItemsActions() {
   );
 
   const removeShoppingListItemCallback = useCallback(
-    (payload: ICreateShoppingItemDto) => {
-      dispatch(removeShoppingListItem(payload));
+    (productId: string) => {
+      dispatch(removeShoppingListItem(productId));
     },
     [dispatch]
+  );
+
+  const isItemPresentCallback = useCallback(
+    (productId: string) => {
+      return state.selectedItems.some((item) => item.productId === productId);
+    },
+    [state.selectedItems]
   );
 
   const showOffcanvasCallback = useCallback(() => {
@@ -89,6 +97,7 @@ export function useShoppingListItemsActions() {
     resetShoppingListItems: resetShoppingListItemsCallback,
     addShoppingListItem: addShoppingListItemCallback,
     removeShoppingListItem: removeShoppingListItemCallback,
+    isItemPresent: isItemPresentCallback,
     showOffcanvas: showOffcanvasCallback,
     hideOffcanvas: hideOffcanvasCallback,
   };

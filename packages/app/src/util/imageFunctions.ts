@@ -5,9 +5,10 @@ export function createBlobUrlFromArrayBuffer(arrayBuffer: ArrayBuffer, mimeType:
   return URL.createObjectURL(blob);
 }
 
-export function getImagePath(file: IFile) {
-  if (!file || !file.mimeType.match(/\/(jpg|jpeg|png|gif|avif)$/) || !file.filePath) {
-    return null;
+export function getImagePath(file: IFile | null | undefined): string {
+  if (file && file.mimeType.match(/\/(jpg|jpeg|png|gif|avif)$/) && file.fileName) {
+    return `http://localhost:4000/uploads/${file.fileName}`;
   }
-  return `localhost:4000/uploads/${file.filePath}`;
+
+  return "http://localhost:3000/images/placeholders/no_img_1200x800.png";
 }

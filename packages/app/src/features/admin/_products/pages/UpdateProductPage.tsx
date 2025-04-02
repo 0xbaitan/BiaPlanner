@@ -42,7 +42,6 @@ export default function UpdateProductPage() {
           });
           console.log("updatedProduct", updatedProduct);
         }}
-        submitButtonText="Update Product"
       />
     </div>
   );

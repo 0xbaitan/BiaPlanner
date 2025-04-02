@@ -1,0 +1,20 @@
+.bp-product_item_card {
+  width: calc(100% - clamp(2em, 2vw, 4em));
+  padding: 1em;
+  border: 1px solid $colors-silver;
+  background-color: $colors-white;
+  display: flex;
+}
+
+.bp-product_item_card__img {
+  width: clamp(10%, 10vw, 20%);
+  aspect-ratio: 1;
+  object-fit: cover;
+  justify-self: left;
+}
+
+.bp-product_item_card__product_name {
+  font-size: 1em;
+  font-weight: 600;
+  color: $colors-black;
+}
