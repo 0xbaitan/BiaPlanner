@@ -29,6 +29,18 @@ $xxl: map-get(
   @include bootstrap-custom-button-variant($colors-main, $colors-main);
 }
 
+.btn-outline-primary {
+  @include bootstrap-custom-button-outline-variant($colors-main);
+}
+
+.btn-secondary {
+  @include bootstrap-custom-button-variant($colors-secondary, $colors-secondary);
+}
+
+.btn-outline-secondary {
+  @include bootstrap-custom-button-outline-variant($colors-secondary);
+}
+
 .\+bold {
   font-weight: bold;
 }

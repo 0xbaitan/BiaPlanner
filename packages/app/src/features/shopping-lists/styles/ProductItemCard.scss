@@ -1,9 +1,22 @@
 .bp-product_item_card {
-  width: calc(100% - clamp(2em, 2vw, 4em));
-  padding: 1em;
   border: 1px solid $colors-silver;
   background-color: $colors-white;
+  width: calc(100% - clamp(2em, 2vw, 4em));
+  padding: 1em;
   display: flex;
+  flex-direction: column;
+  gap: clamp(0.25em, 0.5vw, 0.5em);
+}
+
+.bp-product_item_card__header {
+  display: flex;
+  justify-content: end;
+  gap: clamp(0.5em, 0.5vw, 1em);
+}
+.bp-product_item_card__main {
+  display: flex;
+  gap: clamp(2.5em, 2.5vw, 5em);
+  justify-content: space-between;
 }
 
 .bp-product_item_card__img {
@@ -14,7 +27,81 @@
 }
 
 .bp-product_item_card__product_name {
-  font-size: 1em;
+  font-size: 1.05rem;
   font-weight: 600;
   color: $colors-black;
+}
+
+.bp-product_item_card__product_info {
+  display: flex;
+  flex-basis: clamp(55%, 45vw, 70%);
+  flex-direction: row;
+  gap: clamp(1em, 0.25vw, 2em);
+}
+
+.bp-product_item_card__product_info__details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 2;
+  gap: clamp(0.5em, 0.5vw, 1em);
+}
+
+.bp-product_item_card__measurement {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: $colors-black;
+}
+
+.bp-product_item_card__product_categories {
+  display: flex;
+  flex-direction: row;
+  max-width: calc(100% - clamp(0.5em, 1vw, 1em));
+  gap: clamp(0.5em, 0.5vw, 1em);
+  flex-wrap: wrap;
+}
+.bp-product_item_card__actions {
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5em, 0.5vw, 1em);
+  justify-content: center;
+  align-items: end;
+}
+
+.bp-product_item_card__quantity_actions {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(0.5em, 0.5vw, 1em);
+  justify-content: center;
+  align-items: center;
+}
+
+.bp-product_item_card__action_button {
+  border-radius: 50% !important;
+}
+
+.bp-product_item_card__quantity_status {
+  display: block;
+  padding: 0.25em 0.35em;
+  color: $colors-white;
+  border-radius: 1em;
+  background-color: $colors-dark-grey;
+}
+
+.bp-product_item_card__check_icon {
+  color: $colors-success;
+}
+
+.bp-product_item_card__remove_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bp-product_item_card__added_badge {
+  margin-left: clamp(0.5em, 0.5vw, 1em);
+  padding: 0.25em 0.5em;
+  color: $colors-white;
+  border-radius: 0.25em;
+  background-color: darken($colors-success, 10%);
 }

@@ -1,0 +1,11 @@
+.bp-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em 1em;
+  border-radius: 1em;
+  background-color: $colors-dark-grey;
+  color: $colors-white;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

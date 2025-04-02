@@ -85,6 +85,13 @@ export function useShoppingListItemsActions() {
     [state.selectedItems]
   );
 
+  const getItemCallback = useCallback(
+    (productId: string) => {
+      return state.selectedItems.find((item) => item.productId === productId);
+    },
+    [state.selectedItems]
+  );
+
   const showOffcanvasCallback = useCallback(() => {
     dispatch(showOffcanvas());
   }, [dispatch]);
@@ -100,5 +107,6 @@ export function useShoppingListItemsActions() {
     isItemPresent: isItemPresentCallback,
     showOffcanvas: showOffcanvasCallback,
     hideOffcanvas: hideOffcanvasCallback,
+    getItem: getItemCallback,
   };
 }
