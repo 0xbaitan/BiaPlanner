@@ -1,0 +1,7 @@
+.bp-pagination_component__link {
+  color: $colors-main;
+}
+
+.page-item.active > .bp-pagination_component__link {
+  background-color: $colors-main;
+}

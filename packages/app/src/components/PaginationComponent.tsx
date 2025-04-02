@@ -1,6 +1,7 @@
+import "./styles/PaginationComponent.scss";
+
 import { FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import Pagination, { PaginationProps } from "react-bootstrap/Pagination";
-import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 
 import { useMemo } from "react";
 
@@ -26,14 +27,14 @@ export default function PaginationComponent(props: PaginationComponentProps) {
     const items: JSX.Element[] = [];
     for (let i = 1; i <= delta; i++) {
       items.push(
-        <Pagination.Item key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
+        <Pagination.Item linkClassName="bp-pagination_component__link" key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
           {i}
         </Pagination.Item>
       );
     }
-    items.push(<Pagination.Ellipsis key="end-ellipsis" onClick={() => onPageChange(delta + 1)} />);
+    items.push(<Pagination.Ellipsis linkClassName="bp-pagination_component__link" key="end-ellipsis" onClick={() => onPageChange(delta + 1)} />);
     items.push(
-      <Pagination.Item key={numPages} active={numPages === currentPage} onClick={() => onPageChange(numPages)}>
+      <Pagination.Item linkClassName="bp-pagination_component__link" key={numPages} active={numPages === currentPage} onClick={() => onPageChange(numPages)}>
         {numPages}
       </Pagination.Item>
     );
@@ -46,14 +47,14 @@ export default function PaginationComponent(props: PaginationComponentProps) {
     }
     const items: JSX.Element[] = [];
     items.push(
-      <Pagination.Item key={1} active={1 === currentPage} onClick={() => onPageChange(1)}>
+      <Pagination.Item linkClassName="bp-pagination_component__link" key={1} active={1 === currentPage} onClick={() => onPageChange(1)}>
         1
       </Pagination.Item>
     );
-    items.push(<Pagination.Ellipsis key="start-ellipsis" onClick={() => onPageChange(numPages - delta)} />);
+    items.push(<Pagination.Ellipsis linkClassName="bp-pagination_component__link" key="start-ellipsis" onClick={() => onPageChange(numPages - delta)} />);
     for (let i = numPages - delta + 1; i <= numPages; i++) {
       items.push(
-        <Pagination.Item key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
+        <Pagination.Item linkClassName="bp-pagination_component__link" key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
           {i}
         </Pagination.Item>
       );
@@ -69,11 +70,11 @@ export default function PaginationComponent(props: PaginationComponentProps) {
     const start = Math.ceil(currentPage - (delta - 2) / 2);
     const end = Math.floor(currentPage + (delta - 2) / 2);
     items.push(
-      <Pagination.Item key={1} active={1 === currentPage} onClick={() => onPageChange(1)}>
+      <Pagination.Item linkClassName="bp-pagination_component__link" key={1} active={1 === currentPage} onClick={() => onPageChange(1)}>
         1
       </Pagination.Item>
     );
-    items.push(<Pagination.Ellipsis key="start-ellipsis" onClick={() => onPageChange(currentPage - delta)} />);
+    items.push(<Pagination.Ellipsis linkClassName="bp-pagination_component__link" key="start-ellipsis" onClick={() => onPageChange(currentPage - delta)} />);
     for (let i = start; i <= end; i++) {
       items.push(
         <Pagination.Item key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
@@ -81,9 +82,9 @@ export default function PaginationComponent(props: PaginationComponentProps) {
         </Pagination.Item>
       );
     }
-    items.push(<Pagination.Ellipsis key="both-ellipsis" onClick={() => onPageChange(currentPage + delta)} />);
+    items.push(<Pagination.Ellipsis linkClassName="bp-pagination_component__link" key="both-ellipsis" onClick={() => onPageChange(currentPage + delta)} />);
     items.push(
-      <Pagination.Item key={numPages} active={numPages === currentPage} onClick={() => onPageChange(numPages)}>
+      <Pagination.Item linkClassName="bp-pagination_component__link" key={numPages} active={numPages === currentPage} onClick={() => onPageChange(numPages)}>
         {numPages}
       </Pagination.Item>
     );
@@ -97,7 +98,7 @@ export default function PaginationComponent(props: PaginationComponentProps) {
     const items: JSX.Element[] = [];
     for (let i = 1; i <= numPages; i++) {
       items.push(
-        <Pagination.Item key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
+        <Pagination.Item linkClassName="bp-pagination_component__link" key={i} active={i === currentPage} onClick={() => onPageChange(i)}>
           {i}
         </Pagination.Item>
       );
@@ -107,12 +108,12 @@ export default function PaginationComponent(props: PaginationComponentProps) {
   return (
     <Pagination {...paginationProps}>
       {showFirstLast && (
-        <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1}>
+        <Pagination.First linkClassName="bp-pagination_component__link" onClick={() => onPageChange(1)} disabled={currentPage === 1}>
           <FaAnglesLeft size={13} />
           &nbsp;First
         </Pagination.First>
       )}
-      <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+      <Pagination.Prev linkClassName="bp-pagination_component__link" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
         <FaAngleLeft size={13} />
         &nbsp;Back
       </Pagination.Prev>
@@ -121,12 +122,12 @@ export default function PaginationComponent(props: PaginationComponentProps) {
       {itemsWithEndTruncation}
       {itemsWithBothTruncation}
       {itemsWithoutTruncation}
-      <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === numPages}>
+      <Pagination.Next linkClassName="bp-pagination_component__link" onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === numPages}>
         Next&nbsp;
         <FaAngleRight size={13} />
       </Pagination.Next>
       {showFirstLast && (
-        <Pagination.Last onClick={() => onPageChange(numPages)} disabled={currentPage === numPages}>
+        <Pagination.Last linkClassName="bp-pagination_component__link" onClick={() => onPageChange(numPages)} disabled={currentPage === numPages}>
           Last&nbsp;
           <FaAnglesRight size={13} />
         </Pagination.Last>
