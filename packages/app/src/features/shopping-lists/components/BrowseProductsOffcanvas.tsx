@@ -57,15 +57,17 @@ export default function BrowseProductsOffcanvas() {
         {productsPagination && (
           <div className="bp-browse_products_offcanvas__main">
             <ProductItemCardList products={productsPagination.data} />
-            <PaginationComponent
-              currentPage={currentPage}
-              numPages={totalPages}
-              numberOfPagesToShowOnTruncation={8}
-              showFirstLast={totalPages >= 25}
-              onPageChange={(page) => {
-                searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
-              }}
-            />
+            <div className="bp-browse_products_offcanvas__main__pagination">
+              <PaginationComponent
+                currentPage={currentPage}
+                numPages={totalPages}
+                numberOfPagesToShowOnTruncation={8}
+                showFirstLast={totalPages >= 25}
+                onPageChange={(page) => {
+                  searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
+                }}
+              />
+            </div>
           </div>
         )}
       </Offcanvas.Body>

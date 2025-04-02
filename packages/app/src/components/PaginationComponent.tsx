@@ -1,7 +1,7 @@
 import { FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import Pagination, { PaginationProps } from "react-bootstrap/Pagination";
 import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 
-import Pagination from "react-bootstrap/Pagination";
 import { useMemo } from "react";
 
 export type PaginationComponentProps = {
@@ -11,9 +11,9 @@ export type PaginationComponentProps = {
   numberOfPagesToShowOnTruncation?: number;
 
   showFirstLast?: boolean;
-};
+} & PaginationProps;
 export default function PaginationComponent(props: PaginationComponentProps) {
-  const { numPages, currentPage, onPageChange, numberOfPagesToShowOnTruncation = 8, showFirstLast } = props;
+  const { numPages, currentPage, onPageChange, numberOfPagesToShowOnTruncation = 8, showFirstLast, ...paginationProps } = props;
   const delta = Math.max(numberOfPagesToShowOnTruncation, 5);
   const shouldTruncate = numPages - delta >= 2;
   const shouldTruncateEnd = shouldTruncate && currentPage >= 1 && currentPage <= delta;
@@ -105,34 +105,32 @@ export default function PaginationComponent(props: PaginationComponentProps) {
     return items;
   }, [shouldTruncate, numPages, currentPage, onPageChange]);
   return (
-    <div className="">
-      <Pagination>
-        {showFirstLast && (
-          <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1}>
-            <FaAnglesLeft size={13} />
-            &nbsp;First
-          </Pagination.First>
-        )}
-        <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
-          <FaAngleLeft size={13} />
-          &nbsp;Back
-        </Pagination.Prev>
-        {itemsWithStartTruncation}
+    <Pagination {...paginationProps}>
+      {showFirstLast && (
+        <Pagination.First onClick={() => onPageChange(1)} disabled={currentPage === 1}>
+          <FaAnglesLeft size={13} />
+          &nbsp;First
+        </Pagination.First>
+      )}
+      <Pagination.Prev onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <FaAngleLeft size={13} />
+        &nbsp;Back
+      </Pagination.Prev>
+      {itemsWithStartTruncation}
 
-        {itemsWithEndTruncation}
-        {itemsWithBothTruncation}
-        {itemsWithoutTruncation}
-        <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === numPages}>
-          Next&nbsp;
-          <FaAngleRight size={13} />
-        </Pagination.Next>
-        {showFirstLast && (
-          <Pagination.Last onClick={() => onPageChange(numPages)} disabled={currentPage === numPages}>
-            Last&nbsp;
-            <FaAnglesRight size={13} />
-          </Pagination.Last>
-        )}
-      </Pagination>
-    </div>
+      {itemsWithEndTruncation}
+      {itemsWithBothTruncation}
+      {itemsWithoutTruncation}
+      <Pagination.Next onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === numPages}>
+        Next&nbsp;
+        <FaAngleRight size={13} />
+      </Pagination.Next>
+      {showFirstLast && (
+        <Pagination.Last onClick={() => onPageChange(numPages)} disabled={currentPage === numPages}>
+          Last&nbsp;
+          <FaAnglesRight size={13} />
+        </Pagination.Last>
+      )}
+    </Pagination>
   );
 }
