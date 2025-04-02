@@ -1,9 +1,12 @@
+import "../styles/BrowseProductsOffcanvas.scss";
+
 import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import { FaFilter } from "react-icons/fa6";
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
+import PaginationComponent from "@/components/PaginationComponent";
 import ProductItemCard from "./ProductItemCard";
 import ProductItemCardList from "./ProductItemCardList";
 import { useLazySearchProductsQuery } from "@/apis/ProductsApi";
@@ -16,13 +19,14 @@ export default function BrowseProductsOffcanvas() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchProducts, { data: productsPagination, isError, isLoading }] = useLazySearchProductsQuery();
   const numItems = productsPagination?.data.length || 0;
-  const numPages = productsPagination?.meta.totalPages || 0;
+  const [dummyCurrentPage, setDummyCurrentPage] = useState(1);
+  const currentPage = productsPagination?.meta.currentPage || 1;
   const totalItems = productsPagination?.meta.totalItems || 0;
   const searchTermUsed = productsPagination?.meta.search || "";
   const page = productsPagination?.meta.currentPage || 1;
   const totalPages = productsPagination?.meta.totalPages || 1;
   const handleSearch = (term: string) => {
-    searchProducts({ paginateQuery: { page: 1, limit: 10, search: term, searchBy: ["name", "description"] } });
+    searchProducts({ paginateQuery: { page: currentPage, limit: 10, search: term, searchBy: ["name", "description"] } });
   };
 
   return (
@@ -50,7 +54,20 @@ export default function BrowseProductsOffcanvas() {
         </div>
         {isLoading && <div>Loading...</div>}
         {isError && <div>Error loading products</div>}
-        {productsPagination && <ProductItemCardList products={productsPagination.data} />}
+        {productsPagination && (
+          <div className="bp-browse_products_offcanvas__main">
+            <ProductItemCardList products={productsPagination.data} />
+            <PaginationComponent
+              currentPage={currentPage}
+              numPages={totalPages}
+              numberOfPagesToShowOnTruncation={8}
+              showFirstLast={totalPages >= 25}
+              onPageChange={(page) => {
+                searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
+              }}
+            />
+          </div>
+        )}
       </Offcanvas.Body>
     </Offcanvas>
   );
