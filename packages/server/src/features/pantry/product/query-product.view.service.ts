@@ -112,7 +112,7 @@ export class QueryProductViewService {
     //   qb = this.applyFuzzyQuery(fuzzyQuery, qb);
     // }
 
-    return paginate<DeepPartial<IProduct>>(paginatedQuery, qb, {
+    return paginate<IProduct>(paginatedQuery, qb, {
       sortableColumns: ['name'],
       filterableColumns: {
         name: [

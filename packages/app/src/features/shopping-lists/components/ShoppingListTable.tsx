@@ -1,13 +1,15 @@
+import { FaShoppingCart, FaTrash } from "react-icons/fa";
 import TabbedViewsTable, { TabbedViewsTableProps } from "@/components/tables/TabbedViewsTable";
 
 import { FaPencil } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa";
 import { IShoppingList } from "@biaplanner/shared";
+import { useNavigate } from "react-router-dom";
 
 export type ShoppingListTableProps = {
   data: IShoppingList[];
 };
 export default function ShoppingListTable(props: ShoppingListTableProps) {
+  const navigate = useNavigate();
   return (
     <TabbedViewsTable<IShoppingList>
       data={props.data}
@@ -46,6 +48,14 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           icon: FaTrash,
           onClick(row) {
             console.log("Delete action triggered for row:", row);
+          },
+        },
+        {
+          type: "other",
+          label: "Mark as done",
+          icon: FaShoppingCart,
+          onClick(row) {
+            navigate(`./mark-shopping-done/${row.id}`);
           },
         },
       ]}

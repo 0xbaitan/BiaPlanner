@@ -9,8 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IShoppingItem, IShoppingList } from '@biaplanner/shared';
+import { IProduct, IShoppingItem, IShoppingList } from '@biaplanner/shared';
 
+import { ProductEntity } from '@/features/pantry/product/product.entity';
 import { ShoppingListEntity } from '../shopping-list.entity';
 
 @Entity('shopping-items')
@@ -39,6 +40,13 @@ export class ShoppingItemEntity implements IShoppingItem {
   @Column({ type: 'bigint', nullable: false })
   productId: string;
 
+  @ManyToOne(() => ProductEntity, (product) => product.id, {
+    eager: true,
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  product?: IProduct;
+
   @Column({ type: 'int', nullable: false })
   quantity: number;
 
@@ -53,7 +61,6 @@ export class ShoppingItemEntity implements IShoppingItem {
   shoppingListId?: string;
 
   @ManyToOne(() => ShoppingListEntity, (shoppingList) => shoppingList.id)
-  @JoinColumn({ name: 'shoppingListId' })
   shoppingList?: IShoppingList;
 
   @Column({ type: 'boolean', nullable: true, default: false })

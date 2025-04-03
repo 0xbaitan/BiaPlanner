@@ -29,6 +29,7 @@ export class ShoppingListController {
 
   @Get('/:id')
   async findOne(@Param('id') id: string) {
+    console.log('findOne', id);
     return this.shoppingListService.findOne(id);
   }
 

@@ -21,6 +21,7 @@ import {
   IPantryItem,
   IProduct,
   IProductCategory,
+  IShoppingItem,
   IUser,
   TimeMeasurement,
   Volumes,
@@ -31,6 +32,7 @@ import { BrandEntity } from '../brand/brand.entity';
 import { FileEntity } from '@/features/files/file.entity';
 import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 import { ProductCategoryEntity } from './category/product-category.entity';
+import { ShoppingItemEntity } from '@/features/shopping-list/shopping-item/shopping-item.entity';
 import { UserEntity } from 'src/features/user-info/user/user.entity';
 
 export enum ProductEntityIndices {
@@ -133,6 +135,10 @@ export class ProductEntity implements IProduct {
   })
   @JoinColumn({ name: 'coverId' })
   cover?: IFile;
+
+  @OneToMany(() => ShoppingItemEntity, (shoppingItem) => shoppingItem.product)
+  @JoinColumn({ name: 'productId' })
+  shoppingItems?: IShoppingItem[];
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -6,6 +6,7 @@ import { IBrand } from "./Brand";
 import { IFile } from "../File";
 import { IPantryItem } from "./PantryItem";
 import { IProductCategory } from "./ProductCategory";
+import { IShoppingItem } from "../shopping-lists";
 import { IUser } from "../User";
 import { TimeMeasurement } from "../TimeMeasurement";
 
@@ -27,6 +28,7 @@ export interface IProduct extends IBaseEntity {
   measurementType?: CookingMeasurementType;
   coverId?: string;
   cover?: IFile;
+  shoppingItems?: IShoppingItem[];
 }
 
 export interface ICreateProductDto extends Pick<IProduct, "brandId" | "canExpire" | "canQuicklyExpireAfterOpening" | "timeTillExpiryAfterOpening" | "isLoose" | "name" | "createdById" | "measurement" | "description" | "coverId"> {

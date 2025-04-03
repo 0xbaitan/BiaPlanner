@@ -23,6 +23,7 @@ import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppi
 import HomePage from "@/pages/HomePage";
 import InventoryPage from "./features/pantry-management/_inventory/pages/InventoryPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
+import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlanningPagesContainer from "./features/meal-planning/components/MealPlanningPagesContainer";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
@@ -96,6 +97,7 @@ export default function Routes() {
         <Route path="/shopping-lists" element={<ShoppingListPagesContainer />}>
           <Route path="" element={<ShoppingListsPage />} />
           <Route path="create" element={<CreateShoppingListPage />} />
+          <Route path="mark-shopping-done/:id" element={<MarkShoppingDonePage />} />
         </Route>
       </RoutingTable>
     </Router>

@@ -12,11 +12,16 @@ export class ShoppingItemService {
   ) {}
 
   async findAll(): Promise<ShoppingItemEntity[]> {
-    return this.shoppingItemRepository.find({});
+    return this.shoppingItemRepository.find({
+      relations: ['product', 'replacement'],
+    });
   }
 
   async findOne(id: string): Promise<ShoppingItemEntity> {
-    return this.shoppingItemRepository.findOneOrFail({ where: { id } });
+    return this.shoppingItemRepository.findOneOrFail({
+      where: { id },
+      relations: ['product', 'replacement'],
+    });
   }
 
   async create(dto: ICreateShoppingItemDto): Promise<ShoppingItemEntity> {

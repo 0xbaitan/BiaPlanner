@@ -1,8 +1,10 @@
 import { IBaseEntity } from "../BaseEntity";
+import { IProduct } from "../pantry";
 import { IShoppingList } from "./ShoppingList";
 
 export interface IShoppingItem extends IBaseEntity {
   productId: string;
+  product?: IProduct;
   quantity: number;
   replacementId?: string;
   replacement?: IShoppingItem;

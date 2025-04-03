@@ -25,6 +25,7 @@ export class ShoppingListService {
   public async findOne(id: string) {
     const shoppingList = await this.shoppingListRepository.findOneOrFail({
       where: { id },
+      relations: ['items', 'items.product', 'items.replacement'],
     });
     return shoppingList;
   }
