@@ -22,7 +22,7 @@
 .bp-product_item_card__img {
   width: clamp(10%, 10vw, 20%);
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
   justify-self: left;
 }
 
@@ -99,6 +99,7 @@
 }
 
 .bp-product_item_card__added_badge {
+  display: inline-block;
   margin-left: clamp(0.5em, 0.5vw, 1em);
   padding: 0.25em 0.5em;
   color: $colors-white;

@@ -69,42 +69,42 @@ export class QueryProductViewService {
       .leftJoinAndSelect('product.productCategories', 'productCategories')
       .leftJoinAndSelect('product.cover', 'cover');
 
-    // if (paginatedQuery.search) {
-    //   qb.where(
-    //     'MATCH(product.name, product.description) AGAINST (:searchTerm IN NATURAL LANGUAGE MODE) > :scoreThreshold',
-    //     {
-    //       searchTerm: paginatedQuery.search,
-    //       scoreThreshold: 0.2,
-    //     },
-    //   ).orWhere(
-    //     'product.name LIKE :searchTerm OR product.description LIKE :searchTerm',
-    //     {
-    //       searchTerm: `%${paginatedQuery.search}%`,
-    //     },
-    //   );
-    //   if (
-    //     paginatedQuery.search.split(' ').length <= 2 &&
-    //     paginatedQuery.search.length >= 3
-    //   ) {
-    //     qb.orWhere(
-    //       new Brackets((qb) => {
-    //         qb.where(
-    //           'TRIGRAM_SEARCH(product.name, :searchTerm) > :scoreThreshold',
-    //           {
-    //             searchTerm: paginatedQuery.search,
-    //             scoreThreshold: 0.2,
-    //           },
-    //         ).orWhere(
-    //           'TRIGRAM_SEARCH(product.description, :searchTerm) > :scoreThreshold',
-    //           {
-    //             searchTerm: paginatedQuery.search,
-    //             scoreThreshold: 0.2,
-    //           },
-    //         );
-    //       }),
-    //     );
-    //   }
-    // }
+    if (paginatedQuery.search) {
+      qb.where(
+        'MATCH(product.name, product.description) AGAINST (:searchTerm IN NATURAL LANGUAGE MODE) > :scoreThreshold',
+        {
+          searchTerm: paginatedQuery.search,
+          scoreThreshold: 0.2,
+        },
+      ).orWhere(
+        'product.name LIKE :searchTerm OR product.description LIKE :searchTerm',
+        {
+          searchTerm: `%${paginatedQuery.search}%`,
+        },
+      );
+      if (
+        paginatedQuery.search.split(' ').length <= 2 &&
+        paginatedQuery.search.length >= 3
+      ) {
+        qb.orWhere(
+          new Brackets((qb) => {
+            qb.where(
+              'TRIGRAM_SEARCH(product.name, :searchTerm) > :scoreThreshold',
+              {
+                searchTerm: paginatedQuery.search,
+                scoreThreshold: 0.2,
+              },
+            ).orWhere(
+              'TRIGRAM_SEARCH(product.description, :searchTerm) > :scoreThreshold',
+              {
+                searchTerm: paginatedQuery.search,
+                scoreThreshold: 0.2,
+              },
+            );
+          }),
+        );
+      }
+    }
 
     qb.orderBy('relevanceScore', 'DESC');
 
