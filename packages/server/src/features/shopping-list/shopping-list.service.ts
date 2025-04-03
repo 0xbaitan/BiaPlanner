@@ -30,15 +30,7 @@ export class ShoppingListService {
   }
 
   public async create(dto: CreateShoppingListDto) {
-    const shoppingListItems = await Promise.all(
-      dto.items.map(async (item) => {
-        return this.shoppingItemService.create(item);
-      }),
-    );
-    const shoppingList = this.shoppingListRepository.create({
-      ...dto,
-      items: shoppingListItems,
-    });
+    const shoppingList = this.shoppingListRepository.create(dto);
     return this.shoppingListRepository.save(shoppingList);
   }
 

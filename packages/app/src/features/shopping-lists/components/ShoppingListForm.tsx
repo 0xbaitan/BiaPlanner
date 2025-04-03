@@ -1,7 +1,7 @@
 import "../styles/ShoppingListForm.scss";
 
 import { FormProvider, useForm } from "react-hook-form";
-import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingItemDto } from "@biaplanner/shared";
+import { ICreateShoppingListDto, IShoppingList } from "@biaplanner/shared";
 import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
@@ -12,11 +12,13 @@ import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
 import ProductItemCardList from "./ProductItemCardList";
 import TextInput from "@/components/forms/TextInput";
+import { useCallback } from "react";
+import { useErrorToast } from "@/components/toasts/ErrorToast";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type ShoppingListFormValues = ICreateShoppingListDto | IUpdateShoppingItemDto;
+export type ShoppingListFormValues = ICreateShoppingListDto;
 
 export type ShoppingListFormProps = {
   initialValue?: IShoppingList;
@@ -25,35 +27,59 @@ export type ShoppingListFormProps = {
   type: "create" | "update";
 };
 
+const ShoppingItemSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  quantity: z.number().int().positive("Quantity is required"),
+});
+
 const CreateShoppingListValidationSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "Title cannot be empty"),
   notes: z.string().optional(),
-  plannedDate: z.string().optional(),
+  plannedDate: z.string().min(1, "Planned date has to be in the correct format"),
+  items: z.array(ShoppingItemSchema).optional(),
 });
 
-const UpdateShoppingListValidationSchema = z.object({
-  id: z.string().min(1, "ID is required"),
-  title: z.string().optional(),
-  notes: z.string().optional(),
-  plannedDate: z.string().optional(),
-});
-
-export default function ShoppingListForm(props: ShoppingListFormProps) {
-  const { initialValue, onSubmit, disableSubmit, type } = props;
+export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit, type }: ShoppingListFormProps) {
   const { showOffcanvas } = useShoppingListItemsActions();
   const { selectedItems } = useShoppingListItemsState();
   const navigate = useNavigate();
+
   const formMethods = useForm<ShoppingListFormValues>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
-    resolver: type === "create" ? zodResolver(CreateShoppingListValidationSchema) : zodResolver(UpdateShoppingListValidationSchema),
+    resolver: zodResolver(CreateShoppingListValidationSchema),
   });
-  const products = selectedItems.map((item) => item.product).filter((product) => product !== undefined);
+
+  const {
+    setValue,
+    clearErrors,
+    trigger,
+    formState: { errors },
+    getValues,
+    handleSubmit,
+  } = formMethods;
+
+  const products = selectedItems.map((item) => item.product).filter(Boolean);
+
+  const { notify: notifyError } = useErrorToast({});
+
+  const onSubmitForm = useCallback(() => {
+    const values = getValues();
+    values.items = selectedItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+    if (values.items.length === 0) {
+      notifyError("You need to add at least one product to the shopping list to save it.");
+      return;
+    }
+    onSubmit(values);
+  }, [getValues, notifyError, onSubmit, selectedItems]);
 
   return (
     <FormProvider {...formMethods}>
       <BrowseProductsOffcanvas />
-      <DualPaneForm>
+      <DualPaneForm onSubmit={handleSubmit(onSubmitForm)}>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Update current shopping list"}</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>
@@ -72,12 +98,50 @@ export default function ShoppingListForm(props: ShoppingListFormProps) {
             <Heading level={Heading.Level.H2} className="bp-shopping_list_form__shopping_list_details__header">
               Shopping List Details
             </Heading>
-            <div className="mt-4">
-              <TextInput inputLabelProps={{ required: true }} label="Shopping list title" name="title" placeholder="Enter shopping list title" />
-              <TextInput label="Notes (optional)" className="bp-shopping_list_form__notes" name="notes" placeholder="Enter notes" as="textarea" formGroupClassName="mt-4" />
+            <div className="bp-shopping_list_form__shopping_list_details">
+              <TextInput
+                inputLabelProps={{ required: true }}
+                label="Shopping list title"
+                name="title"
+                error={errors.title?.message}
+                placeholder="Enter shopping list title"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setValue("title", value);
+                  clearErrors("title");
+                  trigger("title");
+                }}
+              />
+              <TextInput
+                label="Planned date"
+                name="plannedDate"
+                type="date"
+                placeholder="Select a date"
+                error={errors.plannedDate?.message}
+                inputLabelProps={{ required: true }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setValue("plannedDate", value);
+                  clearErrors("plannedDate");
+                  trigger("plannedDate");
+                }}
+              />
+              <TextInput
+                label="Notes (optional)"
+                className="bp-shopping_list_form__notes"
+                name="notes"
+                placeholder="Enter notes"
+                error={errors.notes?.message}
+                as="textarea"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setValue("notes", value);
+                  clearErrors("notes");
+                  trigger("notes");
+                }}
+              />
             </div>
           </DualPaneForm.Panel.Pane>
-
           <DualPaneForm.Panel.Pane className="p-4">
             <div className="bp-shopping_list_form__selected_items__header">
               <Heading level={Heading.Level.H2}>Selected Items</Heading>
@@ -86,13 +150,30 @@ export default function ShoppingListForm(props: ShoppingListFormProps) {
               </Button>
             </div>
             <div className="mt-4">
+              <div>
+                {errors.items && (
+                  <div className="bp-shopping_list_form__error_message">
+                    <p>{errors.items.message}</p>
+                    <p className="bp-shopping_list_form__error_message__details">
+                      {errors.items?.map?.((item) => (
+                        <div>
+                          <div>{item?.message}</div>
+                          <div>{item?.productId?.message}</div>
+
+                          <div>{item?.quantity?.message}</div>
+                        </div>
+                      ))}
+                    </p>
+                  </div>
+                )}
+              </div>
               {products.length === 0 ? (
                 <div className="bp-shopping_list_form__no_items">
                   <Heading level={Heading.Level.H3}>No items added yet</Heading>
                   <p>Click on the button above to add products to your shopping list.</p>
                 </div>
               ) : (
-                <ProductItemCardList products={products} hideAddedBadge={true} />
+                <ProductItemCardList products={products} hideAddedBadge />
               )}
             </div>
           </DualPaneForm.Panel.Pane>

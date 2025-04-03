@@ -2,7 +2,7 @@
 .bp-shopping_list_form__shopping_list_details__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
   margin-bottom: 0.875em;
   padding: 0.5em;
 }
@@ -22,4 +22,10 @@
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+.bp-shopping_list_form__shopping_list_details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
 }
