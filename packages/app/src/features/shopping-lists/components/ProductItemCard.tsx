@@ -12,10 +12,11 @@ import { useShoppingListItemsActions } from "../reducers/ShoppingListItemsReduce
 
 export type ProductItemCardProps = {
   product: IProduct;
+  hideAddedBadge?: boolean;
 };
 
 export default function ProductItemCard(props: ProductItemCardProps) {
-  const { product } = props;
+  const { product, hideAddedBadge } = props;
   const imagePath = getImagePath(product.cover as IFile);
   const { addShoppingListItem, getItem, removeShoppingListItem, isItemPresent } = useShoppingListItemsActions();
   const isPresentInList = isItemPresent(product.id);
@@ -27,7 +28,7 @@ export default function ProductItemCard(props: ProductItemCardProps) {
           <img className="bp-product_item_card__img" src={imagePath} alt={product.name} />
           <div className="bp-product_item_card__product_info__details">
             <div className="bp-product_item_card__product_name">
-              {product.name} {isPresentInList && <span className="bp-product_item_card__added_badge">Already added</span>}
+              {product.name} {isPresentInList && !hideAddedBadge && <span className="bp-product_item_card__added_badge">Already added</span>}
             </div>
             <div className="bp-product_item_card__measurement">
               {product.measurement.magnitude} {product.measurement.unit}
@@ -50,6 +51,7 @@ export default function ProductItemCard(props: ProductItemCardProps) {
                 addShoppingListItem({
                   productId: product.id,
                   quantity: 1,
+                  product,
                 })
               }
             >
@@ -66,7 +68,7 @@ export default function ProductItemCard(props: ProductItemCardProps) {
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity - 1 : 0;
                   if (newQuantity > 0) {
-                    addShoppingListItem({ productId: product.id, quantity: newQuantity });
+                    addShoppingListItem({ productId: product.id, quantity: newQuantity, product });
                   } else {
                     removeShoppingListItem(product.id);
                   }
@@ -81,7 +83,7 @@ export default function ProductItemCard(props: ProductItemCardProps) {
                 size="sm"
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity + 1 : 0;
-                  addShoppingListItem({ productId: product.id, quantity: newQuantity });
+                  addShoppingListItem({ productId: product.id, quantity: newQuantity, product });
                 }}
               >
                 <FaPlus />

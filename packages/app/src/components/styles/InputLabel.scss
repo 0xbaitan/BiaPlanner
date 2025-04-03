@@ -6,9 +6,9 @@
 
 .bp-input_label--required {
   @extend .bp-input_label;
-  &::after {
+  &::before {
     content: "*";
     color: $colors-danger;
-    margin-left: 0.25em;
+    margin-right: 0.25em;
   }
 }

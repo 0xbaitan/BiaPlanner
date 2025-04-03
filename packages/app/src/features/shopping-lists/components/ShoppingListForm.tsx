@@ -1,5 +1,8 @@
+import "../styles/ShoppingListForm.scss";
+
 import { FormProvider, useForm } from "react-hook-form";
 import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingItemDto } from "@biaplanner/shared";
+import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
 import Button from "react-bootstrap/esm/Button";
@@ -7,9 +10,9 @@ import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
 import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
+import ProductItemCardList from "./ProductItemCardList";
 import TextInput from "@/components/forms/TextInput";
 import { useNavigate } from "react-router-dom";
-import { useShoppingListItemsActions } from "../reducers/ShoppingListItemsReducer";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -38,12 +41,14 @@ const UpdateShoppingListValidationSchema = z.object({
 export default function ShoppingListForm(props: ShoppingListFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
   const { showOffcanvas } = useShoppingListItemsActions();
+  const { selectedItems } = useShoppingListItemsState();
   const navigate = useNavigate();
   const formMethods = useForm<ShoppingListFormValues>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
     resolver: type === "create" ? zodResolver(CreateShoppingListValidationSchema) : zodResolver(UpdateShoppingListValidationSchema),
   });
+  const products = selectedItems.map((item) => item.product).filter((product) => product !== undefined);
 
   return (
     <FormProvider {...formMethods}>
@@ -64,21 +69,32 @@ export default function ShoppingListForm(props: ShoppingListFormProps) {
         </DualPaneForm.Header>
         <DualPaneForm.Panel>
           <DualPaneForm.Panel.Pane md={4} className="p-4">
-            <Heading level={Heading.Level.H2}>Shopping List Details</Heading>
+            <Heading level={Heading.Level.H2} className="bp-shopping_list_form__shopping_list_details__header">
+              Shopping List Details
+            </Heading>
             <div className="mt-4">
               <TextInput inputLabelProps={{ required: true }} label="Shopping list title" name="title" placeholder="Enter shopping list title" />
-              <TextInput label="Notes" name="notes" placeholder="Enter notes" as="textarea" formGroupClassName="mt-4" />
+              <TextInput label="Notes (optional)" className="bp-shopping_list_form__notes" name="notes" placeholder="Enter notes" as="textarea" formGroupClassName="mt-4" />
             </div>
           </DualPaneForm.Panel.Pane>
 
           <DualPaneForm.Panel.Pane className="p-4">
-            <Heading level={Heading.Level.H2}>Shopping List Items</Heading>
-            <Button variant="outline-secondary" className="mt-4">
-              <span className="ms-2" onClick={showOffcanvas}>
-                Add Shopping List Item
-              </span>
-            </Button>
-            <div className="mt-4"></div>
+            <div className="bp-shopping_list_form__selected_items__header">
+              <Heading level={Heading.Level.H2}>Selected Items</Heading>
+              <Button variant="outline-secondary" className="mt-4" onClick={showOffcanvas}>
+                Add products
+              </Button>
+            </div>
+            <div className="mt-4">
+              {products.length === 0 ? (
+                <div className="bp-shopping_list_form__no_items">
+                  <Heading level={Heading.Level.H3}>No items added yet</Heading>
+                  <p>Click on the button above to add products to your shopping list.</p>
+                </div>
+              ) : (
+                <ProductItemCardList products={products} hideAddedBadge={true} />
+              )}
+            </div>
           </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>

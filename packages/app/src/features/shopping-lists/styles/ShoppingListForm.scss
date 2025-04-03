@@ -1,0 +1,25 @@
+.bp-shopping_list_form__selected_items__header,
+.bp-shopping_list_form__shopping_list_details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.875em;
+  padding: 0.5em;
+}
+
+.bp-shopping_list_form__notes {
+  resize: none;
+  height: clamp(10em, 50vh, 20em);
+  overflow: scroll;
+}
+
+.bp-shopping_list_form__no_items {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - clamp(6em, 30vh, 20em));
+  background-color: #f8f8f8;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}

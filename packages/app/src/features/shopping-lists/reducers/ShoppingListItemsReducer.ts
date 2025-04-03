@@ -1,21 +1,25 @@
+import { ICreateShoppingItemDto, IProduct } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
-import { ICreateShoppingItemDto } from "@biaplanner/shared";
 import { useCallback } from "react";
 
+export type ShoppingListItem = {
+  productId: string;
+  product: IProduct;
+  quantity: number;
+};
+
 export type ShoppingListItemsState = {
-  selectedItems: ICreateShoppingItemDto[];
+  selectedItems: ShoppingListItem[];
+
   showOffcanvas: boolean;
 };
 
 const initialState: ShoppingListItemsState = {
   selectedItems: [],
-  showOffcanvas: false,
-};
 
-export type ShoppingListItemsActionPayload = {
-  selectedItems: ShoppingListItemsState["selectedItems"];
+  showOffcanvas: false,
 };
 
 export const shoppingListItemsSlice = createSlice({
@@ -25,7 +29,7 @@ export const shoppingListItemsSlice = createSlice({
     resetShoppingListItems: (state) => {
       state.selectedItems = [];
     },
-    addShoppingListItem: (state, action: PayloadAction<ICreateShoppingItemDto>) => {
+    addShoppingListItem: (state, action: PayloadAction<ShoppingListItem>) => {
       const { payload } = action;
       const indexOfItem = state.selectedItems.findIndex((item) => item.productId === payload.productId);
       if (indexOfItem !== -1) {
@@ -65,7 +69,7 @@ export function useShoppingListItemsActions() {
   }, [dispatch]);
 
   const addShoppingListItemCallback = useCallback(
-    (payload: ICreateShoppingItemDto) => {
+    (payload: ShoppingListItem) => {
       dispatch(addShoppingListItem(payload));
     },
     [dispatch]
