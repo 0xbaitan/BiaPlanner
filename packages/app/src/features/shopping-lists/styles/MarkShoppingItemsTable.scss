@@ -1,0 +1,34 @@
+.bp-mark_shopping_items_table__product {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: start;
+  gap: clamp(1em, 2vw, 2em);
+}
+
+.bp-mark_shopping_items_table__product__img {
+  justify-self: left;
+  width: clamp(4em, 5vw, 7.5em);
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.bp-mark_shopping_items_table__product__details {
+  flex-grow: 2;
+  text-align: left;
+  justify-content: left;
+  margin-top: 1em;
+}
+
+.bp-mark_shopping_items_table__product__details__title {
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.25em;
+}
+
+.bp-mark_shopping_items_table__product__details__measurement {
+  font-size: 1em;
+  color: #666;
+}
