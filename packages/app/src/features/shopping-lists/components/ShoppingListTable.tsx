@@ -10,6 +10,7 @@ export type ShoppingListTableProps = {
 };
 export default function ShoppingListTable(props: ShoppingListTableProps) {
   const navigate = useNavigate();
+
   return (
     <TabbedViewsTable<IShoppingList>
       data={props.data}

@@ -56,3 +56,12 @@
     background-color: $colors-danger;
   }
 }
+
+.bp-mark_shopping_items_table__actions {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 0;
+}

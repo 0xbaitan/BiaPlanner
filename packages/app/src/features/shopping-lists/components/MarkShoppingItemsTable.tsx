@@ -7,6 +7,7 @@ import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducer
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
+import { RxReset } from "react-icons/rx";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
 import { getImagePath } from "@/util/imageFunctions";
@@ -16,8 +17,9 @@ export type MarkShoppingItemsTableProps = {
 };
 export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProps) {
   const { data } = props;
-  const { isInEditMode } = useMarkShoppingDoneState();
-  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem } = useMarkShoppingDoneActions();
+  const { isInEditMode, transientUpdatedShoppingItems, originalShoppingItems } = useMarkShoppingDoneState();
+  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal } = useMarkShoppingDoneActions();
+
   return (
     <TabbedViewsTable<IShoppingItemExtended>
       data={data}
@@ -97,9 +99,10 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
               header: "Expiry date",
               cell: (cell) => {
                 const expiryDate = cell.row.original.expiryDate;
+                const canExpire = cell.row.original.product?.canExpire;
                 if (isInEditMode) {
                   const id = cell.row.original.id;
-                  return (
+                  return canExpire ? (
                     <Form.Control
                       type="date"
                       value={dayjs(expiryDate).format("YYYY-MM-DD")}
@@ -110,9 +113,11 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         }
                       }}
                     />
+                  ) : (
+                    <span>N/A</span>
                   );
                 }
-                return <span>{dayjs(expiryDate).format("DD/MM/YYYY")}</span>;
+                return <span>{canExpire ? dayjs(expiryDate).format("DD/MM/YYYY") : "N/A"}</span>;
               },
 
               accessorKey: "expiryDate",
@@ -123,11 +128,12 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
               cell: (cell) => {
                 const id = cell.row.original.id;
                 const isCancelled = cell.row.original.isCancelled;
+                const isOriginal = id ? getIsItemOriginal(id) : false;
                 if (!isInEditMode) {
                   return null;
                 }
                 return (
-                  <>
+                  <div className="bp-mark_shopping_items_table__actions">
                     {!isCancelled && (
                       <Button
                         variant="outline-danger"
@@ -156,7 +162,21 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         &emsp;Restore item
                       </Button>
                     )}
-                  </>
+                    {!isOriginal && (
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => {
+                          if (id) {
+                            resetItemToOriginal(id);
+                          }
+                        }}
+                      >
+                        <RxReset />
+                        &emsp;Reset all
+                      </Button>
+                    )}
+                  </div>
                 );
               },
             },

@@ -1,5 +1,7 @@
 import MarkShoppingDoneForm from "../components/MarkShoppingDoneForm";
+import { useEffect } from "react";
 import { useGetShoppingListQuery } from "@/apis/ShoppingListsApi";
+import { useMarkShoppingDoneActions } from "../reducers/MarkShoppingDoneReducer";
 import { useParams } from "react-router-dom";
 
 export default function MarkShoppingDonePage() {
@@ -15,7 +17,15 @@ export default function MarkShoppingDonePage() {
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
-  console.log("shoppingList", shoppingList);
+
+  const { resetFormState } = useMarkShoppingDoneActions();
+
+  useEffect(() => {
+    return () => {
+      resetFormState();
+    };
+  }, [resetFormState]);
+
   return (
     <div>
       {isError && <p>Error: </p>}

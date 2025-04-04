@@ -43,16 +43,17 @@ const markShoppingDoneReducer = createSlice({
         return;
       }
       state.shoppingListId = payload.id;
-      state.originalShoppingItems = payload.items || [];
-      const updatedShoppingItems =
+
+      const initialShoppingItems =
         payload.items?.map(
           (item): IShoppingItemExtended => ({
             ...item,
             expiryDate: item.product?.canExpire ? dayjs().toISOString() : undefined,
           })
         ) ?? [];
-      state.updatedShoppingItems = updatedShoppingItems;
-      state.transientUpdatedShoppingItems = updatedShoppingItems;
+      state.originalShoppingItems = initialShoppingItems;
+      state.updatedShoppingItems = initialShoppingItems;
+      state.transientUpdatedShoppingItems = initialShoppingItems;
       state.isInitialised = true;
       state.isInEditMode = false;
     },
@@ -179,6 +180,7 @@ export function useMarkShoppingDoneState(): MarkShoppingDoneState {
 }
 export function useMarkShoppingDoneActions() {
   const dispatch = useStoreDispatch();
+  const { transientUpdatedShoppingItems, originalShoppingItems } = useMarkShoppingDoneState();
   const resetFormStateCallback = useCallback(() => {
     dispatch(resetFormState());
   }, [dispatch]);
@@ -239,6 +241,21 @@ export function useMarkShoppingDoneActions() {
     [dispatch]
   );
 
+  const getIsItemOriginalCallback = useCallback(
+    (id: string) => {
+      const transientItem = transientUpdatedShoppingItems?.find((item) => item.id === id);
+      const originalItem = originalShoppingItems?.find((item) => item.id === id);
+      if (!transientItem || !originalItem || transientItem.isExtra) {
+        return undefined;
+      }
+      if (originalItem.expiryDate !== transientItem.expiryDate) {
+        console.log("Expiry date mismatch", { originalDate: originalItem.expiryDate, transientDate: transientItem });
+      }
+      return !transientItem.isCancelled && !transientItem.isReplaced && originalItem.quantity === transientItem.quantity && originalItem.expiryDate === transientItem.expiryDate;
+    },
+    [transientUpdatedShoppingItems, originalShoppingItems]
+  );
+
   const openEditModeCallback = useCallback(() => {
     dispatch(openEditMode());
   }, [dispatch]);
@@ -262,5 +279,6 @@ export function useMarkShoppingDoneActions() {
     openEditMode: openEditModeCallback,
     closeEditMode: closeEditModeCallback,
     uncancelShoppingItem: uncancelShoppingItemCallback,
+    getIsItemOriginal: getIsItemOriginalCallback,
   };
 }
