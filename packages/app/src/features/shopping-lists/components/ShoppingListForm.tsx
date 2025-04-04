@@ -10,7 +10,7 @@ import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
 import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
-import ProductItemCardList from "./ProductItemCardList";
+import ProductCardList from "./ProductCardList";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useErrorToast } from "@/components/toasts/ErrorToast";
@@ -40,8 +40,8 @@ const CreateShoppingListValidationSchema = z.object({
 });
 
 export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit, type }: ShoppingListFormProps) {
-  const { showOffcanvas } = useShoppingListItemsActions();
-  const { selectedItems } = useShoppingListItemsState();
+  const { showOffcanvas, hideOffcanvas } = useShoppingListItemsActions();
+  const { selectedItems, showOffcanvas: show } = useShoppingListItemsState();
   const navigate = useNavigate();
 
   const formMethods = useForm<ShoppingListFormValues>({
@@ -78,7 +78,7 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
 
   return (
     <FormProvider {...formMethods}>
-      <BrowseProductsOffcanvas />
+      <BrowseProductsOffcanvas type="normal" showOffcanvas={show} hideOffcanvas={hideOffcanvas} />
       <DualPaneForm onSubmit={handleSubmit(onSubmitForm)}>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Update current shopping list"}</DualPaneForm.Header.Title>
@@ -173,7 +173,7 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
                   <p>Click on the button above to add products to your shopping list.</p>
                 </div>
               ) : (
-                <ProductItemCardList products={products} hideAddedBadge />
+                <ProductCardList type="normal" products={products} hideAddedBadge />
               )}
             </div>
           </DualPaneForm.Panel.Pane>

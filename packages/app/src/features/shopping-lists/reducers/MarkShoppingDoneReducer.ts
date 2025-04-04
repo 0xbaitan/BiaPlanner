@@ -1,8 +1,7 @@
-import { ICreatePantryItemDto, ICreateShoppingItemExtendedDto, IShoppingItem, IShoppingItemExtended, IShoppingList, IUpdateShoppingItemExtendedDto } from "@biaplanner/shared";
+import { IShoppingItemExtended, IShoppingList } from "@biaplanner/shared";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { PayloadAction } from "@reduxjs/toolkit";
-import { assert } from "console";
 import { createSlice } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 import { useCallback } from "react";
@@ -14,6 +13,8 @@ type MarkShoppingDoneState = {
   originalShoppingItems: IShoppingItemExtended[];
   isInitialised: boolean;
   isInEditMode: boolean;
+  showOffcanvas: boolean;
+  offCanvasType: "replacement" | "add-extra" | undefined;
 };
 
 const initialState: MarkShoppingDoneState = {
@@ -23,6 +24,8 @@ const initialState: MarkShoppingDoneState = {
   updatedShoppingItems: [],
   isInitialised: false,
   isInEditMode: false,
+  showOffcanvas: false,
+  offCanvasType: undefined,
 };
 
 const markShoppingDoneReducer = createSlice({
@@ -36,6 +39,8 @@ const markShoppingDoneReducer = createSlice({
       state.originalShoppingItems = [];
       state.isInitialised = false;
       state.isInEditMode = false;
+      state.showOffcanvas = false;
+      state.offCanvasType = undefined;
     },
     initialiseFormState: (state, action: PayloadAction<IShoppingList>) => {
       const { payload } = action;
@@ -56,6 +61,7 @@ const markShoppingDoneReducer = createSlice({
       state.transientUpdatedShoppingItems = initialShoppingItems;
       state.isInitialised = true;
       state.isInEditMode = false;
+      state.showOffcanvas = false;
     },
     addExtraShoppingItem: (state, action: PayloadAction<IShoppingItemExtended>) => {
       const { payload } = action;
@@ -70,23 +76,32 @@ const markShoppingDoneReducer = createSlice({
         isExtra: true,
       });
     },
+
+    removeExtraShoppingItem: (state, action: PayloadAction<string>) => {
+      const { payload: id } = action;
+      const indexOfItem = state.transientUpdatedShoppingItems?.findIndex((item) => item.productId === id);
+      const isExtra = state.transientUpdatedShoppingItems.at(indexOfItem)?.isExtra;
+      if (indexOfItem !== undefined && indexOfItem !== -1 && isExtra) {
+        state.transientUpdatedShoppingItems?.splice(indexOfItem, 1);
+      }
+    },
     cancelShoppingItem: (state, action: PayloadAction<string>) => {
       const { payload: id } = action;
-      const itemToCancel = state.transientUpdatedShoppingItems?.find((item) => item.id === id);
+      const itemToCancel = state.transientUpdatedShoppingItems?.find((item) => item.productId === id);
       if (itemToCancel) {
         itemToCancel.isCancelled = true;
       }
     },
     uncancelShoppingItem: (state, action: PayloadAction<string>) => {
       const { payload: id } = action;
-      const itemToUncancel = state.transientUpdatedShoppingItems?.find((item) => item.id === id);
+      const itemToUncancel = state.transientUpdatedShoppingItems?.find((item) => item.productId === id);
       if (itemToUncancel) {
         itemToUncancel.isCancelled = false;
       }
     },
     replaceShoppingItem: (state, action: PayloadAction<{ id: string; replacedItem: IShoppingItemExtended }>) => {
       const { payload } = action;
-      const itemToReplace = state.transientUpdatedShoppingItems?.find((item) => item.id === payload.id);
+      const itemToReplace = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.id);
       const replacementItem = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.replacedItem.productId);
 
       if (!itemToReplace || replacementItem) {
@@ -103,12 +118,12 @@ const markShoppingDoneReducer = createSlice({
 
     updateExpiryDate: (state, action: PayloadAction<{ id: string; expiryDate: string | undefined }>) => {
       const { payload } = action;
-      const itemToUpdate = state.transientUpdatedShoppingItems?.find((item) => item.id === payload.id);
+      const itemToUpdate = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.id);
       if (!itemToUpdate) {
         return;
       }
       state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
-        if (item.id === payload.id) {
+        if (item.productId === payload.id) {
           return {
             ...item,
             expiryDate: payload.expiryDate,
@@ -120,12 +135,12 @@ const markShoppingDoneReducer = createSlice({
 
     updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
       const { payload } = action;
-      const itemToUpdate = state.transientUpdatedShoppingItems?.find((item) => item.id === payload.id);
+      const itemToUpdate = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.id);
       if (!itemToUpdate) {
         return;
       }
       state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
-        if (item.id === payload.id) {
+        if (item.productId === payload.id) {
           return {
             ...item,
             quantity: payload.quantity,
@@ -137,16 +152,16 @@ const markShoppingDoneReducer = createSlice({
 
     resetItemToOriginal: (state, action: PayloadAction<string>) => {
       const { payload: id } = action;
-      const itemToReset = state.transientUpdatedShoppingItems?.find((item) => item.id === id);
+      const itemToReset = state.transientUpdatedShoppingItems?.find((item) => item.productId === id);
       if (!itemToReset) {
         return;
       }
-      const originalItem = state.originalShoppingItems?.find((item) => item.id === id);
+      const originalItem = state.originalShoppingItems?.find((item) => item.productId === id);
       if (!originalItem) {
         return;
       }
       state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
-        if (item.id === id) {
+        if (item.productId === id) {
           return {
             ...originalItem,
             isCancelled: false,
@@ -168,11 +183,38 @@ const markShoppingDoneReducer = createSlice({
         state.updatedShoppingItems = [...state.transientUpdatedShoppingItems];
       }
     },
+    showAddExtraOffcanvas: (state) => {
+      if (!state.isInEditMode) {
+        state.showOffcanvas = false;
+        return;
+      }
+      state.showOffcanvas = true;
+      state.offCanvasType = "add-extra";
+    },
+    hideOffcanvas: (state) => {
+      console.log("hideOffcanvas");
+      state.showOffcanvas = false;
+      state.offCanvasType = undefined;
+    },
   },
 });
 
-export const { resetFormState, openEditMode, closeEditMode, initialiseFormState, addExtraShoppingItem, cancelShoppingItem, uncancelShoppingItem, replaceShoppingItem, updateExpiryDate, updateQuantity, resetItemToOriginal } =
-  markShoppingDoneReducer.actions;
+export const {
+  resetFormState,
+  showAddExtraOffcanvas,
+  openEditMode,
+  closeEditMode,
+  initialiseFormState,
+  addExtraShoppingItem,
+  removeExtraShoppingItem,
+  cancelShoppingItem,
+  uncancelShoppingItem,
+  replaceShoppingItem,
+  updateExpiryDate,
+  updateQuantity,
+  hideOffcanvas,
+  resetItemToOriginal,
+} = markShoppingDoneReducer.actions;
 export default markShoppingDoneReducer.reducer;
 
 export function useMarkShoppingDoneState(): MarkShoppingDoneState {
@@ -199,52 +241,59 @@ export function useMarkShoppingDoneActions() {
     [dispatch]
   );
 
+  const removeExtraShoppingItemCallback = useCallback(
+    (productId: string) => {
+      dispatch(removeExtraShoppingItem(productId));
+    },
+    [dispatch]
+  );
+
   const cancelShoppingItemCallback = useCallback(
-    (id: string) => {
-      dispatch(cancelShoppingItem(id));
+    (productId: string) => {
+      dispatch(cancelShoppingItem(productId));
     },
     [dispatch]
   );
 
   const uncancelShoppingItemCallback = useCallback(
-    (id: string) => {
-      dispatch(uncancelShoppingItem(id));
+    (productId: string) => {
+      dispatch(uncancelShoppingItem(productId));
     },
     [dispatch]
   );
 
   const replaceShoppingItemCallback = useCallback(
-    (id: string, replacedItem: IShoppingItemExtended) => {
-      dispatch(replaceShoppingItem({ id, replacedItem }));
+    (productId: string, replacedItem: IShoppingItemExtended) => {
+      dispatch(replaceShoppingItem({ id: productId, replacedItem }));
     },
     [dispatch]
   );
 
   const updateExpiryDateCallback = useCallback(
-    (id: string, expiryDate?: string) => {
-      dispatch(updateExpiryDate({ id, expiryDate }));
+    (productId: string, expiryDate?: string) => {
+      dispatch(updateExpiryDate({ id: productId, expiryDate }));
     },
     [dispatch]
   );
 
   const updateQuantityCallback = useCallback(
-    (id: string, quantity: number) => {
-      dispatch(updateQuantity({ id, quantity }));
+    (productId: string, quantity: number) => {
+      dispatch(updateQuantity({ id: productId, quantity }));
     },
     [dispatch]
   );
 
   const resetItemToOriginalCallback = useCallback(
-    (id: string) => {
-      dispatch(resetItemToOriginal(id));
+    (productId: string) => {
+      dispatch(resetItemToOriginal(productId));
     },
     [dispatch]
   );
 
   const getIsItemOriginalCallback = useCallback(
-    (id: string) => {
-      const transientItem = transientUpdatedShoppingItems?.find((item) => item.id === id);
-      const originalItem = originalShoppingItems?.find((item) => item.id === id);
+    (productId: string) => {
+      const transientItem = transientUpdatedShoppingItems?.find((item) => item.productId === productId);
+      const originalItem = originalShoppingItems?.find((item) => item.productId === productId);
       if (!transientItem || !originalItem || transientItem.isExtra) {
         return undefined;
       }
@@ -267,10 +316,44 @@ export function useMarkShoppingDoneActions() {
     [dispatch]
   );
 
+  const isItemPresentCallback = useCallback(
+    (productId: string): "extra" | "non-extra" | false => {
+      const item = transientUpdatedShoppingItems?.find((item) => item.productId === productId);
+      if (!item) {
+        return false;
+      }
+      if (item.isExtra) {
+        return "extra";
+      }
+      if (!item.isExtra) {
+        return "non-extra";
+      }
+      return false;
+    },
+    [transientUpdatedShoppingItems]
+  );
+
+  const getItemCallback = useCallback(
+    (productId: string) => {
+      const item = transientUpdatedShoppingItems?.find((item) => item.productId === productId);
+      return item;
+    },
+    [transientUpdatedShoppingItems]
+  );
+
+  const hideOffcanvasCallback = useCallback(() => {
+    dispatch(hideOffcanvas());
+  }, [dispatch]);
+
+  const showAddExtraOffcanvasCallback = useCallback(() => {
+    dispatch(showAddExtraOffcanvas());
+  }, [dispatch]);
+
   return {
     resetFormState: resetFormStateCallback,
     initialiseFormState: initialiseFormStateCallback,
     addExtraShoppingItem: addExtraShoppingItemCallback,
+    removeExtraShoppingItem: removeExtraShoppingItemCallback,
     cancelShoppingItem: cancelShoppingItemCallback,
     replaceShoppingItem: replaceShoppingItemCallback,
     updateExpiryDate: updateExpiryDateCallback,
@@ -280,5 +363,11 @@ export function useMarkShoppingDoneActions() {
     closeEditMode: closeEditModeCallback,
     uncancelShoppingItem: uncancelShoppingItemCallback,
     getIsItemOriginal: getIsItemOriginalCallback,
+    isItemPresent: isItemPresentCallback,
+    getItem: getItemCallback,
+    showAddExtraOffcanvas: showAddExtraOffcanvasCallback,
+    hideOffcanvas: hideOffcanvasCallback,
   };
 }
+
+export type MarkShoppingDoneActions = ReturnType<typeof useMarkShoppingDoneActions>;

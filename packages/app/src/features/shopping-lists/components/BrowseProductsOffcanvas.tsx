@@ -1,20 +1,26 @@
 import "../styles/BrowseProductsOffcanvas.scss";
 
 import { FaFilter, FaMagnifyingGlass } from "react-icons/fa6";
-import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
+import { ShoppingListItemsActions, useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import PaginationComponent from "@/components/PaginationComponent";
-import ProductItemCardList from "./ProductItemCardList";
+import ProductCardList from "./ProductCardList";
 import { useLazySearchProductsQuery } from "@/apis/ProductsApi";
 import { useState } from "react";
 
-export default function BrowseProductsOffcanvas() {
-  const { showOffcanvas } = useShoppingListItemsState();
-  const { hideOffcanvas } = useShoppingListItemsActions();
+export type BrowseProductsType = "normal" | "add-extra";
+export type BrowseProductsOffcanvasProps = {
+  showOffcanvas: boolean;
+  hideOffcanvas: () => void;
+  type: BrowseProductsType;
+};
+
+export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasProps) {
+  const { showOffcanvas, hideOffcanvas, type } = props;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchProducts, { data: productsPagination, isLoading }] = useLazySearchProductsQuery();
@@ -32,10 +38,18 @@ export default function BrowseProductsOffcanvas() {
   };
 
   return (
-    <Offcanvas show={showOffcanvas} onHide={hideOffcanvas} backdrop="static" placement="end" scroll>
+    <Offcanvas
+      show={showOffcanvas}
+      onHide={() => {
+        hideOffcanvas();
+      }}
+      backdrop="static"
+      placement="end"
+      scroll
+    >
       <Offcanvas.Header closeButton>
         <Offcanvas.Title>
-          <Heading level={Heading.Level.H2}>Browse products</Heading>
+          <Heading level={Heading.Level.H2}>{type === "normal" ? "Browse products" : "Find and add extra products"}</Heading>
         </Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body className="bp-browse_products_offcanvas__body">
@@ -75,7 +89,7 @@ export default function BrowseProductsOffcanvas() {
         {productsPagination && (
           <div className="bp-browse_products_offcanvas__main">
             {isLoading && <div>Loading...</div>}
-            <ProductItemCardList products={productsPagination.data} />
+            <ProductCardList products={productsPagination.data} type={type} />
             <div className="bp-browse_products_offcanvas__main__pagination">
               <PaginationComponent
                 currentPage={currentPage}

@@ -114,3 +114,5 @@ export function useShoppingListItemsActions() {
     getItem: getItemCallback,
   };
 }
+
+export type ShoppingListItemsActions = ReturnType<typeof useShoppingListItemsActions>;

@@ -1,7 +1,9 @@
+import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
+
+import BrowseProductsOffcanvas from "../components/BrowseProductsOffcanvas";
 import MarkShoppingDoneForm from "../components/MarkShoppingDoneForm";
 import { useEffect } from "react";
 import { useGetShoppingListQuery } from "@/apis/ShoppingListsApi";
-import { useMarkShoppingDoneActions } from "../reducers/MarkShoppingDoneReducer";
 import { useParams } from "react-router-dom";
 
 export default function MarkShoppingDonePage() {
@@ -10,7 +12,7 @@ export default function MarkShoppingDonePage() {
     data: shoppingList,
     isLoading,
     isError,
-    error,
+
     isSuccess,
   } = useGetShoppingListQuery(String(id), {
     refetchOnMountOrArgChange: true,
@@ -30,6 +32,7 @@ export default function MarkShoppingDonePage() {
     <div>
       {isError && <p>Error: </p>}
       {isLoading && <p>Loading...</p>}
+
       {isSuccess && shoppingList && <MarkShoppingDoneForm initialValue={shoppingList} />}
     </div>
   );

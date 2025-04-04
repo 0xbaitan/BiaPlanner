@@ -51,6 +51,7 @@ export class QueryProductViewService {
         'product.id',
         'product.name',
         'product.description',
+        'product.canExpire',
         'product.measurement',
         'product.measurementType',
         'brand.id',

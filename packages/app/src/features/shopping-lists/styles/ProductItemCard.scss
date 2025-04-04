@@ -98,11 +98,18 @@
   align-items: center;
 }
 
-.bp-product_item_card__added_badge {
+.bp-product_item_card__badge {
   display: inline-block;
   margin-left: clamp(0.5em, 0.5vw, 1em);
   padding: 0.25em 0.5em;
   color: $colors-white;
   border-radius: 0.25em;
-  background-color: darken($colors-success, 10%);
+
+  &.active {
+    background-color: darken($colors-success, 10%);
+  }
+
+  &.passive {
+    background-color: darken(silver, 10%);
+  }
 }

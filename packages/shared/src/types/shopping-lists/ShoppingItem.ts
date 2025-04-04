@@ -22,7 +22,7 @@ export interface IUpdateShoppingItemDto extends Partial<Omit<IShoppingItem, keyo
   replacement?: ICreateShoppingItemDto | IUpdateShoppingItemDto | undefined;
 }
 
-export interface IShoppingItemExtended extends Omit<IShoppingItem, "id" | "replacement"> {
+export interface IShoppingItemExtended extends Omit<IShoppingItem, keyof IBaseEntity | "replacement"> {
   id?: string;
   replacement?: IShoppingItemExtended;
   expiryDate?: string;

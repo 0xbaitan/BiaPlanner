@@ -55,6 +55,11 @@
   &.cancelled {
     background-color: $colors-danger;
   }
+
+  &.extra,
+  &.replacement {
+    background-color: darken($color: silver, $amount: 25);
+  }
 }
 
 .bp-mark_shopping_items_table__actions {

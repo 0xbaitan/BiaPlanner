@@ -1,12 +1,13 @@
 import "../styles/MarkShoppingItemsTable.scss";
 
 import { FaMinus, FaPlus, FaTrash, FaTrashRestore } from "react-icons/fa";
-import { FaPencil, FaXmark } from "react-icons/fa6";
+import { FaPencil, FaTrashCan, FaXmark } from "react-icons/fa6";
 import { IShoppingItem, IShoppingItemExtended } from "@biaplanner/shared";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
+import Pill from "@/components/Pill";
 import { RxReset } from "react-icons/rx";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
@@ -18,7 +19,7 @@ export type MarkShoppingItemsTableProps = {
 export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProps) {
   const { data } = props;
   const { isInEditMode, transientUpdatedShoppingItems, originalShoppingItems } = useMarkShoppingDoneState();
-  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal } = useMarkShoppingDoneActions();
+  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal, removeExtraShoppingItem } = useMarkShoppingDoneActions();
 
   return (
     <TabbedViewsTable<IShoppingItemExtended>
@@ -54,15 +55,15 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
               header: "Status",
               cell: (cell) => {
                 const isCancelled = cell.row.original.isCancelled;
-                return isCancelled ? <div className="bp-mark_shopping_items_table__status_pill cancelled">Cancelled</div> : <div className="bp-mark_shopping_items_table__status_pill active">Active</div>;
+                return isCancelled ? <Pill className="bp-mark_shopping_items_table__status_pill cancelled">Cancelled</Pill> : <Pill className="bp-mark_shopping_items_table__status_pill active">Active</Pill>;
               },
             },
             {
               header: "Quantity",
               cell: (cell) => {
                 const quantity = cell.row.original.quantity;
-                const id = cell.row.original.id;
-                if (isInEditMode && id) {
+                const productId = cell.row.original.productId;
+                if (isInEditMode && productId) {
                   return (
                     <div className="bp-product_item_card__quantity_actions">
                       <Button
@@ -71,7 +72,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         size="sm"
                         disabled={quantity <= 1}
                         onClick={() => {
-                          updateQuantity(id, quantity - 1);
+                          updateQuantity(productId, quantity - 1);
                         }}
                       >
                         <FaMinus />
@@ -82,7 +83,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         className="bp-product_item_card__action_button"
                         size="sm"
                         onClick={() => {
-                          updateQuantity(id, quantity + 1);
+                          updateQuantity(productId, quantity + 1);
                         }}
                       >
                         <FaPlus />
@@ -101,15 +102,15 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                 const expiryDate = cell.row.original.expiryDate;
                 const canExpire = cell.row.original.product?.canExpire;
                 if (isInEditMode) {
-                  const id = cell.row.original.id;
+                  const productId = cell.row.original.productId;
                   return canExpire ? (
                     <Form.Control
                       type="date"
                       value={dayjs(expiryDate).format("YYYY-MM-DD")}
                       onChange={(e) => {
                         const newDate = e.target.value;
-                        if (id) {
-                          updateExpiryDate(id, newDate);
+                        if (productId) {
+                          updateExpiryDate(productId, newDate);
                         }
                       }}
                     />
@@ -122,25 +123,41 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
 
               accessorKey: "expiryDate",
             },
+            {
+              header: "Attributes",
+              cell: (cell) => {
+                const isExtra = cell.row.original.isExtra;
+                const isReplacement = !!cell.row.original.replacement;
+
+                return (
+                  <div>
+                    {isExtra && <Pill className="bp-mark_shopping_items_table__status_pill extra">Extra</Pill>}
+
+                    {isReplacement && <Pill className="bp-mark_shopping_items_table__status_pill replacement">Replacement</Pill>}
+                  </div>
+                );
+              },
+            },
 
             {
               header: "Actions",
               cell: (cell) => {
-                const id = cell.row.original.id;
+                const productId = cell.row.original.productId;
                 const isCancelled = cell.row.original.isCancelled;
-                const isOriginal = id ? getIsItemOriginal(id) : false;
+                const isOriginal = productId ? getIsItemOriginal(productId) : false;
+                const isExtra = cell.row.original.isExtra;
                 if (!isInEditMode) {
                   return null;
                 }
                 return (
                   <div className="bp-mark_shopping_items_table__actions">
-                    {!isCancelled && (
+                    {!isCancelled && !isExtra && (
                       <Button
                         variant="outline-danger"
                         size="sm"
                         onClick={() => {
-                          if (id) {
-                            cancelShoppingItem(id);
+                          if (productId) {
+                            cancelShoppingItem(productId);
                           }
                         }}
                       >
@@ -148,13 +165,13 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         &emsp;Cancel item
                       </Button>
                     )}
-                    {isCancelled && (
+                    {isCancelled && !isExtra && (
                       <Button
                         variant="outline-secondary"
                         size="sm"
                         onClick={() => {
-                          if (id) {
-                            uncancelShoppingItem(id);
+                          if (productId) {
+                            uncancelShoppingItem(productId);
                           }
                         }}
                       >
@@ -162,18 +179,32 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                         &emsp;Restore item
                       </Button>
                     )}
-                    {!isOriginal && (
+                    {!isOriginal && !isExtra && (
                       <Button
                         variant="outline-secondary"
                         size="sm"
                         onClick={() => {
-                          if (id) {
-                            resetItemToOriginal(id);
+                          if (productId) {
+                            resetItemToOriginal(productId);
                           }
                         }}
                       >
                         <RxReset />
                         &emsp;Reset all
+                      </Button>
+                    )}
+                    {isExtra && (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => {
+                          if (productId) {
+                            removeExtraShoppingItem(productId);
+                          }
+                        }}
+                      >
+                        <FaTrashCan />
+                        &emsp;Remove item
                       </Button>
                     )}
                   </div>
