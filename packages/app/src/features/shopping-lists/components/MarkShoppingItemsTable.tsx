@@ -1,12 +1,12 @@
 import "../styles/MarkShoppingItemsTable.scss";
 
 import { FaMinus, FaPlus, FaTrash, FaTrashRestore } from "react-icons/fa";
-import { FaPencil, FaTrashCan, FaXmark } from "react-icons/fa6";
-import { IShoppingItem, IShoppingItemExtended } from "@biaplanner/shared";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import Button from "react-bootstrap/esm/Button";
+import { FaTrashCan } from "react-icons/fa6";
 import Form from "react-bootstrap/esm/Form";
+import { IShoppingItemExtended } from "@biaplanner/shared";
 import { MdFindReplace } from "react-icons/md";
 import Pill from "@/components/Pill";
 import { RxReset } from "react-icons/rx";
@@ -19,7 +19,7 @@ export type MarkShoppingItemsTableProps = {
 };
 export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProps) {
   const { data } = props;
-  const { isInEditMode, transientUpdatedShoppingItems, originalShoppingItems } = useMarkShoppingDoneState();
+  const { isInEditMode } = useMarkShoppingDoneState();
   const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal, removeExtraShoppingItem, showReplacementOffcanvas, getOriginalItem } = useMarkShoppingDoneActions();
   console.log("MarkShoppingItemsTable", data);
   return (
@@ -28,7 +28,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
       views={[
         {
           viewKey: "general-details",
-          viewTitle: "General Details",
+          viewTitle: "Shopping Items",
           columnAccessorKeys: ["product", "quantity", "expiryDate"],
           default: true,
           columnDefs: [
@@ -78,63 +78,73 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                 const item = cell.row.original;
                 const quantity = item.isReplaced && !!item.replacement ? item.replacement.quantity : item.quantity;
                 const productId = item.productId;
-                if (isInEditMode && productId) {
-                  return (
-                    <div className="bp-product_item_card__quantity_actions">
-                      <Button
-                        variant="outline-primary"
-                        className="bp-product_item_card__action_button"
-                        size="sm"
-                        disabled={quantity <= 1}
-                        onClick={() => {
-                          updateQuantity(productId, quantity - 1);
-                        }}
-                      >
-                        <FaMinus />
-                      </Button>
-                      <span className="bp-product_item_card__quantity">{quantity ?? 1}</span>
-                      <Button
-                        variant="primary"
-                        className="bp-product_item_card__action_button"
-                        size="sm"
-                        onClick={() => {
-                          updateQuantity(productId, quantity + 1);
-                        }}
-                      >
-                        <FaPlus />
-                      </Button>
-                    </div>
-                  );
-                }
-                return <span>{quantity}</span>;
+
+                return (
+                  <div className="bp-mark_shopping_items_table__cell">
+                    {isInEditMode && productId ? (
+                      <div className="bp-product_item_card__quantity_actions">
+                        <Button
+                          variant="outline-primary"
+                          className="bp-product_item_card__action_button"
+                          size="sm"
+                          disabled={quantity <= 1}
+                          onClick={() => {
+                            updateQuantity(productId, quantity - 1);
+                          }}
+                        >
+                          <FaMinus />
+                        </Button>
+                        <span className="bp-product_item_card__quantity">{quantity ?? 1}</span>
+                        <Button
+                          variant="primary"
+                          className="bp-product_item_card__action_button"
+                          size="sm"
+                          onClick={() => {
+                            updateQuantity(productId, quantity + 1);
+                          }}
+                        >
+                          <FaPlus />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div>{quantity}</div>
+                    )}
+                  </div>
+                );
               },
               accessorKey: "quantity",
             },
 
             {
               header: "Expiry date",
-              cell: (cell) => {
+              cell: (cell: { row: { original: IShoppingItemExtended } }) => {
                 const item = cell.row.original;
                 const expiryDate = item.isReplaced && item.replacement ? item.replacement.expiryDate : item.expiryDate;
                 const canExpire = item.isReplaced && item.replacement ? item.replacement.product?.canExpire : item.product?.canExpire;
                 const productId = cell.row.original.productId;
-                if (isInEditMode) {
-                  return canExpire ? (
-                    <Form.Control
-                      type="date"
-                      value={dayjs(expiryDate).format("YYYY-MM-DD")}
-                      onChange={(e) => {
-                        const newDate = e.target.value;
-                        if (productId) {
-                          updateExpiryDate(productId, newDate);
-                        }
-                      }}
-                    />
-                  ) : (
-                    <span>N/A</span>
-                  );
-                }
-                return <span>{canExpire ? dayjs(expiryDate).format("DD/MM/YYYY") : "N/A"}</span>;
+
+                return (
+                  <div className="bp-mark_shopping_items_table__cell">
+                    {isInEditMode && canExpire && productId ? (
+                      <Form.Control
+                        type="date"
+                        value={dayjs(expiryDate).format("YYYY-MM-DD")}
+                        onChange={(e) => {
+                          const newDate = e.target.value;
+                          if (productId) {
+                            updateExpiryDate(productId, newDate);
+                          }
+                        }}
+                      />
+                    ) : !isInEditMode && canExpire ? (
+                      <span>{dayjs(expiryDate).format("DD/MM/YYYY")}</span>
+                    ) : (
+                      <span>
+                        <div>N/A</div>
+                      </span>
+                    )}
+                  </div>
+                );
               },
 
               accessorKey: "expiryDate",
@@ -146,7 +156,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                 const isReplacement = !!cell.row.original.replacement;
 
                 return (
-                  <div>
+                  <div className="bp-mark_shopping_items_table__cell">
                     {isExtra && <Pill className="bp-mark_shopping_items_table__status_pill extra">Extra</Pill>}
 
                     {isReplacement && <Pill className="bp-mark_shopping_items_table__status_pill replacement">Replacement</Pill>}
@@ -169,77 +179,79 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                   return null;
                 }
                 return (
-                  <div className="bp-mark_shopping_items_table__actions">
-                    {!isCancelled && !isExtra && (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => {
-                          if (productId) {
-                            cancelShoppingItem(productId);
-                          }
-                        }}
-                      >
-                        <FaTrash />
-                        &emsp;Cancel item
-                      </Button>
-                    )}
-                    {isCancelled && !isExtra && (
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        onClick={() => {
-                          if (productId) {
-                            uncancelShoppingItem(productId);
-                          }
-                        }}
-                      >
-                        <FaTrashRestore />
-                        &emsp;Restore item
-                      </Button>
-                    )}
-                    {!isCancelled && !isExtra && (
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        onClick={() => {
-                          if (product) {
-                            showReplacementOffcanvas(product);
-                          }
-                        }}
-                      >
-                        <MdFindReplace />
-                        &emsp;Replace item
-                      </Button>
-                    )}
-                    {!isOriginal && !isExtra && (
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        onClick={() => {
-                          if (productId) {
-                            resetItemToOriginal(productId);
-                          }
-                        }}
-                      >
-                        <RxReset />
-                        &emsp;Reset all
-                      </Button>
-                    )}
-                    {isExtra && (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => {
-                          if (productId) {
-                            removeExtraShoppingItem(productId);
-                          }
-                        }}
-                      >
-                        <FaTrashCan />
-                        &emsp;Remove item
-                      </Button>
-                    )}
+                  <div className="bp-mark_shopping_items_table__cell">
+                    <div className=" bp-mark_shopping_items_table__actions">
+                      {!isCancelled && !isExtra && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => {
+                            if (productId) {
+                              cancelShoppingItem(productId);
+                            }
+                          }}
+                        >
+                          <FaTrash />
+                          &emsp;Cancel item
+                        </Button>
+                      )}
+                      {isCancelled && !isExtra && (
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={() => {
+                            if (productId) {
+                              uncancelShoppingItem(productId);
+                            }
+                          }}
+                        >
+                          <FaTrashRestore />
+                          &emsp;Restore item
+                        </Button>
+                      )}
+                      {!isCancelled && !isExtra && (
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={() => {
+                            if (product) {
+                              showReplacementOffcanvas(product);
+                            }
+                          }}
+                        >
+                          <MdFindReplace />
+                          &emsp;Replace item
+                        </Button>
+                      )}
+                      {!isOriginal && !isExtra && (
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={() => {
+                            if (productId) {
+                              resetItemToOriginal(productId);
+                            }
+                          }}
+                        >
+                          <RxReset />
+                          &emsp;Reset all
+                        </Button>
+                      )}
+                      {isExtra && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => {
+                            if (productId) {
+                              removeExtraShoppingItem(productId);
+                            }
+                          }}
+                        >
+                          <FaTrashCan />
+                          &emsp;Remove item
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 );
               },

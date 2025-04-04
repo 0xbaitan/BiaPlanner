@@ -1,0 +1,26 @@
+.bp-mark_done_form__shopping_list_details {
+  padding: clamp(1em, 2vw, 2em);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25em;
+}
+
+.bp-mark_done_form__shopping_list_details__description {
+  font-size: 1em;
+  color: #333;
+}
+
+.bp-mark_done_form__shopping_list_details__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  justify-content: right;
+  align-items: center;
+  margin-right: clamp(1em, 2vw, 2em);
+}
+
+.bp-mark_done_form__shopping_list_details__items {
+  flex-grow: 1;
+  width: 100%;
+}

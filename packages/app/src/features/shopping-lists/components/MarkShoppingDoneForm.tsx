@@ -1,3 +1,5 @@
+import "../styles/MarkShoppingDoneForm.scss";
+
 import { FaCheckCircle, FaSave } from "react-icons/fa";
 import { useEffect, useMemo } from "react";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
@@ -55,36 +57,38 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
         </DualPaneForm.Header>
 
         <DualPaneForm.Panel>
-          <DualPaneForm.Panel.Pane>
-            <Heading level={Heading.Level.H2} className="bp-shopping_list_form__shopping_list_details__title">
-              Review Shopping Items
-            </Heading>
-            <p className="bp-shopping_list_form__shopping_list_details__subtitle">Review your purchased items, and make any amends as necessary prior to adding them to your pantry.</p>
-
-            {!isInEditMode && (
-              <Button variant="outline-secondary" onClick={() => openEditMode()} className="bp-shopping_list_form__make_amends_btn">
-                Edit items
-              </Button>
-            )}
-            {isInEditMode && (
-              <Button variant="outline-secondary" onClick={() => closeEditMode(true)}>
-                Save changes
-              </Button>
-            )}
-            {isInEditMode && (
-              <Button variant="outline-danger" onClick={() => closeEditMode(false)} className="bp-shopping_list_form__cancel_amends_btn">
-                Cancel changes
-              </Button>
-            )}
-            {isInEditMode && (
-              <Button variant="outline-secondary" onClick={() => showAddExtraOffcanvas()} className="bp-shopping_list_form__add_extra_btn">
-                Add extra items
-              </Button>
-            )}
-            <Button variant="outline-secondary" className="bp-shopping_list_form__review_changes_btn">
-              Review amends
-            </Button>
-            <MarkShoppingItemsTable data={itemsToShow} />
+          <DualPaneForm.Panel.Pane className="bp-mark_done_form__shopping_list_details">
+            <div>
+              <Heading level={Heading.Level.H2} className="bp-mark_done_form__shopping_list_details__title">
+                Review Shopping Items
+              </Heading>
+              <p className="bp-mark_done_form__shopping_list_details__">Review your purchased items, and make any amends as necessary prior to adding them to your pantry.</p>
+            </div>
+            <div className="bp-mark_done_form__shopping_list_details__actions">
+              {isInEditMode && (
+                <Button variant="outline-primary" onClick={() => showAddExtraOffcanvas()} className="bp-mark_done_form__add_extra_btn">
+                  Add extra items
+                </Button>
+              )}
+              {!isInEditMode && (
+                <Button variant="secondary" onClick={() => openEditMode()} className="bp-mark_done_form__make_amends_btn">
+                  Amend Items
+                </Button>
+              )}
+              {isInEditMode && (
+                <Button variant="secondary" onClick={() => closeEditMode(true)}>
+                  Save changes
+                </Button>
+              )}
+              {isInEditMode && (
+                <Button variant="danger" onClick={() => closeEditMode(false)} className="bp-mark_done_form__cancel_amends_btn">
+                  Cancel changes
+                </Button>
+              )}
+            </div>
+            <div className="bp-mark_done_form__shopping_list_details__items">
+              <MarkShoppingItemsTable data={itemsToShow} />
+            </div>
           </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>
