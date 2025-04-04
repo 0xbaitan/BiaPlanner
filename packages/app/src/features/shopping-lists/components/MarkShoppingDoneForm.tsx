@@ -22,7 +22,7 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
   const { initialValue } = props;
   const navigate = useNavigate();
   const { initialiseFormState, openEditMode, resetFormState, closeEditMode, hideOffcanvas, showAddExtraOffcanvas } = useMarkShoppingDoneActions();
-  const { updatedShoppingItems, isInitialised, isInEditMode, transientUpdatedShoppingItems, offCanvasType, showOffcanvas } = useMarkShoppingDoneState();
+  const { updatedShoppingItems, isInitialised, isInEditMode, transientUpdatedShoppingItems, offCanvasType, showOffcanvas, currentItemToReplace } = useMarkShoppingDoneState();
   const itemsToShow = useMemo(() => {
     if (isInEditMode) {
       return transientUpdatedShoppingItems;
@@ -38,7 +38,7 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
 
   return (
     <div>
-      <BrowseProductsOffcanvas hideOffcanvas={hideOffcanvas} showOffcanvas={showOffcanvas} type={offCanvasType === "add-extra" ? "add-extra" : "add-extra"} />
+      <BrowseProductsOffcanvas hideOffcanvas={hideOffcanvas} showOffcanvas={showOffcanvas} type={offCanvasType ?? "normal"} replacedProductName={currentItemToReplace?.name} />
       <DualPaneForm>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>Mark shopping done</DualPaneForm.Header.Title>

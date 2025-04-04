@@ -4,6 +4,7 @@ import AddExtraVariantProductCard from "./AddExtraVariantProductCard";
 import { BrowseProductsType } from "./BrowseProductsOffcanvas";
 import { IProduct } from "@biaplanner/shared";
 import NormalVariantProductCard from "./NormalVariantProductCard";
+import ReplacementVariantProductCard from "./ReplacementVariantProductCard";
 
 export type ProductCardProps = {
   product: IProduct;
@@ -26,6 +27,7 @@ export default function ProductCardList(props: ProductCardListProps) {
         <li key={product.id}>
           {type === "add-extra" && <AddExtraVariantProductCard product={product} hideAddedBadge={hideAddedBadge} />}
           {type === "normal" && <NormalVariantProductCard product={product} hideAddedBadge={hideAddedBadge} />}
+          {type === "replacement" && <ReplacementVariantProductCard product={product} hideAddedBadge={hideAddedBadge} />}
         </li>
       ))}
     </ul>

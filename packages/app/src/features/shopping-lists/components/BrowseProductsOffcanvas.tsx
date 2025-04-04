@@ -12,15 +12,16 @@ import ProductCardList from "./ProductCardList";
 import { useLazySearchProductsQuery } from "@/apis/ProductsApi";
 import { useState } from "react";
 
-export type BrowseProductsType = "normal" | "add-extra";
+export type BrowseProductsType = "normal" | "add-extra" | "replacement";
 export type BrowseProductsOffcanvasProps = {
   showOffcanvas: boolean;
   hideOffcanvas: () => void;
   type: BrowseProductsType;
+  replacedProductName?: string;
 };
 
 export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasProps) {
-  const { showOffcanvas, hideOffcanvas, type } = props;
+  const { showOffcanvas, hideOffcanvas, type, replacedProductName } = props;
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchProducts, { data: productsPagination, isLoading }] = useLazySearchProductsQuery();
@@ -49,7 +50,11 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
     >
       <Offcanvas.Header closeButton>
         <Offcanvas.Title>
-          <Heading level={Heading.Level.H2}>{type === "normal" ? "Browse products" : "Find and add extra products"}</Heading>
+          <Heading level={Heading.Level.H2}>
+            {type === "normal" && "Browse products"}
+            {type === "add-extra" && "Find and add extra products"}
+            {type === "replacement" && (replacedProductName ? `Find a replacement for '${replacedProductName}'` : "Find a replacement product")}
+          </Heading>
         </Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body className="bp-browse_products_offcanvas__body">

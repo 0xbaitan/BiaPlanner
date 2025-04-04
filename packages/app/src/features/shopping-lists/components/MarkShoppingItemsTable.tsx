@@ -7,6 +7,7 @@ import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducer
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
+import { MdFindReplace } from "react-icons/md";
 import Pill from "@/components/Pill";
 import { RxReset } from "react-icons/rx";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
@@ -19,8 +20,8 @@ export type MarkShoppingItemsTableProps = {
 export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProps) {
   const { data } = props;
   const { isInEditMode, transientUpdatedShoppingItems, originalShoppingItems } = useMarkShoppingDoneState();
-  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal, removeExtraShoppingItem } = useMarkShoppingDoneActions();
-
+  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal, removeExtraShoppingItem, showReplacementOffcanvas, getOriginalItem } = useMarkShoppingDoneActions();
+  console.log("MarkShoppingItemsTable", data);
   return (
     <TabbedViewsTable<IShoppingItemExtended>
       data={data}
@@ -35,17 +36,29 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
               header: "Product",
               cell: (cell) => {
                 const product = cell.row.original.product;
+                const originalQty = getOriginalItem(cell.row.original.productId)?.quantity;
+                const isReplaced = cell.row.original.isReplaced;
+                const replacement = cell.row.original.replacement;
+                let productToShow = isReplaced && replacement && replacement.product ? replacement.product : product;
                 return (
-                  <div className="bp-mark_shopping_items_table__product">
-                    <img className="bp-mark_shopping_items_table__product__img" src={getImagePath(product?.cover)} alt={product?.name} />
-                    <div className="bp-mark_shopping_items_table__product__details">
-                      <div className="bp-mark_shopping_items_table__product__details__title">{product?.name}</div>
-                      <div className="bp-mark_shopping_items_table__product__details__measurement">
-                        <span>{product?.measurement.magnitude}</span>
-                        <span>{product?.measurement.unit}</span>
+                  <>
+                    <div className="bp-mark_shopping_items_table__product">
+                      <img className="bp-mark_shopping_items_table__product__img" src={getImagePath(productToShow?.cover)} alt={productToShow?.name} />
+                      <div className="bp-mark_shopping_items_table__product__details">
+                        <div className="bp-mark_shopping_items_table__product__details__title">{productToShow?.name}</div>
+                        <div className="bp-mark_shopping_items_table__product__details__measurement">
+                          <span>{productToShow?.measurement.magnitude}</span>
+                          <span>{productToShow?.measurement.unit}</span>
+                          {isReplaced && replacement && (
+                            <div className="bp-mark_shopping_items_table__product__original_info">
+                              Replaces {originalQty} of {product?.name} ({product?.measurement.magnitude}
+                              {product?.measurement.unit})
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </>
                 );
               },
 
@@ -61,8 +74,9 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
             {
               header: "Quantity",
               cell: (cell) => {
-                const quantity = cell.row.original.quantity;
-                const productId = cell.row.original.productId;
+                const item = cell.row.original;
+                const quantity = item.isReplaced && !!item.replacement ? item.replacement.quantity : item.quantity;
+                const productId = item.productId;
                 if (isInEditMode && productId) {
                   return (
                     <div className="bp-product_item_card__quantity_actions">
@@ -99,10 +113,11 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
             {
               header: "Expiry date",
               cell: (cell) => {
-                const expiryDate = cell.row.original.expiryDate;
-                const canExpire = cell.row.original.product?.canExpire;
+                const item = cell.row.original;
+                const expiryDate = item.isReplaced && item.replacement ? item.replacement.expiryDate : item.expiryDate;
+                const canExpire = item.isReplaced && item.replacement ? item.replacement.product?.canExpire : item.product?.canExpire;
+                const productId = cell.row.original.productId;
                 if (isInEditMode) {
-                  const productId = cell.row.original.productId;
                   return canExpire ? (
                     <Form.Control
                       type="date"
@@ -142,6 +157,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
             {
               header: "Actions",
               cell: (cell) => {
+                const product = cell.row.original.product;
                 const productId = cell.row.original.productId;
                 const isCancelled = cell.row.original.isCancelled;
                 const isOriginal = productId ? getIsItemOriginal(productId) : false;
@@ -177,6 +193,20 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                       >
                         <FaTrashRestore />
                         &emsp;Restore item
+                      </Button>
+                    )}
+                    {!isCancelled && !isExtra && (
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => {
+                          if (product) {
+                            showReplacementOffcanvas(product);
+                          }
+                        }}
+                      >
+                        <MdFindReplace />
+                        &emsp;Replace item
                       </Button>
                     )}
                     {!isOriginal && !isExtra && (

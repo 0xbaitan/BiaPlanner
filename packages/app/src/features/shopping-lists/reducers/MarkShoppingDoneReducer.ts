@@ -1,4 +1,4 @@
-import { IShoppingItemExtended, IShoppingList } from "@biaplanner/shared";
+import { IProduct, IShoppingItemExtended, IShoppingList } from "@biaplanner/shared";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -14,6 +14,7 @@ type MarkShoppingDoneState = {
   isInitialised: boolean;
   isInEditMode: boolean;
   showOffcanvas: boolean;
+  currentItemToReplace: IProduct | undefined;
   offCanvasType: "replacement" | "add-extra" | undefined;
 };
 
@@ -26,6 +27,7 @@ const initialState: MarkShoppingDoneState = {
   isInEditMode: false,
   showOffcanvas: false,
   offCanvasType: undefined,
+  currentItemToReplace: undefined,
 };
 
 const markShoppingDoneReducer = createSlice({
@@ -41,6 +43,7 @@ const markShoppingDoneReducer = createSlice({
       state.isInEditMode = false;
       state.showOffcanvas = false;
       state.offCanvasType = undefined;
+      state.currentItemToReplace = undefined;
     },
     initialiseFormState: (state, action: PayloadAction<IShoppingList>) => {
       const { payload } = action;
@@ -99,20 +102,25 @@ const markShoppingDoneReducer = createSlice({
         itemToUncancel.isCancelled = false;
       }
     },
-    replaceShoppingItem: (state, action: PayloadAction<{ id: string; replacedItem: IShoppingItemExtended }>) => {
+    replaceShoppingItem: (state, action: PayloadAction<{ productId: string; replacedItem: IShoppingItemExtended }>) => {
       const { payload } = action;
-      const itemToReplace = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.id);
+      const { productId, replacedItem } = payload;
+      const replacedItemIndex = state.transientUpdatedShoppingItems?.findIndex((item) => item.productId === productId);
       const replacementItem = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.replacedItem.productId);
-
-      if (!itemToReplace || replacementItem) {
+      const originalReplacedItem = state.originalShoppingItems?.find((item) => item.productId === productId);
+      if (replacedItemIndex === undefined || replacedItemIndex === -1 || replacementItem || !originalReplacedItem) {
         return;
       }
 
-      itemToReplace.isReplaced = true;
-      itemToReplace.replacement = replacementItem;
-
-      state.transientUpdatedShoppingItems?.push({
-        ...payload.replacedItem,
+      state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
+        if (item.productId === productId) {
+          return {
+            ...originalReplacedItem, // reset to original item incase this is never reset
+            isReplaced: true,
+            replacement: replacedItem,
+          };
+        }
+        return item;
       });
     },
 
@@ -124,6 +132,15 @@ const markShoppingDoneReducer = createSlice({
       }
       state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
         if (item.productId === payload.id) {
+          if (item.isReplaced && !!item.replacement) {
+            return {
+              ...item,
+              replacement: {
+                ...item.replacement,
+                expiryDate: payload.expiryDate,
+              },
+            };
+          }
           return {
             ...item,
             expiryDate: payload.expiryDate,
@@ -141,6 +158,15 @@ const markShoppingDoneReducer = createSlice({
       }
       state.transientUpdatedShoppingItems = state.transientUpdatedShoppingItems?.map((item) => {
         if (item.productId === payload.id) {
+          if (item.isReplaced && !!item.replacement) {
+            return {
+              ...item,
+              replacement: {
+                ...item.replacement,
+                quantity: payload.quantity,
+              },
+            };
+          }
           return {
             ...item,
             quantity: payload.quantity,
@@ -164,6 +190,7 @@ const markShoppingDoneReducer = createSlice({
         if (item.productId === id) {
           return {
             ...originalItem,
+            isExtra: false,
             isCancelled: false,
             isReplaced: false,
             replacement: undefined,
@@ -191,8 +218,17 @@ const markShoppingDoneReducer = createSlice({
       state.showOffcanvas = true;
       state.offCanvasType = "add-extra";
     },
+    showReplacementOffcanvas: (state, action: PayloadAction<IProduct>) => {
+      if (!state.isInEditMode) {
+        state.showOffcanvas = false;
+        return;
+      }
+      const { payload: productId } = action;
+      state.showOffcanvas = true;
+      state.offCanvasType = "replacement";
+      state.currentItemToReplace = productId;
+    },
     hideOffcanvas: (state) => {
-      console.log("hideOffcanvas");
       state.showOffcanvas = false;
       state.offCanvasType = undefined;
     },
@@ -214,6 +250,7 @@ export const {
   updateQuantity,
   hideOffcanvas,
   resetItemToOriginal,
+  showReplacementOffcanvas,
 } = markShoppingDoneReducer.actions;
 export default markShoppingDoneReducer.reducer;
 
@@ -264,7 +301,7 @@ export function useMarkShoppingDoneActions() {
 
   const replaceShoppingItemCallback = useCallback(
     (productId: string, replacedItem: IShoppingItemExtended) => {
-      dispatch(replaceShoppingItem({ id: productId, replacedItem }));
+      dispatch(replaceShoppingItem({ productId, replacedItem }));
     },
     [dispatch]
   );
@@ -305,6 +342,14 @@ export function useMarkShoppingDoneActions() {
     [transientUpdatedShoppingItems, originalShoppingItems]
   );
 
+  const getOriginalItemCallback = useCallback(
+    (productId: string) => {
+      const item = originalShoppingItems?.find((item) => item.productId === productId);
+      return item;
+    },
+    [originalShoppingItems]
+  );
+
   const openEditModeCallback = useCallback(() => {
     dispatch(openEditMode());
   }, [dispatch]);
@@ -318,7 +363,7 @@ export function useMarkShoppingDoneActions() {
 
   const isItemPresentCallback = useCallback(
     (productId: string): "extra" | "non-extra" | false => {
-      const item = transientUpdatedShoppingItems?.find((item) => item.productId === productId);
+      const item = transientUpdatedShoppingItems?.find((item) => item.productId === productId || item.replacement?.productId === productId);
       if (!item) {
         return false;
       }
@@ -349,6 +394,13 @@ export function useMarkShoppingDoneActions() {
     dispatch(showAddExtraOffcanvas());
   }, [dispatch]);
 
+  const showReplacementOffcanvasCallback = useCallback(
+    (product: IProduct) => {
+      dispatch(showReplacementOffcanvas(product));
+    },
+    [dispatch]
+  );
+
   return {
     resetFormState: resetFormStateCallback,
     initialiseFormState: initialiseFormStateCallback,
@@ -363,9 +415,11 @@ export function useMarkShoppingDoneActions() {
     closeEditMode: closeEditModeCallback,
     uncancelShoppingItem: uncancelShoppingItemCallback,
     getIsItemOriginal: getIsItemOriginalCallback,
+    getOriginalItem: getOriginalItemCallback,
     isItemPresent: isItemPresentCallback,
     getItem: getItemCallback,
     showAddExtraOffcanvas: showAddExtraOffcanvasCallback,
+    showReplacementOffcanvas: showReplacementOffcanvasCallback,
     hideOffcanvas: hideOffcanvasCallback,
   };
 }
