@@ -76,6 +76,13 @@ const markShoppingDoneReducer = createSlice({
         itemToCancel.isCancelled = true;
       }
     },
+    uncancelShoppingItem: (state, action: PayloadAction<string>) => {
+      const { payload: id } = action;
+      const itemToUncancel = state.transientUpdatedShoppingItems?.find((item) => item.id === id);
+      if (itemToUncancel) {
+        itemToUncancel.isCancelled = false;
+      }
+    },
     replaceShoppingItem: (state, action: PayloadAction<{ id: string; replacedItem: IShoppingItemExtended }>) => {
       const { payload } = action;
       const itemToReplace = state.transientUpdatedShoppingItems?.find((item) => item.id === payload.id);
@@ -163,7 +170,8 @@ const markShoppingDoneReducer = createSlice({
   },
 });
 
-export const { resetFormState, openEditMode, closeEditMode, initialiseFormState, addExtraShoppingItem, cancelShoppingItem, replaceShoppingItem, updateExpiryDate, updateQuantity, resetItemToOriginal } = markShoppingDoneReducer.actions;
+export const { resetFormState, openEditMode, closeEditMode, initialiseFormState, addExtraShoppingItem, cancelShoppingItem, uncancelShoppingItem, replaceShoppingItem, updateExpiryDate, updateQuantity, resetItemToOriginal } =
+  markShoppingDoneReducer.actions;
 export default markShoppingDoneReducer.reducer;
 
 export function useMarkShoppingDoneState(): MarkShoppingDoneState {
@@ -192,6 +200,13 @@ export function useMarkShoppingDoneActions() {
   const cancelShoppingItemCallback = useCallback(
     (id: string) => {
       dispatch(cancelShoppingItem(id));
+    },
+    [dispatch]
+  );
+
+  const uncancelShoppingItemCallback = useCallback(
+    (id: string) => {
+      dispatch(uncancelShoppingItem(id));
     },
     [dispatch]
   );
@@ -246,5 +261,6 @@ export function useMarkShoppingDoneActions() {
     resetItemToOriginal: resetItemToOriginalCallback,
     openEditMode: openEditModeCallback,
     closeEditMode: closeEditModeCallback,
+    uncancelShoppingItem: uncancelShoppingItemCallback,
   };
 }

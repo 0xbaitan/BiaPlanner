@@ -32,3 +32,27 @@
   font-size: 1em;
   color: #666;
 }
+
+.bp-mark_shopping_items_table__status_pill {
+  display: flex;
+  justify-self: center;
+  width: 75%;
+  max-width: 10em;
+  padding: 0.25em 0.5em;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: center;
+  gap: 0.5em;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1em;
+  color: $colors-white;
+
+  &.active {
+    background-color: $colors-success;
+  }
+
+  &.cancelled {
+    background-color: $colors-danger;
+  }
+}

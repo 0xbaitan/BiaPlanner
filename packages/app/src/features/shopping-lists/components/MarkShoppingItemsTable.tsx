@@ -1,12 +1,11 @@
 import "../styles/MarkShoppingItemsTable.scss";
 
-import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { FaMinus, FaPlus, FaTrash, FaTrashRestore } from "react-icons/fa";
+import { FaPencil, FaXmark } from "react-icons/fa6";
 import { IShoppingItem, IShoppingItemExtended } from "@biaplanner/shared";
-import { addShoppingListItem, removeShoppingListItem } from "../reducers/ShoppingListItemsReducer";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import Button from "react-bootstrap/esm/Button";
-import { FaPencil } from "react-icons/fa6";
 import Form from "react-bootstrap/esm/Form";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
@@ -18,7 +17,7 @@ export type MarkShoppingItemsTableProps = {
 export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProps) {
   const { data } = props;
   const { isInEditMode } = useMarkShoppingDoneState();
-  const { updateQuantity, updateExpiryDate } = useMarkShoppingDoneActions();
+  const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem } = useMarkShoppingDoneActions();
   return (
     <TabbedViewsTable<IShoppingItemExtended>
       data={data}
@@ -48,6 +47,13 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
               },
 
               accessorKey: "product",
+            },
+            {
+              header: "Status",
+              cell: (cell) => {
+                const isCancelled = cell.row.original.isCancelled;
+                return isCancelled ? <div className="bp-mark_shopping_items_table__status_pill cancelled">Cancelled</div> : <div className="bp-mark_shopping_items_table__status_pill active">Active</div>;
+              },
             },
             {
               header: "Quantity",
@@ -111,25 +117,50 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
 
               accessorKey: "expiryDate",
             },
+
+            {
+              header: "Actions",
+              cell: (cell) => {
+                const id = cell.row.original.id;
+                const isCancelled = cell.row.original.isCancelled;
+                if (!isInEditMode) {
+                  return null;
+                }
+                return (
+                  <>
+                    {!isCancelled && (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => {
+                          if (id) {
+                            cancelShoppingItem(id);
+                          }
+                        }}
+                      >
+                        <FaTrash />
+                        &emsp;Cancel item
+                      </Button>
+                    )}
+                    {isCancelled && (
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => {
+                          if (id) {
+                            uncancelShoppingItem(id);
+                          }
+                        }}
+                      >
+                        <FaTrashRestore />
+                        &emsp;Restore item
+                      </Button>
+                    )}
+                  </>
+                );
+              },
+            },
           ],
-        },
-      ]}
-      actions={[
-        {
-          type: "edit",
-          label: "Edit shopping list",
-          icon: FaPencil,
-          onClick(row) {
-            console.log("Edit action triggered for row:", row);
-          },
-        },
-        {
-          type: "delete",
-          label: "Delete shopping list",
-          icon: FaTrash,
-          onClick(row) {
-            console.log("Delete action triggered for row:", row);
-          },
         },
       ]}
     />
