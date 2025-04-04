@@ -67,7 +67,8 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
             {
               header: "Status",
               cell: (cell) => {
-                const isCancelled = cell.row.original.isCancelled;
+                const item = cell.row.original;
+                const isCancelled = item.isReplaced && !!item.replacement ? item.replacement.isCancelled : item.isCancelled;
                 return isCancelled ? <Pill className="bp-mark_shopping_items_table__status_pill cancelled">Cancelled</Pill> : <Pill className="bp-mark_shopping_items_table__status_pill active">Active</Pill>;
               },
             },
@@ -157,9 +158,11 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
             {
               header: "Actions",
               cell: (cell) => {
-                const product = cell.row.original.product;
-                const productId = cell.row.original.productId;
-                const isCancelled = cell.row.original.isCancelled;
+                const item = cell.row.original;
+                const product = item.product;
+                const productId = item.productId;
+
+                const isCancelled = item.isReplaced && !!item.replacement ? item.replacement.isCancelled : item.isCancelled;
                 const isOriginal = productId ? getIsItemOriginal(productId) : false;
                 const isExtra = cell.row.original.isExtra;
                 if (!isInEditMode) {

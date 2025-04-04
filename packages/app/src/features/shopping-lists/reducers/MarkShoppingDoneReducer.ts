@@ -92,6 +92,11 @@ const markShoppingDoneReducer = createSlice({
       const { payload: id } = action;
       const itemToCancel = state.transientUpdatedShoppingItems?.find((item) => item.productId === id);
       if (itemToCancel) {
+        if (itemToCancel.isReplaced && !!itemToCancel.replacement) {
+          itemToCancel.replacement.isCancelled = true;
+          return;
+        }
+
         itemToCancel.isCancelled = true;
       }
     },
@@ -99,6 +104,10 @@ const markShoppingDoneReducer = createSlice({
       const { payload: id } = action;
       const itemToUncancel = state.transientUpdatedShoppingItems?.find((item) => item.productId === id);
       if (itemToUncancel) {
+        if (itemToUncancel.isReplaced && !!itemToUncancel.replacement) {
+          itemToUncancel.replacement.isCancelled = false;
+          return;
+        }
         itemToUncancel.isCancelled = false;
       }
     },
