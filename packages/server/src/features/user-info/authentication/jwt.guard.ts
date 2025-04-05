@@ -40,7 +40,9 @@ export class JwtGuard extends AuthGuard('jwt') {
       CAN_EVADE_JWT_GUARD_KEY,
       context.getHandler(),
     );
-    if (canEvadeJWT) {
+
+    const isPublic = await this.isPublic(context);
+    if (canEvadeJWT || isPublic) {
       return true;
     }
 
@@ -52,5 +54,10 @@ export class JwtGuard extends AuthGuard('jwt') {
 
     const result = (await super.canActivate(context)) as boolean;
     return result;
+  }
+
+  private async isPublic(context: ExecutionContext): Promise<boolean> {
+    const isPublic = Reflect.getMetadata('isPublic', context.getHandler());
+    return isPublic;
   }
 }

@@ -1,5 +1,5 @@
 import BrandModule from '../brand/brand.module';
-import { ComputExpiryDatesService } from './compute-expiry-dates.service';
+import { ComputeExpiryDatesService } from './compute-expiry-dates.service';
 import { Module } from '@nestjs/common';
 import PantryItemController from './pantry-item.controller';
 import { PantryItemEntity } from './pantry-item.entity';
@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     RecipeIngredientModule,
   ],
   controllers: [PantryItemController, ShelfLifePantryItemController],
-  providers: [PantryItemService, ComputExpiryDatesService],
-  exports: [TypeOrmModule, PantryItemService],
+  providers: [PantryItemService, ComputeExpiryDatesService],
+  exports: [PantryItemService, ComputeExpiryDatesService],
 })
 export default class PantryItemModule {}

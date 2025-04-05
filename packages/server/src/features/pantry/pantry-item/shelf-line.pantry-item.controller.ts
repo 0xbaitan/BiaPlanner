@@ -1,14 +1,17 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
-import { ComputExpiryDatesService } from './compute-expiry-dates.service';
+import { ComputeExpiryDatesService } from './compute-expiry-dates.service';
 import { IPantryItem, IUser } from '@biaplanner/shared';
 import { User } from '@/features/user-info/authentication/user.decorator';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RecipeEntity } from '@/features/meal-plan/recipe/recipe.entity';
+import { Repository } from 'typeorm';
 
 @Controller('/pantry/shelf-life')
 export class ShelfLifePantryItemController {
   constructor(
-    @Inject(ComputExpiryDatesService)
-    private pantryItemService: ComputExpiryDatesService,
+    @Inject(ComputeExpiryDatesService)
+    private pantryItemService: ComputeExpiryDatesService,
   ) {}
 
   @Get('/expiring-items')

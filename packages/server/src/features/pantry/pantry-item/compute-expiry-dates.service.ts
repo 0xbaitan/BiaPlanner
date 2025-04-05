@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { IPantryItem } from '@biaplanner/shared';
 
 @Injectable()
-export class ComputExpiryDatesService {
+export class ComputeExpiryDatesService {
   constructor(
     @InjectRepository(PantryItemEntity)
     private pantryItemRepository: Repository<PantryItemEntity>,
@@ -20,6 +20,7 @@ export class ComputExpiryDatesService {
       .select('pantryItem')
       .leftJoinAndSelect('pantryItem.product', 'product')
       .leftJoin('pantryItem.createdBy', 'createdBy')
+      .leftJoinAndSelect('product.productCategories', 'productCategories')
       .where('pantryItem.createdById = :userId', { userId })
       .andWhere('pantryItem.expiryDate IS NOT NULL')
       .andWhere('pantryItem.isExpired = false')
@@ -27,6 +28,24 @@ export class ComputExpiryDatesService {
         'DATEDIFF(pantryItem.expiryDate, NOW()) <= :maxDaysLeftThreshold',
         { maxDaysLeftThreshold },
       );
+    const pantryItems = await qb.getMany();
+    return pantryItems;
+  }
+
+  async findNonExpiredItems(userId?: string): Promise<IPantryItem[]> {
+    const qb = this.pantryItemRepository
+      .createQueryBuilder('pantryItem')
+      .select('pantryItem')
+      .leftJoinAndSelect('pantryItem.product', 'product')
+      .leftJoinAndSelect('product.productCategories', 'productCategories')
+      .leftJoin('pantryItem.createdBy', 'createdBy')
+      .andWhere('pantryItem.expiryDate IS NOT NULL')
+      .andWhere('pantryItem.isExpired = false');
+
+    if (userId) {
+      qb.andWhere('pantryItem.createdById = :userId', { userId });
+    }
+
     const pantryItems = await qb.getMany();
     return pantryItems;
   }
