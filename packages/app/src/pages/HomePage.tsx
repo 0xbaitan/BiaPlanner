@@ -5,55 +5,46 @@ import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
 import Protected from "@/features/authentication/components/Protected";
+import { useLazyGetExpiringPantryItemsQuery } from "@/apis/PantryItemsApi";
 import { useSendTestReminderMutation } from "@/apis/RemindersApi";
 import { useUploadFileMutation } from "@/apis/FilesApi";
 
 export default function HomePage() {
-  const [sendTestEmail, { isSuccess, isError }] = useSendTestReminderMutation();
-  const [uploadFile, { isSuccess: isFileUploadSuccess, isError: isFileUploadError }] = useUploadFileMutation();
-  const [file, setFile] = useState<File | null>(null);
+  const [getExpiringPantryItems, { data, isSuccess, isError, isLoading }] = useLazyGetExpiringPantryItemsQuery();
+  const [maxDaysLeft, setMaxDaysLeft] = useState(0);
   return (
     <Protected>
       <BasicLayout>
-        <div>Hi. You have Logged In</div>
-        <LogoutButton />
+        <Form.Group className="mb-3">
+          <Form.Label>Max days left</Form.Label>
+          <Form.Control
+            type="number"
+            placeholder="Enter max days left"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setMaxDaysLeft(Number(e.target.value));
+            }}
+          />
+        </Form.Group>
         <Button
           variant="primary"
-          onClick={async () => {
-            await sendTestEmail();
+          onClick={() => {
+            getExpiringPantryItems({ maxDaysLeft });
           }}
         >
-          Send test email
+          Get Expiring Pantry Items
         </Button>
-        <div>
-          {isSuccess ? "Email sent successfully" : ""}
-          {isError ? "Error sending email" : ""}
-        </div>
-        <Form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            if (file) {
-              formData.append("file", file);
-              await uploadFile(formData);
-            }
-          }}
-        >
-          <Form.Group>
-            <Form.Label>Test File Upload</Form.Label>
-            <Form.Control
-              type="file"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                if (e.target.files) {
-                  setFile(e.target.files[0]);
-                }
-              }}
-            />
-            {isFileUploadSuccess ? "File uploaded successfully" : ""}
-            {isFileUploadError ? "Error uploading file" : ""}
-          </Form.Group>
-          <Button type="submit">Upload</Button>
-        </Form>
+        {isLoading && <p>Loading...</p>}
+        {isSuccess && (
+          <ul>
+            {data.map((item) => (
+              <li key={item.id}>
+                {item.product?.name} - {item.expiryDate}
+              </li>
+            ))}
+          </ul>
+        )}
+        {isError && <p>Error fetching expiring pantry items</p>}
+        <LogoutButton />
       </BasicLayout>
     </Protected>
   );

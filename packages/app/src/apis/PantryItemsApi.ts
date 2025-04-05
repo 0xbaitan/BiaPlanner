@@ -40,6 +40,23 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       keepUnusedDataFor: 0,
       providesTags: [{ type: "PantryItem", id: "COMPATIBLE" }],
     }),
+
+    getExpiringPantryItems: build.query<IPantryItem[], { maxDaysLeft: number }>({
+      query: ({ maxDaysLeft }) => ({
+        url: `/pantry/shelf-life/expiring-items`,
+        method: "GET",
+        params: { maxDaysLeft },
+      }),
+      providesTags: (result) => (result ? result.map(({ id }) => ({ type: "PantryItem" as const, id })) : []),
+    }),
+
+    getExpiredPantryItems: build.query<IPantryItem[], void>({
+      query: () => ({
+        url: `/pantry/shelf-life/expired-items`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? result.map(({ id }) => ({ type: "PantryItem" as const, id })) : []),
+    }),
   }),
 });
 
@@ -51,4 +68,8 @@ export const {
   useLazyGetIngredientCompatiblePantryItemsQuery,
   useGetPantryItemsByIdsQuery,
   useLazyGetPantryItemsByIdsQuery,
+  useGetExpiringPantryItemsQuery,
+  useLazyGetExpiringPantryItemsQuery,
+  useGetExpiredPantryItemsQuery,
+  useLazyGetExpiredPantryItemsQuery,
 } = pantryItemsApi;
