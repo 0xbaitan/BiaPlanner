@@ -11,9 +11,15 @@ import { ShoppingListService } from './shopping-list.service';
 import {
   CreateShoppingListDto,
   ICreateShoppingListDto,
+  IUpdateShoppingItemExtendedDto,
   IUpdateShoppingListDto,
+  IUpdateShoppingListExtendedDto,
+  IUser,
   UpdateShoppingListDto,
+  UpdateShoppingListExtendedDto,
 } from '@biaplanner/shared';
+import { User } from '../user-info/authentication/user.decorator';
+import { MarkShoppingDoneService } from './mark-shopping-done.service';
 
 @Controller('/shopping-lists')
 export class ShoppingListController {

@@ -1,7 +1,8 @@
 import "../styles/MarkShoppingDoneForm.scss";
 
 import { FaCheckCircle, FaSave } from "react-icons/fa";
-import { useEffect, useMemo } from "react";
+import { IShoppingList, IUpdateShoppingItemExtendedDto, IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
+import { useCallback, useEffect, useMemo } from "react";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
@@ -9,7 +10,6 @@ import Button from "react-bootstrap/esm/Button";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FormProvider } from "react-hook-form";
 import Heading from "@/components/Heading";
-import { IShoppingList } from "@biaplanner/shared";
 import MarkShoppingItemsTable from "./MarkShoppingItemsTable";
 import { MdCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -17,11 +17,11 @@ import { useNavigate } from "react-router-dom";
 export type MarkShoppingDoneFormProps = {
   disableSubmit?: boolean;
   initialValue: IShoppingList;
+  onSubmit: (values: IUpdateShoppingListExtendedDto) => void;
 };
 
 export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
-  const { disableSubmit } = props;
-  const { initialValue } = props;
+  const { initialValue, disableSubmit, onSubmit } = props;
   const navigate = useNavigate();
   const { initialiseFormState, openEditMode, resetFormState, closeEditMode, hideOffcanvas, showAddExtraOffcanvas } = useMarkShoppingDoneActions();
   const { updatedShoppingItems, isInitialised, isInEditMode, transientUpdatedShoppingItems, offCanvasType, showOffcanvas, currentItemToReplace } = useMarkShoppingDoneState();
@@ -38,10 +38,23 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
     }
   }, [initialValue, initialiseFormState, isInitialised, resetFormState]);
 
+  const handleSubmit = useCallback(() => {
+    const dto: IUpdateShoppingListExtendedDto = {
+      ...initialValue,
+      items: updatedShoppingItems,
+    };
+    onSubmit(dto);
+  }, [initialValue, onSubmit, updatedShoppingItems]);
+
   return (
     <div>
       <BrowseProductsOffcanvas hideOffcanvas={hideOffcanvas} showOffcanvas={showOffcanvas} type={offCanvasType ?? "normal"} replacedProductName={currentItemToReplace?.name} />
-      <DualPaneForm>
+      <DualPaneForm
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>Mark shopping done</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>

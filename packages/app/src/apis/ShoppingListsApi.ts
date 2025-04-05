@@ -1,4 +1,4 @@
-import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingListDto } from "@biaplanner/shared";
+import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingListDto, IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -45,7 +45,16 @@ export const shoppingListsApi = rootApi.injectEndpoints({
       }),
       providesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg }],
     }),
+
+    markShoppingDone: build.mutation<IShoppingList, IUpdateShoppingListExtendedDto>({
+      query: (body) => ({
+        url: `/mark-shopping-done`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg.id }],
+    }),
   }),
 });
 
-export const { useGetShoppingListsQuery, useCreateShoppingListMutation, useUpdateShoppingListMutation, useDeleteShoppingListMutation, useGetShoppingListQuery } = shoppingListsApi;
+export const { useGetShoppingListsQuery, useCreateShoppingListMutation, useUpdateShoppingListMutation, useDeleteShoppingListMutation, useGetShoppingListQuery, useMarkShoppingDoneMutation } = shoppingListsApi;
