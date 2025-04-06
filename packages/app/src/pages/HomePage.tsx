@@ -11,6 +11,7 @@ import { useUploadFileMutation } from "@/apis/FilesApi";
 
 export default function HomePage() {
   const [getExpiringPantryItems, { data, isSuccess, isError, isLoading }] = useLazyGetExpiringPantryItemsQuery();
+  const [sendTestMail, { isSuccess: isMailSent }] = useSendTestReminderMutation();
   const [maxDaysLeft, setMaxDaysLeft] = useState(0);
   return (
     <Protected>
@@ -44,6 +45,15 @@ export default function HomePage() {
           </ul>
         )}
         {isError && <p>Error fetching expiring pantry items</p>}
+        <Button
+          variant="primary"
+          onClick={() => {
+            sendTestMail();
+          }}
+        >
+          Send Test Email
+        </Button>
+        {isMailSent && <p>Email sent successfully</p>}
         <LogoutButton />
       </BasicLayout>
     </Protected>

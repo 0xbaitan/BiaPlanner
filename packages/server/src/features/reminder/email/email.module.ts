@@ -9,6 +9,8 @@ import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { Environment } from '../../../environment';
 import { Module } from '@nestjs/common';
+import PantryItemModule from '@/features/pantry/pantry-item/pantry-item.module';
+import { RecipeModule } from '@/features/meal-plan/recipe/recipe.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { Module } from '@nestjs/common';
         return options;
       },
     }),
+    PantryItemModule,
+    RecipeModule,
   ],
   controllers: [EmailController],
   providers: [EmailService],

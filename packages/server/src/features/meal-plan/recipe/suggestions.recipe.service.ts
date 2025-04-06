@@ -286,7 +286,10 @@ export class RecipeSuggestionsService {
     return average;
   }
 
-  public async computeRecipeSuggestions(userId: string) {
+  public async computeRecipeSuggestions(
+    userId: string,
+    maxDaysLeftThreshold = 7,
+  ) {
     const pantryItems = await this.computeExpiryDatesService.findExpiringItems(
       userId,
       5,
@@ -305,9 +308,6 @@ export class RecipeSuggestionsService {
       .filter((r) => r.pantryRelevance > 0)
       .sort((a, b) => b.pantryRelevance - a.pantryRelevance);
 
-    return sortedRecipes.map((item) => ({
-      recipe: item.recipe.title,
-      pantryRelevance: item.pantryRelevance,
-    }));
+    return sortedRecipes.slice(0, 10);
   }
 }

@@ -24,5 +24,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [RecipeController, RecipeSuggestionsController],
   providers: [RecipeService, RecipeSuggestionsService],
+  exports: [
+    RecipeService,
+    RecipeIngredientModule,
+    ConcreteIngredientModule,
+    ConcretRecipeModule,
+    PantryItemPortionModule,
+    RecipeTagModule,
+    RecipeSuggestionsService,
+  ],
 })
 export class RecipeModule {}
