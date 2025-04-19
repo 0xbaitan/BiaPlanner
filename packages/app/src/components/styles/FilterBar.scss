@@ -1,0 +1,31 @@
+.bp-filter_bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa; // Light gray background
+  border: 1px solid #dee2e6; // Border color
+  border-radius: 0.5rem;
+
+  &__prominent_filter {
+    flex: 1;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .bp-filter_multiselect {
+      width: 100%;
+    }
+  }
+
+  &__prominent_checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+
+    input[type="checkbox"] {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+}

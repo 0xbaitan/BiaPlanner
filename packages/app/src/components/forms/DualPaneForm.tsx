@@ -2,12 +2,11 @@ import "../styles/DualPaneForm.scss";
 
 import Col, { ColProps } from "react-bootstrap/esm/Col";
 import Form, { FormProps } from "react-bootstrap/Form";
-import Heading, { HeadingProps } from "../Heading";
 import Row, { RowProps } from "react-bootstrap/esm/Row";
 
-import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/Container";
 import { HTMLProps } from "react";
+import Heading from "../Heading";
 import React from "react";
 
 export type DualPaneFormMainProps = FormProps;

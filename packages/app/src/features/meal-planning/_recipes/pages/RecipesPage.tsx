@@ -1,6 +1,7 @@
 import Button from "react-bootstrap/esm/Button";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
+import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { useGetRecipesQuery } from "@/apis/RecipeApi";
 import { useNavigate } from "react-router-dom";
@@ -27,20 +28,7 @@ export default function RecipesPage() {
 
       <Button onClick={() => navigate("./create")}>Create Recipe</Button>
       <RecipesTable data={recipes} />
-      <FilterMultiselect<IRecipe>
-        list={recipes}
-        idSelector={(item) => item.id}
-        nameSelector={(item) => item.title}
-        selectedValues={[]}
-        onChange={(selectedList, selectedOptions) => {
-          console.log("Selected List:", selectedList);
-          console.log("Selected Options:", selectedOptions);
-        }}
-        className="mb-3"
-        error={""}
-        placeholder="Select recipes"
-        multi={true}
-      />
+      <RecipesFilterBar />
     </div>
   );
 }
