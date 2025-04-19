@@ -1,0 +1,52 @@
+.bp-filter_multiselect__label {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: bold;
+  color: $colors-black;
+}
+
+.bp-filter_multiselect__content {
+  width: 100%;
+  display: flex;
+  padding: 0 clamp(0.5em, 2vw, 1.25em);
+  flex-direction: row;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bp-filter_multiselect__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  width: 100%;
+}
+
+.bp-filter_multiselect__dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  width: 100%;
+  padding: 1.5em clamp(0.5em, 2vw, 1.25em);
+}
+
+.bp-filter_multiselect__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bp-filter_multiselect__count-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border-radius: 0;
+  aspect-ratio: 2/1;
+  padding: 0.25em 0.5em;
+  width: fit-content;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}

@@ -14,28 +14,39 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 export type FilterMultiselectProps<T extends IBaseEntity> = SelectInputProps<T>;
 export default function FilterMultiselect<T extends IBaseEntity>(props: FilterMultiselectProps<T>) {
   const [focused, setFocused] = useState(false);
-  return <SelectInput {...props} contentRenderer={FilterMultiselectContent} separator dropdownRenderer={FilterMultiselectDropdown} searchable multi />;
+  return <SelectInput className="bp-filter_multiselect" {...props} contentRenderer={FilterMultiselectContent} separator dropdownRenderer={FilterMultiselectDropdown} searchable multi />;
 }
 
 function FilterMultiselectContent<T extends IBaseEntity>(props: SelectRendererProps<T>) {
   const { props: selectProps, state, methods, additionalMethods } = props;
+  const selectCount = state.values.length;
+  const isAllSelected = selectCount === selectProps.options.length;
   return (
-    <div>
-      {selectProps.labelField && <Form.Label>{selectProps.labelField}</Form.Label>} hi {selectProps.values.length} selected
+    <div className="bp-filter_multiselect__content">
+      {selectProps.labelField && <Form.Label className="bp-filter_multiselect__label">{selectProps.labelField}</Form.Label>}
+      <div className={["bp-filter_multiselect__count-badge", isAllSelected ? "all-selected" : ""].join(" ")}>{isAllSelected ? <span>All</span> : <span>{selectCount}</span>}</div>
     </div>
   );
 }
 
 function FilterMultiselectDropdown<T extends IBaseEntity>(props: SelectRendererProps<T>) {
-  const { props: selectProps, state, methods, additionalMethods } = props;
+  const { props: selectProps, state, methods } = props;
   const { addItem, removeItem, isSelected } = methods;
   const [search, setSearch] = useState(() => state.search ?? "");
   const [optionsParent] = useAutoAnimate({ duration: 300, easing: "ease-in-out" });
   const isAllSelected = state.values.length === selectProps.options.length;
 
   return (
-    <div className="p-2">
-      <div>
+    <div className="bp-filter_multiselect__dropdown">
+      <Form.Control
+        value={search}
+        placeholder={selectProps.placeholder ?? "Start typing to filter..."}
+        onChange={(e) => {
+          setSearch(() => e.target.value);
+          methods.setSearch(e as React.ChangeEvent<HTMLInputElement>);
+        }}
+      />
+      <div className="bp-filter_multiselect__actions">
         {isAllSelected ? (
           <Button
             size="sm"
@@ -62,14 +73,7 @@ function FilterMultiselectDropdown<T extends IBaseEntity>(props: SelectRendererP
           </Button>
         )}
       </div>
-      <Form.Control
-        onChange={(e) => {
-          setSearch(() => e.target.value);
-          methods.setSearch(e as React.ChangeEvent<HTMLInputElement>);
-        }}
-      />
-
-      <div ref={optionsParent}>
+      <div ref={optionsParent} className="bp-filter_multiselect__options">
         {selectProps.options
           .filter((option) => {
             const term = search.trim().toLowerCase();
@@ -121,6 +125,7 @@ function FilterMultiselectDropdown<T extends IBaseEntity>(props: SelectRendererP
           .map((option, index) => {
             return (
               <Form.Check
+                className="bp-filter_multiselect__option"
                 key={option.id}
                 label={option.name}
                 checked={isSelected(option)}
