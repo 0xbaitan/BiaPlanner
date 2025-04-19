@@ -189,6 +189,9 @@ importers:
       formik:
         specifier: ^2.4.6
         version: 2.4.6(react@18.3.1)
+      fuzzysearch:
+        specifier: ^1.0.3
+        version: 1.0.3
       multiselect-react-dropdown:
         specifier: ^2.0.25
         version: 2.0.25(react@18.3.1)
@@ -329,6 +332,9 @@ importers:
       '@locator/runtime':
         specifier: ^0.4.4
         version: 0.4.4(ts-node@10.9.2(@types/node@16.18.114)(typescript@4.9.5))
+      '@types/fuzzysearch':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@types/react-anchor-link-smooth-scroll':
         specifier: ^1.0.5
         version: 1.0.5
@@ -2702,6 +2708,9 @@ packages:
 
   '@types/express@5.0.0':
     resolution: {integrity: sha512-DvZriSMehGHL1ZNLzi6MidnsDhUZM/x2pRdDIKdwbUNqqwHxMlRdkxtn6/EPKyqKpHqTl/4nRZsRNLpZxZRpPQ==}
+
+  '@types/fuzzysearch@1.0.2':
+    resolution: {integrity: sha512-G2M0M7acg75BzTtUv1qmPFMe7nTwX1K2AEKNeBO8zW0o+H2oTmyir7IJ2v0UW8pZkY4nHgHALvgpWQpB9WXPpg==}
 
   '@types/google-libphonenumber@7.4.30':
     resolution: {integrity: sha512-Td1X1ayRxePEm6/jPHUBs2tT6TzW1lrVB6ZX7ViPGellyzO/0xMNi+wx5nH6jEitjznq276VGIqjK5qAju0XVw==}
@@ -5195,6 +5204,9 @@ packages:
 
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+
+  fuzzysearch@1.0.3:
+    resolution: {integrity: sha512-s+kNWQuI3mo9OALw0HJ6YGmMbLqEufCh2nX/zzV5CrICQ/y4AwPxM+6TIiF9ItFCHXFCyM/BfCCmN57NTIJuPg==}
 
   gauge@3.0.2:
     resolution: {integrity: sha512-+5J6MS/5XksCuXq++uFRsnUd7Ovu1XenbeuIuNRJxYWjgQbPuFhT14lAvsWfqfAmnwluf1OwMjz39HjfLPci0Q==}
@@ -12689,6 +12701,8 @@ snapshots:
       '@types/qs': 6.9.16
       '@types/serve-static': 1.15.7
 
+  '@types/fuzzysearch@1.0.2': {}
+
   '@types/google-libphonenumber@7.4.30': {}
 
   '@types/graceful-fs@4.1.9':
@@ -15925,6 +15939,8 @@ snapshots:
       functions-have-names: 1.2.3
 
   functions-have-names@1.2.3: {}
+
+  fuzzysearch@1.0.3: {}
 
   gauge@3.0.2:
     dependencies:

@@ -248,13 +248,13 @@ export class RecipeSuggestionsService {
       }
       return this.calculateUsageFactor(pantryItem, ingredient);
     });
-    const avgUsageFactor =
-      usageFactors.reduce((sum, factor) => sum + factor, 0) /
-      usageFactors.length;
+    const maxUsageFactor =
+      usageFactors.reduce((max, factor) => Math.max(max, factor), 0) || 0;
+
     const expiryFactor = this.calculateExpiryFactor(pantryItem);
     const pantryItemRelevance = (
       0.6 * expiryFactor +
-      0.4 * avgUsageFactor
+      0.4 * maxUsageFactor
     ).toFixed(2);
     return Number(pantryItemRelevance);
   }
@@ -292,7 +292,7 @@ export class RecipeSuggestionsService {
   ) {
     const pantryItems = await this.computeExpiryDatesService.findExpiringItems(
       userId,
-      5,
+      maxDaysLeftThreshold,
     );
     const recipes = await this.recipeService.findAll();
 
