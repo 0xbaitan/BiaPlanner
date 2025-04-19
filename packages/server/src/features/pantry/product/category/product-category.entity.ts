@@ -29,6 +29,9 @@ export class ProductCategoryEntity implements IProductCategory {
   @ManyToMany(() => ProductEntity, (product) => product.productCategories)
   products?: IProduct[];
 
+  @Column({ type: 'boolean', default: false, nullable: false })
+  isAllergen?: boolean;
+
   @ManyToMany(
     () => RecipeIngredientEntity,
     (recipeIngredient) => recipeIngredient.productCategories,
