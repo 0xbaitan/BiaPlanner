@@ -19,11 +19,13 @@ export type ProductCategoryFormProps = {
 
 export const CreateBrandValidationSchema: z.ZodType<ICreateProductCategoryDto> = z.object({
   name: z.string().min(1, { message: "Product category name is required" }),
+  isAllergen: z.boolean().optional(),
 });
 
 export const UpdateBrandValidationSchema: z.ZodType<IUpdateProductCategoryDto> = z.object({
   id: z.string().min(1, { message: "Product category name is required" }),
   name: z.string().min(1, { message: "Product category name is required" }),
+  isAllergen: z.boolean().optional(),
 });
 
 export default function BrandForm(props: ProductCategoryFormProps) {
@@ -62,6 +64,18 @@ export default function BrandForm(props: ProductCategoryFormProps) {
           setValue("name", value);
         }}
       />
+      <Form.Group className="mb-3">
+        <Form.Check
+          type="checkbox"
+          label="Is Allergen?"
+          defaultChecked={initialValue?.isAllergen ?? false}
+          onChange={(e) => {
+            const value = e.target.checked;
+            setValue("isAllergen", value);
+          }}
+        />
+        {errors.isAllergen && <span className="text-danger">{errors.isAllergen.message}</span>}
+      </Form.Group>
 
       <Button type="submit" disabled={disableSubmit}>
         Submit
