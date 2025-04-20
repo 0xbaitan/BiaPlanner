@@ -1,0 +1,43 @@
+.bp-view_segmented_button {
+  &__item {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: $colors-secondary; // Dark gray text
+    background-color: #fefefe; // Light gray background
+
+    border: 1px solid darken(#fefefe, 25); // Dark gray border
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      background-color: darken(#fefefe, 10); // Darker gray on hover
+    }
+
+    &:first-child {
+      border-radius: 0.5rem 0 0 0.5rem; // Rounded corners for the first item
+    }
+    &:last-child {
+      border-radius: 0 0.5rem 0.5rem 0; // Rounded corners for the last item
+    }
+
+    &.active {
+      background-color: $colors-main; // Blue background for active state
+      color: #ffffff; // White text for active state
+
+      &:hover {
+        background-color: darken($colors-main, 10); // Darker blue on hover
+      }
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); // Focus ring
+    }
+  }
+}

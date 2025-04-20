@@ -24,10 +24,6 @@ export class RecipeService {
   async findAll(): Promise<IRecipe[]> {
     return this.recipeRepository.find({
       relations: ['cuisine', 'ingredients', 'tags'],
-      cache: {
-        id: 'recipe-cache',
-        milliseconds: 1000 * 60 * 60, // 1 hour
-      },
     });
   }
 

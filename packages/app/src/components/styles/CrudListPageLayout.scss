@@ -190,3 +190,11 @@
   font-size: 1rem;
   color: $colors-secondary;
 }
+
+.bp-crud_list_page_layout__body__layout_settings {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(0.5em, 2vw, 1.25em);
+}

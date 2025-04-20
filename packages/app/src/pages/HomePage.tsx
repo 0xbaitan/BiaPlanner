@@ -37,7 +37,7 @@ export default function HomePage() {
         {isLoading && <p>Loading...</p>}
         {isSuccess && (
           <ul>
-            {data.map((item) => (
+            {data?.map((item) => (
               <li key={item.id}>
                 {item.product?.name} - {item.expiryDate}
               </li>

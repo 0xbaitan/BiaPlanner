@@ -1,7 +1,8 @@
 import "./styles/CrudListPageLayout.scss";
 
-import { HTMLProps, useState } from "react";
+import { HTMLProps, memo, useMemo, useState } from "react";
 import PaginationComponent, { PaginationComponentProps } from "./PaginationComponent";
+import ViewSegmentedButtonComponent, { ViewSegmentedButtonProps } from "./ViewSegmentedButton";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
@@ -9,23 +10,17 @@ import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import Heading from "./Heading";
 import React from "react";
 
-export type CrudListPageHeaderProps = HTMLProps<HTMLDivElement> & {
+export type CrudListPageHeaderProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
   pageTitle: string;
   onSearch?: (searchTerm: string) => void;
+  actionsComponent?: React.ReactNode;
+  filtersComponent?: React.ReactNode;
 };
 export type CrudListPageLayoutProps = HTMLProps<HTMLDivElement>;
 
 function Header(props: CrudListPageHeaderProps) {
-  const { className, children, pageTitle, onSearch, ...rest } = props;
+  const { className, actionsComponent, filtersComponent, pageTitle, onSearch, ...rest } = props;
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const actionsSegment = React.Children.toArray(children).find((child) => {
-    if (!React.isValidElement(child)) return false;
-    return child.type === Actions;
-  }) as React.ReactElement | null;
-  const filterArea = React.Children.toArray(children).find((child) => {
-    if (!React.isValidElement(child)) return false;
-    return child.type === Filters;
-  }) as React.ReactElement | null;
 
   return (
     <div {...rest} className={`bp-crud_list_page_layout__header ${className || ""}`}>
@@ -55,9 +50,9 @@ function Header(props: CrudListPageHeaderProps) {
             Search
           </Button>
         </div>
-        <div className="bp-crud_list_page_layout__header__actions_area__actions">{actionsSegment}</div>
+        <div className="bp-crud_list_page_layout__header__actions_area__actions">{actionsComponent}</div>
       </div>
-      {filterArea && <div className="bp-crud_list_page_layout__header__filter_area">{filterArea}</div>}
+      {filtersComponent && <div className="bp-crud_list_page_layout__header__filter_area">{filtersComponent}</div>}
     </div>
   );
 }
@@ -88,27 +83,26 @@ export type ResultsCountProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
   searchTermUse?: string;
 };
 
-function Body(props: HTMLProps<HTMLDivElement>) {
-  const { className, children, ...rest } = props;
-  const resultsCount = React.Children.toArray(children).find((child) => {
-    if (!React.isValidElement(child)) return false;
-    return child.type === ResultsCount;
-  }) as React.ReactElement | null;
-  const content = React.Children.toArray(children).find((child) => {
-    if (!React.isValidElement(child)) return false;
-    return child.type === Content;
-  }) as React.ReactElement | null;
-  const itemsPerPageCountSelector = React.Children.toArray(children).find((child) => {
-    if (!React.isValidElement(child)) return false;
-    return child.type === ItemsPerPageCountSelector;
-  }) as React.ReactElement | null;
+export type CrudListBodyProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
+  resultsCountComponent?: React.ReactNode;
+  contentComponent?: React.ReactNode;
+  itemsPerPageCountSelectorComponent?: React.ReactNode;
+  viewSegmentedButtonComponent?: React.ReactNode;
+};
+
+function Body(props: CrudListBodyProps) {
+  const { className, resultsCountComponent, contentComponent, itemsPerPageCountSelectorComponent, viewSegmentedButtonComponent, ...rest } = props;
+
   return (
     <div {...rest} className={`bp-crud_list_page_layout__body ${className || ""}`}>
       <div className="bp-crud_list_page_layout__pagination_meta">
-        {resultsCount && <div className="bp-crud_list_page_layout__body__results_count_area">{resultsCount}</div>}
-        {itemsPerPageCountSelector && <div className="bp-crud_list_page_layout__body__items_per_page_count_area">{itemsPerPageCountSelector}</div>}
+        {resultsCountComponent && <div className="bp-crud_list_page_layout__body__results_count_area">{resultsCountComponent}</div>}
+        <div className="bp-crud_list_page_layout__body__layout_settings">
+          {itemsPerPageCountSelectorComponent && <div className="bp-crud_list_page_layout__body__items_per_page_count_area">{itemsPerPageCountSelectorComponent}</div>}
+          {viewSegmentedButtonComponent}
+        </div>
       </div>
-      {content && <div className="bp-crud_list_page_layout__body__content_area">{content}</div>}
+      {contentComponent && <div className="bp-crud_list_page_layout__body__content_area">{contentComponent}</div>}
     </div>
   );
 }
@@ -172,16 +166,23 @@ function ItemsPerPageCountSelector(props: CrudListPageItemsPerPageCountSelector)
   );
 }
 
+function ViewSegmentedButton(props: ViewSegmentedButtonProps) {
+  const { className, ...rest } = props;
+  return <ViewSegmentedButtonComponent {...rest} className="bp-crud_list_page_layout__view_segmented_button__component" />;
+}
+
 function CrudListPageLayout(props: CrudListPageLayoutProps) {
   return <div {...props} className={`bp-crud_list_page_layout ${props.className || ""}`}></div>;
 }
 
-export type CrudListPageFooterProps = HTMLProps<HTMLDivElement>;
+export type CrudListPageFooterProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
+  paginationComponent?: React.ReactNode;
+};
 function Footer(props: CrudListPageFooterProps) {
-  const { className, children, ...rest } = props;
+  const { className, paginationComponent, ...rest } = props;
   return (
     <div {...rest} className={`bp-crud_list_page_layout__footer ${className || ""}`}>
-      {children}
+      {paginationComponent && <div className="bp-crud_list_page_layout__footer__pagination_area">{paginationComponent}</div>}
     </div>
   );
 }
@@ -203,6 +204,7 @@ Footer.Pagination = Pagination;
 Body.ResultsCount = ResultsCount;
 Body.Content = Content;
 Body.ItemsPerPageCountSelector = ItemsPerPageCountSelector;
+Body.ViewSegmentedButton = ViewSegmentedButton;
 
 Header.Actions = Actions;
 Header.Filters = Filters;
