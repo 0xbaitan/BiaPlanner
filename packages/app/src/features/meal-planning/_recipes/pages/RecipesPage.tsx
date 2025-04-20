@@ -30,9 +30,6 @@ export default function RecipesPage() {
       <Button onClick={() => navigate("./create")}>Create Recipe</Button>
       <RecipesTable data={recipes} />
       <RecipesFilterBar />
-      <DropdownPane toggleText="Click me" toggleId="some-id">
-        Hi
-      </DropdownPane>
     </div>
   );
 }

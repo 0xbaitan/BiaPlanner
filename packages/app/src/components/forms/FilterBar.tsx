@@ -1,5 +1,6 @@
 import "../styles/FilterBar.scss";
 
+import Button, { ButtonProps } from "react-bootstrap/esm/Button";
 import FilterMultiselect, { FilterMultiselectProps } from "./FilterMultiselect";
 import React, { HTMLProps } from "react";
 
@@ -7,8 +8,10 @@ import DropdownPane from "../DropdownPane";
 import { FaSort } from "react-icons/fa";
 import Form from "react-bootstrap/esm/Form";
 import { FormCheckInputProps } from "react-bootstrap/esm/FormCheckInput";
+import { FormCheckProps } from "react-bootstrap/esm/FormCheck";
 import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { IoFilter as IoFil } from "react-icons/io5";
+import { RxReset } from "react-icons/rx";
 
 export type FilterSelectProps<T extends object> = FilterMultiselectProps<T>;
 function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
@@ -19,10 +22,16 @@ function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
     </div>
   );
 }
-export type ProminentCheckboxProps = FormCheckInputProps;
-function FilterCheckbox(props: ProminentCheckboxProps) {
+export type CheckboxProps = FormCheckProps & {
+  label: string;
+};
+function FilterCheckbox(props: CheckboxProps) {
   const { className, ...rest } = props;
-  return <Form.Check {...rest} className={["bp-filter_bar__prominent_checkbox", className].join(" ")} />;
+  return (
+    <div>
+      <Form.Check {...rest} className={["bp-filter_bar__checkbox", className].join(" ")} />
+    </div>
+  );
 }
 export type FilterGroupProps = HTMLProps<HTMLDivElement> & {
   type: "prominent-filters" | "sorter" | "hidden-filters";
@@ -32,7 +41,19 @@ function FilterGroup(props: FilterGroupProps) {
   return <div {...rest} className={["bp-filter_bar__filters_group", type, className].join(" ")} />;
 }
 
+export type FilterResetButtonProps = ButtonProps;
+
+function FilterResetButton(props: FilterResetButtonProps) {
+  const { className, ...rest } = props;
+  return (
+    <Button variant="outline-danger" {...rest} className={["bp-filter_bar__reset_button", className].join(" ")}>
+      <RxReset size={16} className="bp-filter_bar__reset_icon" />
+      <span className="bp-filter_bar__reset_text">Reset filters</span>
+    </Button>
+  );
+}
 export type FilterBarProps = HTMLProps<HTMLDivElement>;
+
 function FilterBar(props: FilterBarProps) {
   const { className: propsClass, children, ...rest } = props;
 
@@ -50,6 +71,11 @@ function FilterBar(props: FilterBarProps) {
     if (!React.isValidElement(child)) return false;
     return child.type === FilterGroup && child.props.type === "sorter";
   }) as React.ReactElement | null;
+
+  const resetFiltersButton = React.Children.toArray(children).find((child) => {
+    if (!React.isValidElement(child)) return false;
+    return child.type === FilterResetButton;
+  }) as React.ReactElement | null;
   return (
     <div {...rest} className={["bp-filter_bar", propsClass].join(" ")}>
       {prominentFiltersGroup && (
@@ -65,6 +91,8 @@ function FilterBar(props: FilterBarProps) {
               {hiddenFiltersGroup}
             </DropdownPane>
           )}
+
+          {resetFiltersButton && <>{resetFiltersButton}</>}
         </div>
       )}
       {sorterGroup && (
@@ -91,5 +119,6 @@ FilterBar.Select = FilterSelect;
 FilterBar.Checkbox = FilterCheckbox;
 FilterBar.Sorter = SortSelect;
 FilterBar.Group = FilterGroup;
+FilterBar.ResetButton = FilterResetButton;
 
 export default FilterBar;
