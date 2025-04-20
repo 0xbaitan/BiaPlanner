@@ -1,4 +1,4 @@
-import RecipeGrid from "../components/RecipeGrid";
+import RecipeGrid from "@/components/layouts/RecipeGrid";
 import { useGetRecipesQuery } from "@/apis/RecipeApi";
 
 export default function SelectRecipePage() {

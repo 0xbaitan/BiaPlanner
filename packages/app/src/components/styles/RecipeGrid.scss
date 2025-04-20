@@ -4,7 +4,11 @@
   &__row {
     display: flex;
     justify-content: left;
-    align-content: stretch;
     row-gap: clamp(3rem, 5rem - 2vw, 1rem);
+  }
+
+  &__col {
+    display: flex;
+    align-content: stretch;
   }
 }
