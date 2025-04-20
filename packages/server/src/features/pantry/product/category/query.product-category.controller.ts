@@ -21,4 +21,9 @@ export class QueryProductCategoryController {
       fuzzyQuery,
     );
   }
+
+  @Get('/allergens')
+  async findAllAllergens() {
+    return this.queryProductCategoryService.findAllAllergens();
+  }
 }

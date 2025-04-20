@@ -33,8 +33,8 @@ function FilterMultiselectContent<T>(props: SelectRendererProps<T> & { multisele
   const isAllSelected = selectCount === selectProps.options.length;
   return (
     <div className="bp-filter_multiselect__content">
-      {multiselectLabel && <Form.Label className="bp-filter_multiselect__label">{multiselectLabel}</Form.Label>}
-      <div className={["bp-filter_multiselect__count-badge", isAllSelected ? "all-selected" : ""].join(" ")}>{isAllSelected ? <span>All</span> : <span>{selectCount}</span>}</div>
+      {multiselectLabel && <div className="bp-filter_multiselect__label">{multiselectLabel}</div>}
+      <div className="bp-filter_multiselect__count-badge">{isAllSelected ? <span>All</span> : <span>{selectCount}</span>}</div>
     </div>
   );
 }

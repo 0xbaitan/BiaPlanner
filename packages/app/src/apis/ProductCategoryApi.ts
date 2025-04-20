@@ -56,6 +56,17 @@ const productClassificationApi = rootApi.injectEndpoints({
         return [...tags, { type: "ProductCategory" as const, id: "LIST" }];
       },
     }),
+
+    getAllergens: build.query<IProductCategory[], void>({
+      query: () => ({
+        url: "/query/product-categories/allergens",
+        method: "GET",
+      }),
+      providesTags: (result) => {
+        const tags = result?.map((item) => ({ type: "ProductCategory" as const, id: item.id })) || [];
+        return [...tags, { type: "ProductCategory" as const, id: "LIST" }];
+      },
+    }),
   }),
 });
 
@@ -69,4 +80,6 @@ export const {
   useUpdateProductCategoryMutation,
   useSearchProductCategoriesQuery,
   useLazySearchProductCategoriesQuery,
+  useGetAllergensQuery,
+  useLazyGetAllergensQuery,
 } = productClassificationApi;

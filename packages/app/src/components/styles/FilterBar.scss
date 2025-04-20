@@ -3,29 +3,97 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f8f9fa; // Light gray background
-  border: 1px solid #dee2e6; // Border color
+
+  border-top: 1px solid #dee2e6; // Light gray border
+  border-bottom: 1px solid #dee2e6; // Light gray border
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Subtle shadow
   border-radius: 0.5rem;
+  justify-content: space-between;
+  width: 100%;
+}
 
-  &__prominent_filter {
-    flex: 1;
+.bp-filter_bar__prominent_checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.bp-filter_bar__prominent_checkbox input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+}
 
-    .bp-filter_multiselect {
-      width: 100%;
-    }
-  }
+.bp-filter_bar__filter_area {
+  display: flex;
 
-  &__prominent_checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
+  gap: 1rem;
+  flex-direction: row;
+  justify-content: left;
+  flex: 2;
+  align-items: center;
+}
 
-    input[type="checkbox"] {
-      width: 1.2rem;
-      height: 1.2rem;
-    }
-  }
+.bp-filter_bar__filter_title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  flex-wrap: nowrap;
+  text-wrap: nowrap;
+  font-weight: bold;
+  color: #495057; // Dark gray text
+}
+
+.bp-filter_bar__filter_icon {
+  font-size: 1.5rem;
+  color: $colors-secondary; // Secondary color for the icon
+}
+
+.bp-filter_bar__filter_text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #495057; // Dark gray text
+}
+
+.bp-filter_bar__sort_area {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: right;
+  gap: 1rem;
+}
+
+.bp-filter_bar__sort_title {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  text-wrap: nowrap;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #495057; // Dark gray text
+}
+
+.bp-filter_bar__sort_icon {
+  font-size: 1.5rem;
+  color: $colors-secondary; // Secondary color for the icon
+}
+
+.bp-filter_bar__sort_text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #495057; // Dark gray text
+}
+
+.bp-filter_bar__sort_select {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.bp-filter_bar__filters_group {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
 }

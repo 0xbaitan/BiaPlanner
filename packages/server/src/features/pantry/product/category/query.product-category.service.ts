@@ -39,6 +39,14 @@ export class QueryProductCategoryService {
     });
   }
 
+  async findAllAllergens() {
+    return this.productCategoryRepository.find({
+      where: {
+        isAllergen: true,
+      },
+    });
+  }
+
   async findAllProductCategories() {
     return this.productCategoryRepository.find({
       relations: ['products'],
