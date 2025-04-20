@@ -5,6 +5,7 @@ $card-width: calc(100% - 2 * $card-margin);
   width: $card-width;
   height: 100%;
   align-content: stretch !important;
+  cursor: pointer;
 
   &__header {
     flex-grow: 1;
@@ -67,15 +68,14 @@ $card-width: calc(100% - 2 * $card-margin);
   width: calc($card-width + 2 * $card-margin);
   height: 50%;
 
-  flex-direction: row;
-  justify-content: end;
+  flex-direction: row-reverse;
+  justify-content: space-between;
   align-items: start;
 }
 
 .bp-recipe_card__favourite_btn {
   display: block;
-  justify-self: right;
-  align-self: flex-start;
+
   margin: 0;
   background-color: white;
   border: none;
@@ -138,6 +138,61 @@ $card-width: calc(100% - 2 * $card-margin);
 .bp-recipe_card__body__dl__pair {
   display: flex;
   align-items: center;
-  justify-content: left;
+  justify-content: space-between;
   gap: calc(clamp(0.25rem, 1vw, 0.75rem) * 2);
+}
+
+.bp-recipe_card__allergen_caution_label {
+  background-color: $colors-warning;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: clamp(0.25rem, 1vw, 0.75rem);
+  align-items: center;
+  padding: 0.5rem;
+  color: $colors-secondary;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+}
+.bp-recipe_card__allergen_caution_label__icon {
+  font-size: 1rem;
+}
+
+.bp-recipe_card__allergen_caution_label__text {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: $colors-secondary;
+}
+
+.bp-recipe_card__allergen_caution_label__info_icon {
+  font-size: 1.5rem;
+  color: $colors-secondary;
+}
+
+.bp-recipe_card__overlay__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-self: right;
+
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+}
+
+.bp-recipe_card__allergen_popover {
+  display: block;
+  width: max-content;
+  padding: 1rem;
+  background-color: $colors-warning;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bp-recipe_card__allergen_popover__text {
+  display: block;
+  font-size: 0.9rem !important;
+  color: $colors-secondary;
+  font-weight: bold;
 }

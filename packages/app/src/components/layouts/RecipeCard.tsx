@@ -1,14 +1,17 @@
 import "../styles/RecipeCard.scss";
 
+import { ArrowContainer, Popover } from "react-tiny-popover";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaAllergies, FaHeart, FaRegHeart } from "react-icons/fa";
 import { IRecipe, SegmentedTime } from "@biaplanner/shared";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
+import { PiChefHatFill, PiQuestionFill } from "react-icons/pi";
+import { TbAlertTriangle, TbBowlSpoonFilled } from "react-icons/tb";
 import { useCallback, useState } from "react";
 
+import { ReactComponent as AllergenIcon } from "@/icons/allergen-icon.svg";
 import Card from "react-bootstrap/Card";
-import { PiChefHatFill } from "react-icons/pi";
-import { TbBowlSpoonFilled } from "react-icons/tb";
+import { IconBase } from "react-icons";
 import { useNavigate } from "react-router-dom";
 
 export type RecipeCardProps = {
@@ -49,6 +52,7 @@ export default function RecipeCard(props: RecipeCardProps) {
 
       <Card.ImgOverlay className="bp-recipe_card__img_overlay">
         <FavouriteButton isFavourite={false} onClick={() => {}} />
+        <AllergenCautionLabel recipe={recipe} />
       </Card.ImgOverlay>
 
       <Card.Header className="bp-recipe_card__header">
@@ -70,7 +74,7 @@ export default function RecipeCard(props: RecipeCardProps) {
               <div className="bp-recipe_card__body__dl__pair">
                 <dt className="bp-recipe_card__body__dl__dt">
                   <MdAccessTime className="bp-recipe_card__body__dl__dt__icon" />
-                  Preparation Time
+                  Preparation time
                 </dt>
                 <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.prepTime)}</dd>
               </div>
@@ -80,7 +84,7 @@ export default function RecipeCard(props: RecipeCardProps) {
                 <dt className="bp-recipe_card__body__dl__dt">
                   {" "}
                   <MdAccessTimeFilled className="bp-recipe_card__body__dl__dt__icon" />
-                  Cooking Time
+                  Cooking time
                 </dt>
                 <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.cookingTime)}</dd>
               </div>
@@ -112,5 +116,45 @@ function FavouriteButton(props: FavouriteButtonProps) {
     <button className="bp-recipe_card__favourite_btn" onClick={onClick}>
       {isFavourite ? <BsHeartFill className="bp-recipe_card__favourite_btn__icon" /> : <BsHeart className="bp-recipe_card__favourite_btn__icon" />}
     </button>
+  );
+}
+
+export type AllergenCautionLabelProps = {
+  recipe: IRecipe;
+};
+function AllergenCautionLabel(props: AllergenCautionLabelProps) {
+  const { recipe } = props;
+  const allergens = recipe.ingredients
+    .flatMap((ingredient) => ingredient.productCategories)
+    .filter((category) => category.isAllergen)
+    .map((category) => category.name);
+  const uniqueAllergens = Array.from(new Set(allergens));
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  if (uniqueAllergens.length === 0) {
+    return null;
+  }
+
+  return (
+    <Popover
+      isOpen={isPopoverOpen}
+      onClickOutside={() => setIsPopoverOpen(false)}
+      content={({ position, childRect, popoverRect }) => (
+        <ArrowContainer position={position} childRect={childRect} popoverRect={popoverRect} arrowColor="#ffc107" arrowSize={12} className="bp-recipe_card__popover__arrow_container">
+          <div className="bp-recipe_card__allergen_popover">
+            <div className="bp-recipe_card__allergen_popover__text">Allergens present: {uniqueAllergens.join(", ")}</div>
+          </div>
+        </ArrowContainer>
+      )}
+      positions={["bottom", "top", "right", "left"]} // preferred position by priority
+      padding={10}
+    >
+      <div className="bp-recipe_card__allergen_caution_label">
+        <TbAlertTriangle className="bp-recipe_card__allergen_caution_label__icon" />
+
+        <span className="bp-recipe_card__allergen_caution_label__text">Has allergens</span>
+        <PiQuestionFill className="bp-recipe_card__allergen_caution_label__info_icon" onMouseOver={() => setIsPopoverOpen(true)} onMouseLeave={() => setIsPopoverOpen(false)} />
+      </div>
+    </Popover>
   );
 }
