@@ -5,6 +5,7 @@ import DropdownPane from "@/components/DropdownPane";
 import { FaPlus } from "react-icons/fa";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
+import RecipeGrid from "../../_meal-plans/components/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { useGetRecipesQuery } from "@/apis/RecipeApi";
@@ -43,7 +44,7 @@ export default function RecipesPage() {
 
         <CrudListPageLayout.Body.ItemsPerPageCountSelector itemsCount={10} onChange={(pageSize) => {}} />
         <CrudListPageLayout.Body.Content>
-          <RecipesTable data={recipes} />
+          <RecipeGrid recipes={recipes} />
         </CrudListPageLayout.Body.Content>
       </CrudListPageLayout.Body>
       <CrudListPageLayout.Footer>
