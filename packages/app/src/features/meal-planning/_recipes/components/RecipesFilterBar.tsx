@@ -10,6 +10,7 @@ export default function RecipesFilterBar() {
         <CuisineProminentMultiselect />
         <AllergenProminentMultiselect />
       </FilterBar.Group>
+      <FilterBar.Group type="hidden-filters">Hi</FilterBar.Group>
       <FilterBar.Group type="sorter">
         <FilterBar.Sorter>
           <option value="name">Name</option>

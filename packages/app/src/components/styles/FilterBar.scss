@@ -94,6 +94,14 @@
 .bp-filter_bar__filters_group {
   display: flex;
   gap: 1rem;
-  width: 100%;
+
   align-items: center;
+}
+
+.bp-filter_bar__hidden_filters_content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1.5em clamp(0.5em, 2vw, 1.25em) !important;
+  width: max-content;
 }

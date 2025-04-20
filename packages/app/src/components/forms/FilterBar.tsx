@@ -3,6 +3,7 @@ import "../styles/FilterBar.scss";
 import FilterMultiselect, { FilterMultiselectProps } from "./FilterMultiselect";
 import React, { HTMLProps } from "react";
 
+import DropdownPane from "../DropdownPane";
 import { FaSort } from "react-icons/fa";
 import Form from "react-bootstrap/esm/Form";
 import { FormCheckInputProps } from "react-bootstrap/esm/FormCheckInput";
@@ -40,6 +41,11 @@ function FilterBar(props: FilterBarProps) {
     return child.type === FilterGroup && child.props.type === "prominent-filters";
   }) as React.ReactElement | null;
 
+  const hiddenFiltersGroup = React.Children.toArray(children).find((child) => {
+    if (!React.isValidElement(child)) return false;
+    return child.type === FilterGroup && child.props.type === "hidden-filters";
+  }) as React.ReactElement | null;
+
   const sorterGroup = React.Children.toArray(children).find((child) => {
     if (!React.isValidElement(child)) return false;
     return child.type === FilterGroup && child.props.type === "sorter";
@@ -54,6 +60,11 @@ function FilterBar(props: FilterBarProps) {
             <span className="bp-filter_bar__filter_text">Filter by:</span>
           </div>
           {prominentFiltersGroup}
+          {hiddenFiltersGroup && (
+            <DropdownPane className="bp-filter_bar__hidden_filters" toggleId="hidden-filters" toggleText="More filters" contentProps={{ className: "bp-filter_bar__hidden_filters_content" }}>
+              {hiddenFiltersGroup}
+            </DropdownPane>
+          )}
         </div>
       )}
       {sorterGroup && (

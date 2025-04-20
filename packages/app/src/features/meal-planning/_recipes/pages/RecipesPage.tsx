@@ -1,11 +1,12 @@
 import Button from "react-bootstrap/esm/Button";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownPane from "@/components/DropdownPane";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { useGetRecipesQuery } from "@/apis/RecipeApi";
 import { useNavigate } from "react-router-dom";
-
 export default function RecipesPage() {
   const navigate = useNavigate();
   const {
@@ -29,6 +30,9 @@ export default function RecipesPage() {
       <Button onClick={() => navigate("./create")}>Create Recipe</Button>
       <RecipesTable data={recipes} />
       <RecipesFilterBar />
+      <DropdownPane toggleText="Click me" toggleId="some-id">
+        Hi
+      </DropdownPane>
     </div>
   );
 }
