@@ -7,7 +7,7 @@ import DropdownPane from "@/components/DropdownPane";
 import { FaPlus } from "react-icons/fa";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
-import RecipeGrid from "../../_meal-plans/components/RecipeGrid";
+import RecipeGrid from "@/components/layouts/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { ViewType } from "@/components/ViewSegmentedButton";

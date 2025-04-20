@@ -1,8 +1,8 @@
 $card-margin: clamp(0.5rem, 1.5vw, 1rem);
-
+$card-width: calc(100% - 2 * $card-margin);
 .bp-recipe_card {
   margin: $card-margin;
-  width: calc(100% - 2 * $card-margin);
+  width: $card-width;
   height: 100%;
   &__header {
     flex-grow: 1;
@@ -42,4 +42,40 @@ $card-margin: clamp(0.5rem, 1.5vw, 1rem);
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
   transform: scale(0.98);
   transition: transform 0.2s;
+}
+
+.bp-recipe_card__img_overlay {
+  display: flex;
+
+  width: calc($card-width + 2 * $card-margin);
+  height: 50%;
+
+  flex-direction: row;
+  justify-content: end;
+  align-items: start;
+}
+
+.bp-recipe_card__favourite_btn {
+  display: block;
+  justify-self: right;
+  align-self: flex-start;
+  margin: 0;
+  background-color: white;
+  border: none;
+
+  border-radius: 1em;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.15);
+    transition: transform 0.2s;
+    color: darken($colors-main, 25);
+  }
+}
+
+.bp-recipe_card__favourite_btn__icon {
+  font-size: calc(clamp(1.5rem, 2vw, 2rem) * 1.15);
+  color: $colors-main;
+  padding: calc(clamp(1.5rem, 2vw, 2rem) * 0.2);
 }
