@@ -1,6 +1,8 @@
 import Button from "react-bootstrap/esm/Button";
+import CrudListPageLayout from "@/components/CrudListPageLayout";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownPane from "@/components/DropdownPane";
+import { FaPlus } from "react-icons/fa";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
 import RecipesFilterBar from "../components/RecipesFilterBar";
@@ -24,12 +26,37 @@ export default function RecipesPage() {
   }
 
   return (
-    <div>
-      <h1>Recipes Page</h1>
+    <CrudListPageLayout>
+      <CrudListPageLayout.Header pageTitle="Recipes">
+        <CrudListPageLayout.Header.Actions>
+          <Button variant="primary" onClick={() => navigate("./create")}>
+            <FaPlus />
+            &ensp;Create Recipe
+          </Button>
+        </CrudListPageLayout.Header.Actions>
+        <CrudListPageLayout.Header.Filters>
+          <RecipesFilterBar />
+        </CrudListPageLayout.Header.Filters>
+      </CrudListPageLayout.Header>
+      <CrudListPageLayout.Body>
+        <CrudListPageLayout.Body.ResultsCount itemsStart={1} itemsEnd={4} totalItems={10} itemDescription="recipes" />
 
-      <Button onClick={() => navigate("./create")}>Create Recipe</Button>
-      <RecipesTable data={recipes} />
-      <RecipesFilterBar />
-    </div>
+        <CrudListPageLayout.Body.ItemsPerPageCountSelector itemsCount={10} onChange={(pageSize) => {}} />
+        <CrudListPageLayout.Body.Content>
+          <RecipesTable data={recipes} />
+        </CrudListPageLayout.Body.Content>
+      </CrudListPageLayout.Body>
+      <CrudListPageLayout.Footer>
+        <CrudListPageLayout.Footer.Pagination
+          paginationProps={{
+            currentPage: 1,
+            numPages: 10,
+            onPageChange: (page) => {
+              console.log("Page changed to", page);
+            },
+          }}
+        />
+      </CrudListPageLayout.Footer>
+    </CrudListPageLayout>
   );
 }
