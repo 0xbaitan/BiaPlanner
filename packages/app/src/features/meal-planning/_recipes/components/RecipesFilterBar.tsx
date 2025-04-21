@@ -1,21 +1,18 @@
 import "../styles/RecipeFilterBar.scss";
 
 import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag, RecipeSortBy } from "@biaplanner/shared";
-import { Suspense, useEffect, useMemo, useState } from "react";
 import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
 import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
 
-import Col from "react-bootstrap/esm/Col";
-import Container from "react-bootstrap/esm/Container";
 import FilterBar from "@/components/forms/FilterBar";
-import Row from "react-bootstrap/esm/Row";
 import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useGetAllergensQuery } from "@/apis/ProductCategoryApi";
 import { useGetRecipeTagsQuery } from "@/apis/RecipeTagsApi";
+import { useMemo } from "react";
 
 export type RecipeFilterBarProps = {};
 export default function RecipesFilterBar() {
-  useCuisinesPrefetch();
+  const { resetFilters } = useRecipesCrudListActions();
 
   return (
     <FilterBar>
@@ -36,7 +33,11 @@ export default function RecipesFilterBar() {
           </div>
         </div>
       </FilterBar.Group>
-      <FilterBar.ResetButton />
+      <FilterBar.ResetButton
+        onClick={() => {
+          resetFilters();
+        }}
+      />
       <FilterBar.Group type="sorter">
         <RecipeSorter />
       </FilterBar.Group>
@@ -61,8 +62,8 @@ function RecipeSorter() {
       <option value={RecipeSortBy.DEFAULT}>Default</option>
       <option value={RecipeSortBy.RECIPE_TITLE_A_TO_Z}>Recipe title (A to Z)</option>
       <option value={RecipeSortBy.RECIPE_TITLE_Z_TO_A}>Recipe title (Z to A)</option>
-      <option value={RecipeSortBy.RECIPE_INCREASING_DIFFICULTY_LEVEL}>Increasing difficulty</option>
-      <option value={RecipeSortBy.RECIPE_DECREASING_DIFFICULTY_LEVEL}>Decreasing difficulty</option>
+      <option value={RecipeSortBy.RECIPE_INCREASING_DIFFICULTY_LEVEL}>Least difficult</option>
+      <option value={RecipeSortBy.RECIPE_DECREASING_DIFFICULTY_LEVEL}>Most difficult</option>
       <option value={RecipeSortBy.RECIPE_MOST_TIME_CONSUMING}>Most time consuming</option>
       <option value={RecipeSortBy.RECIPE_LEAST_TIME_CONSUMING}>Least time consuming</option>
       <option value={RecipeSortBy.RECIPE_MOST_RELEVANT_TO_PANTRY}>Most relevant to your pantry</option>
@@ -71,7 +72,7 @@ function RecipeSorter() {
 }
 
 function CuisineProminentMultiselect() {
-  const { data, isError, isSuccess, isLoading, isFetching } = useGetCuisinesQuery();
+  const { data, isError, isSuccess, isLoading } = useGetCuisinesQuery();
   const {
     recipesQuery: { cuisineIds },
   } = useRecipesCrudListState();

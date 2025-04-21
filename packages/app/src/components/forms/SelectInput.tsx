@@ -1,7 +1,7 @@
 import "../styles/SelectInput.scss";
 
 import Select, { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Form from "react-bootstrap/Form";
 
@@ -62,11 +62,17 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     ...rest
   } = props;
   const defaultOptions: Option[] = useMemo(() => list.map((item) => ({ id: idSelector(item), name: nameSelector(item) })), [list, idSelector, nameSelector]);
-  const [options, setOptions] = useState<Option[]>(defaultOptions);
+  const [options, setOptions] = useState<Option[]>(() => defaultOptions ?? []);
 
   const [selectedOptions, setSelectedOptions] = useState<Option[]>(() => {
     return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
   });
+
+  useEffect(() => {
+    setSelectedOptions(() => {
+      return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
+    });
+  }, [defaultSelectedValues, idSelector, nameSelector]);
 
   const getValueCounterPart = useCallback(
     (option: Option) => {
