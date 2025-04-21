@@ -1,12 +1,13 @@
 import { DifficultyLevels, Time } from "../units";
 import { IsArray, IsBoolean, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
+import { IsStringArrayConstraint, toBoolean, toNumber, toString, toStringArray, transform, trimString } from "../../util";
+import { Transform, Type } from "class-transformer";
 
 import { DeepPartial } from "utility-types";
 import { IBaseEntity } from "../BaseEntity";
 import { ICuisine } from "./Cuisine";
 import { IRecipeIngredient } from "./RecipeIngredient";
 import { IRecipeTag } from "./RecipeTag";
-import { IsStringArrayConstraint } from "../../util";
 import { PaginateQuery } from "../PaginateExtended";
 import { SegmentedTime } from "../TimeMeasurement";
 import z from "zod";
@@ -71,41 +72,53 @@ export class UpdateRecipeDto implements IUpdateRecipeDto {
 }
 
 export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | "search"> {
-  allergensExclude?: string[];
+  allergenIdsExclude?: string[];
   difficultyLevel?: string[];
-  recipeTags?: string[];
+  recipeTagIds?: string[];
   ownRecipes?: boolean;
   favouritesOnly?: boolean;
   useWhatIhave?: boolean;
-  cuisines?: string[];
+  cuisineIds?: string[];
 }
 
 export class QueryRecipeDto implements IQueryRecipeDto {
+  @Transform((params) => transform(params, toStringArray))
   @IsOptional()
   @Validate(IsStringArrayConstraint)
-  allergensExclude?: string[] | undefined;
-
+  allergenIdsExclude?: string[] | undefined;
+  @Transform((params) => transform(params, toStringArray))
   @IsOptional()
   @Validate(IsStringArrayConstraint)
   difficultyLevel?: string[] | undefined;
 
+  @Transform((params) => transform(params, toStringArray))
   @IsOptional()
   @Validate(IsStringArrayConstraint)
-  recipeTags?: string[] | undefined;
+  recipeTagIds?: string[] | undefined;
 
+  @Transform((params) => transform(params, toBoolean))
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   ownRecipes?: boolean | undefined;
 
+  @Transform((params) => transform(params, toBoolean))
   @IsOptional()
   @IsBoolean()
   favouritesOnly?: boolean | undefined;
 
+  @Transform((params) => transform(params, toBoolean))
   @IsOptional()
   @IsBoolean()
   useWhatIhave?: boolean | undefined;
-  cuisines?: string[] | undefined;
 
+  @Transform((params) => transform(params, toStringArray))
+  @IsOptional()
+  @Validate(IsStringArrayConstraint)
+  @Type(() => String)
+  cuisineIds?: string[] | undefined;
+
+  @Transform((params) => transform(params, toNumber))
   @IsOptional()
   @IsNumber({
     allowInfinity: false,
@@ -115,15 +128,16 @@ export class QueryRecipeDto implements IQueryRecipeDto {
   @IsPositive()
   page?: number | undefined;
 
+  @Transform((params) => transform(params, toNumber))
   @IsOptional()
   @IsNumber({
     allowInfinity: false,
     allowNaN: false,
     maxDecimalPlaces: 0,
   })
-  @IsPositive()
   limit?: number | undefined;
 
+  @Transform((params) => trimString(transform(params, toString)))
   @IsOptional()
   @IsString()
   search?: string | undefined;

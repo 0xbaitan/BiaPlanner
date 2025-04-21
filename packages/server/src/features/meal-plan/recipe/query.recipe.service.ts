@@ -18,6 +18,7 @@ export class QueryRecipeService {
   ) {}
 
   async query(query: IQueryRecipeDto) {
+    console.log('Querying recipes with query:', query);
     const qb = this.recipeRepository.createQueryBuilder('recipe');
 
     qb.leftJoinAndSelect('recipe.cuisine', 'cuisine')
@@ -30,32 +31,47 @@ export class QueryRecipeService {
         new Brackets((qb) => {
           qb.where('LOWER(recipe.title) LIKE LOWER(:search)', {
             search: `%${query.search}%`,
-          });
+          })
+            .orWhere('LOWER(recipe.description) LIKE LOWER(:search)', {
+              search: `%${query.search}%`,
+            })
+            .orWhere('LOWER(ingredient.title) LIKE LOWER(:search)', {
+              search: `%${query.search}%`,
+            })
+            .orWhere('LOWER(productCategory.name) LIKE LOWER(:search)', {
+              search: `%${query.search}%`,
+            })
+            .orWhere('LOWER(tag.name) LIKE LOWER(:search)', {
+              search: `%${query.search}%`,
+            })
+            .orWhere('LOWER(cuisine.name) LIKE LOWER(:search)', {
+              search: `%${query.search}%`,
+            });
         }),
       );
     }
 
-    if (!!query.allergensExclude && query.allergensExclude.length > 0) {
-      qb.andWhere('productCategory.name  NOT IN (:...allergens)', {
-        allergens: query.allergensExclude,
+    if (!!query.allergenIdsExclude && query.allergenIdsExclude.length > 0) {
+      qb.andWhere('productCategory.id  NOT IN (:...allergenIds)', {
+        allergenIds: query.allergenIdsExclude,
       });
     }
 
-    if (!!query.cuisines && query.cuisines.length > 0) {
-      qb.andWhere('cuisine.name IN (:...cuisines)', {
-        cuisines: query.cuisines,
+    if (!!query.cuisineIds && query.cuisineIds.length > 0) {
+      qb.andWhere('cuisine.id IN (:...cuisines)', {
+        cuisines: query.cuisineIds,
       });
     }
 
     if (!!query.difficultyLevel) {
-      qb.andWhere('recipe.difficultyLevel = :difficultyLevel', {
-        difficultyLevel: query.difficultyLevel,
+      qb.andWhere('recipe.difficultyLevel IN (:...difficultyLevels)', {
+        difficultyLevels: query.difficultyLevel,
       });
     }
 
-    if (!!query.recipeTags && query.recipeTags.length > 0) {
-      qb.andWhere('tag.name IN (:...recipeTags)', {
-        recipeTags: query.recipeTags,
+    if (!!query.recipeTagIds && query.recipeTagIds.length > 0) {
+      qb.andWhere('tag.id IN (:...recipeTagIds)', {
+        recipeTagIds: query.recipeTagIds,
       });
     }
 

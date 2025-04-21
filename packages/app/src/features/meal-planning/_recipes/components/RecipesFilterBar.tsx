@@ -1,8 +1,9 @@
 import "../styles/RecipeFilterBar.scss";
 
-import { DifficultyLevels, ICuisine, IRecipeTag } from "@biaplanner/shared";
+import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag } from "@biaplanner/shared";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
+import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
 
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
@@ -49,6 +50,22 @@ export default function RecipesFilterBar() {
 
 function CuisineProminentMultiselect() {
   const { data, isError, isSuccess, isLoading, isFetching } = useGetCuisinesQuery();
+  const {
+    recipesQuery: { cuisineIds },
+  } = useRecipesCrudListState();
+  const { setFilter } = useRecipesCrudListActions();
+  const mappedCuisines = useMemo(() => {
+    return (cuisineIds ?? [])
+      .map((cuisineId) => {
+        const found = data?.find((item) => item.id === cuisineId);
+        if (found) {
+          return found;
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean) as ICuisine[];
+  }, [cuisineIds, data]);
 
   if (!data || isError || isLoading) {
     return <div>Failed to fetch cuisines</div>;
@@ -57,7 +74,11 @@ function CuisineProminentMultiselect() {
     <FilterBar.Select
       multiselectLabel="Cuisines"
       list={isSuccess ? data : []}
-      onChange={() => {}}
+      selectedValues={mappedCuisines}
+      onChange={(selectedList) => {
+        const selectedCuisines = selectedList.map((item) => item.id);
+        setFilter({ cuisineIds: selectedCuisines });
+      }}
       idSelector={(item) => item.id}
       nameSelector={(item) => item.name}
       loading={isLoading}
@@ -69,12 +90,42 @@ function CuisineProminentMultiselect() {
 
 function AllergenProminentMultiselect() {
   const { data, isError, isLoading } = useGetAllergensQuery();
+  const {
+    recipesQuery: { allergenIdsExclude },
+  } = useRecipesCrudListState();
+  const { setFilter } = useRecipesCrudListActions();
+  const mappedAllergens = useMemo(() => {
+    return (allergenIdsExclude ?? [])
+      .map((allergenId) => {
+        const found = data?.find((item) => item.id === allergenId);
+        if (found) {
+          return found;
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean) as IProductCategory[];
+  }, [allergenIdsExclude, data]);
 
   if (!data || isError || isLoading) {
     return <div>Failed to fetch allergens</div>;
   }
 
-  return <FilterBar.Select multiselectLabel="Allergens excluded" loading={isLoading} disabled={isLoading || isError || data?.length === 0} list={data ?? []} idSelector={(item) => item.id} nameSelector={(item) => item.name} />;
+  return (
+    <FilterBar.Select
+      multiselectLabel="Allergens excluded"
+      selectedValues={mappedAllergens}
+      onChange={(selectedList) => {
+        const selectedAllergens = selectedList.map((item) => item.id);
+        setFilter({ allergenIdsExclude: selectedAllergens });
+      }}
+      loading={isLoading}
+      disabled={isLoading || isError || data?.length === 0}
+      list={data ?? []}
+      idSelector={(item) => item.id}
+      nameSelector={(item) => item.name}
+    />
+  );
 }
 
 function DifficultyLevelMultiselect() {
@@ -83,21 +134,70 @@ function DifficultyLevelMultiselect() {
     return entries;
   }, []);
 
-  return <FilterBar.Select multiselectLabel="Difficulty level" list={options} idSelector={(item) => item.value} nameSelector={(item) => item.label} />;
+  const {
+    recipesQuery: { difficultyLevel },
+  } = useRecipesCrudListState();
+
+  const { setFilter } = useRecipesCrudListActions();
+
+  const mappedDifficultyLevel = useMemo(() => {
+    return difficultyLevel
+      ?.map((difficultyLevel) => {
+        const found = options.find((item) => item.value === difficultyLevel);
+        if (found) {
+          return found;
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean) as { label: string; value: DifficultyLevels }[];
+  }, [difficultyLevel, options]);
+
+  return (
+    <FilterBar.Select
+      multiselectLabel="Difficulty level"
+      selectedValues={mappedDifficultyLevel}
+      onChange={(selectedList) => {
+        const selectedDifficultyLevels = selectedList.map((item) => item.value);
+        setFilter({ difficultyLevel: selectedDifficultyLevels });
+      }}
+      idSelector={(item) => item.value}
+      nameSelector={(item) => item.label}
+      list={options}
+    />
+  );
 }
 
 function RecipeTagsMultiselect() {
-  const { data, isError, isLoading, isSuccess } = useGetRecipeTagsQuery();
+  const { data, isError, isLoading } = useGetRecipeTagsQuery();
 
-  const [selectedTags, setSelectedTags] = useState<IRecipeTag[]>([]);
+  const {
+    recipesQuery: { recipeTagIds },
+  } = useRecipesCrudListState();
+  const { setFilter } = useRecipesCrudListActions();
+
+  const mappedRecipeTags = useMemo(() => {
+    return (recipeTagIds ?? [])
+      .map((recipeTagId) => {
+        const found = data?.find((item) => item.id === recipeTagId);
+        if (found) {
+          return found;
+        } else {
+          return null;
+        }
+      })
+      .filter(Boolean) as IRecipeTag[];
+  }, [recipeTagIds, data]);
+
   if (!data || isError || isLoading) {
     return <div>Failed to fetch recipe tags</div>;
   }
   return (
     <FilterBar.Select
-      selectedValues={selectedTags}
+      selectedValues={mappedRecipeTags}
       onChange={(selectedList) => {
-        setSelectedTags(selectedList);
+        const selectedRecipeTags = selectedList.map((item) => item.id);
+        setFilter({ recipeTagIds: selectedRecipeTags });
       }}
       multiselectLabel="Recipe tags"
       list={data ?? []}

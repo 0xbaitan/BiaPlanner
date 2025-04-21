@@ -1,6 +1,7 @@
 import "./index.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/main.scss";
+import "reflect-metadata";
 
 import store, { persistor } from "./store";
 

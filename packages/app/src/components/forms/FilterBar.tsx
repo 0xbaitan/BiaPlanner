@@ -21,6 +21,13 @@ function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
     </div>
   );
 }
+
+export type OrdinarySelectProps = FormSelectProps;
+function OrdinarySelect(props: OrdinarySelectProps) {
+  const { className, ...rest } = props;
+  return <Form.Select {...rest} className={["bp-filter_bar__ordinary_select", className].join(" ")} />;
+}
+
 export type CheckboxProps = FormCheckProps & {
   label: string;
 };
@@ -114,6 +121,7 @@ function SortSelect(props: SortSelectProps) {
   return <Form.Select {...rest} className={["bp-filter_bar__sort_select", className].join(" ")} />;
 }
 
+FilterBar.OrdinarySelect = OrdinarySelect;
 FilterBar.Select = FilterSelect;
 FilterBar.Checkbox = FilterCheckbox;
 FilterBar.Sorter = SortSelect;

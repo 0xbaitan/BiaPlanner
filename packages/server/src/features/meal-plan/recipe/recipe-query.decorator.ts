@@ -9,10 +9,9 @@ export const RecipeQuery = createParamDecorator(
   async (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const query = qs.parse(request.query);
-
-    const recipeQueryDto = plainToInstance(QueryRecipeDto, query, {
-      excludeExtraneousValues: true,
-    });
+    console.log('Querying recipes with query:', query);
+    const recipeQueryDto = plainToInstance(QueryRecipeDto, query);
+    console.log('Parsed query:', recipeQueryDto);
 
     const errors = await validate(recipeQueryDto);
 

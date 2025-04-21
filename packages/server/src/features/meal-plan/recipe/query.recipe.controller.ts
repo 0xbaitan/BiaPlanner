@@ -1,8 +1,9 @@
 import { Controller, Get, Inject, Module } from '@nestjs/common';
 import { QueryRecipeService } from './query.recipe.service';
 import { Paginate } from 'nestjs-paginate';
-import { PaginateQuery } from '@biaplanner/shared';
+import { PaginateQuery, QueryRecipeDto } from '@biaplanner/shared';
 import { Public } from '@/features/user-info/authentication/public.decorator';
+import { RecipeQuery } from './recipe-query.decorator';
 
 @Controller('/query/recipes')
 export class QueryRecipeController {
@@ -13,7 +14,7 @@ export class QueryRecipeController {
 
   @Public()
   @Get()
-  async query(@Paginate() query: PaginateQuery) {
+  async query(@RecipeQuery() query: QueryRecipeDto) {
     return this.queryRecipeService.query(query);
   }
 }
