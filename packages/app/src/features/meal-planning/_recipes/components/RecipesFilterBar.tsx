@@ -1,18 +1,21 @@
 import "../styles/RecipeFilterBar.scss";
 
+import { DifficultyLevels, ICuisine, IRecipeTag } from "@biaplanner/shared";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
+
 import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
-import { DifficultyLevels } from "@biaplanner/shared";
 import FilterBar from "@/components/forms/FilterBar";
 import Row from "react-bootstrap/esm/Row";
 import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useGetAllergensQuery } from "@/apis/ProductCategoryApi";
-import { useGetCuisinesQuery } from "@/apis/CuisinesApi";
 import { useGetRecipeTagsQuery } from "@/apis/RecipeTagsApi";
-import { useMemo } from "react";
 
 export type RecipeFilterBarProps = {};
 export default function RecipesFilterBar() {
+  useCuisinesPrefetch();
+
   return (
     <FilterBar>
       <FilterBar.Group type="prominent-filters">
@@ -45,13 +48,33 @@ export default function RecipesFilterBar() {
 }
 
 function CuisineProminentMultiselect() {
-  const { data: cuisines, isError, isLoading } = useGetCuisinesQuery();
-  return <FilterBar.Select multiselectLabel="Cuisines" loading={isLoading} disabled={isLoading || isError} list={cuisines ?? []} idSelector={(item) => item.id} nameSelector={(item) => item.name} />;
+  const { data, isError, isSuccess, isLoading, isFetching } = useGetCuisinesQuery();
+
+  if (!data || isError || isLoading) {
+    return <div>Failed to fetch cuisines</div>;
+  }
+  return (
+    <FilterBar.Select
+      multiselectLabel="Cuisines"
+      list={isSuccess ? data : []}
+      onChange={() => {}}
+      idSelector={(item) => item.id}
+      nameSelector={(item) => item.name}
+      loading={isLoading}
+      disabled={isLoading || isError || !data?.length}
+      noDataLabel="No cuisines available"
+    />
+  );
 }
 
 function AllergenProminentMultiselect() {
-  const { data: allergens, isError, isLoading } = useGetAllergensQuery();
-  return <FilterBar.Select multiselectLabel="Allergens excluded" loading={isLoading} disabled={isLoading || isError} list={allergens ?? []} idSelector={(item) => item.id} nameSelector={(item) => item.name} />;
+  const { data, isError, isLoading } = useGetAllergensQuery();
+
+  if (!data || isError || isLoading) {
+    return <div>Failed to fetch allergens</div>;
+  }
+
+  return <FilterBar.Select multiselectLabel="Allergens excluded" loading={isLoading} disabled={isLoading || isError || data?.length === 0} list={data ?? []} idSelector={(item) => item.id} nameSelector={(item) => item.name} />;
 }
 
 function DifficultyLevelMultiselect() {
@@ -64,7 +87,22 @@ function DifficultyLevelMultiselect() {
 }
 
 function RecipeTagsMultiselect() {
-  const { data: tags, isError, isLoading } = useGetRecipeTagsQuery();
+  const { data, isError, isLoading, isSuccess } = useGetRecipeTagsQuery();
 
-  return <FilterBar.Select multiselectLabel="Recipe tags" loading={isLoading} disabled={isLoading || isError} list={tags ?? []} idSelector={(item) => item.id} nameSelector={(item) => item.name} />;
+  const [selectedTags, setSelectedTags] = useState<IRecipeTag[]>([]);
+  if (!data || isError || isLoading) {
+    return <div>Failed to fetch recipe tags</div>;
+  }
+  return (
+    <FilterBar.Select
+      selectedValues={selectedTags}
+      onChange={(selectedList) => {
+        setSelectedTags(selectedList);
+      }}
+      multiselectLabel="Recipe tags"
+      list={data ?? []}
+      idSelector={(item) => item.id}
+      nameSelector={(item) => item.name}
+    />
+  );
 }

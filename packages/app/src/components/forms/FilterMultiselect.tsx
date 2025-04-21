@@ -1,6 +1,6 @@
 import "../styles/FilterMultiselect.scss";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SelectInput, { SelectInputProps, SelectRendererProps } from "./SelectInput";
 
 import { BiSolidSelectMultiple } from "react-icons/bi";

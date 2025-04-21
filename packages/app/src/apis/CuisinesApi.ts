@@ -55,3 +55,12 @@ export const cuisinesApi = rootApi.injectEndpoints({
 });
 
 export const { useGetCuisinesQuery, useLazyGetCuisinesQuery, useGetCuisineQuery, useCreateCuisineMutation, useUpdateCuisineMutation, useDeleteCuisineMutation } = cuisinesApi;
+export const useCuisinesPrefetch = () => {
+  const prefetch = cuisinesApi.usePrefetch("getCuisines" as const, { force: true, ifOlderThan: 0 });
+
+  return {
+    prefetchCuisines: () => {
+      prefetch();
+    },
+  };
+};

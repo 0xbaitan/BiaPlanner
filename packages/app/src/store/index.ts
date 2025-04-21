@@ -12,6 +12,7 @@ import shoppingListsReducer from "@/features/shopping-lists/reducers";
 const persistConfig = {
   key: "root",
   storage: sessionStorage,
+  blacklist: [rootApi.reducerPath],
 };
 
 const rootReducer = combineReducers({
