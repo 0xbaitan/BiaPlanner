@@ -9,6 +9,7 @@ import DropdownPane from "@/components/DropdownPane";
 import { FaPlus } from "react-icons/fa";
 import FilterMultiselect from "@/components/forms/FilterMultiselect";
 import { IRecipe } from "@biaplanner/shared";
+import NoResultsFound from "@/components/NoResultsFound";
 import RecipeGrid from "@/components/layouts/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
@@ -75,7 +76,11 @@ export default function RecipesPage() {
 
       <CrudListPageLayout.Body
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="recipes" searchTermUsed={searchTermUsed} />}
-        contentComponent={<CrudListPageLayout.Body.Content>{view === "grid" ? recipesGrid : recipesTable}</CrudListPageLayout.Body.Content>}
+        contentComponent={
+          <CrudListPageLayout.Body.Content>
+            {totalItems === 0 || isError ? <NoResultsFound title={"Oops! No recipes found"} description={"Try searching with different keywords or check the spelling."} /> : view === "grid" ? recipesGrid : recipesTable}
+          </CrudListPageLayout.Body.Content>
+        }
         itemsPerPageCountSelectorComponent={
           <CrudListPageLayout.Body.ItemsPerPageCountSelector
             itemsCount={10}

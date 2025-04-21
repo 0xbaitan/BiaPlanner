@@ -1,0 +1,29 @@
+.bp-no_results_found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5em, 2vw, 1.5em);
+  height: 100%;
+  width: 100%;
+  padding: clamp(1em, 2vw, 2em);
+}
+
+.bp-no_results_found__illustration {
+  max-width: 100%;
+  max-height: clamp(200px, 15vw, 300px);
+}
+
+.bp-no_results_found__title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.bp-no_results_found__description {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-top: 10px;
+}

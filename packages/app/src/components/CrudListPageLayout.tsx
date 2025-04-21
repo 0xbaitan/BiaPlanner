@@ -110,7 +110,13 @@ function Body(props: CrudListBodyProps) {
 
 function ResultsCount(props: ResultsCountProps) {
   const { className, itemsEnd, itemsStart, totalItems, itemDescription, searchTermUsed, ...rest } = props;
-
+  if (totalItems === 0) {
+    return (
+      <div {...rest} className={`bp-crud_list_page_layout__results_count ${className || ""}`}>
+        No {itemDescription ?? "results"} found {searchTermUsed && <>for "{searchTermUsed}"</>}
+      </div>
+    );
+  }
   return (
     <div {...rest} className={`bp-crud_list_page_layout__results_count ${className || ""}`}>
       Showing {itemsStart} - {itemsEnd} of {totalItems} {itemDescription || "items"} {searchTermUsed && <>for "{searchTermUsed}"</>}
