@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { setPage, useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
 import { useGetRecipesQuery, useSearchRecipesQuery } from "@/apis/RecipeApi";
-import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
@@ -15,6 +15,7 @@ import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { ViewType } from "@/components/ViewSegmentedButton";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
+import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import qs from "qs";
 import useDefaultStatusToast from "@/hooks/useDefaultStatusToast";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +26,11 @@ export default function RecipesPage() {
 
   const { recipesQuery, view } = useRecipesCrudListState();
   const { setView, setSearch } = useRecipesCrudListActions();
-
+  const {
+    recipesQuery: { limit },
+  } = useRecipesCrudListState();
   console.log("recipesQuery", qs.stringify(recipesQuery));
-
+  const { setLimit } = useRecipesCrudListActions();
   const {
     data: results,
 
@@ -83,9 +86,9 @@ export default function RecipesPage() {
         }
         itemsPerPageCountSelectorComponent={
           <CrudListPageLayout.Body.ItemsPerPageCountSelector
-            itemsCount={10}
-            onChange={(count) => {
-              console.log(count);
+            itemsCount={constrainItemsPerPage(limit)}
+            onChange={(limit) => {
+              setLimit(limit);
             }}
           />
         }
@@ -106,7 +109,7 @@ export default function RecipesPage() {
               numPages: totalPages,
               currentPage,
               onPageChange: (page) => {
-                console.log(page);
+                setPage(page);
               },
             }}
           />
