@@ -52,8 +52,19 @@ export class QueryRecipeService {
     }
 
     if (!!query.allergenIdsExclude && query.allergenIdsExclude.length > 0) {
-      qb.andWhere('productCategory.id  NOT IN (:...allergenIds)', {
-        allergenIds: query.allergenIdsExclude,
+      qb.andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('recipe.id')
+          .from(RecipeEntity, 'recipe')
+          .innerJoin('recipe.ingredients', 'ingredient')
+          .innerJoin('ingredient.productCategories', 'productCategory')
+          .where('productCategory.isAllergen = TRUE')
+          .andWhere('productCategory.id IN (:...allergenIds)', {
+            allergenIds: query.allergenIdsExclude,
+          })
+          .getQuery();
+        return `recipe.id NOT IN ${subQuery}`;
       });
     }
 
@@ -70,8 +81,17 @@ export class QueryRecipeService {
     }
 
     if (!!query.recipeTagIds && query.recipeTagIds.length > 0) {
-      qb.andWhere('tag.id IN (:...recipeTagIds)', {
-        recipeTagIds: query.recipeTagIds,
+      qb.andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('recipe.id')
+          .from(RecipeEntity, 'recipe')
+          .innerJoin('recipe.tags', 'tag')
+          .where('tag.id IN (:...tags)', {
+            tags: query.recipeTagIds,
+          })
+          .getQuery();
+        return `recipe.id IN ${subQuery}`;
       });
     }
 
