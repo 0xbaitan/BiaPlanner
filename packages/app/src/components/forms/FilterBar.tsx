@@ -7,7 +7,6 @@ import React, { HTMLProps } from "react";
 import DropdownPane from "../DropdownPane";
 import { FaSort } from "react-icons/fa";
 import Form from "react-bootstrap/esm/Form";
-import { FormCheckInputProps } from "react-bootstrap/esm/FormCheckInput";
 import { FormCheckProps } from "react-bootstrap/esm/FormCheck";
 import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { IoFilter as IoFil } from "react-icons/io5";

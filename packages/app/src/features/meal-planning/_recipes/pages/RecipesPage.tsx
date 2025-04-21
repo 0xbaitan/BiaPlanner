@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useGetRecipesQuery, useSearchRecipesQuery } from "@/apis/RecipeApi";
+import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
@@ -11,46 +13,50 @@ import RecipeGrid from "@/components/layouts/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { ViewType } from "@/components/ViewSegmentedButton";
-import { useGetRecipesQuery } from "@/apis/RecipeApi";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
+import qs from "qs";
+import useDefaultStatusToast from "@/hooks/useDefaultStatusToast";
 import { useNavigate } from "react-router-dom";
+import useToast from "@/hooks/useToast";
 
 export default function RecipesPage() {
   const navigate = useNavigate();
-  const [view, setView] = useState<ViewType>("grid");
+
+  const { recipesQuery, view } = useRecipesCrudListState();
+  const { setView, setSearch } = useRecipesCrudListActions();
+
+  console.log("recipesQuery", qs.stringify(recipesQuery));
+
   const {
-    data,
+    data: results,
 
     isError,
     isLoading,
     isFetching,
-  } = useGetRecipesQuery(undefined, {
+  } = useSearchRecipesQuery(recipesQuery, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
     refetchOnReconnect: true,
   });
 
+  const { currentPage, totalItems, itemsPerPage, numItemEndOnPage, numItemStartOnPage, numItems, searchTermUsed, totalPages } = calculatePaginationElements(recipesQuery.limit ?? 25, results);
+
   const recipesTable = useMemo(() => {
-    return <RecipesTable data={data ?? []} />;
-  }, [data, navigate]);
+    return <RecipesTable data={results?.data ?? []} />;
+  }, [results?.data]);
 
   const recipesGrid = useMemo(() => {
-    return <RecipeGrid recipes={data ?? []} />;
-  }, [data]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error</div>;
-  }
-
-  if (!data) {
-    return <div>No data</div>;
-  }
+    return <RecipeGrid recipes={results?.data ?? []} />;
+  }, [results?.data]);
 
   return (
     // <div>hi</div>
     <CrudListPageLayout>
       <CrudListPageLayout.Header
+        searchTerm={recipesQuery.search}
+        onSearch={(searchTerm) => {
+          setSearch(searchTerm);
+        }}
         pageTitle="Recipes"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
@@ -68,7 +74,7 @@ export default function RecipesPage() {
       />
 
       <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount itemsEnd={data.length} itemsStart={1} totalItems={data.length} itemDescription="recipes" searchTermUse="recipes" />}
+        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="recipes" searchTermUsed={searchTermUsed} />}
         contentComponent={<CrudListPageLayout.Body.Content>{view === "grid" ? recipesGrid : recipesTable}</CrudListPageLayout.Body.Content>}
         itemsPerPageCountSelectorComponent={
           <CrudListPageLayout.Body.ItemsPerPageCountSelector
@@ -81,7 +87,7 @@ export default function RecipesPage() {
         viewSegmentedButtonComponent={
           <CrudListPageLayout.Body.ViewSegmentedButton
             view={view}
-            onChange={(view) => {
+            onChange={(view: ViewType) => {
               setView(view);
             }}
           />
@@ -92,13 +98,11 @@ export default function RecipesPage() {
         paginationComponent={
           <CrudListPageLayout.Footer.Pagination
             paginationProps={{
-              numPages: Math.ceil(data.length / 10),
-              currentPage: 1,
-              onPageChange: (pageSelected: number) => {
-                console.log(`Page changed to: ${pageSelected}`);
+              numPages: totalPages,
+              currentPage,
+              onPageChange: (page) => {
+                console.log(page);
               },
-              numberOfPagesToShowOnTruncation: 5,
-              showFirstLast: true,
             }}
           />
         }

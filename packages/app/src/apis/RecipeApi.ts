@@ -1,5 +1,7 @@
-import { ICreateRecipeDto, IRecipe, IUpdateRecipeDto } from "@biaplanner/shared";
+import { ICreateRecipeDto, IQueryRecipeDto, IRecipe, IUpdateRecipeDto } from "@biaplanner/shared";
 
+import { Paginated } from "nestjs-paginate/lib/paginate";
+import qs from "qs";
 import { rootApi } from ".";
 
 export const RecipeApi = rootApi.injectEndpoints({
@@ -48,7 +50,15 @@ export const RecipeApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: (result, error, id) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
+
+    searchRecipes: build.query<Paginated<IRecipe>, IQueryRecipeDto>({
+      query: (query) => ({
+        url: `/query/recipes?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.data.map((recipe) => ({ id: recipe.id, type: "Recipe" as const })), { type: "Recipe", id: "LIST" }] : [{ type: "Recipe", id: "LIST" }]),
+    }),
   }),
 });
 
-export const { useGetRecipesQuery, useLazyGetRecipesQuery, useCreateRecipeMutation, useUpdateRecipeMutation, useDeleteRecipeMutation, useGetRecipeQuery } = RecipeApi;
+export const { useGetRecipesQuery, useLazyGetRecipesQuery, useCreateRecipeMutation, useUpdateRecipeMutation, useDeleteRecipeMutation, useGetRecipeQuery, useSearchRecipesQuery, useLazySearchRecipesQuery } = RecipeApi;

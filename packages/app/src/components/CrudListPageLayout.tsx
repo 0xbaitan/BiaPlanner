@@ -12,6 +12,7 @@ import React from "react";
 
 export type CrudListPageHeaderProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
   pageTitle: string;
+  searchTerm?: string;
   onSearch?: (searchTerm: string) => void;
   actionsComponent?: React.ReactNode;
   filtersComponent?: React.ReactNode;
@@ -19,8 +20,8 @@ export type CrudListPageHeaderProps = Omit<HTMLProps<HTMLDivElement>, "children"
 export type CrudListPageLayoutProps = HTMLProps<HTMLDivElement>;
 
 function Header(props: CrudListPageHeaderProps) {
-  const { className, actionsComponent, filtersComponent, pageTitle, onSearch, ...rest } = props;
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { className, searchTerm: initialTerm, actionsComponent, filtersComponent, pageTitle, onSearch, ...rest } = props;
+  const [searchTerm, setSearchTerm] = useState<string>(initialTerm || "");
 
   return (
     <div {...rest} className={`bp-crud_list_page_layout__header ${className || ""}`}>
@@ -80,7 +81,7 @@ export type ResultsCountProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
   itemsEnd: number;
   totalItems: number;
   itemDescription?: string;
-  searchTermUse?: string;
+  searchTermUsed?: string;
 };
 
 export type CrudListBodyProps = Omit<HTMLProps<HTMLDivElement>, "children"> & {
@@ -108,20 +109,11 @@ function Body(props: CrudListBodyProps) {
 }
 
 function ResultsCount(props: ResultsCountProps) {
-  const {
-    className,
-    itemsEnd,
-    itemsStart,
-    totalItems,
-    itemDescription,
-    searchTermUse,
-
-    ...rest
-  } = props;
+  const { className, itemsEnd, itemsStart, totalItems, itemDescription, searchTermUsed, ...rest } = props;
 
   return (
     <div {...rest} className={`bp-crud_list_page_layout__results_count ${className || ""}`}>
-      Showing {itemsStart} - {itemsEnd} of {totalItems} {itemDescription || "items"} {searchTermUse && <span>for "{searchTermUse}"</span>}
+      Showing {itemsStart} - {itemsEnd} of {totalItems} {itemDescription || "items"} {searchTermUsed && <>for "{searchTermUsed}"</>}
     </div>
   );
 }

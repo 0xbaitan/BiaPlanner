@@ -110,6 +110,8 @@ $card-width: calc(100% - 2 * $card-margin);
   display: flex;
   flex-direction: column;
   gap: clamp(0.25rem, 1vw, 0.75rem);
+  padding: 0 0.25em;
+  margin: 0;
 }
 
 .bp-recipe_card__body__dl__dt {
@@ -122,7 +124,7 @@ $card-width: calc(100% - 2 * $card-margin);
 
 .bp-recipe_card__body__dl__dt__icon {
   display: inline-block;
-  font-size: calc(clamp(1.5rem, 2vw, 2rem) * 0.75);
+  font-size: clamp(0.8rem, 1vw, 1.1rem) !important;
   color: $colors-secondary;
 }
 
@@ -195,4 +197,21 @@ $card-width: calc(100% - 2 * $card-margin);
   font-size: 0.9rem !important;
   color: $colors-secondary;
   font-weight: bold;
+}
+
+.bp-recipe_card__body__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  padding: 0 0.5em;
+}
+
+.bp-recipe_card__body__tag {
+  display: block;
+  padding: 0.15rem 0.25rem;
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border: 1px solid darken($colors-light, 25);
+  border-radius: 0.25rem;
 }

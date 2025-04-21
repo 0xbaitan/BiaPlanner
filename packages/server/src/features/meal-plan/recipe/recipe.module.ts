@@ -3,6 +3,8 @@ import { ConcreteIngredientModule } from './concrete-ingredient/concrete-ingredi
 import { Module } from '@nestjs/common';
 import PantryItemModule from '@/features/pantry/pantry-item/pantry-item.module';
 import { PantryItemPortionModule } from './pantry-item-portion/pantry-item-portion.module';
+import { QueryRecipeController } from './query.recipe.controller';
+import { QueryRecipeService } from './query.recipe.service';
 import { RecipeController } from './recipe.controller';
 import { RecipeEntity } from './recipe.entity';
 import { RecipeIngredientModule } from './recipe-ingredient/recipe-ingredient.module';
@@ -22,8 +24,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     PantryItemPortionModule,
     PantryItemModule,
   ],
-  controllers: [RecipeController, RecipeSuggestionsController],
-  providers: [RecipeService, RecipeSuggestionsService],
+  controllers: [
+    RecipeController,
+    RecipeSuggestionsController,
+    QueryRecipeController,
+  ],
+  providers: [RecipeService, RecipeSuggestionsService, QueryRecipeService],
   exports: [
     RecipeService,
     RecipeIngredientModule,

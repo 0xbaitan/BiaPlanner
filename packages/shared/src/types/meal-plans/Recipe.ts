@@ -1,10 +1,13 @@
 import { DifficultyLevels, Time } from "../units";
+import { IsArray, IsBoolean, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
 
 import { DeepPartial } from "utility-types";
 import { IBaseEntity } from "../BaseEntity";
 import { ICuisine } from "./Cuisine";
 import { IRecipeIngredient } from "./RecipeIngredient";
 import { IRecipeTag } from "./RecipeTag";
+import { IsStringArrayConstraint } from "../../util";
+import { PaginateQuery } from "../PaginateExtended";
 import { SegmentedTime } from "../TimeMeasurement";
 import z from "zod";
 
@@ -65,4 +68,63 @@ export class UpdateRecipeDto implements IUpdateRecipeDto {
   defaultNumberOfServings?: [number, number] | undefined;
   notes?: string | undefined;
   source?: string | undefined;
+}
+
+export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | "search"> {
+  allergensExclude?: string[];
+  difficultyLevel?: string[];
+  recipeTags?: string[];
+  ownRecipes?: boolean;
+  favouritesOnly?: boolean;
+  useWhatIhave?: boolean;
+  cuisines?: string[];
+}
+
+export class QueryRecipeDto implements IQueryRecipeDto {
+  @IsOptional()
+  @Validate(IsStringArrayConstraint)
+  allergensExclude?: string[] | undefined;
+
+  @IsOptional()
+  @Validate(IsStringArrayConstraint)
+  difficultyLevel?: string[] | undefined;
+
+  @IsOptional()
+  @Validate(IsStringArrayConstraint)
+  recipeTags?: string[] | undefined;
+
+  @IsOptional()
+  @IsBoolean()
+  ownRecipes?: boolean | undefined;
+
+  @IsOptional()
+  @IsBoolean()
+  favouritesOnly?: boolean | undefined;
+
+  @IsOptional()
+  @IsBoolean()
+  useWhatIhave?: boolean | undefined;
+  cuisines?: string[] | undefined;
+
+  @IsOptional()
+  @IsNumber({
+    allowInfinity: false,
+    allowNaN: false,
+    maxDecimalPlaces: 0,
+  })
+  @IsPositive()
+  page?: number | undefined;
+
+  @IsOptional()
+  @IsNumber({
+    allowInfinity: false,
+    allowNaN: false,
+    maxDecimalPlaces: 0,
+  })
+  @IsPositive()
+  limit?: number | undefined;
+
+  @IsOptional()
+  @IsString()
+  search?: string | undefined;
 }

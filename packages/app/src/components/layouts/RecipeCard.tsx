@@ -2,16 +2,15 @@ import "../styles/RecipeCard.scss";
 
 import { ArrowContainer, Popover } from "react-tiny-popover";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
-import { FaAllergies, FaHeart, FaRegHeart } from "react-icons/fa";
 import { IRecipe, SegmentedTime } from "@biaplanner/shared";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
 import { PiChefHatFill, PiQuestionFill } from "react-icons/pi";
 import { TbAlertTriangle, TbBowlSpoonFilled } from "react-icons/tb";
 import { useCallback, useState } from "react";
 
-import { ReactComponent as AllergenIcon } from "@/icons/allergen-icon.svg";
 import Card from "react-bootstrap/Card";
-import { IconBase } from "react-icons";
+import { SiLevelsdotfyi } from "react-icons/si";
+import convertToSentenceCase from "@/util/convertToSentenceCase";
 import { useNavigate } from "react-router-dom";
 
 export type RecipeCardProps = {
@@ -59,47 +58,66 @@ export default function RecipeCard(props: RecipeCardProps) {
         <Card.Title className="bp-recipe_card__header__title">{recipe.title}</Card.Title>
       </Card.Header>
       <Card.Body className="bp-recipe_card__body">
-        <Card.Text>
-          <dl className="bp-recipe_card__body__dl">
-            {recipe.defaultNumberOfServings && (
-              <div className="bp-recipe_card__body__dl__pair">
-                <dt className="bp-recipe_card__body__dl__dt">
-                  <TbBowlSpoonFilled className="bp-recipe_card__body__dl__dt__icon" />
-                  Servings
-                </dt>
-                <dd className="bp-recipe_card__body__dl__dd">{recipe.defaultNumberOfServings[0] - recipe.defaultNumberOfServings[1]}</dd>
-              </div>
-            )}
-            {recipe.prepTime && (
-              <div className="bp-recipe_card__body__dl__pair">
-                <dt className="bp-recipe_card__body__dl__dt">
-                  <MdAccessTime className="bp-recipe_card__body__dl__dt__icon" />
-                  Preparation time
-                </dt>
-                <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.prepTime)}</dd>
-              </div>
-            )}
-            {recipe.cookingTime && (
-              <div className="bp-recipe_card__body__dl__pair">
-                <dt className="bp-recipe_card__body__dl__dt">
-                  {" "}
-                  <MdAccessTimeFilled className="bp-recipe_card__body__dl__dt__icon" />
-                  Cooking time
-                </dt>
-                <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.cookingTime)}</dd>
-              </div>
-            )}
-            {recipe.cuisine.name && (
-              <div className="bp-recipe_card__body__dl__pair">
-                <dt className="bp-recipe_card__body__dl__dt">
-                  <PiChefHatFill className="bp-recipe_card__body__dl__dt__icon" />
-                  Cuisine
-                </dt>
-                <dd className="bp-recipe_card__body__dl__dd">{recipe.cuisine.name}</dd>
-              </div>
-            )}
-          </dl>
-        </Card.Text>
+        <dl className="bp-recipe_card__body__dl">
+          {recipe.defaultNumberOfServings && (
+            <div className="bp-recipe_card__body__dl__pair">
+              <dt className="bp-recipe_card__body__dl__dt">
+                <TbBowlSpoonFilled className="bp-recipe_card__body__dl__dt__icon" />
+                Servings
+              </dt>
+              <dd className="bp-recipe_card__body__dl__dd">{recipe.defaultNumberOfServings[0] - recipe.defaultNumberOfServings[1]}</dd>
+            </div>
+          )}
+          {recipe.prepTime && (
+            <div className="bp-recipe_card__body__dl__pair">
+              <dt className="bp-recipe_card__body__dl__dt">
+                <MdAccessTime className="bp-recipe_card__body__dl__dt__icon" />
+                Preparation time
+              </dt>
+              <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.prepTime)}</dd>
+            </div>
+          )}
+          {recipe.cookingTime && (
+            <div className="bp-recipe_card__body__dl__pair">
+              <dt className="bp-recipe_card__body__dl__dt">
+                {" "}
+                <MdAccessTimeFilled className="bp-recipe_card__body__dl__dt__icon" />
+                Cooking time
+              </dt>
+              <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.cookingTime)}</dd>
+            </div>
+          )}
+          {recipe.cuisine.name && (
+            <div className="bp-recipe_card__body__dl__pair">
+              <dt className="bp-recipe_card__body__dl__dt">
+                <PiChefHatFill className="bp-recipe_card__body__dl__dt__icon" />
+                Cuisine
+              </dt>
+              <dd className="bp-recipe_card__body__dl__dd">{recipe.cuisine.name}</dd>
+            </div>
+          )}
+          {recipe.difficultyLevel && (
+            <div className="bp-recipe_card__body__dl__pair">
+              <dt className="bp-recipe_card__body__dl__dt">
+                <SiLevelsdotfyi className="bp-recipe_card__body__dl__dt__icon" />
+                Difficulty
+              </dt>
+              <dd className="bp-recipe_card__body__dl__dd">{convertToSentenceCase(recipe.difficultyLevel)}</dd>
+            </div>
+          )}
+        </dl>
+        {recipe.tags && recipe.tags.length > 0 && (
+          <>
+            <hr />
+            <div className="bp-recipe_card__body__tags">
+              {recipe.tags.map((tag) => (
+                <div key={tag.id} className="bp-recipe_card__body__tag">
+                  {tag.name}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </Card.Body>
     </Card>
   );

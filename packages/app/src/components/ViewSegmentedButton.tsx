@@ -7,9 +7,9 @@ import Button from "react-bootstrap/esm/Button";
 import { FaTableCells } from "react-icons/fa6";
 
 export type ViewType = "table" | "grid";
-export type ViewSegmentedButtonProps = Omit<ButtonGroupProps, "children"> & {
+export type ViewSegmentedButtonProps = Omit<ButtonGroupProps, "children" | "onChange"> & {
   view?: ViewType;
-  onChange?: (view: "table" | "grid") => void;
+  onChange?: (view: ViewType) => void;
 };
 export default function ViewSegmentedButton(props: ViewSegmentedButtonProps) {
   const { className, view, onChange, ...rest } = props;
