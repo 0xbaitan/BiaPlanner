@@ -11,10 +11,10 @@ import { useCallback, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { SiLevelsdotfyi } from "react-icons/si";
 import convertToSentenceCase from "@/util/convertToSentenceCase";
-import { useNavigate } from "react-router-dom";
 
 export type RecipeCardProps = {
   recipe: IRecipe;
+  onClick?: (recipe: IRecipe) => void;
 };
 
 function formatSegmentedTimeAsString(time: SegmentedTime) {
@@ -36,14 +36,11 @@ function formatSegmentedTimeAsString(time: SegmentedTime) {
 }
 
 export default function RecipeCard(props: RecipeCardProps) {
-  const { recipe } = props;
-  const navigate = useNavigate();
+  const { recipe, onClick } = props;
+
   const handleRecipeClick = useCallback(() => {
-    navigate({
-      pathname: "/meal-planning/meal-plans/create",
-      search: `?recipeId=${recipe.id}`,
-    });
-  }, [navigate, recipe.id]);
+    onClick?.(recipe);
+  }, [onClick, recipe]);
 
   return (
     <Card className="bp-recipe_card" onClick={handleRecipeClick}>

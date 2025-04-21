@@ -9,18 +9,19 @@ import { useMemo } from "react";
 
 export type RecipeGridProps = {
   recipes: IRecipe[];
+  onClick?: (recipe: IRecipe) => void;
 };
 
 export default function RecipeGrid(props: RecipeGridProps) {
-  const { recipes } = props;
+  const { recipes, onClick } = props;
 
   const recipeCards = useMemo(() => {
     return recipes.map((recipe) => (
       <Col xs={12} sm={6} lg={4} xxl={3} key={recipe.id} className="bp-recipe_grid__col">
-        <RecipeCard recipe={recipe} />
+        <RecipeCard recipe={recipe} onClick={onClick} />
       </Col>
     ));
-  }, [recipes]);
+  }, [onClick, recipes]);
 
   return (
     <div className="d-flex justify-content-center">

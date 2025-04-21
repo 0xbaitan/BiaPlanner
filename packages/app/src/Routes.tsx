@@ -27,13 +27,14 @@ import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDo
 import MealPlanningPagesContainer from "./features/meal-planning/components/MealPlanningPagesContainer";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
-import RecipesPage from "./features/meal-planning/_recipes/pages/RecipesPage";
+import RecipesListPage from "./features/meal-planning/_recipes/pages/RecipesListPage";
 import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import ShoppingListPagesContainer from "./features/shopping-lists/components/ShoppingListPagesContainer";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
 import UpdateRecipePage from "./features/meal-planning/_recipes/pages/UpdateRecipePage";
+import ViewRecipePage from "./features/meal-planning/_recipes/pages/ViewRecipePage";
 
 export default function Routes() {
   return (
@@ -86,9 +87,10 @@ export default function Routes() {
         </Route>
 
         <Route path="/meal-planning" element={<MealPlanningPagesContainer />}>
-          <Route path="recipes" element={<RecipesPage />} />
+          <Route path="recipes" element={<RecipesListPage />} />
           <Route path="recipes/create" element={<CreateRecipePage />} />
           <Route path="recipes/update/:id" element={<UpdateRecipePage />} />
+          <Route path="recipes/view/:id" element={<ViewRecipePage />} />
           <Route path="meal-plans" element={<MealPlansPage />} />
           <Route path="meal-plans/select-recipe" element={<SelectRecipePage />} />
           <Route path="meal-plans/create" element={<CreateMealPlanPage />} />

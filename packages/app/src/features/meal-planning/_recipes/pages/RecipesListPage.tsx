@@ -1,14 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { setPage, useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
-import { useGetRecipesQuery, useSearchRecipesQuery } from "@/apis/RecipeApi";
 
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownPane from "@/components/DropdownPane";
 import { FaPlus } from "react-icons/fa";
-import FilterMultiselect from "@/components/forms/FilterMultiselect";
-import { IRecipe } from "@biaplanner/shared";
 import NoResultsFound from "@/components/NoResultsFound";
 import RecipeGrid from "@/components/layouts/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
@@ -17,11 +11,11 @@ import { ViewType } from "@/components/ViewSegmentedButton";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import qs from "qs";
-import useDefaultStatusToast from "@/hooks/useDefaultStatusToast";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import useToast from "@/hooks/useToast";
+import { useSearchRecipesQuery } from "@/apis/RecipeApi";
 
-export default function RecipesPage() {
+export default function RecipesListPage() {
   const navigate = useNavigate();
 
   const { recipesQuery, view } = useRecipesCrudListState();
@@ -35,23 +29,28 @@ export default function RecipesPage() {
     data: results,
 
     isError,
-    isLoading,
-    isFetching,
   } = useSearchRecipesQuery(recipesQuery, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, itemsPerPage, numItemEndOnPage, numItemStartOnPage, numItems, searchTermUsed, totalPages } = calculatePaginationElements(recipesQuery.limit ?? 25, results);
+  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, searchTermUsed, totalPages } = calculatePaginationElements(recipesQuery.limit ?? 25, results);
 
   const recipesTable = useMemo(() => {
     return <RecipesTable data={results?.data ?? []} />;
   }, [results?.data]);
 
   const recipesGrid = useMemo(() => {
-    return <RecipeGrid recipes={results?.data ?? []} />;
-  }, [results?.data]);
+    return (
+      <RecipeGrid
+        recipes={results?.data ?? []}
+        onClick={(recipe) => {
+          navigate(`./view/${recipe.id}`);
+        }}
+      />
+    );
+  }, [navigate, results?.data]);
 
   return (
     // <div>hi</div>
