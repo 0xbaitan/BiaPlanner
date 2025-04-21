@@ -1,20 +1,19 @@
 .bp-recipe_view__content {
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background-color: #f9f9f9;
 }
 
 .bp-recipe_view__details_container {
   display: flex;
   gap: 20px;
   margin-top: 20px;
+  margin-bottom: 2em;
 }
 
 .bp-recipe_view__image_container {
   flex: 1;
-  max-width: 300px;
-  height: 300px;
+  max-width: clamp(300px, 50vw, 400px);
+  aspect-ratio: 1/1;
   background-color: #eaeaea;
   border-radius: 8px;
   overflow: hidden;
@@ -30,63 +29,204 @@
   gap: 20px;
 }
 
-.bp-recipe_view__info__meta {
+.bp-recipe_view__info__description {
+  background-color: #fff;
+  padding: clamp(1em, 2vw, 2em);
+}
+
+.bp-recipe_view__actions {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  align-items: center;
+  justify-content: space-between;
 }
 
 .bp-recipe_view__info__meta__item {
-  background-color: #fff;
-  padding: 10px 15px;
-  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: clamp(0.5em, 1vw, 2em);
+  padding: clamp(0.5em, 2vw, 1.25em) clamp(1em, 2.5vw, 2.5em);
+  width: clamp(5em, 7.5vw, 10em);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  color: #333;
-}
-
-.bp-recipe_view__info__description {
-  background-color: #fff;
-  padding: 15px;
   border-radius: 8px;
+}
+
+.bp-recipe_view__info__meta__item__icon {
+  font-size: clamp(1.5em, 2vw, 2em);
+  color: $colors-secondary;
+}
+
+.bp-recipe_view__info__meta__item__label {
+  font-size: calc(clamp(1em, 2vw, 1.5em) * 0.8);
+  color: $colors-secondary;
+  font-weight: bold;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.bp-recipe_view__info__meta {
+  display: flex;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  align-self: center;
+  flex-wrap: wrap;
+}
+
+.bp-recipe_view__info__meta__item__description {
+  padding-top: calc(clamp(0.5em, 2vw, 1.25em) * 0.2);
+  font-size: calc(clamp(1em, 2vw, 1.5em) * 0.6);
+  color: #666;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.bp-recipe_view__info__description__container {
+  display: flex;
+  flex-direction: column;
+  gap: calc(clamp(0.5em, 2vw, 1.25em) * 0.7);
+  padding: clamp(1em, 2vw, 2em);
+}
+.bp-recipe_view__info_description {
+  @include typography-lora-font(1.1rem, normal);
+  display: block;
+
+  color: $colors-secondary;
+  text-align: justify;
+  line-height: 1.15;
+}
+
+.bp-recipe_view__info__tags__container {
+  padding: 0 clamp(1em, 2vw, 2em);
+}
+
+.bp-recipe_view__info__tags {
+  margin-top: 0.25em;
+
+  display: flex;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  flex-wrap: wrap;
+}
+
+.bp-recipe_view__info__tags__item {
+  padding: 0.5em;
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border-radius: 8px;
+  font-size: calc(clamp(1em, 2vw, 1.5em) * 0.6);
+}
+
+.bp-recipe-view__divider {
+  width: 100%;
+  height: 2px;
+  background-color: $colors-silver;
+}
+
+.bp-recipe_view__ingredients_directions__container {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: clamp(1em, 2vw, 2em);
+  justify-content: space-between;
+  align-items: stretch;
+  flex-wrap: wrap;
+  padding: 0 clamp(1em, 2vw, 2em);
+}
+
+.bp-recipe_view__ingredients_directions__container__ingredients {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  flex-basis: 40%;
+  padding: calc(clamp(0.5em, 2vw, 1.25em) * 2) clamp(1em, 2vw, 2em);
+
+  border: 0.5px solid $colors-silver;
+  border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  min-height: calc(50vh - 2em);
+}
 
-  h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #555;
-  }
+.bp-recipe_view__ingredients_directions__container__ingredients__list {
+  list-style: decimal;
+  margin-top: clamp(0.5em, 2vw, 1.25em);
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5em, 2vw, 1.25em);
 
-  p {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.6;
+  border-radius: 0.5rem;
+}
+
+.bp-recipe_view__ingredients_directions__container__ingredients__list__item {
+  display: flex;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  align-items: center;
+  padding: 0.5em;
+  font-size: calc(clamp(1em, 2vw, 1.5em) * 0.8);
+  color: $colors-secondary;
+  border-bottom: 0.5px solid $colors-silver;
+
+  &:first-child {
+    border-top: 0.5px solid $colors-silver;
   }
 }
 
-.btn {
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  cursor: pointer;
+.bp-recipe_view__ingredients_directions__container__directions {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5em, 2vw, 1.25em);
+  flex-basis: 50%;
+  padding: calc(clamp(0.5em, 2vw, 1.25em) * 2) clamp(1em, 2vw, 2em);
+  border: 0.5px solid $colors-silver;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  min-height: calc(50vh - 2em);
+}
 
-  &.btn-primary {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
+.bp-recipe_view__product_categories_info_tooltip {
+  display: inline-block;
+}
 
-    &:hover {
-      background-color: #0056b3;
-    }
-  }
+.bp-recipe_product_categories_info_tooltip__content {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  margin: 1em;
+  padding: 1em;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid $colors-silver;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  max-width: clamp(300px, 50vw, 600px);
+  align-items: center;
+  z-index: 1000;
+  flex-wrap: wrap;
+}
 
-  &.btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
+.bp-recipe_view__product_categories_info_tooltip__content__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
 
-    &:hover {
-      background-color: #a71d2a;
-    }
-  }
+.bp-recipe_view__product_categories__item {
+  padding: 0.5em;
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bp-recipe_view__product_categories_info_tooltip__content__title {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5em;
+  color: $colors-secondary;
+  text-wrap: nowrap;
 }

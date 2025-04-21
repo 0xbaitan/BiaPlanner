@@ -1,6 +1,20 @@
 import "../styles/ViewRecipePage.scss";
 
+import { FaPencil, FaTrash } from "react-icons/fa6";
+import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
+
+import { Button } from "react-bootstrap";
 import CrudViewPageLayout from "@/components/CrudViewPageLayout";
+import { FaInfoCircle } from "react-icons/fa";
+import Heading from "@/components/Heading";
+import { IconType } from "react-icons";
+import { PiChefHatFill } from "react-icons/pi";
+import { SegmentedTime } from "@biaplanner/shared";
+import { SiLevelsdotfyi } from "react-icons/si";
+import { TbBowlSpoonFilled } from "react-icons/tb";
+import Tooltip from "@/components/Tooltip";
+import convertToSentenceCase from "@/util/convertToSentenceCase";
+import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
 import { useParams } from "react-router-dom";
 
@@ -14,6 +28,40 @@ export default function ViewRecipePage() {
   } = useGetRecipeQuery(String(id), {
     refetchOnMountOrArgChange: true,
   });
+
+  const metaItems = [
+    {
+      label: recipe?.cuisine.name,
+      icon: PiChefHatFill,
+      description: "Cuisine",
+    },
+    {
+      label: recipe?.difficultyLevel?.toString(),
+      icon: SiLevelsdotfyi,
+      description: "Difficulty",
+    },
+    {
+      label: recipe?.prepTime ? `${formatSegmentedTimeAsString(recipe.prepTime)}` : undefined,
+      icon: MdAccessTime,
+      description: "Prepping time",
+    },
+    {
+      label: recipe?.cookingTime ? `${formatSegmentedTimeAsString(recipe.cookingTime)}` : undefined,
+      icon: MdAccessTimeFilled,
+      description: "Cooking time",
+    },
+    {
+      label: recipe?.defaultNumberOfServings ? `${recipe.defaultNumberOfServings[0]} - ${recipe.defaultNumberOfServings[1]} servings` : undefined,
+      icon: TbBowlSpoonFilled,
+      description: "Servings",
+    },
+  ]
+    .filter((item) => item.label !== undefined)
+    .map((item) => ({
+      label: convertToSentenceCase(item.label! as string),
+      icon: item.icon,
+      description: item.description,
+    }));
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -41,9 +89,21 @@ export default function ViewRecipePage() {
       ]}
       title={recipe.title}
       actions={
-        <div>
-          <button className="btn btn-primary">Edit</button>
-          <button className="btn btn-danger">Delete</button>
+        <div className="bp-recipe_view__actions">
+          <Button variant="secondary" onClick={() => {}}>
+            <FaPencil />
+            &ensp;Edit recipe
+          </Button>
+
+          <Button
+            variant="outline-danger"
+            onClick={() => {
+              // Handle delete action
+            }}
+          >
+            <FaTrash />
+            &ensp;Delete recipe
+          </Button>
         </div>
       }
     >
@@ -52,15 +112,74 @@ export default function ViewRecipePage() {
           <div className="bp-recipe_view__image_container"></div>
           <div className="bp-recipe_view__info_container">
             <div className="bp-recipe_view__info__meta">
-              <div className="bp-recipe_view__info__meta__item"></div>
+              {metaItems.map((item, index) => {
+                const Icon: IconType = item.icon;
+                return (
+                  <div key={index} className="bp-recipe_view__info__meta__item">
+                    <Icon className="bp-recipe_view__info__meta__item__icon" />
+                    <div>
+                      <div className="bp-recipe_view__info__meta__item__label">{item.label}</div>
+                      <div className="bp-recipe_view__info__meta__item__description">{item.description}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className="bp-recipe_view__info__description">
-              <h3>Description</h3>
-              <p>{recipe.description}</p>
+            <div className="bp-recipe_view__info__description__container">
+              <Heading level={Heading.Level.H2}>About the recipe</Heading>
+              <p className="bp-recipe_view__info_description">{recipe.description}</p>
             </div>
+            {recipe.tags && recipe.tags.length > 0 && (
+              <div className="bp-recipe_view__info__tags__container">
+                <Heading level={Heading.Level.H3}>Tags</Heading>
+                <div className="bp-recipe_view__info__tags">
+                  {recipe.tags?.map((tag) => (
+                    <div key={tag.id} className="bp-recipe_view__info__tags__item">
+                      {tag.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <hr className="bp-recipe_view__divider" />
+        <div className="bp-recipe_view__ingredients_directions__container">
+          <div className="bp-recipe_view__ingredients_directions__container__ingredients">
+            <Heading level={Heading.Level.H2}>Ingredients</Heading>
+            <ol className="bp-recipe_view__ingredients_directions__container__ingredients__list">
+              {recipe.ingredients.map((ingredient, index) => (
+                <li key={ingredient.id} className="bp-recipe_view__ingredients_directions__container__ingredients__list__item">
+                  <div>{index + 1}.</div>{" "}
+                  <div>
+                    {ingredient.measurement?.magnitude && ingredient.measurement?.unit ? `${ingredient.measurement.magnitude} ${ingredient.measurement.unit} of ` : ""}
+                    {ingredient.measurement?.magnitude}&nbsp;{ingredient.measurement?.unit}
+                    {ingredient.title}
+                  </div>
+                  <Tooltip className="bp-recipe_view__product_categories_info_tooltip" icon={FaInfoCircle} placement={["top", "bottom", "left", "right"]}>
+                    <div className="bp-recipe_product_categories_info_tooltip__content">
+                      <div className="bp-recipe_view__product_categories_info_tooltip__content__title">Applicable product categories:</div>
+                      <div className="bp-recipe_view__product_categories_info_tooltip__content__items">
+                        {ingredient.productCategories.map((productCategory) => (
+                          <div key={productCategory.id} className="bp-recipe_view__product_categories__item">
+                            {productCategory.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Tooltip>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="bp-recipe_view__ingredients_directions__container__directions">
+            <Heading level={Heading.Level.H2}>Directions</Heading>
           </div>
         </div>
       </div>
     </CrudViewPageLayout>
   );
+}
+function formatSegmentedTimeAsString(prepTime: SegmentedTime | undefined): string | undefined {
+  throw new Error("Function not implemented.");
 }
