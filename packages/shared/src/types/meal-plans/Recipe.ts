@@ -1,5 +1,5 @@
 import { DifficultyLevels, Time } from "../units";
-import { IsArray, IsBoolean, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
 import { IsStringArrayConstraint, toBoolean, toNumber, toString, toStringArray, transform, trimString } from "../../util";
 import { Transform, Type } from "class-transformer";
 
@@ -71,6 +71,17 @@ export class UpdateRecipeDto implements IUpdateRecipeDto {
   source?: string | undefined;
 }
 
+export enum RecipeSortBy {
+  RECIPE_TITLE_A_TO_Z = "RECIPE_TITLE_A_TO_Z",
+  RECIPE_TITLE_Z_TO_A = "RECIPE_TITLE_Z_TO_A",
+  RECIPE_MOST_TIME_CONSUMING = "RECIPE_MOST_TIME_CONSUMING",
+  RECIPE_LEAST_TIME_CONSUMING = "RECIPE_LEAST_TIME_CONSUMING",
+  RECIPE_INCREASING_DIFFICULTY_LEVEL = "RECIPE_INCREASING_DIFFICULTY_LEVEL",
+  RECIPE_DECREASING_DIFFICULTY_LEVEL = "RECIPE_DECREASING_DIFFICULTY_LEVEL",
+  RECIPE_MOST_RELEVANT_TO_PANTRY = "RECIPE_MOST_RELEVANT_TO_PANTRY",
+  DEFAULT = "DEFAULT",
+}
+
 export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | "search"> {
   allergenIdsExclude?: string[];
   difficultyLevel?: string[];
@@ -79,6 +90,7 @@ export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | 
   favouritesOnly?: boolean;
   useWhatIhave?: boolean;
   cuisineIds?: string[];
+  sortBy?: RecipeSortBy;
 }
 
 export class QueryRecipeDto implements IQueryRecipeDto {
@@ -141,4 +153,9 @@ export class QueryRecipeDto implements IQueryRecipeDto {
   @IsOptional()
   @IsString()
   search?: string | undefined;
+
+  @Transform((params) => transform(params, toString))
+  @IsOptional()
+  @IsEnum(RecipeSortBy)
+  sortBy?: RecipeSortBy | undefined;
 }

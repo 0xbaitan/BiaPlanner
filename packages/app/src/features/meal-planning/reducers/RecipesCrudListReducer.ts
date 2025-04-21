@@ -1,7 +1,7 @@
+import { IQueryRecipeDto, RecipeSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
-import { IQueryRecipeDto } from "@biaplanner/shared";
 import { ViewType } from "@/components/ViewSegmentedButton";
 
 export type RecipesCrudListState = {
@@ -18,7 +18,7 @@ const initialState: RecipesCrudListState = {
   },
 };
 
-export type RecipeFilter = Omit<IQueryRecipeDto, "page" | "limit" | "search">;
+export type RecipeFilter = Omit<IQueryRecipeDto, "page" | "limit" | "search" | "sortBy">;
 
 export const recipesCrudListSlice = createSlice({
   name: "recipesCrudList",
@@ -43,9 +43,14 @@ export const recipesCrudListSlice = createSlice({
       state.view = action.payload;
     },
 
+    setSortBy: (state, action: PayloadAction<RecipeSortBy>) => {
+      state.recipesQuery.sortBy = action.payload;
+    },
+
     resetFilters: (state) => {
       state.recipesQuery = {
         ...initialState.recipesQuery,
+        sortBy: state.recipesQuery.sortBy,
         page: state.recipesQuery.page,
         limit: state.recipesQuery.limit,
         search: state.recipesQuery.search,
@@ -54,7 +59,7 @@ export const recipesCrudListSlice = createSlice({
   },
 });
 
-export const { setFilter, setPage, setLimit, setSearch, resetFilters, setView } = recipesCrudListSlice.actions;
+export const { setFilter, setPage, setLimit, setSearch, resetFilters, setView, setSortBy } = recipesCrudListSlice.actions;
 export default recipesCrudListSlice.reducer;
 
 export function useRecipesCrudListState() {
@@ -72,5 +77,6 @@ export function useRecipesCrudListActions() {
     setSearch: (search: string) => dispatch(setSearch(search)),
     resetFilters: () => dispatch(resetFilters()),
     setView: (view: ViewType) => dispatch(setView(view)),
+    setSortBy: (sortBy: RecipeSortBy) => dispatch(setSortBy(sortBy)),
   };
 }

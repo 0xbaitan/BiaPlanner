@@ -1,6 +1,6 @@
 import "../styles/RecipeFilterBar.scss";
 
-import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag } from "@biaplanner/shared";
+import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag, RecipeSortBy } from "@biaplanner/shared";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
 import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
@@ -38,13 +38,35 @@ export default function RecipesFilterBar() {
       </FilterBar.Group>
       <FilterBar.ResetButton />
       <FilterBar.Group type="sorter">
-        <FilterBar.Sorter>
-          <option value="name">Name</option>
-          <option value="createdAt">Created At</option>
-          <option value="updatedAt">Updated At</option>
-        </FilterBar.Sorter>
+        <RecipeSorter />
       </FilterBar.Group>
     </FilterBar>
+  );
+}
+
+function RecipeSorter() {
+  const {
+    recipesQuery: { sortBy },
+  } = useRecipesCrudListState();
+  const { setSortBy } = useRecipesCrudListActions();
+
+  return (
+    <FilterBar.Sorter
+      value={sortBy}
+      onChange={(e) => {
+        const value = e.target.value;
+        setSortBy(value as RecipeSortBy);
+      }}
+    >
+      <option value={RecipeSortBy.DEFAULT}>Default</option>
+      <option value={RecipeSortBy.RECIPE_TITLE_A_TO_Z}>Recipe title (A to Z)</option>
+      <option value={RecipeSortBy.RECIPE_TITLE_Z_TO_A}>Recipe title (Z to A)</option>
+      <option value={RecipeSortBy.RECIPE_INCREASING_DIFFICULTY_LEVEL}>Increasing difficulty</option>
+      <option value={RecipeSortBy.RECIPE_DECREASING_DIFFICULTY_LEVEL}>Decreasing difficulty</option>
+      <option value={RecipeSortBy.RECIPE_MOST_TIME_CONSUMING}>Most time consuming</option>
+      <option value={RecipeSortBy.RECIPE_LEAST_TIME_CONSUMING}>Least time consuming</option>
+      <option value={RecipeSortBy.RECIPE_MOST_RELEVANT_TO_PANTRY}>Most relevant to your pantry</option>
+    </FilterBar.Sorter>
   );
 }
 

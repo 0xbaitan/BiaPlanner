@@ -1,9 +1,6 @@
 import { TransformFnParams } from "class-transformer";
 
 export function toNumber(value: unknown): number | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
   if (typeof value === "number") {
     return value;
   }
@@ -13,13 +10,10 @@ export function toNumber(value: unknown): number | undefined {
   if (typeof value === "boolean") {
     return value ? 1 : 0;
   }
-  return NaN;
+  return undefined;
 }
 
 export function toBoolean(value: unknown): boolean | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
   if (typeof value === "boolean") {
     return value;
   }
@@ -29,13 +23,10 @@ export function toBoolean(value: unknown): boolean | undefined {
   if (typeof value === "number") {
     return value !== 0;
   }
-  return false;
+  return undefined;
 }
 
 export function toString(value: unknown): string | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
   if (typeof value === "string") {
     return value;
   }
@@ -45,20 +36,17 @@ export function toString(value: unknown): string | undefined {
   if (typeof value === "boolean") {
     return value ? "true" : "false";
   }
-  return "";
+  return undefined;
 }
 
 export function toStringArray(value: unknown): string[] | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
   if (Array.isArray(value)) {
     return value.map((item) => toString(item) ?? "");
   }
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return [toString(value) ?? ""];
   }
-  return [];
+  return undefined;
 }
 export function trimString(value: unknown): string | undefined {
   if (typeof value === "string") {
