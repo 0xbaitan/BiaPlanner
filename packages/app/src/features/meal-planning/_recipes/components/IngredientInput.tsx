@@ -66,6 +66,7 @@ export default function IngredientInput() {
       <div className="bp-ingredient_input__row">
         <ProductCategoryMultiselect
           label="Choose category/categories for a single ingredient"
+          initialValues={ingredient.productCategories}
           error={errors?.productCategories?._errors[0]}
           onSelectionChange={(productCategories) => {
             setCurrentIngredient({

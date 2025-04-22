@@ -79,14 +79,13 @@ const MemoizedCuisineSelect = React.memo(CuisineSelect);
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
   const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
-
+  const navigate = useNavigate();
   const methods = useForm<IWriteRecipeDto>({
     defaultValues: transformedInitialValue,
     resolver: zodResolver(WriteRecipeValidationSchema),
     mode: "onChange",
   });
   const { handleSubmit, reset, setValue, watch, formState } = methods;
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (initialValue) {
@@ -96,10 +95,7 @@ export default function RecipeForm(props: RecipeFormProps) {
 
   const handleFormSubmit = async () => {
     const data = methods.getValues();
-    const isSuccess = await onSubmit(data);
-    if (isSuccess) {
-      reset(initialValue);
-    }
+    await onSubmit(data);
   };
 
   return (
@@ -124,7 +120,15 @@ export default function RecipeForm(props: RecipeFormProps) {
               <Heading level={Heading.Level.H2}>General Information</Heading>
               <MemoizedImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <div className="bp-recipe_form__general_info">
-                <MemoizedTextInput label="Recipe title" name="title" value={watch("title")} inputLabelProps={{ required: true }} error={formState.errors?.title?.message} />
+                <MemoizedTextInput
+                  label="Recipe title"
+                  name="title"
+                  value={watch("title")}
+                  inputLabelProps={{ required: true }}
+                  onChange={(e) => setValue("title", e.target.value)}
+                  placeholder="Enter recipe title"
+                  error={formState.errors?.title?.message}
+                />
                 <MemoizedDifficultyLevelSelect
                   onChange={(value) => {
                     setValue("difficultyLevel", value);
@@ -154,14 +158,31 @@ export default function RecipeForm(props: RecipeFormProps) {
                     )
                   }
                 />
-                <MemoizedTextInput label="Recipe Description" value={watch("description")} name="description" as="textarea" />
+                <MemoizedTextInput
+                  label="Recipe Description"
+                  value={watch("description")}
+                  name="description"
+                  as="textarea"
+                  onChange={(e) => setValue("description", e.target.value)}
+                  placeholder="Enter recipe description"
+                  error={formState.errors?.description?.message}
+                />
               </div>
             </DualPaneForm.Panel.Pane>
             <DualPaneForm.Panel.Pane>
               <Heading level={Heading.Level.H2}>Ingredients</Heading>
               <MemoizedIngredientList />
 
-              <MemoizedTextInput formGroupClassName="mt-5" label="Instructions" name="instructions" as="textarea" value={watch("instructions")} />
+              <MemoizedTextInput
+                formGroupClassName="mt-5"
+                label="Instructions"
+                name="instructions"
+                as="textarea"
+                value={watch("instructions")}
+                onChange={(e) => setValue("instructions", e.target.value)}
+                placeholder="Enter recipe instructions"
+                error={formState.errors?.instructions?.message}
+              />
             </DualPaneForm.Panel.Pane>
           </DualPaneForm.Panel>
         </DualPaneForm>

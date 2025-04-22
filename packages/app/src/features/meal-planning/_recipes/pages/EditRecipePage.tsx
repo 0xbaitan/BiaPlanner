@@ -1,18 +1,18 @@
 import { IRecipe, IRecipeTag, IUpdateRecipeTagDto, IWriteRecipeDto } from "@biaplanner/shared";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
 import { useGetRecipeTagQuery, useUpdateRecipeTagMutation } from "@/apis/RecipeTagsApi";
+import { useNavigate, useParams } from "react-router-dom";
 
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
-import { useParams } from "react-router-dom";
 
 export default function EditRecipePage() {
   const { id } = useParams();
   const { data: recipe, isLoading: isReadLoading, isError: isReadError } = useGetRecipeQuery(String(id));
   const [updateRecipe, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading: isUpdateLoading }] = useUpdateRecipeMutation();
-
+  const navigate = useNavigate();
   const { setItem } = useDefaultStatusToast<IRecipe>({
     idSelector: (entity) => entity.id,
     action: Action.UPDATE,
@@ -30,6 +30,12 @@ export default function EditRecipePage() {
       redirectUrl: "/meal-planning/recipes",
     },
   });
+
+  useEffect(() => {
+    if (isUpdateSuccess) {
+      navigate(-1);
+    }
+  }, [isUpdateSuccess, navigate]);
 
   const handleUpdateRecipeSubmission = useCallback(
     async (dto: IWriteRecipeDto) => {
