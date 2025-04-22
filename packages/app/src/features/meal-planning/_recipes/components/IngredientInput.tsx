@@ -52,7 +52,9 @@ export default function IngredientInput() {
             className="bp-ingredient_input__measurement_unit_field"
             selectedValues={[getCookingMeasurement(ingredient.measurement?.unit ?? Weights.GRAM)]}
             error={errors?.measurement?.unit?._errors[0]}
-            onChange={([{ unit }]) => {
+            onChange={(measurements) => {
+              const unit = measurements.at(0)?.unit;
+              if (!unit) return;
               setCurrentIngredient({
                 measurement: {
                   unit,

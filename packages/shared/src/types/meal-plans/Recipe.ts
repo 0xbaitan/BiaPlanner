@@ -8,6 +8,7 @@ import { Transform, Type } from "class-transformer";
 
 import { DeepPartial } from "utility-types";
 import { ICuisine } from "./Cuisine";
+import { IFile } from "../File";
 import { IRecipeTag } from "./RecipeTag";
 import { PaginateQuery } from "../PaginateExtended";
 import { WriteRecipeIngredientDtoSchema } from "./RecipeIngredient";
@@ -24,7 +25,8 @@ export interface IRecipe extends IBaseEntity {
   cookingTime?: SegmentedTime;
   prepTime?: SegmentedTime;
   defaultNumberOfServings?: [number, number];
-
+  coverImage?: IFile;
+  coverImageId?: string;
   notes?: string;
   source?: string;
   tags?: IRecipeTag[];
@@ -76,6 +78,7 @@ export const WriteRecipeValidationSchema = z.object({
     .min(1, {
       message: "Recipe must have at least one tag",
     }),
+  fileId: z.string().optional(),
 });
 
 export type IWriteRecipeDto = z.infer<typeof WriteRecipeValidationSchema>;
@@ -90,6 +93,7 @@ export class WriteRecipeDto implements IWriteRecipeDto {
   cookingTime?: SegmentedTime;
   prepTime?: SegmentedTime;
   tags: IReadEntityDto[];
+  fileId?: string;
 }
 
 export type WriteRecipeFormattedErrors = z.inferFormattedError<typeof WriteRecipeValidationSchema>;

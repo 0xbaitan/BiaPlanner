@@ -36,3 +36,57 @@ export function getCookingMeasurement(unit: CookingMeasurementUnit): ICookingMea
   const allMeasurements = getCookingMeasurementList();
   return allMeasurements.find((measurement) => measurement.unit === unit) as ICookingMeasurement;
 }
+
+export function getMeasurementLabel(unit: CookingMeasurementUnit): string {
+  const measurement = getCookingMeasurement(unit);
+  switch (measurement.unit) {
+    case Weights.GRAM:
+      return "grams (g)";
+    case Weights.KILOGRAM:
+      return "kilograms (kg)";
+    case Weights.POUND:
+      return "pounds (lb)";
+    case Weights.OUNCE:
+      return "ounces (oz)";
+    case Volumes.LITRE:
+      return "litres (L)";
+    case Volumes.MILLILITRE:
+      return "millilitres (mL)";
+    case Volumes.CUP:
+      return "cups (c)";
+    case Volumes.TABLESPOON:
+      return "tablespoons (tbsp)";
+    case Volumes.TEASPOON:
+      return "teaspoons (tsp)";
+    case Volumes.FLUID_OUNCE:
+      return "fluid ounces (fl oz)";
+    case Volumes.PINT:
+      return "pints (pt)";
+    case Volumes.QUART:
+      return "quarts (qt)";
+    case Volumes.GALLON:
+      return "gallons (gal)";
+    case Approximates.DASH:
+      return "dashes";
+    case Approximates.PINCH:
+      return "pinches";
+    case Approximates.DROP:
+      return "drops";
+    case Approximates.PIECE:
+      return "pieces";
+    case Approximates.SMIDGEN:
+      return "smidgens";
+    case Weights.MICROGRAM:
+      return "micrograms (mcg)";
+    case Weights.MILLIGRAM:
+      return "milligrams (mg)";
+    case Volumes.CUBIC_CENTIMETRE:
+      return "cubic centimeters (cc)";
+    case Volumes.CUBIC_INCH:
+      return "cubic inches (in³)";
+    case Volumes.CUBIC_METRE:
+      return "cubic meters (m³)";
+    default:
+      return "N/A";
+  }
+}

@@ -55,7 +55,7 @@ export default function ImageSelector(props: ImageSelectorProps) {
               </div>
               <div className={["bp-image_selector__upload_box__preview", imageUrl ? "+image-selected" : ""].join(" ")}>
                 {imageUrl && <img className="bp-image_selector__upload_box__preview__image" src={imageUrl} alt="preview" onClick={() => onImageUpdate(0)} {...dragProps} />}
-                <button className="bp-image_selector__upload_box__preview__remove" onClick={() => onImageRemove(0)}>
+                <button type="button" className="bp-image_selector__upload_box__preview__remove" onClick={() => onImageRemove(0)}>
                   <MdCancel className="bp-image_selector__upload_box__preview__remove__icon" />
                 </button>
               </div>

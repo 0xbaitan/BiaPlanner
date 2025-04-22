@@ -13,8 +13,10 @@
   display: flex;
   padding: 0.25em clamp(0.5em, 2vw, 1.25em);
   flex-direction: row;
+  width: 100%;
   gap: clamp(0.5em, 2vw, 1.25em);
   flex-wrap: nowrap;
+
   text-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
@@ -62,7 +64,7 @@
   align-items: center;
   text-align: center;
   flex-wrap: wrap;
-  gap: 0.5em;
+  gap: 1em;
 }
 
 .bp-filter_multiselect__selected-value {

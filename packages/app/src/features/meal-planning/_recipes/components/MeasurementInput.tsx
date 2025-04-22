@@ -1,68 +1,44 @@
 import "../styles/MeasurementInput.scss";
 
-import { ICookingMeasurement, getCookingMeasurementList } from "@biaplanner/shared";
-import SelectInput, { Option, SelectInputProps } from "@/components/forms/SelectInput";
+import { ICookingMeasurement, getCookingMeasurement, getCookingMeasurementList, getMeasurementLabel } from "@biaplanner/shared";
+import { Option, SelectInputProps, SelectRendererProps } from "@/components/forms/SelectInput";
 import { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
+import { useMemo, useState } from "react";
 
-import { useMemo } from "react";
+import { BiSolidSelectMultiple } from "react-icons/bi";
+import { Button } from "react-bootstrap";
+import { FaEraser } from "react-icons/fa6";
+import FilterSelect from "@/components/forms/FilterSelect";
+import Form from "react-bootstrap/Form";
+import SelectInput from "@/components/forms/SelectInput";
+import fuzzysearch from "fuzzysearch";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export type MeasurementInputProps = Omit<SelectInputProps<ICookingMeasurement>, "list" | "idSelector" | "nameSelector" | "dropdownRenderer">;
 
 export default function MeasurementInput(props: MeasurementInputProps) {
   const cookingMeasurements = useMemo(() => getCookingMeasurementList(), []);
 
-  return <SelectInput<ICookingMeasurement> {...props} idSelector={(measurement) => measurement.id} list={cookingMeasurements} nameSelector={(measurement) => measurement.unit} dropdownRenderer={MeasurementInputDropdown} />;
-}
-
-function MeasurementInputDropdown(rendererProps: { props: SelectProps<Option>; state: SelectState<Option>; methods: SelectMethods<Option>; additionalMethods: { getValueCounterPart: (option: Option) => ICookingMeasurement } }) {
-  const {
-    props,
-
-    methods,
-    additionalMethods: { getValueCounterPart },
-  } = rendererProps;
-  const allOptions = props.options;
-  const weightOptions = allOptions.filter((option) => {
-    const counterpart = getValueCounterPart(option);
-    return counterpart.type === "weight";
-  });
-
-  const volumeOptions = allOptions.filter((option) => {
-    const counterpart = getValueCounterPart(option);
-    return counterpart.type === "volume";
-  });
-
-  const approximateOptions = allOptions.filter((option) => {
-    const counterpart = getValueCounterPart(option);
-    return counterpart.type === "approximate";
-  });
-
   return (
-    <div className="bp-measurement-input__grid-container">
-      <div className="column">
-        <div>Weights</div>
-        {weightOptions.map((value) => (
-          <div className="bp-option" key={value.id} onClick={() => methods.addItem(value)}>
-            {value.name}
+    <FilterSelect<ICookingMeasurement>
+      {...props}
+      idSelector={(measurement) => measurement.id}
+      list={cookingMeasurements}
+      nameSelector={(measurement) => measurement.unit}
+      extendFuzzySearch={(measurement) => [measurement.unit, measurement.type, getMeasurementLabel(measurement.unit)]}
+      transformLabel={(measurement) => {
+        const unitLabel = getMeasurementLabel(measurement.unit);
+        const unitType = getCookingMeasurement(measurement.unit);
+        const unitTypeLabel = unitType.type === "weight" ? "Weight" : unitType.type === "volume" ? "Volume" : "Approximate";
+
+        return (
+          <div className="bp-measurement-input__label">
+            <div className="bp-measurements-input__label__unit"> {unitLabel}</div>
+            <div className="bp-measurement-input__label__unit_type">{unitTypeLabel}</div>
           </div>
-        ))}
-      </div>
-      <div className="column">
-        <div>Volumes</div>
-        {volumeOptions.map((value) => (
-          <div className="bp-option" key={value.id} onClick={() => methods.addItem(value)}>
-            {value.name}
-          </div>
-        ))}
-      </div>
-      <div className="column">
-        <div>Approximates</div>
-        {approximateOptions.map((value) => (
-          <div className="bp-option" key={value.id} onClick={() => methods.addItem(value)}>
-            {value.name}
-          </div>
-        ))}
-      </div>
-    </div>
+        );
+      }}
+      multi={false}
+    />
   );
 }

@@ -37,7 +37,7 @@ export default function IngredientModal(props: IngredientModalProps) {
     closeIngredientModal();
   }, [currentIngredient, ingredientIndex, modalType, closeIngredientModal, setErrors, appendIngredient, updateIngredient]);
   return (
-    <Modal show={showIngredientModal} onHide={closeIngredientModal} backdrop="static">
+    <Modal show={showIngredientModal} onHide={closeIngredientModal} backdrop="static" size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{modalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Modal.Title>
       </Modal.Header>

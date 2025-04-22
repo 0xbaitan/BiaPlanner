@@ -13,6 +13,8 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 export type FilterSelectProps<T extends object> = SelectInputProps<T> & {
   selectLabel?: string;
   maxSelectedValuesToShow?: number;
+  transformLabel?: (option: T) => React.ReactNode;
+  extendFuzzySearch?: (option: T) => string[];
 };
 export default function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   return (
@@ -20,22 +22,38 @@ export default function FilterSelect<T extends object>(props: FilterSelectProps<
       className="bp-filter_multiselect"
       multi={true}
       {...props}
-      contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} maxSelectedValuesToShow={props.maxSelectedValuesToShow} />}
+      contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} maxSelectedValuesToShow={props.maxSelectedValuesToShow} transformLabel={props.transformLabel} />}
       separator
-      dropdownRenderer={FilterSelectDropdown}
-      searchable
+      dropdownRenderer={(renderProps) => <FilterSelectDropdown {...renderProps} transformLabel={props.transformLabel} extendFuzzySearch={props.extendFuzzySearch} />}
     />
   );
 }
 
-function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string; maxSelectedValuesToShow?: number }) {
-  const { props: selectProps, state, multiselectLabel, maxSelectedValuesToShow } = props;
+function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string; maxSelectedValuesToShow?: number; transformLabel?: (option: T) => React.ReactNode }) {
+  const {
+    props: selectProps,
+    state,
+    multiselectLabel,
+    maxSelectedValuesToShow,
+    transformLabel,
+    additionalMethods: { getValueCounterPart },
+  } = props;
   const selectCount = state.values.length;
   const isAllSelected = selectCount === selectProps.options.length;
   const isMulti = selectProps.multi === true;
 
   if (!isMulti) {
-    return state.values.length > 0 ? <span>{state.values[0].name}</span> : <span>{selectProps.placeholder}</span>;
+    const option = state.values[0];
+    if (!option) {
+      return <span>{selectProps.placeholder}</span>;
+    }
+    const counterpart = getValueCounterPart(option);
+    if (!counterpart) {
+      return <span>{selectProps.placeholder}</span>;
+    }
+    const label = transformLabel ? transformLabel(counterpart) : option.name;
+
+    return state.values.length !== 0 ? <span>{label}</span> : <span>{selectProps.placeholder}</span>;
   }
 
   if (maxSelectedValuesToShow) {
@@ -73,8 +91,15 @@ function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLab
   );
 }
 
-function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T>) {
-  const { props: selectProps, state, methods } = props;
+function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T> & { transformLabel?: (option: T) => React.ReactNode; extendFuzzySearch?: (option: T) => string[] }) {
+  const {
+    props: selectProps,
+    state,
+    methods,
+    transformLabel,
+    additionalMethods: { getValueCounterPart },
+    extendFuzzySearch,
+  } = props;
   const { addItem, removeItem, isSelected } = methods;
   const [search, setSearch] = useState(() => state.search ?? "");
   const [optionsParent] = useAutoAnimate({ duration: 300, easing: "ease-in-out" });
@@ -121,11 +146,12 @@ function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T>) {
       <div ref={optionsParent} className="bp-filter_multiselect__options">
         {selectProps.options
           .filter((option) => {
+            const searchAgainst = extendFuzzySearch ? extendFuzzySearch(getValueCounterPart(option)) : [option.name];
             const term = search.trim().toLowerCase();
             if (term.length === 0) {
               return true;
             }
-            return fuzzysearch(term, option.name.toLowerCase());
+            return fuzzysearch(term, searchAgainst.join(" ").trim().toLowerCase());
           })
           .sort((a, b) => {
             // Extract the search term from the state and convert it to lowercase for comparison
@@ -168,11 +194,12 @@ function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T>) {
             return 0; // Both are either selected or not selected, so maintain the current order
           })
           .map((option) => {
+            const label = transformLabel ? transformLabel(getValueCounterPart(option)) : option.name;
             return (
               <Form.Check
                 className="bp-filter_multiselect__option"
                 key={option.id}
-                label={option.name}
+                label={label}
                 checked={isSelected(option)}
                 onChange={(e) => {
                   if (e.target.checked) {

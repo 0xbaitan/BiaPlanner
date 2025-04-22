@@ -20,3 +20,23 @@
     background-color: lightgray;
   }
 }
+
+.bp-measurement-input__label {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  gap: 1em;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.bp-measurement-input__label__unit_type {
+  display: block;
+  padding: 0.25em;
+  font-size: 0.875rem;
+  font-weight: 400;
+  background-color: $colors-secondary;
+  color: $colors-white;
+}
