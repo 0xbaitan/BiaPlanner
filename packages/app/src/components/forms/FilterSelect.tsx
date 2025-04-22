@@ -12,6 +12,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export type FilterSelectProps<T extends object> = SelectInputProps<T> & {
   selectLabel?: string;
+  maxSelectedValuesToShow?: number;
 };
 export default function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   return (
@@ -19,7 +20,7 @@ export default function FilterSelect<T extends object>(props: FilterSelectProps<
       className="bp-filter_multiselect"
       multi={true}
       {...props}
-      contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} />}
+      contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} maxSelectedValuesToShow={props.maxSelectedValuesToShow} />}
       separator
       dropdownRenderer={FilterSelectDropdown}
       searchable
@@ -27,14 +28,41 @@ export default function FilterSelect<T extends object>(props: FilterSelectProps<
   );
 }
 
-function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string }) {
-  const { props: selectProps, state, multiselectLabel } = props;
+function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string; maxSelectedValuesToShow?: number }) {
+  const { props: selectProps, state, multiselectLabel, maxSelectedValuesToShow } = props;
   const selectCount = state.values.length;
   const isAllSelected = selectCount === selectProps.options.length;
   const isMulti = selectProps.multi === true;
 
   if (!isMulti) {
     return state.values.length > 0 ? <span>{state.values[0].name}</span> : <span>{selectProps.placeholder}</span>;
+  }
+
+  if (maxSelectedValuesToShow) {
+    const selectedValues = state.values.slice(0, maxSelectedValuesToShow);
+    const remainingCount = selectCount - maxSelectedValuesToShow;
+    if (selectedValues.length === 0) {
+      return (
+        <div className="bp-filter_multiselect__content--only-badge">
+          <div className="bp-filter_multiselect__placeholder">{selectProps.placeholder ?? "Select..."}</div>
+          <div className="bp-filter_multiselect__count-badge">
+            <span>0</span>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="bp-filter_multiselect__content--max-selected">
+        <div className="bp-filter_multiselect__selected-values_container">
+          {selectedValues.map((value) => (
+            <span key={value.id} className="bp-filter_multiselect__selected-value">
+              {value.name}
+            </span>
+          ))}
+        </div>
+        {remainingCount > 0 && <span className="bp-filter_multiselect__remaining-count">+{remainingCount}</span>}
+      </div>
+    );
   }
 
   return (
@@ -56,7 +84,7 @@ function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T>) {
     <div className="bp-filter_multiselect__dropdown">
       <Form.Control
         value={search}
-        placeholder={selectProps.placeholder ?? "Start typing to filter..."}
+        placeholder={"Start typing to filter..."}
         onChange={(e) => {
           setSearch(() => e.target.value);
           methods.setSearch(e as React.ChangeEvent<HTMLInputElement>);

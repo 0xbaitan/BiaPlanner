@@ -11,7 +11,7 @@
 .bp-filter_multiselect__content {
   width: 100%;
   display: flex;
-  padding: 0 clamp(0.5em, 2vw, 1.25em);
+  padding: 0.25em clamp(0.5em, 2vw, 1.25em);
   flex-direction: row;
   gap: clamp(0.5em, 2vw, 1.25em);
   flex-wrap: nowrap;
@@ -52,6 +52,72 @@
   aspect-ratio: 2/1;
 
   width: clamp(1.5em, 2vw, 2.5em);
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.bp-filter_multiselect__content--max-selected {
+  @extend .bp-filter_multiselect__content;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.bp-filter_multiselect__selected-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border-radius: 0;
+  width: max-content;
+  padding: 0.5em;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.bp-filter_multiselect__remaining-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $colors-secondary;
+  color: $colors-white;
+  border-radius: 0;
+  justify-self: right;
+  width: max-content;
+  padding: 0.5em;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.bp-filter_multiselect__selected-values_container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.bp-filter_multiselect__content--only-badge {
+  @extend .bp-filter_multiselect__content;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+.bp-filter_multiselect__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a0a0a0;
+  border-radius: 0;
+  width: max-content;
+
   font-size: 0.875rem;
   border-radius: 0.5rem;
 }

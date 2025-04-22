@@ -3,6 +3,7 @@ import "../styles/ProductCategoryMultiselect.scss";
 import SelectInput, { SelectInputProps } from "./SelectInput";
 import { useEffect, useState } from "react";
 
+import FilterSelect from "./FilterSelect";
 import Form from "react-bootstrap/Form";
 import { IProductCategory } from "@biaplanner/shared";
 import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
@@ -32,11 +33,13 @@ export default function ProductCategoryMultiselect(props: ProductCategoryMultise
   return (
     <Form.Group className="bp-product_category_multiselect">
       <Form.Label>{label ?? "Product Categories"}</Form.Label>
-      <SelectInput<IProductCategory>
+      <FilterSelect<IProductCategory>
         {...props}
         error={error}
         multi
+        placeholder="Select product categories..."
         list={productCategories}
+        maxSelectedValuesToShow={3}
         idSelector={(productCategory) => productCategory.id}
         nameSelector={(productCategory) => productCategory.name}
         selectedValues={selectedProductCategories}
