@@ -1,11 +1,11 @@
 import { IRecipe, IRecipeTag, IUpdateRecipeTagDto, IWriteRecipeDto } from "@biaplanner/shared";
+import { useCallback, useMemo } from "react";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
 import { useGetRecipeTagQuery, useUpdateRecipeTagMutation } from "@/apis/RecipeTagsApi";
 
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
-import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 export default function EditRecipePage() {
@@ -31,6 +31,25 @@ export default function EditRecipePage() {
     },
   });
 
+  const handleUpdateRecipeSubmission = useCallback(
+    async (dto: IWriteRecipeDto) => {
+      if (!id) {
+        console.error("No ID provided for recipe update");
+        return false;
+      }
+      console.log("Updating recipe with ID:", id, "and DTO:", dto);
+      setItem(dto as IRecipe);
+      try {
+        await updateRecipe({ id, dto }).unwrap();
+        return true;
+      } catch (error) {
+        console.error("Error updating recipe:", error);
+        return false;
+      }
+    },
+    [id, updateRecipe, setItem]
+  );
+
   if (isReadLoading) {
     return <div>Loading...</div>;
   }
@@ -43,26 +62,5 @@ export default function EditRecipePage() {
     return <div>Could not find the recipe</div>;
   }
 
-  return (
-    <div>
-      {recipe ? (
-        <RecipeForm
-          type="update"
-          initialValue={recipe}
-          onSubmit={async (dto) => {
-            if (!id) {
-              console.error("No ID provided for recipe update");
-              return;
-            }
-            console.log("Updating recipe with ID:", id, "and DTO:", dto);
-            setItem(dto as IRecipe);
-            await updateRecipe({ id, dto });
-          }}
-          disableSubmit={isUpdateLoading}
-        />
-      ) : (
-        <div>Could not find the recipe</div>
-      )}
-    </div>
-  );
+  return <div>{recipe ? <RecipeForm type="update" initialValue={recipe} onSubmit={handleUpdateRecipeSubmission} disableSubmit={isUpdateLoading} /> : <div>Could not find the recipe</div>}</div>;
 }

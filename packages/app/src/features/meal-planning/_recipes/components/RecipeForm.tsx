@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
-  onSubmit: (dto: IWriteRecipeDto) => void;
+  onSubmit: (dto: IWriteRecipeDto) => Promise<boolean>;
   type: "create" | "update";
   disableSubmit?: boolean;
 };
@@ -79,8 +79,7 @@ const MemoizedCuisineSelect = React.memo(CuisineSelect);
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
   const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
-  console.log("transformedInitialValue", transformedInitialValue);
-  console.log("initialValue", initialValue);
+
   const methods = useForm<IWriteRecipeDto>({
     defaultValues: transformedInitialValue,
     resolver: zodResolver(WriteRecipeValidationSchema),
@@ -95,9 +94,12 @@ export default function RecipeForm(props: RecipeFormProps) {
     }
   }, [initialValue, reset]);
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     const data = methods.getValues();
-    onSubmit(data);
+    const isSuccess = await onSubmit(data);
+    if (isSuccess) {
+      reset(initialValue);
+    }
   };
 
   return (

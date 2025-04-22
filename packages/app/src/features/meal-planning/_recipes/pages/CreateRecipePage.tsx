@@ -1,6 +1,6 @@
+import { IRecipe, IWriteRecipeDto } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { IRecipe } from "@biaplanner/shared";
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
 import { useCreateRecipeMutation } from "@/apis/RecipeApi";
@@ -26,15 +26,21 @@ export default function CreateRecipePage() {
     },
   });
 
+  const handleCreateRecipeSubmission = async (dto: IWriteRecipeDto) => {
+    console.log("Creating recipe with DTO:", dto);
+    setItem(dto as IRecipe);
+    try {
+      await createRecipeMutation(dto).unwrap();
+      return true;
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+      return false;
+    }
+  };
+
   return (
     <div>
-      <RecipeForm
-        type="create"
-        onSubmit={async (values) => {
-          setItem(values as IRecipe);
-          await createRecipeMutation(values);
-        }}
-      />
+      <RecipeForm type="create" onSubmit={handleCreateRecipeSubmission} />
     </div>
   );
 }
