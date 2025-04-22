@@ -18,16 +18,22 @@ export type CuisineSelectProps = {
 export default function CuisineSelect(props: CuisineSelectProps) {
   const { onChange, defaultValue, inputLabelProps, error } = props;
   const { data: cuisineOptions, isSuccess, isLoading, isError } = useGetCuisinesQuery();
-  console.log("cuisineOptions", cuisineOptions);
 
-  const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>();
-
-  useEffect(() => {
-    if (isSuccess) {
-      const populatedCuisine = cuisineOptions?.find((cuisine) => cuisine.id === defaultValue?.id!);
-      setSelectedValue(populatedCuisine);
+  const defaultCuisine = useMemo(() => {
+    if (defaultValue && isSuccess && cuisineOptions) {
+      return cuisineOptions.find((cuisine) => cuisine.id === defaultValue.id);
     }
-  }, [defaultValue, cuisineOptions, isSuccess]);
+    return undefined;
+  }, [defaultValue, isSuccess, cuisineOptions]);
+
+  const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>(defaultCuisine);
+
+  console.log("CuisineSelect", { defaultCuisine, selectedValue });
+  useEffect(() => {
+    if (defaultCuisine) {
+      setSelectedValue(defaultCuisine);
+    }
+  }, [defaultCuisine]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -36,6 +42,11 @@ export default function CuisineSelect(props: CuisineSelectProps) {
   if (isError) {
     return <div>Error loading cuisines</div>;
   }
+
+  if (!cuisineOptions || cuisineOptions?.length === 0) {
+    return <div>No cuisines available</div>;
+  }
+
   return (
     <Form.Group>
       <InputLabel {...inputLabelProps}>Cuisine</InputLabel>
@@ -45,7 +56,7 @@ export default function CuisineSelect(props: CuisineSelectProps) {
         nameSelector={(item) => item.name}
         selectedValues={selectedValue ? [selectedValue] : []}
         onChange={([selectedValue]) => {
-          setSelectedValue(selectedValue);
+          setSelectedValue(() => selectedValue);
           onChange(selectedValue);
         }}
         multi={false}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import FilterSelect from "@/components/forms/FilterSelect";
 import Form from "react-bootstrap/Form";
@@ -15,17 +15,26 @@ export type RecipeTagsSelectProps = Omit<SelectInputProps<IRecipeTag>, "list" | 
 };
 export default function RecipeTagsMultiselect(props: RecipeTagsSelectProps) {
   const { inputLabelProps, error, initialValue, onChange } = props;
-  const { data: recipeTags, isError } = useGetRecipeTagsQuery();
+  const { data: recipeTags, isError, isSuccess } = useGetRecipeTagsQuery();
   const noReceipeTags = isError || !recipeTags || recipeTags.length === 0;
+  console.log("initialValue", initialValue);
   const initialValueAsPopulated = useMemo(() => {
+    if (!isSuccess) return [];
+    if (!recipeTags || recipeTags.length === 0) return [];
     return initialValue
       ?.map((tag) => {
-        const populatedTag = recipeTags?.find((t) => t.id === tag.id);
+        const populatedTag = recipeTags.find((t) => t.id === tag.id);
         return populatedTag;
       })
       .filter((tag) => tag !== undefined) as IRecipeTag[];
-  }, [initialValue, recipeTags]);
-  const [selectedValues, setSelectedValues] = useState<IRecipeTag[]>(initialValueAsPopulated as IRecipeTag[]);
+  }, [initialValue, recipeTags, isSuccess]);
+  const [selectedValues, setSelectedValues] = useState<IRecipeTag[]>(initialValueAsPopulated);
+
+  useEffect(() => {
+    if (initialValueAsPopulated) {
+      setSelectedValues(initialValueAsPopulated);
+    }
+  }, [initialValueAsPopulated]);
 
   if (isError) {
     return <div>Error loading recipe tags</div>;

@@ -68,11 +68,11 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
     return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
   });
 
-  // useEffect(() => {
-  //   setSelectedOptions(() => {
-  //     return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
-  //   });
-  // }, [defaultSelectedValues, idSelector, nameSelector]);
+  useEffect(() => {
+    setSelectedOptions(() => {
+      return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
+    });
+  }, [defaultSelectedValues, idSelector, nameSelector]);
 
   const getValueCounterPart = useCallback(
     (option: Option) => {

@@ -1,19 +1,28 @@
 import "../styles/IngredientItem.scss";
 
+import { IRecipeIngredient, IWriteRecipeIngredientDto } from "@biaplanner/shared";
+
 import { DeepPartial } from "utility-types";
 import { FaTrash } from "react-icons/fa";
-import { IRecipeIngredient } from "@biaplanner/shared";
 import { MdEdit } from "react-icons/md";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
+import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 import { useRecipeFormActions } from "../../reducers/RecipeFormReducer";
 
-export type IngredientItemProps = {
-  ingredient: IRecipeIngredient;
+type IngredientItemProps = {
+  ingredient: IWriteRecipeIngredientDto;
   index: number;
 };
+
 export default function IngredientItem(props: IngredientItemProps) {
   const { ingredient, index } = props;
   const { openUpdateIngredientModal, removeIngredient } = useRecipeFormActions();
+  const { data: productCategories, isSuccess } = useGetProductCategoriesQuery();
+
+  const getIngredientCategoryName = (categoryId: string) => {
+    const category = productCategories?.find((category) => category.id === categoryId);
+    return category ? category.name : undefined;
+  };
 
   const { notify: notifyDeletion } = useDeletionToast<{ ingredient: DeepPartial<IRecipeIngredient>; index: number }>({
     identifierSelector: (entity) => `${entity.ingredient.title} Ingredient (#${entity.index + 1})`,
@@ -39,7 +48,7 @@ export default function IngredientItem(props: IngredientItemProps) {
             <div className="bp-ingredient_item__categories">
               {ingredient.productCategories.map((category, index) => (
                 <div key={index} className="bp-ingredient_item__categories__category">
-                  {category.name}
+                  {isSuccess && <span className="bp-ingredient_item__categories__category__name">{getIngredientCategoryName(category.id)}</span>}
                 </div>
               ))}
             </div>

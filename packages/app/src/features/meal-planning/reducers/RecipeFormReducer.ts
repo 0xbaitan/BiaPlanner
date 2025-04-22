@@ -109,9 +109,11 @@ export const recipeSlice = createSlice({
 
     setFormValues: (state, action: PayloadAction<IRecipe>) => {
       const recipe = action.payload;
+      console.log("setFormValues", recipe);
       state.formValues = {
         ...state.formValues,
-        cuisine: { id: recipe.cuisine.id },
+
+        cuisine: { id: recipe.cuisineId },
         description: recipe.description,
         difficultyLevel: recipe.difficultyLevel,
         ingredients: recipe.ingredients.map((ingredient) => ({

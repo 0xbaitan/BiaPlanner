@@ -1,6 +1,6 @@
-import { IRecipe, IWriteRecipeDto } from "@biaplanner/shared";
-import { useCallback, useEffect, useMemo } from "react";
-import { useRecipeFormActions, useRecipeFormState } from "../../reducers/RecipeFormReducer";
+import { DifficultyLevels, IRecipe, IWriteRecipeDto, Weights, WriteRecipeValidationSchema } from "@biaplanner/shared";
+import { FormProvider, useForm } from "react-hook-form";
+import { useEffect, useMemo } from "react";
 
 import { Button } from "react-bootstrap";
 import CuisineSelect from "./CuisineSelect";
@@ -10,7 +10,7 @@ import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import ImageSelector from "@/components/forms/ImageSelector";
-import IngredientList from "../../_meal-plans/components/IngredientList";
+import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
 import InputLabel from "@/components/forms/InputLabel";
 import { MdCancel } from "react-icons/md";
@@ -18,6 +18,7 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
@@ -26,104 +27,131 @@ export type RecipeFormProps = {
   disableSubmit?: boolean;
 };
 
+function convertRecipeToDto(recipe?: IRecipe): IWriteRecipeDto {
+  if (!recipe) {
+    return {
+      title: "",
+      difficultyLevel: DifficultyLevels.EASY,
+      cuisine: { id: "1" },
+      prepTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+      cookingTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+      tags: [],
+      ingredients: [],
+      description: "",
+      instructions: "",
+    };
+  }
+
+  return {
+    title: recipe.title,
+    difficultyLevel: recipe.difficultyLevel ?? DifficultyLevels.EASY,
+    cuisine: {
+      id: recipe.cuisine?.id,
+    },
+    ingredients:
+      recipe.ingredients?.map((ingredient) => ({
+        id: ingredient.id,
+        title: ingredient.title || "", // Ensure title is a string
+        measurement: ingredient.measurement || { magnitude: 0, unit: Weights.GRAM }, // Provide a default measurement
+        productCategories: ingredient.productCategories?.map((category) => ({ id: category.id })) || [],
+      })) || [],
+
+    prepTime: recipe.prepTime,
+    cookingTime: recipe.cookingTime,
+    tags: recipe.tags?.map((tag) => ({ id: tag.id })) || [],
+    description: recipe.description,
+    instructions: recipe.instructions,
+  };
+}
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
-  const { formValues, formErrors } = useRecipeFormState();
-  const { resetForm, setFormValues, validateForm, clearFormErrors, setFields } = useRecipeFormActions();
+  const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
+  console.log("transformedInitialValue", transformedInitialValue);
+  console.log("initialValue", initialValue);
+  const methods = useForm<IWriteRecipeDto>({
+    defaultValues: transformedInitialValue,
+    resolver: zodResolver(WriteRecipeValidationSchema),
+    mode: "onChange",
+  });
+  const { handleSubmit, reset, setValue, watch, formState } = methods;
   const navigate = useNavigate();
-
+  const ingredients = watch("ingredients");
   useEffect(() => {
     if (initialValue) {
-      setFormValues(initialValue);
+      reset(initialValue);
     }
-    return () => {
-      resetForm();
-    };
-  }, [initialValue, resetForm, setFormValues]);
+  }, [initialValue, reset]);
 
-  const handleSubmit = useCallback(() => {
-    const validationSucces = validateForm(formValues);
-    if (!validationSucces) {
-      console.log("Validation failed");
-      return;
-    }
-    clearFormErrors();
-    onSubmit(formValues);
-  }, [clearFormErrors, formValues, onSubmit, validateForm]);
-
-  const handleTitleChange = useCallback((e) => setFields({ title: e.target.value }), [setFields]);
-  const handleDifficultyChange = useCallback((difficultyLevel) => setFields({ difficultyLevel }), [setFields]);
-  const handleCuisineChange = useCallback((cuisine) => setFields({ cuisine: { id: cuisine.id } }), [setFields]);
-  const handlePrepTimeChange = useCallback((segmentedTime) => setFields({ prepTime: segmentedTime }), [setFields]);
-  const handleCookingTimeChange = useCallback((segmentedTime) => setFields({ cookingTime: segmentedTime }), [setFields]);
-  const handleTagsChange = useCallback((tags) => setFields({ tags }), [setFields]);
-  const handleDescriptionChange = useCallback((e) => setFields({ description: e.target.value }), [setFields]);
-  const handleInstructionsChange = useCallback((e) => setFields({ instructions: e.target.value }), [setFields]);
+  const handleFormSubmit = (data: IWriteRecipeDto) => {
+    onSubmit(data);
+  };
 
   return (
-    <div>
-      <IngredientModal />
-      <DualPaneForm onSubmit={handleSubmit} className="bp-recipe_form">
-        <DualPaneForm.Header>
-          <DualPaneForm.Header.Title>{type === "create" ? "Create Recipe" : "Update Recipe"}</DualPaneForm.Header.Title>
-          <DualPaneForm.Header.Actions>
-            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
-              <MdCancel />
-              <span className="ms-2">Cancel</span>
-            </Button>
-            <Button type="submit" disabled={disableSubmit}>
-              <FaSave />
-              <span className="ms-2">Save recipe</span>
-            </Button>
-          </DualPaneForm.Header.Actions>
-        </DualPaneForm.Header>
-        <DualPaneForm.Panel>
-          <DualPaneForm.Panel.Pane md={4}>
-            <Heading level={Heading.Level.H2}>General Information</Heading>
-            <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
-            <div className="bp-recipe_form__general_info">
-              <TextInput label="Recipe title" defaultValue={formValues?.title} inputLabelProps={{ required: true }} error={formErrors?.title?._errors?.[0]} onChange={handleTitleChange} />
-              <DifficultyLevelSelect onChange={handleDifficultyChange} initialValue={formValues?.difficultyLevel} inputLabelProps={{ required: true }} error={formErrors?.difficultyLevel?._errors?.[0]} />
-              <CuisineSelect onChange={handleCuisineChange} defaultValue={formValues?.cuisine} inputLabelProps={{ required: true }} error={formErrors?.cuisine?._errors?.[0]} />
-              <Form.Group>
-                <InputLabel required>Preparation time</InputLabel>
-                <SegmentedTimeInput
-                  onChange={handlePrepTimeChange}
-                  initialValue={
-                    formValues?.prepTime ?? {
-                      days: 0,
-                      hours: 0,
-                      minutes: 0,
-                      seconds: 0,
-                    }
-                  }
+    <FormProvider {...methods}>
+      <div>
+        <IngredientModal />
+        <DualPaneForm onSubmit={handleSubmit(handleFormSubmit)} className="bp-recipe_form">
+          <DualPaneForm.Header>
+            <DualPaneForm.Header.Title>{type === "create" ? "Create Recipe" : "Update Recipe"}</DualPaneForm.Header.Title>
+            <DualPaneForm.Header.Actions>
+              <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
+                <MdCancel />
+                <span className="ms-2">Cancel</span>
+              </Button>
+              <Button type="submit" disabled={disableSubmit}>
+                <FaSave />
+                <span className="ms-2">Save recipe</span>
+              </Button>
+            </DualPaneForm.Header.Actions>
+          </DualPaneForm.Header>
+          <DualPaneForm.Panel>
+            <DualPaneForm.Panel.Pane md={4}>
+              <Heading level={Heading.Level.H2}>General Information</Heading>
+              <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+              <div className="bp-recipe_form__general_info">
+                <TextInput label="Recipe title" name="title" value={watch("title")} inputLabelProps={{ required: true }} error={formState.errors?.title?.message} />
+                <DifficultyLevelSelect
+                  onChange={(value) => {
+                    setValue("difficultyLevel", value);
+                  }}
+                  name="difficultyLevel"
+                  inputLabelProps={{ required: true }}
+                  error={formState.errors?.difficultyLevel?.message}
                 />
-              </Form.Group>
-              <Form.Group>
-                <InputLabel required>Cooking time</InputLabel>
-                <SegmentedTimeInput
-                  onChange={handleCookingTimeChange}
-                  initialValue={
-                    formValues?.cookingTime ?? {
-                      days: 0,
-                      hours: 0,
-                      minutes: 0,
-                      seconds: 0,
-                    }
-                  }
-                />
-              </Form.Group>
-              <RecipeTagsMultiselect inputLabelProps={{ required: true }} initialValue={initialValue?.tags ?? []} onChange={handleTagsChange} error={formErrors?.tags?._errors?.[0]} />
-              <TextInput label="Recipe Description" defaultValue={formValues?.description} onChange={handleDescriptionChange} as="textarea" />
-            </div>
-          </DualPaneForm.Panel.Pane>
-          <DualPaneForm.Panel.Pane>
-            <Heading level={Heading.Level.H2}>Ingredients</Heading>
-            <IngredientList />
-            <TextInput formGroupClassName="mt-5" label="Instructions" defaultValue={initialValue?.instructions} onChange={handleInstructionsChange} as="textarea" />
-          </DualPaneForm.Panel.Pane>
-        </DualPaneForm.Panel>
-      </DualPaneForm>
-    </div>
+                <CuisineSelect defaultValue={watch("cuisine")} inputLabelProps={{ required: true }} onChange={(cuisine) => setValue("cuisine.id", cuisine.id)} />
+                <Form.Group>
+                  <InputLabel required>Preparation time</InputLabel>
+                  <SegmentedTimeInput initialValue={watch("prepTime")} onChange={(value) => setValue("prepTime", value)} />
+                </Form.Group>
+                <Form.Group>
+                  <InputLabel required>Cooking time</InputLabel>
+                  <SegmentedTimeInput initialValue={watch("cookingTime")} onChange={(value) => setValue("cookingTime", value)} />
+                </Form.Group>
+
+                <RecipeTagsMultiselect initialValue={watch("tags")} inputLabelProps={{ required: true }} error={formState.errors?.tags?.message} />
+                <TextInput label="Recipe Description" value={watch("description")} name="description" as="textarea" />
+              </div>
+            </DualPaneForm.Panel.Pane>
+            <DualPaneForm.Panel.Pane>
+              <Heading level={Heading.Level.H2}>Ingredients</Heading>
+              <IngredientModal />
+              {ingredients.length === 0 ? (
+                <div className="bp-recipe_form__ingredients__empty">
+                  <span>No ingredients added yet</span>
+                </div>
+              ) : (
+                <div className="bp-recipe_form__ingredients__list">
+                  {ingredients.map((ingredient, index) => (
+                    <IngredientItem ingredient={ingredient} index={index} key={index} />
+                  ))}
+                </div>
+              )}
+
+              <TextInput formGroupClassName="mt-5" label="Instructions" name="instructions" as="textarea" value={watch("instructions")} />
+            </DualPaneForm.Panel.Pane>
+          </DualPaneForm.Panel>
+        </DualPaneForm>
+      </div>
+    </FormProvider>
   );
 }
