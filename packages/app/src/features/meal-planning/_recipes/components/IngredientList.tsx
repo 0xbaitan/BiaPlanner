@@ -1,5 +1,6 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 
+import { Button } from "react-bootstrap";
 import { IWriteRecipeDto } from "@biaplanner/shared";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
@@ -34,7 +35,7 @@ export default function IngredientList() {
           update(index, ingredient);
         }}
       />
-      <button onClick={openCreateIngredientModal}>Add ingredient</button>
+      <Button onClick={openCreateIngredientModal}>Add ingredient</Button>
       <ol>
         {fields.length === 0 && <div>No ingredients</div>}
         {fields.length > 0 &&

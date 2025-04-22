@@ -141,7 +141,17 @@ export default function RecipeForm(props: RecipeFormProps) {
                   <MemoizedSegmentedTimeInput initialValue={watch("cookingTime")} onChange={(value) => setValue("cookingTime", value)} />
                 </Form.Group>
 
-                <MemoizedRecipeTagsMultiselect initialValue={watch("tags")} inputLabelProps={{ required: true }} error={formState.errors?.tags?.message} />
+                <MemoizedRecipeTagsMultiselect
+                  initialValue={watch("tags")}
+                  inputLabelProps={{ required: true }}
+                  error={formState.errors?.tags?.message}
+                  onChange={(tags) =>
+                    setValue(
+                      "tags",
+                      tags.map((tag) => ({ id: tag.id }))
+                    )
+                  }
+                />
                 <MemoizedTextInput label="Recipe Description" value={watch("description")} name="description" as="textarea" />
               </div>
             </DualPaneForm.Panel.Pane>

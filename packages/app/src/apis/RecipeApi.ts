@@ -46,7 +46,7 @@ export const RecipeApi = rootApi.injectEndpoints({
         body: dto,
       }),
 
-      invalidatesTags: (result, error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
 
     deleteRecipe: build.mutation<void, string>({

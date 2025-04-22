@@ -1,14 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RecipeEntity } from './recipe.entity';
 import { Repository } from 'typeorm';
 import { IRecipe, IWriteRecipeDto } from '@biaplanner/shared';
+import { RecipeIngredientHelperService } from './recipe-ingredient/recipe-ingredient-helper.service';
+import { RecipeTagHelperService } from './recipe-tag/recipe-tag-helper.service';
 
 @Injectable()
 export class RecipeService {
   constructor(
     @InjectRepository(RecipeEntity)
     private readonly recipeRepository: Repository<RecipeEntity>,
+    @Inject(RecipeIngredientHelperService)
+    private readonly recipeIngredientHelperService: RecipeIngredientHelperService,
+    @Inject(RecipeTagHelperService)
+    private readonly recipeTagHelperService: RecipeTagHelperService,
   ) {}
 
   async findOne(id: string): Promise<IRecipe> {
@@ -32,11 +38,25 @@ export class RecipeService {
     const recipe = await this.recipeRepository.findOne({
       where: { id },
     });
-
     if (!recipe) {
-      throw new Error('Recipe not found');
+      throw new Error(`Recipe with id ${id} not found`);
     }
-    return this.recipeRepository.save(dto);
+    const { ingredients, tags, ...rest } = dto;
+    if (ingredients && ingredients.length > 0) {
+      await this.recipeIngredientHelperService.updateExistingRecipeIngredients(
+        id,
+        ingredients,
+      );
+    }
+    if (tags && tags.length > 0) {
+      await this.recipeTagHelperService.updateExistingRecipeTags(id, tags);
+    }
+    await this.recipeRepository.update(id, rest);
+    const savedRecipe = await this.recipeRepository.findOne({
+      where: { id },
+      relations: ['cuisine', 'ingredients', 'tags'],
+    });
+    return savedRecipe;
   }
 
   async deleteRecipe(id: string): Promise<void> {
