@@ -9,7 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
-import { CreateRecipeDto, UpdateRecipeDto } from '@biaplanner/shared';
+import { WriteRecipeDto } from '@biaplanner/shared';
 
 @Controller('/meal-plan/recipes')
 export class RecipeController {
@@ -28,12 +28,12 @@ export class RecipeController {
   }
 
   @Post()
-  async createRecipe(@Body() dto: CreateRecipeDto) {
+  async createRecipe(@Body() dto: WriteRecipeDto) {
     return this.recipeService.createRecipe(dto);
   }
 
   @Put('/:id')
-  async updateRecipe(@Param('id') id: string, @Body() dto: UpdateRecipeDto) {
+  async updateRecipe(@Param('id') id: string, @Body() dto: WriteRecipeDto) {
     return this.recipeService.updateRecipe(id, dto);
   }
 

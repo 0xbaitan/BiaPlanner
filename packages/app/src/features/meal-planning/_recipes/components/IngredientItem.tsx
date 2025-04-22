@@ -1,12 +1,11 @@
 import "../styles/IngredientItem.scss";
 
-import { useConfirmedIngredientsState, useOpenUpdateIngredientModal } from "../../reducers/RecipeFormReducer";
-
 import { DeepPartial } from "utility-types";
 import { FaTrash } from "react-icons/fa";
 import { IRecipeIngredient } from "@biaplanner/shared";
 import { MdEdit } from "react-icons/md";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
+import { useRecipeFormActions } from "../../reducers/RecipeFormReducer";
 
 export type IngredientItemProps = {
   ingredient: IRecipeIngredient;
@@ -14,8 +13,7 @@ export type IngredientItemProps = {
 };
 export default function IngredientItem(props: IngredientItemProps) {
   const { ingredient, index } = props;
-  const openUpdateIngredientModal = useOpenUpdateIngredientModal();
-  const { removeIngredient } = useConfirmedIngredientsState();
+  const { openUpdateIngredientModal, removeIngredient } = useRecipeFormActions();
 
   const { notify: notifyDeletion } = useDeletionToast<{ ingredient: DeepPartial<IRecipeIngredient>; index: number }>({
     identifierSelector: (entity) => `${entity.ingredient.title} Ingredient (#${entity.index + 1})`,
@@ -48,7 +46,7 @@ export default function IngredientItem(props: IngredientItemProps) {
           </div>
         </div>
         <div className="bp-ingredient_item__main__actions">
-          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index, ingredient)}>
+          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index)}>
             <MdEdit size={20} />
           </button>
           <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => notifyDeletion({ ingredient, index })}>

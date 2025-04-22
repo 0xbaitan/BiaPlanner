@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RecipeEntity } from './recipe.entity';
 import { Repository } from 'typeorm';
-import {
-  IRecipe,
-  ICreateRecipeDto,
-  IUpdateRecipeDto,
-} from '@biaplanner/shared';
+import { IRecipe, IWriteRecipeDto } from '@biaplanner/shared';
 
 @Injectable()
 export class RecipeService {
@@ -27,18 +23,20 @@ export class RecipeService {
     });
   }
 
-  async createRecipe(dto: ICreateRecipeDto): Promise<IRecipe> {
+  async createRecipe(dto: IWriteRecipeDto): Promise<IRecipe> {
     const recipe = this.recipeRepository.create(dto);
     return this.recipeRepository.save(recipe);
   }
 
-  async updateRecipe(id: string, dto: IUpdateRecipeDto): Promise<IRecipe> {
-    const recipe = await this.findOne(id);
-    delete recipe.ingredients;
-    delete recipe.tags;
-    const updatedRecipe = this.recipeRepository.merge(recipe, dto);
+  async updateRecipe(id: string, dto: IWriteRecipeDto): Promise<IRecipe> {
+    const recipe = await this.recipeRepository.findOne({
+      where: { id },
+    });
 
-    return this.recipeRepository.save(updatedRecipe);
+    if (!recipe) {
+      throw new Error('Recipe not found');
+    }
+    return this.recipeRepository.save(dto);
   }
 
   async deleteRecipe(id: string): Promise<void> {

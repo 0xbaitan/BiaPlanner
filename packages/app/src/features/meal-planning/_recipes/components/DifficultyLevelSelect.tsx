@@ -8,7 +8,7 @@ import { useMemo } from "react";
 
 export type DifficultyLevelSelectProps = {
   initialValue?: DifficultyLevels;
-  onChange: (difficultyLevel: DifficultyLevels) => void | Promise<void>;
+  onChange: (difficultyLevel: DifficultyLevels) => void;
   error?: string;
   label?: string;
   inputLabelProps?: Omit<InputLabelProps, "children">;

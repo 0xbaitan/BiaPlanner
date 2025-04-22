@@ -1,15 +1,16 @@
-import { IRecipe, IRecipeTag, IUpdateRecipeDto, IUpdateRecipeTagDto } from "@biaplanner/shared";
+import { IRecipe, IRecipeTag, IUpdateRecipeTagDto, IWriteRecipeDto } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
 import { useGetRecipeTagQuery, useUpdateRecipeTagMutation } from "@/apis/RecipeTagsApi";
 
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-export default function UpdateRecipePage() {
+export default function EditRecipePage() {
   const { id } = useParams();
-  const { data: recipe } = useGetRecipeQuery(String(id));
+  const { data: recipe, isLoading: isReadLoading, isError: isReadError } = useGetRecipeQuery(String(id));
   const [updateRecipe, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading: isUpdateLoading }] = useUpdateRecipeMutation();
 
   const { setItem } = useDefaultStatusToast<IRecipe>({
@@ -30,16 +31,31 @@ export default function UpdateRecipePage() {
     },
   });
 
+  if (isReadLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isReadError) {
+    return <div>Error loading recipe</div>;
+  }
+
+  if (!recipe) {
+    return <div>Could not find the recipe</div>;
+  }
+
   return (
     <div>
-      <h2>Update Recipe</h2>
       {recipe ? (
         <RecipeForm
           type="update"
           initialValue={recipe}
           onSubmit={async (dto) => {
+            if (!id) {
+              console.error("No ID provided for recipe update");
+              return;
+            }
             setItem(dto as IRecipe);
-            await updateRecipe(dto as IUpdateRecipeDto);
+            await updateRecipe({ id, dto });
           }}
           disableSubmit={isUpdateLoading}
         />

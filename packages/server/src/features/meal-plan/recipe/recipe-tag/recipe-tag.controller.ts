@@ -9,11 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { RecipeTagService } from './recipe-tag.service';
-import {
-  CreateRecipeDto,
-  CreateRecipeTagDto,
-  UpdateRecipeTagDto,
-} from '@biaplanner/shared';
+import { CreateRecipeTagDto, UpdateRecipeTagDto } from '@biaplanner/shared';
 
 @Controller('meal-plan/recipe-tags')
 export class RecipeTagController {

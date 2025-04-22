@@ -1,4 +1,4 @@
-import { ICreateRecipeDto, IQueryRecipeDto, IRecipe, IUpdateRecipeDto } from "@biaplanner/shared";
+import { IQueryRecipeDto, IRecipe, IWriteRecipeDto } from "@biaplanner/shared";
 
 import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
@@ -23,7 +23,7 @@ export const RecipeApi = rootApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Recipe", id }],
     }),
 
-    createRecipe: build.mutation<IRecipe, ICreateRecipeDto>({
+    createRecipe: build.mutation<IRecipe, IWriteRecipeDto>({
       query: (body) => ({
         url: "/meal-plan/recipes",
         method: "POST",
@@ -33,9 +33,15 @@ export const RecipeApi = rootApi.injectEndpoints({
       invalidatesTags: (result, error) => [{ type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],
     }),
 
-    updateRecipe: build.mutation<IRecipe, IUpdateRecipeDto>({
-      query: (dto) => ({
-        url: `/meal-plan/recipes/${dto.id}`,
+    updateRecipe: build.mutation<
+      IRecipe,
+      {
+        id: string;
+        dto: IWriteRecipeDto;
+      }
+    >({
+      query: ({ dto, id }) => ({
+        url: `/meal-plan/recipes/${id}`,
         method: "PUT",
         body: dto,
       }),

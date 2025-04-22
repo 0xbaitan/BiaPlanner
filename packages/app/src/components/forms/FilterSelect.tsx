@@ -10,27 +10,33 @@ import Form from "react-bootstrap/Form";
 import fuzzysearch from "fuzzysearch";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-export type FilterMultiselectProps<T extends object> = SelectInputProps<T> & {
-  multiselectLabel?: string;
+export type FilterSelectProps<T extends object> = SelectInputProps<T> & {
+  selectLabel?: string;
 };
-export default function FilterMultiselect<T extends object>(props: FilterMultiselectProps<T>) {
+export default function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   return (
     <SelectInput
       className="bp-filter_multiselect"
+      multi={true}
       {...props}
-      contentRenderer={(renderProps) => <FilterMultiselectContent {...renderProps} multiselectLabel={props.multiselectLabel} />}
+      contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} />}
       separator
-      dropdownRenderer={FilterMultiselectDropdown}
+      dropdownRenderer={FilterSelectDropdown}
       searchable
-      multi
     />
   );
 }
 
-function FilterMultiselectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string }) {
+function FilterSelectContent<T>(props: SelectRendererProps<T> & { multiselectLabel?: string }) {
   const { props: selectProps, state, multiselectLabel } = props;
   const selectCount = state.values.length;
   const isAllSelected = selectCount === selectProps.options.length;
+  const isMulti = selectProps.multi === true;
+
+  if (!isMulti) {
+    return state.values.length > 0 ? <span>{state.values[0].name}</span> : <span>{selectProps.placeholder}</span>;
+  }
+
   return (
     <div className="bp-filter_multiselect__content">
       {multiselectLabel && <div className="bp-filter_multiselect__label">{multiselectLabel}</div>}
@@ -39,13 +45,13 @@ function FilterMultiselectContent<T>(props: SelectRendererProps<T> & { multisele
   );
 }
 
-function FilterMultiselectDropdown<T extends object>(props: SelectRendererProps<T>) {
+function FilterSelectDropdown<T extends object>(props: SelectRendererProps<T>) {
   const { props: selectProps, state, methods } = props;
   const { addItem, removeItem, isSelected } = methods;
   const [search, setSearch] = useState(() => state.search ?? "");
   const [optionsParent] = useAutoAnimate({ duration: 300, easing: "ease-in-out" });
   const isAllSelected = state.values.length === selectProps.options.length;
-
+  const isMulti = selectProps.multi === true;
   return (
     <div className="bp-filter_multiselect__dropdown">
       <Form.Control
@@ -57,31 +63,32 @@ function FilterMultiselectDropdown<T extends object>(props: SelectRendererProps<
         }}
       />
       <div className="bp-filter_multiselect__actions">
-        {isAllSelected ? (
-          <Button
-            size="sm"
-            variant="outline-danger"
-            onClick={() => {
-              methods.clearAll();
-              setSearch("");
-            }}
-          >
-            <FaEraser size={16} />
-            &ensp;Clear all
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline-primary"
-            onClick={() => {
-              methods.selectAll();
-              setSearch("");
-            }}
-          >
-            <BiSolidSelectMultiple />
-            &ensp;Select all
-          </Button>
-        )}
+        {isMulti &&
+          (isAllSelected ? (
+            <Button
+              size="sm"
+              variant="outline-danger"
+              onClick={() => {
+                methods.clearAll();
+                setSearch("");
+              }}
+            >
+              <FaEraser size={16} />
+              &ensp;Clear all
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => {
+                methods.selectAll();
+                setSearch("");
+              }}
+            >
+              <BiSolidSelectMultiple />
+              &ensp;Select all
+            </Button>
+          ))}
       </div>
       <div ref={optionsParent} className="bp-filter_multiselect__options">
         {selectProps.options
@@ -146,7 +153,7 @@ function FilterMultiselectDropdown<T extends object>(props: SelectRendererProps<
                     removeItem(null, option, true);
                   }
                 }}
-                type="checkbox"
+                type={selectProps.multi === true ? "checkbox" : "radio"}
               />
             );
           })}

@@ -1,8 +1,15 @@
 import { Approximates, Volumes, Weights } from "./units";
 
+import { z } from "zod";
+
 export type CookingMeasurement = {
   magnitude: number;
   unit: CookingMeasurementUnit;
+};
+
+export const CookingMeasurementSchema = {
+  magnitude: z.number().min(0, { message: "Magnitude must be greater than 0" }),
+  unit: z.union([z.nativeEnum(Weights), z.nativeEnum(Volumes), z.nativeEnum(Approximates)]),
 };
 
 export type CookingMeasurementUnit = Weights | Volumes | Approximates;

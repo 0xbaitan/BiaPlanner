@@ -1,6 +1,6 @@
-import { ICreateRecipeDto, IRecipe } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
+import { IRecipe } from "@biaplanner/shared";
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
 import { useCreateRecipeMutation } from "@/apis/RecipeApi";
@@ -32,7 +32,7 @@ export default function CreateRecipePage() {
         type="create"
         onSubmit={async (values) => {
           setItem(values as IRecipe);
-          await createRecipeMutation(values as ICreateRecipeDto);
+          await createRecipeMutation(values);
         }}
       />
     </div>

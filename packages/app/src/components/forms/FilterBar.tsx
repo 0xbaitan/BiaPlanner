@@ -1,7 +1,7 @@
 import "../styles/FilterBar.scss";
 
 import Button, { ButtonProps } from "react-bootstrap/esm/Button";
-import FilterMultiselect, { FilterMultiselectProps } from "./FilterMultiselect";
+import FilterMultiselect, { FilterSelectProps } from "./FilterSelect";
 import React, { HTMLProps } from "react";
 
 import DropdownPane from "../DropdownPane";
@@ -12,7 +12,6 @@ import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { IoFilter as IoFil } from "react-icons/io5";
 import { RxReset } from "react-icons/rx";
 
-export type FilterSelectProps<T extends object> = FilterMultiselectProps<T>;
 function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   const { className, ...rest } = props;
   return (

@@ -1,15 +1,16 @@
 import { DifficultyLevels, Time } from "../units";
+import { IBaseEntity, IReadEntityDto, ReadEntityDtoSchema } from "../BaseEntity";
+import { IRecipeIngredient, IWriteRecipeIngredientDto } from "./RecipeIngredient";
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
 import { IsStringArrayConstraint, toBoolean, toNumber, toString, toStringArray, transform, trimString } from "../../util";
+import { SegmentedTime, SegmentedTimeSchema } from "../TimeMeasurement";
 import { Transform, Type } from "class-transformer";
 
 import { DeepPartial } from "utility-types";
-import { IBaseEntity } from "../BaseEntity";
 import { ICuisine } from "./Cuisine";
-import { IRecipeIngredient } from "./RecipeIngredient";
 import { IRecipeTag } from "./RecipeTag";
 import { PaginateQuery } from "../PaginateExtended";
-import { SegmentedTime } from "../TimeMeasurement";
+import { WriteRecipeIngredientDtoSchema } from "./RecipeIngredient";
 import z from "zod";
 
 export interface IRecipe extends IBaseEntity {
@@ -27,48 +28,6 @@ export interface IRecipe extends IBaseEntity {
   notes?: string;
   source?: string;
   tags?: IRecipeTag[];
-}
-
-export interface ICreateRecipeDto extends Omit<IRecipe, "id" | "createdAt" | "updatedAt" | "deletedAt" | "ingredients" | "tags" | "cuisine"> {
-  ingredients: DeepPartial<IRecipeIngredient>[];
-  newTags?: Pick<IRecipeTag, "name">[];
-  tags?: Pick<IRecipeTag, "id">[];
-}
-
-export interface IUpdateRecipeDto extends Partial<ICreateRecipeDto>, Pick<IRecipe, "id"> {}
-
-export class CreateRecipeDto implements ICreateRecipeDto {
-  ingredients: DeepPartial<IRecipeIngredient>[];
-  newTags?: Pick<IRecipeTag, "name">[] | undefined;
-  tags?: Pick<IRecipeTag, "id">[] | undefined;
-  title: string;
-  description?: string | undefined;
-  instructions: string;
-  difficultyLevel: DifficultyLevels;
-  cuisineId: string;
-  cookingTime: SegmentedTime;
-  prepTime: SegmentedTime;
-
-  defaultNumberOfServings?: [number, number];
-  notes?: string | undefined;
-  source?: string | undefined;
-}
-
-export class UpdateRecipeDto implements IUpdateRecipeDto {
-  id: string;
-  title?: string | undefined;
-  description?: string | undefined;
-  instructions?: string | undefined;
-  difficultyLevel?: DifficultyLevels | undefined;
-  cuisineId?: string | undefined;
-  ingredients?: DeepPartial<IRecipeIngredient>[] | undefined;
-  tags?: Pick<IRecipeTag, "id">[] | undefined;
-  newTags?: Pick<IRecipeTag, "name">[] | undefined;
-  cookingTime?: SegmentedTime | undefined;
-  prepTime?: SegmentedTime | undefined;
-  defaultNumberOfServings?: [number, number] | undefined;
-  notes?: string | undefined;
-  source?: string | undefined;
 }
 
 export enum RecipeSortBy {
@@ -92,6 +51,48 @@ export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | 
   cuisineIds?: string[];
   sortBy?: RecipeSortBy;
 }
+
+export const WriteRecipeValidationSchema = z.object({
+  title: z.string({
+    required_error: "Recipe title is required",
+    invalid_type_error: "Recipe title must be composed of characters",
+  }),
+  description: z.string().optional(),
+  instructions: z.string({
+    required_error: "Recipe instructions are required",
+    invalid_type_error: "Recipe instructions must be composed of characters",
+  }),
+  ingredients: z.array(WriteRecipeIngredientDtoSchema).min(1, {
+    message: "Recipe must have at least one ingredient",
+  }),
+  difficultyLevel: z.nativeEnum(DifficultyLevels).optional(),
+  cuisine: ReadEntityDtoSchema.required(),
+  cookingTime: SegmentedTimeSchema.optional(),
+  prepTime: SegmentedTimeSchema.optional(),
+  tags: z
+    .array(ReadEntityDtoSchema, {
+      required_error: "Recipe tags are required",
+    })
+    .min(1, {
+      message: "Recipe must have at least one tag",
+    }),
+});
+
+export type IWriteRecipeDto = z.infer<typeof WriteRecipeValidationSchema>;
+
+export class WriteRecipeDto implements IWriteRecipeDto {
+  title: string;
+  description?: string;
+  instructions: string;
+  ingredients: IWriteRecipeIngredientDto[];
+  difficultyLevel: DifficultyLevels;
+  cuisine: IReadEntityDto;
+  cookingTime?: SegmentedTime;
+  prepTime?: SegmentedTime;
+  tags: IReadEntityDto[];
+}
+
+export type WriteRecipeFormattedErrors = z.inferFormattedError<typeof WriteRecipeValidationSchema>;
 
 export class QueryRecipeDto implements IQueryRecipeDto {
   @Transform((params) => transform(params, toStringArray))

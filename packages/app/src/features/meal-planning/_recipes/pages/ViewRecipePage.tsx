@@ -2,6 +2,7 @@ import "../styles/ViewRecipePage.scss";
 
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "react-bootstrap";
 import CrudViewPageLayout from "@/components/CrudViewPageLayout";
@@ -14,13 +15,12 @@ import { SiLevelsdotfyi } from "react-icons/si";
 import { TbBowlSpoonFilled } from "react-icons/tb";
 import Tooltip from "@/components/Tooltip";
 import convertToSentenceCase from "@/util/convertToSentenceCase";
-import normaliseEnumKey from "@/util/normaliseEnumKey";
+import { formatSegmentedTimeAsString } from "@/components/layouts/RecipeCard";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
-import { useParams } from "react-router-dom";
 
 export default function ViewRecipePage() {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const {
     data: recipe,
     isLoading,
@@ -90,7 +90,12 @@ export default function ViewRecipePage() {
       title={recipe.title}
       actions={
         <div className="bp-recipe_view__actions">
-          <Button variant="secondary" onClick={() => {}}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              navigate(`/meal-planning/recipes/update/${recipe.id}`);
+            }}
+          >
             <FaPencil />
             &ensp;Edit recipe
           </Button>
@@ -153,7 +158,7 @@ export default function ViewRecipePage() {
                   <div>{index + 1}.</div>{" "}
                   <div>
                     {ingredient.measurement?.magnitude && ingredient.measurement?.unit ? `${ingredient.measurement.magnitude} ${ingredient.measurement.unit} of ` : ""}
-                    {ingredient.measurement?.magnitude}&nbsp;{ingredient.measurement?.unit}
+
                     {ingredient.title}
                   </div>
                   <Tooltip className="bp-recipe_view__product_categories_info_tooltip" icon={FaInfoCircle} placement={["top", "bottom", "left", "right"]}>
@@ -179,7 +184,4 @@ export default function ViewRecipePage() {
       </div>
     </CrudViewPageLayout>
   );
-}
-function formatSegmentedTimeAsString(prepTime: SegmentedTime | undefined): string | undefined {
-  throw new Error("Function not implemented.");
 }

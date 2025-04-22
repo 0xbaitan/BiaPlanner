@@ -1,20 +1,16 @@
-import "../styles/RecipeForm.scss";
+import { IRecipe, IWriteRecipeDto } from "@biaplanner/shared";
+import { useCallback, useEffect, useMemo } from "react";
+import { useRecipeFormActions, useRecipeFormState } from "../../reducers/RecipeFormReducer";
 
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { ICreateRecipeDto, IRecipe, IRecipeIngredient, IUpdateRecipeDto, Weights } from "@biaplanner/shared";
-import { useConfirmedIngredientsState, useOpenCreateIngredientModal } from "../../reducers/RecipeFormReducer";
-import { useEffect, useMemo } from "react";
-
-import Button from "react-bootstrap/Button";
+import { Button } from "react-bootstrap";
 import CuisineSelect from "./CuisineSelect";
 import DifficultyLevelSelect from "./DifficultyLevelSelect";
 import DualPaneForm from "@/components/forms/DualPaneForm";
-import { FaPlus } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import ImageSelector from "@/components/forms/ImageSelector";
-import IngredientItem from "./IngredientItem";
+import IngredientList from "../../_meal-plans/components/IngredientList";
 import IngredientModal from "./IngredientModal";
 import InputLabel from "@/components/forms/InputLabel";
 import { MdCancel } from "react-icons/md";
@@ -22,117 +18,52 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-export type RecipeFormValues = IUpdateRecipeDto | ICreateRecipeDto;
-
-const ingredientsSchema = z.object({
-  productCategories: z.array(z.string()),
-  title: z.string().min(1, { message: "Ingredient title is required" }),
-  measurement: z.object({
-    unit: z.string().min(1, { message: "Ingredient measurement unit is required" }),
-    magnitude: z.number().min(0, { message: "Ingredient measurement magnitude must be greater than 0" }),
-  }),
-});
-
-export const CreateRecipeValidationSchema = z.object({
-  ingredients: z.array(ingredientsSchema),
-  newTags: z.array(z.object({ name: z.string() })).nullable(),
-  tags: z
-    .array(
-      z.object({
-        id: z.string({
-          required_error: "Recipe tag id is required",
-          invalid_type_error: "Recipe tag id must be a string",
-        }),
-      }),
-      {
-        required_error: "Recipe must have at least one tag",
-      }
-    )
-    .length(1, { message: "Recipe must have at least one tag" }),
-
-  title: z
-    .string({
-      required_error: "Recipe title is required",
-      invalid_type_error: "Recipe title must be composed of characters",
-    })
-    .min(1),
-  description: z.string().nullable(),
-  instructions: z
-    .string({
-      required_error: "Recipe instructions are required",
-      invalid_type_error: "Recipe instructions must be composed of characters",
-    })
-    .min(1),
-  difficultyLevel: z.string().nullable(),
-  cuisineId: z.string().min(1, { message: "Recipe cuisine is required" }),
-  prepTime: z.object({
-    hours: z.number().min(0).max(23),
-    minutes: z.number().min(0).max(59),
-    days: z.number().min(0).max(7),
-    seconds: z.number().min(0).max(59),
-  }),
-  cookingTime: z.object({
-    hours: z.number().min(0).max(23),
-    minutes: z.number().min(0).max(59),
-    days: z.number().min(0).max(7),
-    seconds: z.number().min(0).max(59),
-  }),
-});
-
-export const UpdateRecipeTagValidationSchema = z.object({
-  id: z.string().min(1, { message: "Recipe tag id is required" }),
-});
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
+  onSubmit: (dto: IWriteRecipeDto) => void;
   type: "create" | "update";
-  onSubmit: (values: RecipeFormValues) => void;
   disableSubmit?: boolean;
 };
+
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
-  const { resetConfirmedIngredients } = useConfirmedIngredientsState();
+  const { formValues, formErrors } = useRecipeFormState();
+  const { resetForm, setFormValues, validateForm, clearFormErrors, setFields } = useRecipeFormActions();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    resetConfirmedIngredients();
-  }, [resetConfirmedIngredients]);
+    if (initialValue) {
+      setFormValues(initialValue);
+    }
+    return () => {
+      resetForm();
+    };
+  }, [initialValue, resetForm, setFormValues]);
 
-  const navigate = useNavigate();
-  const formMethods = useForm<RecipeFormValues>({
-    mode: "onSubmit",
-    shouldUnregister: false,
-    defaultValues: {
-      ...initialValue,
-      ingredients: initialValue?.ingredients ?? [
-        {
-          productCategories: [],
-          measurement: {
-            unit: Weights.GRAM,
-            magnitude: 0,
-          },
-        },
-      ],
-    },
-    resolver: zodResolver(type === "create" ? CreateRecipeValidationSchema : UpdateRecipeTagValidationSchema),
-  });
+  const handleSubmit = useCallback(() => {
+    const validationSucces = validateForm(formValues);
+    if (!validationSucces) {
+      console.log("Validation failed");
+      return;
+    }
+    clearFormErrors();
+    onSubmit(formValues);
+  }, [clearFormErrors, formValues, onSubmit, validateForm]);
 
-  const { handleSubmit, setValue, getValues, formState } = formMethods;
+  const handleTitleChange = useCallback((e) => setFields({ title: e.target.value }), [setFields]);
+  const handleDifficultyChange = useCallback((difficultyLevel) => setFields({ difficultyLevel }), [setFields]);
+  const handleCuisineChange = useCallback((cuisine) => setFields({ cuisine: { id: cuisine.id } }), [setFields]);
+  const handlePrepTimeChange = useCallback((segmentedTime) => setFields({ prepTime: segmentedTime }), [setFields]);
+  const handleCookingTimeChange = useCallback((segmentedTime) => setFields({ cookingTime: segmentedTime }), [setFields]);
+  const handleTagsChange = useCallback((tags) => setFields({ tags }), [setFields]);
+  const handleDescriptionChange = useCallback((e) => setFields({ description: e.target.value }), [setFields]);
+  const handleInstructionsChange = useCallback((e) => setFields({ instructions: e.target.value }), [setFields]);
 
-  console.log(formState.errors);
   return (
-    <FormProvider {...formMethods}>
+    <div>
       <IngredientModal />
-      <DualPaneForm
-        onSubmit={handleSubmit(() => {
-          const dto = getValues();
-          console.log(dto);
-          onSubmit(dto);
-        })}
-        className="bp-recipe_form"
-      >
+      <DualPaneForm onSubmit={handleSubmit} className="bp-recipe_form">
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>{type === "create" ? "Create Recipe" : "Update Recipe"}</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>
@@ -151,140 +82,48 @@ export default function RecipeForm(props: RecipeFormProps) {
             <Heading level={Heading.Level.H2}>General Information</Heading>
             <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
             <div className="bp-recipe_form__general_info">
-              <TextInput
-                label="Recipe title"
-                defaultValue={initialValue?.title}
-                inputLabelProps={{ required: true }}
-                error={formState.errors.title?.message}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setValue("title", value);
-                }}
-              />
-              <DifficultyLevelSelect
-                onChange={(value) => {
-                  setValue("difficultyLevel", value);
-                }}
-                initialValue={initialValue?.difficultyLevel}
-                inputLabelProps={{ required: true }}
-                error={formState.errors.difficultyLevel?.message === "Required" ? "Difficulty level is required" : formState.errors.difficultyLevel?.message}
-              />
-              <CuisineSelect
-                onChange={(value) => {
-                  setValue("cuisineId", value.id);
-                }}
-                initialValueId={String(initialValue?.cuisine?.id)}
-                inputLabelProps={{ required: true }}
-                error={formState.errors.cuisineId?.message === "Required" ? "Cuisine is required" : formState.errors.cuisineId?.message}
-              />
+              <TextInput label="Recipe title" defaultValue={formValues?.title} inputLabelProps={{ required: true }} error={formErrors?.title?._errors?.[0]} onChange={handleTitleChange} />
+              <DifficultyLevelSelect onChange={handleDifficultyChange} initialValue={formValues?.difficultyLevel} inputLabelProps={{ required: true }} error={formErrors?.difficultyLevel?._errors?.[0]} />
+              <CuisineSelect onChange={handleCuisineChange} defaultValue={formValues?.cuisine} inputLabelProps={{ required: true }} error={formErrors?.cuisine?._errors?.[0]} />
               <Form.Group>
                 <InputLabel required>Preparation time</InputLabel>
                 <SegmentedTimeInput
-                  onChange={(segmentedTime) => {
-                    setValue("prepTime", segmentedTime);
-                  }}
-                  initialValue={initialValue?.prepTime}
+                  onChange={handlePrepTimeChange}
+                  initialValue={
+                    formValues?.prepTime ?? {
+                      days: 0,
+                      hours: 0,
+                      minutes: 0,
+                      seconds: 0,
+                    }
+                  }
                 />
               </Form.Group>
               <Form.Group>
                 <InputLabel required>Cooking time</InputLabel>
                 <SegmentedTimeInput
-                  onChange={(segmentedTime) => {
-                    setValue("cookingTime", segmentedTime);
-                  }}
-                  initialValue={initialValue?.cookingTime}
+                  onChange={handleCookingTimeChange}
+                  initialValue={
+                    formValues?.cookingTime ?? {
+                      days: 0,
+                      hours: 0,
+                      minutes: 0,
+                      seconds: 0,
+                    }
+                  }
                 />
               </Form.Group>
-              <RecipeTagsMultiselect
-                inputLabelProps={{ required: true }}
-                initialValues={initialValue?.tags}
-                onChange={(tags) => {
-                  setValue(
-                    "tags",
-                    tags.map((tag) => ({
-                      id: tag.id,
-                    }))
-                  );
-                }}
-                error={formState.errors.tags?.message}
-              />
-              <TextInput
-                label="Recipe Description"
-                defaultValue={initialValue?.description}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setValue("description", value);
-                }}
-                as="textarea"
-              />
+              <RecipeTagsMultiselect inputLabelProps={{ required: true }} initialValue={initialValue?.tags ?? []} onChange={handleTagsChange} error={formErrors?.tags?._errors?.[0]} />
+              <TextInput label="Recipe Description" defaultValue={formValues?.description} onChange={handleDescriptionChange} as="textarea" />
             </div>
           </DualPaneForm.Panel.Pane>
           <DualPaneForm.Panel.Pane>
             <Heading level={Heading.Level.H2}>Ingredients</Heading>
-
             <IngredientList />
-            <TextInput
-              formGroupClassName="mt-5"
-              label="Instructions"
-              defaultValue={initialValue?.instructions}
-              onChange={(e) => {
-                const { value } = e.target;
-                setValue("instructions", value);
-              }}
-              as="textarea"
-            />
+            <TextInput formGroupClassName="mt-5" label="Instructions" defaultValue={initialValue?.instructions} onChange={handleInstructionsChange} as="textarea" />
           </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>
       </DualPaneForm>
-    </FormProvider>
+    </div>
   );
-}
-
-function IngredientList() {
-  const { confirmedIngredients } = useConfirmedIngredientsState();
-  const { setValue, getValues } = useFormContext<RecipeFormValues>();
-  const openCreateIngredientModal = useOpenCreateIngredientModal();
-  useEffect(() => {
-    setValue("ingredients", confirmedIngredients);
-  }, [confirmedIngredients, setValue]);
-
-  const ingredientItems = useMemo(() => {
-    return (
-      <div className="bp-ingredient_list">
-        <div className="bp-ingredient_list__header">
-          <div className="bp-ingredient_list__header__title">
-            <h3 className="bp-h3">Ingredient List</h3>
-          </div>
-          <div className="bp-ingredient_list__header__actions">
-            <Button
-              type="button"
-              onClick={() => {
-                openCreateIngredientModal({
-                  index: 0,
-                  onConfirmIngredient: (ingredient) => {
-                    setValue("ingredients", (getValues("ingredients") ?? []).concat(ingredient));
-                  },
-                });
-              }}
-            >
-              <FaPlus /> <span className="ps-2">Add ingredient</span>
-            </Button>
-          </div>
-        </div>
-        <div className="bp-ingredient_list__content">
-          {confirmedIngredients && confirmedIngredients.length > 0 ? (
-            <div className="bp-ingredient_list__content__list">
-              {confirmedIngredients.map((ingredient, index) => (
-                <IngredientItem key={index} ingredient={ingredient as IRecipeIngredient} index={index} />
-              ))}
-            </div>
-          ) : (
-            <div className="bp-ingredient_list__content__no_list_message">No ingredients have been added yet, add at least one ingredient.</div>
-          )}
-        </div>
-      </div>
-    );
-  }, [confirmedIngredients, getValues, openCreateIngredientModal, setValue]);
-
-  return ingredientItems;
 }

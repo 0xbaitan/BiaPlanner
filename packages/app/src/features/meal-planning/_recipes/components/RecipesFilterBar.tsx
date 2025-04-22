@@ -95,7 +95,7 @@ function CuisineProminentMultiselect() {
   }
   return (
     <FilterBar.Select
-      multiselectLabel="Cuisines"
+      selectLabel="Cuisines"
       list={isSuccess ? data : []}
       selectedValues={mappedCuisines}
       onChange={(selectedList) => {
@@ -136,7 +136,7 @@ function AllergenProminentMultiselect() {
 
   return (
     <FilterBar.Select
-      multiselectLabel="Allergens excluded"
+      selectLabel="Allergens excluded"
       selectedValues={mappedAllergens}
       onChange={(selectedList) => {
         const selectedAllergens = selectedList.map((item) => item.id);
@@ -178,7 +178,7 @@ function DifficultyLevelMultiselect() {
 
   return (
     <FilterBar.Select
-      multiselectLabel="Difficulty level"
+      selectLabel="Difficulty level"
       selectedValues={mappedDifficultyLevel}
       onChange={(selectedList) => {
         const selectedDifficultyLevels = selectedList.map((item) => item.value);
@@ -222,7 +222,7 @@ function RecipeTagsMultiselect() {
         const selectedRecipeTags = selectedList.map((item) => item.id);
         setFilter({ recipeTagIds: selectedRecipeTags });
       }}
-      multiselectLabel="Recipe tags"
+      selectLabel="Recipe tags"
       list={data ?? []}
       idSelector={(item) => item.id}
       nameSelector={(item) => item.name}

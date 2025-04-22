@@ -17,7 +17,7 @@ export type RecipeCardProps = {
   onClick?: (recipe: IRecipe) => void;
 };
 
-function formatSegmentedTimeAsString(time: SegmentedTime) {
+export function formatSegmentedTimeAsString(time: SegmentedTime) {
   const { days, hours, minutes, seconds } = time;
   const timeParts: string[] = [];
   if (days > 0) {
