@@ -11,9 +11,11 @@ import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import ImageSelector from "@/components/forms/ImageSelector";
 import IngredientItem from "./IngredientItem";
+import IngredientList from "./IngredientList";
 import IngredientModal from "./IngredientModal";
 import InputLabel from "@/components/forms/InputLabel";
 import { MdCancel } from "react-icons/md";
+import React from "react";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
@@ -63,6 +65,17 @@ function convertRecipeToDto(recipe?: IRecipe): IWriteRecipeDto {
     instructions: recipe.instructions,
   };
 }
+
+const MemoizedTextInput = React.memo(TextInput);
+
+const MemoizedIngredientList = React.memo(IngredientList);
+
+const MemoizedSegmentedTimeInput = React.memo(SegmentedTimeInput);
+const MemoizedRecipeTagsMultiselect = React.memo(RecipeTagsMultiselect);
+const MemoizedImageSelector = React.memo(ImageSelector);
+const MemoizedDifficultyLevelSelect = React.memo(DifficultyLevelSelect);
+const MemoizedCuisineSelect = React.memo(CuisineSelect);
+
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
   const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
@@ -75,21 +88,21 @@ export default function RecipeForm(props: RecipeFormProps) {
   });
   const { handleSubmit, reset, setValue, watch, formState } = methods;
   const navigate = useNavigate();
-  const ingredients = watch("ingredients");
+
   useEffect(() => {
     if (initialValue) {
       reset(initialValue);
     }
   }, [initialValue, reset]);
 
-  const handleFormSubmit = (data: IWriteRecipeDto) => {
+  const handleFormSubmit = () => {
+    const data = methods.getValues();
     onSubmit(data);
   };
 
   return (
     <FormProvider {...methods}>
       <div>
-        <IngredientModal />
         <DualPaneForm onSubmit={handleSubmit(handleFormSubmit)} className="bp-recipe_form">
           <DualPaneForm.Header>
             <DualPaneForm.Header.Title>{type === "create" ? "Create Recipe" : "Update Recipe"}</DualPaneForm.Header.Title>
@@ -107,10 +120,10 @@ export default function RecipeForm(props: RecipeFormProps) {
           <DualPaneForm.Panel>
             <DualPaneForm.Panel.Pane md={4}>
               <Heading level={Heading.Level.H2}>General Information</Heading>
-              <ImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+              <MemoizedImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <div className="bp-recipe_form__general_info">
-                <TextInput label="Recipe title" name="title" value={watch("title")} inputLabelProps={{ required: true }} error={formState.errors?.title?.message} />
-                <DifficultyLevelSelect
+                <MemoizedTextInput label="Recipe title" name="title" value={watch("title")} inputLabelProps={{ required: true }} error={formState.errors?.title?.message} />
+                <MemoizedDifficultyLevelSelect
                   onChange={(value) => {
                     setValue("difficultyLevel", value);
                   }}
@@ -118,36 +131,25 @@ export default function RecipeForm(props: RecipeFormProps) {
                   inputLabelProps={{ required: true }}
                   error={formState.errors?.difficultyLevel?.message}
                 />
-                <CuisineSelect defaultValue={watch("cuisine")} inputLabelProps={{ required: true }} onChange={(cuisine) => setValue("cuisine.id", cuisine.id)} />
+                <MemoizedCuisineSelect defaultValue={watch("cuisine")} inputLabelProps={{ required: true }} onChange={(cuisine) => setValue("cuisine.id", cuisine.id)} />
                 <Form.Group>
                   <InputLabel required>Preparation time</InputLabel>
-                  <SegmentedTimeInput initialValue={watch("prepTime")} onChange={(value) => setValue("prepTime", value)} />
+                  <MemoizedSegmentedTimeInput initialValue={watch("prepTime")} onChange={(value) => setValue("prepTime", value)} />
                 </Form.Group>
                 <Form.Group>
                   <InputLabel required>Cooking time</InputLabel>
-                  <SegmentedTimeInput initialValue={watch("cookingTime")} onChange={(value) => setValue("cookingTime", value)} />
+                  <MemoizedSegmentedTimeInput initialValue={watch("cookingTime")} onChange={(value) => setValue("cookingTime", value)} />
                 </Form.Group>
 
-                <RecipeTagsMultiselect initialValue={watch("tags")} inputLabelProps={{ required: true }} error={formState.errors?.tags?.message} />
-                <TextInput label="Recipe Description" value={watch("description")} name="description" as="textarea" />
+                <MemoizedRecipeTagsMultiselect initialValue={watch("tags")} inputLabelProps={{ required: true }} error={formState.errors?.tags?.message} />
+                <MemoizedTextInput label="Recipe Description" value={watch("description")} name="description" as="textarea" />
               </div>
             </DualPaneForm.Panel.Pane>
             <DualPaneForm.Panel.Pane>
               <Heading level={Heading.Level.H2}>Ingredients</Heading>
-              <IngredientModal />
-              {ingredients.length === 0 ? (
-                <div className="bp-recipe_form__ingredients__empty">
-                  <span>No ingredients added yet</span>
-                </div>
-              ) : (
-                <div className="bp-recipe_form__ingredients__list">
-                  {ingredients.map((ingredient, index) => (
-                    <IngredientItem ingredient={ingredient} index={index} key={index} />
-                  ))}
-                </div>
-              )}
+              <MemoizedIngredientList />
 
-              <TextInput formGroupClassName="mt-5" label="Instructions" name="instructions" as="textarea" value={watch("instructions")} />
+              <MemoizedTextInput formGroupClassName="mt-5" label="Instructions" name="instructions" as="textarea" value={watch("instructions")} />
             </DualPaneForm.Panel.Pane>
           </DualPaneForm.Panel>
         </DualPaneForm>

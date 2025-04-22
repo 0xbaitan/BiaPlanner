@@ -54,6 +54,7 @@ export default function EditRecipePage() {
               console.error("No ID provided for recipe update");
               return;
             }
+            console.log("Updating recipe with ID:", id, "and DTO:", dto);
             setItem(dto as IRecipe);
             await updateRecipe({ id, dto });
           }}

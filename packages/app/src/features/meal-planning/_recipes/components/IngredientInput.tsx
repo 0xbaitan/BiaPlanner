@@ -9,8 +9,8 @@ import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultis
 import TextInput from "@/components/forms/TextInput";
 
 export default function IngredientInput() {
-  const { ingredient, ingredientModalErrors: errors } = useRecipeFormState();
-  const { setIngredientFields } = useRecipeFormActions();
+  const { currentIngredient: ingredient, errors } = useRecipeFormState();
+  const { setCurrentIngredient } = useRecipeFormActions();
 
   return (
     <div className="bp-ingredient_input">
@@ -22,7 +22,7 @@ export default function IngredientInput() {
           label="Ingredient Title"
           defaultValue={ingredient.title}
           onChange={(e) => {
-            setIngredientFields({
+            setCurrentIngredient({
               title: e.target.value,
             });
           }}
@@ -35,9 +35,9 @@ export default function IngredientInput() {
             className="bp-ingredient_input__measurement_magnitude_field"
             placeholder="Quantity"
             value={ingredient.measurement?.magnitude ?? 0}
-            isInvalid={Boolean(errors?.measurement?.magnitude)}
+            isInvalid={Boolean(errors?.measurement?.magnitude?._errors[0])}
             onChange={(e) =>
-              setIngredientFields({
+              setCurrentIngredient({
                 measurement: {
                   magnitude: Number(e.target.value),
                   unit: ingredient.measurement?.unit ?? Weights.GRAM,
@@ -53,10 +53,10 @@ export default function IngredientInput() {
             selectedValues={[getCookingMeasurement(ingredient.measurement?.unit ?? Weights.GRAM)]}
             error={errors?.measurement?.unit?._errors[0]}
             onChange={([{ unit }]) => {
-              setIngredientFields({
+              setCurrentIngredient({
                 measurement: {
-                  magnitude: ingredient.measurement?.magnitude ?? 0,
                   unit,
+                  magnitude: ingredient.measurement?.magnitude ?? 0,
                 },
               });
             }}
@@ -68,8 +68,10 @@ export default function IngredientInput() {
           label="Choose category/categories for a single ingredient"
           error={errors?.productCategories?._errors[0]}
           onSelectionChange={(productCategories) => {
-            setIngredientFields({
-              productCategories,
+            setCurrentIngredient({
+              productCategories: productCategories.map((category) => ({
+                id: category.id,
+              })),
             });
           }}
         />

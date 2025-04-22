@@ -12,11 +12,12 @@ import { useRecipeFormActions } from "../../reducers/RecipeFormReducer";
 type IngredientItemProps = {
   ingredient: IWriteRecipeIngredientDto;
   index: number;
+  onRemove: (index: number) => void;
 };
 
 export default function IngredientItem(props: IngredientItemProps) {
-  const { ingredient, index } = props;
-  const { openUpdateIngredientModal, removeIngredient } = useRecipeFormActions();
+  const { ingredient, index, onRemove } = props;
+  const { openUpdateIngredientModal } = useRecipeFormActions();
   const { data: productCategories, isSuccess } = useGetProductCategoriesQuery();
 
   const getIngredientCategoryName = (categoryId: string) => {
@@ -24,10 +25,10 @@ export default function IngredientItem(props: IngredientItemProps) {
     return category ? category.name : undefined;
   };
 
-  const { notify: notifyDeletion } = useDeletionToast<{ ingredient: DeepPartial<IRecipeIngredient>; index: number }>({
+  const { notify: notifyDeletion } = useDeletionToast<{ ingredient: DeepPartial<IWriteRecipeIngredientDto>; index: number }>({
     identifierSelector: (entity) => `${entity.ingredient.title} Ingredient (#${entity.index + 1})`,
     onConfirm: async (entity) => {
-      removeIngredient(entity.index);
+      onRemove(entity.index);
     },
   });
   return (
@@ -55,7 +56,7 @@ export default function IngredientItem(props: IngredientItemProps) {
           </div>
         </div>
         <div className="bp-ingredient_item__main__actions">
-          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index)}>
+          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index, ingredient)}>
             <MdEdit size={20} />
           </button>
           <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => notifyDeletion({ ingredient, index })}>

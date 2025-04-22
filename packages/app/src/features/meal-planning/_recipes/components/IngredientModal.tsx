@@ -1,29 +1,49 @@
-import { IRecipeIngredient, IWriteRecipeIngredientDto } from "@biaplanner/shared";
+import { IWriteRecipeDto, IWriteRecipeIngredientDto, WriteRecipeIngredientDtoSchema } from "@biaplanner/shared";
+import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
 import { useRecipeFormActions, useRecipeFormState } from "../../reducers/RecipeFormReducer";
 
 import Button from "react-bootstrap/Button";
-import { DeepPartial } from "utility-types";
-import { FaTrash } from "react-icons/fa6";
 import IngredientInput from "./IngredientInput";
-import { MdEdit } from "react-icons/md";
 import Modal from "react-bootstrap/Modal";
-import { useDeletionToast } from "@/components/toasts/DeletionToast";
-import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
+import { useCallback } from "react";
 
-export default function IngredientModal() {
-  const { showIngredientModal, ingredientModalType, ingredientIndex } = useRecipeFormState();
-  const { closeIngredientModal, confirmIngredient } = useRecipeFormActions();
+export type IngredientModalProps = {
+  appendIngredient: (ingredient: IWriteRecipeIngredientDto) => void;
+  updateIngredient: (index: number, ingredient: IWriteRecipeIngredientDto) => void;
+};
 
+export default function IngredientModal(props: IngredientModalProps) {
+  const { appendIngredient, updateIngredient } = props;
+  const { showIngredientModal, modalType, ingredientIndex, currentIngredient } = useRecipeFormState();
+  const { closeIngredientModal, setErrors } = useRecipeFormActions();
+  const formMethods = useFormContext<IWriteRecipeDto>();
+  const confirmIngredient = useCallback(() => {
+    if (!currentIngredient) {
+      return;
+    }
+
+    const validationStatus = WriteRecipeIngredientDtoSchema.safeParse(currentIngredient);
+    if (!validationStatus.success) {
+      const errors = validationStatus.error.format();
+      setErrors(errors);
+      return;
+    }
+
+    if (modalType === "create") {
+      appendIngredient(currentIngredient);
+    } else if (modalType === "update" && ingredientIndex !== undefined && ingredientIndex >= 0) {
+      updateIngredient(ingredientIndex, currentIngredient);
+    }
+    closeIngredientModal();
+  }, [currentIngredient, ingredientIndex, modalType, closeIngredientModal, setErrors, appendIngredient, updateIngredient]);
   return (
     <Modal show={showIngredientModal} onHide={closeIngredientModal} backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>{ingredientModalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Modal.Title>
+        <Modal.Title>{modalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <IngredientInput />
-
-        {/* /> */}
       </Modal.Body>
 
       <Modal.Footer>
