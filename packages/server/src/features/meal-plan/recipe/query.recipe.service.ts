@@ -102,7 +102,8 @@ export class QueryRecipeService {
     qb.leftJoinAndSelect('recipe.cuisine', 'cuisine')
       .leftJoinAndSelect('recipe.ingredients', 'ingredient')
       .leftJoinAndSelect('ingredient.productCategories', 'productCategory')
-      .leftJoinAndSelect('recipe.tags', 'tag');
+      .leftJoinAndSelect('recipe.tags', 'tag')
+      .leftJoinAndSelect('recipe.coverImage', 'coverImage');
 
     if (!!query.search && query.search.trim().length > 0) {
       qb.where(

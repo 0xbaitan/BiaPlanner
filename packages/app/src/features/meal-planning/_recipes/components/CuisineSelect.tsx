@@ -28,7 +28,6 @@ export default function CuisineSelect(props: CuisineSelectProps) {
 
   const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>(defaultCuisine);
 
-  console.log("CuisineSelect", { defaultCuisine, selectedValue });
   useEffect(() => {
     if (defaultCuisine) {
       setSelectedValue(defaultCuisine);

@@ -8,6 +8,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +23,7 @@ import {
 } from '@biaplanner/shared';
 
 import { CuisineEntity } from '../cuisine/cuisine.entity';
+import { FileEntity } from '@/features/files/file.entity';
 import { RecipeIngredientEntity } from './recipe-ingredient/recipe-ingredient.entity';
 import { RecipeTagEntity } from './recipe-tag/recipe-tag.entity';
 
@@ -142,4 +144,16 @@ export class RecipeEntity implements IRecipe {
     inverseJoinColumn: { name: 'tagId', referencedColumnName: 'id' },
   })
   tags?: IRecipeTag[];
+
+  @OneToOne(() => FileEntity)
+  @JoinColumn({
+    name: 'coverImageId',
+  })
+  coverImage?: FileEntity;
+
+  @Column({
+    type: 'bigint',
+    nullable: true,
+  })
+  coverImageId?: string;
 }

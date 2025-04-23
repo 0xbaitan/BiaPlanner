@@ -19,7 +19,25 @@ export const FilesApi = rootApi.injectEndpoints({
         responseType: "json",
       }),
     }),
+    deleteImage: build.mutation<IFile, string>({
+      query: (id) => ({
+        url: `/files/${id}`,
+        method: "DELETE",
+      }),
+
+      invalidatesTags: (result, error, id) => [
+        { type: "File", id },
+        { type: "File", id: "LIST" },
+      ],
+    }),
+    getFile: build.query<IFile, string>({
+      query: (id) => ({
+        url: `/files/metadata/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "File", id }],
+    }),
   }),
 });
 
-export const { useUploadFileMutation, useUploadImageFileMutation } = FilesApi;
+export const { useUploadFileMutation, useUploadImageFileMutation, useDeleteImageMutation, useGetFileQuery, useLazyGetFileQuery } = FilesApi;

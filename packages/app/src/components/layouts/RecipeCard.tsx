@@ -11,6 +11,7 @@ import { useCallback, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { SiLevelsdotfyi } from "react-icons/si";
 import convertToSentenceCase from "@/util/convertToSentenceCase";
+import { getImagePath } from "@/util/imageFunctions";
 
 export type RecipeCardProps = {
   recipe: IRecipe;
@@ -44,7 +45,14 @@ export default function RecipeCard(props: RecipeCardProps) {
 
   return (
     <Card className="bp-recipe_card" onClick={handleRecipeClick}>
-      <Card.Img className="bp-recipe_card__img" variant="top" src={"https://picsum.photos/200/300"} />
+      <Card.Img
+        className="bp-recipe_card__img"
+        variant="top"
+        src={getImagePath(recipe.coverImage)}
+        alt={`
+        Image of 
+        ${recipe.title}`}
+      />
 
       <Card.ImgOverlay className="bp-recipe_card__img_overlay">
         <FavouriteButton isFavourite={false} onClick={() => {}} />

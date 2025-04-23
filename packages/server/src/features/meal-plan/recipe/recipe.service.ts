@@ -20,12 +20,12 @@ export class RecipeService {
   async findOne(id: string): Promise<IRecipe> {
     return this.recipeRepository.findOneOrFail({
       where: { id },
-      relations: ['cuisine', 'ingredients', 'tags'],
+      relations: ['cuisine', 'ingredients', 'tags', 'coverImage'],
     });
   }
   async findAll(): Promise<IRecipe[]> {
     return this.recipeRepository.find({
-      relations: ['cuisine', 'ingredients', 'tags'],
+      relations: ['cuisine', 'ingredients', 'tags', 'coverImage'],
     });
   }
 

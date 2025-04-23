@@ -17,7 +17,7 @@ export default function RecipeTagsMultiselect(props: RecipeTagsSelectProps) {
   const { inputLabelProps, error, initialValue, onChange } = props;
   const { data: recipeTags, isError, isSuccess } = useGetRecipeTagsQuery();
   const noReceipeTags = isError || !recipeTags || recipeTags.length === 0;
-  console.log("initialValue", initialValue);
+
   const initialValueAsPopulated = useMemo(() => {
     if (!isSuccess) return [];
     if (!recipeTags || recipeTags.length === 0) return [];

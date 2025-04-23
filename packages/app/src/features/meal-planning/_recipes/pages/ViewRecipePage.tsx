@@ -16,6 +16,7 @@ import { TbBowlSpoonFilled } from "react-icons/tb";
 import Tooltip from "@/components/Tooltip";
 import convertToSentenceCase from "@/util/convertToSentenceCase";
 import { formatSegmentedTimeAsString } from "@/components/layouts/RecipeCard";
+import { getImagePath } from "@/util/imageFunctions";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
 
 export default function ViewRecipePage() {
@@ -114,7 +115,9 @@ export default function ViewRecipePage() {
     >
       <div className="bp-recipe_view__content">
         <div className="bp-recipe_view__details_container">
-          <div className="bp-recipe_view__image_container"></div>
+          <div className="bp-recipe_view__image_container">
+            <img className="bp-recipe_view__image" src={getImagePath(recipe.coverImage)} alt={recipe.title} />
+          </div>
           <div className="bp-recipe_view__info_container">
             <div className="bp-recipe_view__info__meta">
               {metaItems.map((item, index) => {

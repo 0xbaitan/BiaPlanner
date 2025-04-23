@@ -1,6 +1,6 @@
 import { DifficultyLevels, IRecipe, IWriteRecipeDto, Weights, WriteRecipeValidationSchema } from "@biaplanner/shared";
 import { FormProvider, useForm } from "react-hook-form";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { Button } from "react-bootstrap";
 import CuisineSelect from "./CuisineSelect";
@@ -9,6 +9,7 @@ import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
+import { ImageListType } from "react-images-uploading";
 import ImageSelector from "@/components/forms/ImageSelector";
 import IngredientList from "./IngredientList";
 import InputLabel from "@/components/forms/InputLabel";
@@ -17,7 +18,10 @@ import React from "react";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
+import { useDeleteImageMutation } from "@/apis/FilesApi";
+import useGetImageFile from "@/hooks/useImageFile";
 import { useNavigate } from "react-router-dom";
+import useUploadImageFile from "@/hooks/useUploadImageFile";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
@@ -39,6 +43,7 @@ function convertRecipeToDto(recipe?: IRecipe): IWriteRecipeDto {
       ingredients: [],
       description: "",
       instructions: "",
+      coverImageId: undefined,
     };
   }
 
@@ -61,6 +66,7 @@ function convertRecipeToDto(recipe?: IRecipe): IWriteRecipeDto {
     tags: recipe.tags?.map((tag) => ({ id: tag.id })) || [],
     description: recipe.description,
     instructions: recipe.instructions,
+    coverImageId: recipe.coverImageId,
   };
 }
 
@@ -77,7 +83,10 @@ const MemoizedCuisineSelect = React.memo(CuisineSelect);
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
   const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
+  const [recipeImageRaw, setRecipeImageRaw] = React.useState<ImageListType>();
 
+  const uploadImage = useUploadImageFile();
+  const [deleteImageFile] = useDeleteImageMutation();
   const navigate = useNavigate();
   const methods = useForm<IWriteRecipeDto>({
     defaultValues: transformedInitialValue,
@@ -92,10 +101,33 @@ export default function RecipeForm(props: RecipeFormProps) {
     }
   }, [initialValue, reset]);
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = useCallback(async () => {
     const data = methods.getValues();
-    await onSubmit(data);
-  };
+    let imageId: string | undefined = undefined;
+    if (recipeImageRaw && recipeImageRaw.length > 0 && recipeImageRaw[0].file) {
+      const fileMetadata = await uploadImage(recipeImageRaw[0].file);
+      imageId = data.coverImageId = fileMetadata.id;
+      alert("Image uploaded successfully");
+    }
+    const isSuccess = await onSubmit(data);
+    if (!isSuccess) {
+      console.error("Error submitting form");
+      if (imageId) {
+        await deleteImageFile(imageId);
+      }
+    }
+  }, [methods, recipeImageRaw, onSubmit, uploadImage, deleteImageFile]);
+
+  const handleImageChange = useCallback(
+    (imageList: ImageListType) => {
+      if (imageList.length > 0) {
+        setRecipeImageRaw(imageList);
+      } else {
+        setRecipeImageRaw(undefined);
+      }
+    },
+    [setRecipeImageRaw]
+  );
 
   return (
     <FormProvider {...methods}>
@@ -117,7 +149,7 @@ export default function RecipeForm(props: RecipeFormProps) {
           <DualPaneForm.Panel>
             <DualPaneForm.Panel.Pane md={4}>
               <Heading level={Heading.Level.H2}>General Information</Heading>
-              <MemoizedImageSelector helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+              <MemoizedImageSelector onChange={handleImageChange} helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <div className="bp-recipe_form__general_info">
                 <MemoizedTextInput
                   label="Recipe title"

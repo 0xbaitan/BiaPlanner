@@ -78,7 +78,7 @@ export const WriteRecipeValidationSchema = z.object({
     .min(1, {
       message: "Recipe must have at least one tag",
     }),
-  fileId: z.string().optional(),
+  coverImageId: z.string().optional().nullable(),
 });
 
 export type IWriteRecipeDto = z.infer<typeof WriteRecipeValidationSchema>;
@@ -93,7 +93,7 @@ export class WriteRecipeDto implements IWriteRecipeDto {
   cookingTime?: SegmentedTime;
   prepTime?: SegmentedTime;
   tags: IReadEntityDto[];
-  fileId?: string;
+  coverImageId?: string;
 }
 
 export type WriteRecipeFormattedErrors = z.inferFormattedError<typeof WriteRecipeValidationSchema>;

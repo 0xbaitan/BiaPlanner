@@ -9,13 +9,23 @@ import { MdCancel } from "react-icons/md";
 
 export type ImageSelectorProps = {
   helpText?: string;
+  initialImages?: ImageListType;
   uploadButtonText?: string;
   onChange?: (imageList: ImageListType) => void;
 } & Omit<HTMLAttributes<HTMLDivElement>, "onChange">;
 
 export default function ImageSelector(props: ImageSelectorProps) {
-  const { helpText, uploadButtonText, className, onChange: onCustomChange, ...rest } = props;
-  const [image, setImage] = React.useState<ImageListType>([]);
+  const { helpText, initialImages, uploadButtonText, className, onChange: onCustomChange, ...rest } = props;
+  const [image, setImage] = React.useState<ImageListType>(initialImages ?? []);
+  const [isInitialised, setInitialised] = React.useState(false);
+
+  console.log("ImageSelector", { initialImages, image });
+  useEffect(() => {
+    if (initialImages && !isInitialised) {
+      setImage(() => initialImages);
+      setInitialised(true);
+    }
+  }, [initialImages, isInitialised]);
 
   const onChange = useCallback((imageList: ImageListType) => {
     setImage(() => imageList);

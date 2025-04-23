@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -65,5 +66,10 @@ export class FilesController {
   @Get('/metadata/:id')
   async getFileMetadata(@Param('id') id: string): Promise<IFile> {
     return this.filesService.getFile(id);
+  }
+
+  @Delete('/:id')
+  async deleteFile(@Param('id') id: string): Promise<void> {
+    return this.filesService.deleteFile(id);
   }
 }
