@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './db/ormconfig';
 import { modules } from './modules';
@@ -14,7 +15,13 @@ import { modules } from './modules';
       autoLoadEntities: true,
       keepConnectionAlive: true,
       logging: true,
-      // logger: 'advanced-console',
+      logger: 'simple-console',
+    }),
+    NestjsFormDataModule.config({
+      isGlobal: true,
+      cleanupAfterFailedHandle: true,
+      cleanupAfterSuccessHandle: true,
+      fileSystemStoragePath: 'uploads/',
     }),
 
     ...modules,

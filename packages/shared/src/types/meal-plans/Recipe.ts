@@ -1,17 +1,19 @@
 import { DifficultyLevels, Time } from "../units";
 import { IBaseEntity, IReadEntityDto, ReadEntityDtoSchema } from "../BaseEntity";
+import { IFile, ImageTypeExtendedListSchema } from "../File";
 import { IRecipeIngredient, IWriteRecipeIngredientDto } from "./RecipeIngredient";
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
 import { IsStringArrayConstraint, toBoolean, toNumber, toString, toStringArray, transform, trimString } from "../../util";
 import { SegmentedTime, SegmentedTimeSchema } from "../TimeMeasurement";
 import { Transform, Type } from "class-transformer";
+import { file, zfd } from "zod-form-data";
 
 import { DeepPartial } from "utility-types";
 import { ICuisine } from "./Cuisine";
-import { IFile } from "../File";
 import { IRecipeTag } from "./RecipeTag";
 import { PaginateQuery } from "../PaginateExtended";
 import { WriteRecipeIngredientDtoSchema } from "./RecipeIngredient";
+import { createZodDto } from "nestjs-zod";
 import z from "zod";
 
 export interface IRecipe extends IBaseEntity {
@@ -54,47 +56,27 @@ export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | 
   sortBy?: RecipeSortBy;
 }
 
-export const WriteRecipeValidationSchema = z.object({
-  title: z.string({
-    required_error: "Recipe title is required",
-    invalid_type_error: "Recipe title must be composed of characters",
-  }),
-  description: z.string().optional(),
-  instructions: z.string({
-    required_error: "Recipe instructions are required",
-    invalid_type_error: "Recipe instructions must be composed of characters",
-  }),
-  ingredients: z.array(WriteRecipeIngredientDtoSchema).min(1, {
-    message: "Recipe must have at least one ingredient",
-  }),
-  difficultyLevel: z.nativeEnum(DifficultyLevels).optional(),
-  cuisine: ReadEntityDtoSchema.required(),
-  cookingTime: SegmentedTimeSchema.optional(),
-  prepTime: SegmentedTimeSchema.optional(),
-  tags: z
-    .array(ReadEntityDtoSchema, {
-      required_error: "Recipe tags are required",
-    })
-    .min(1, {
-      message: "Recipe must have at least one tag",
-    }),
-  coverImageId: z.string().optional().nullable(),
+export const WriteRecipeValidationSchema = zfd.formData({
+  title: zfd.text(z.string()),
+  description: zfd.text(z.string().optional()),
+  instructions: zfd.text(z.string().optional()),
+
+  ingredients: zfd.repeatable(z.array(zfd.json(WriteRecipeIngredientDtoSchema)).min(1, { message: "At least one ingredient is required" })),
+
+  difficultyLevel: zfd.text(z.string()),
+  cuisine: zfd.json(z.object({ id: z.coerce.string() })),
+
+  cookingTime: zfd.json(SegmentedTimeSchema).optional(),
+  prepTime: zfd.json(SegmentedTimeSchema).optional(),
+
+  tags: zfd.repeatable(z.array(zfd.json(z.object({ id: z.coerce.string() }))).min(1, { message: "At least one tag is required" })),
+
+  file: zfd.file(z.instanceof(File).refine((file) => file.size > 0, "File required")).optional(),
 });
 
 export type IWriteRecipeDto = z.infer<typeof WriteRecipeValidationSchema>;
 
-export class WriteRecipeDto implements IWriteRecipeDto {
-  title: string;
-  description?: string;
-  instructions: string;
-  ingredients: IWriteRecipeIngredientDto[];
-  difficultyLevel: DifficultyLevels;
-  cuisine: IReadEntityDto;
-  cookingTime?: SegmentedTime;
-  prepTime?: SegmentedTime;
-  tags: IReadEntityDto[];
-  coverImageId?: string;
-}
+export class WriteRecipeDto extends createZodDto(WriteRecipeValidationSchema) {}
 
 export type WriteRecipeFormattedErrors = z.inferFormattedError<typeof WriteRecipeValidationSchema>;
 

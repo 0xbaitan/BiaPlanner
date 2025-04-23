@@ -1,45 +1,77 @@
 import "../styles/ImageSelector.scss";
 
-import ImageUploading, { ImageListType } from "react-images-uploading";
+import ImageUploading, { ImageListType, ImageType } from "react-images-uploading";
 import React, { HTMLAttributes, useCallback, useEffect } from "react";
 
 import Button from "react-bootstrap/Button";
 import { FaUpload } from "react-icons/fa";
+import { IFile } from "@biaplanner/shared";
 import { MdCancel } from "react-icons/md";
+import { getImagePath } from "@/util/imageFunctions";
 
 export type ImageSelectorProps = {
   helpText?: string;
-  initialImages?: ImageListType;
+  value?: File;
+  valueMetadata?: IFile;
   uploadButtonText?: string;
-  onChange?: (imageList: ImageListType) => void;
+  onChange?: (value: File | undefined) => void;
+  isInitialised?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, "onChange">;
 
 export default function ImageSelector(props: ImageSelectorProps) {
-  const { helpText, initialImages, uploadButtonText, className, onChange: onCustomChange, ...rest } = props;
-  const [image, setImage] = React.useState<ImageListType>(initialImages ?? []);
-  const [isInitialised, setInitialised] = React.useState(false);
+  const { helpText, value, isInitialised: isInitialisedDefault, valueMetadata, uploadButtonText, className, onChange: onCustomChange, ...rest } = props;
+  console.log(valueMetadata);
+  const [file, setFile] = React.useState<File | undefined>(value);
 
-  console.log("ImageSelector", { initialImages, image });
-  useEffect(() => {
-    if (initialImages && !isInitialised) {
-      setImage(() => initialImages);
-      setInitialised(true);
+  const [images, setImages] = React.useState<ImageListType>([]);
+
+  const [isInitialised, setInitialised] = React.useState(isInitialisedDefault ?? false);
+
+  const getImageFile = useCallback(async (imageFile: IFile | undefined) => {
+    if (!imageFile) {
+      return undefined;
     }
-  }, [initialImages, isInitialised]);
 
-  const onChange = useCallback((imageList: ImageListType) => {
-    setImage(() => imageList);
+    const imagePath = getImagePath(imageFile);
+    const response = await fetch(imagePath);
+    const blob = await response.blob();
+    const file = new File([blob], imageFile.fileName, { type: imageFile.mimeType });
+    const imageTypeObj: ImageType = {
+      dataUrl: URL.createObjectURL(file),
+      file,
+      name: imageFile.fileName,
+      id: imageFile.id,
+    };
+
+    return imageTypeObj;
   }, []);
 
   useEffect(() => {
-    if (onCustomChange) {
-      onCustomChange(image);
+    if (!file && !isInitialised && valueMetadata) {
+      getImageFile(valueMetadata).then((imageFile) => {
+        if (imageFile) {
+          setFile(imageFile.file);
+          setInitialised(true);
+          setImages([imageFile]);
+        }
+      });
     }
-  }, [image, onCustomChange]);
+  }, [getImageFile, isInitialised, file, valueMetadata]);
+
+  const onChange = useCallback((imageList: ImageListType) => {
+    setImages(imageList);
+    const imageFile = imageList.at(0);
+
+    setFile(imageFile?.file);
+  }, []);
+
+  useEffect(() => {
+    onCustomChange?.(file);
+  }, [file, onCustomChange]);
 
   return (
     <div {...rest} className={["bp-image_selector", className ?? ""].join(" ")}>
-      <ImageUploading value={image} onChange={onChange} maxNumber={1} dataURLKey="dataUrl">
+      <ImageUploading value={images} onChange={onChange} maxNumber={1} dataURLKey="dataUrl">
         {({ imageList, onImageUpload, onImageRemoveAll, onImageUpdate, onImageRemove, isDragging, dragProps }) => {
           const imageUrl = imageList.length > 0 ? imageList[0].dataUrl : undefined;
 
@@ -50,18 +82,6 @@ export default function ImageSelector(props: ImageSelectorProps) {
                   <FaUpload /> <span className="ms-1">{uploadButtonText ?? "Upload image"}</span>
                 </Button>
                 {helpText && <span className="bp-image_selector__upload_box__controls__help_text">{helpText} </span>}
-
-                {/* &nbsp; */}
-                {/* <button onClick={onImageRemoveAll}>Remove all images</button> */}
-                {/* {imageList.map((image, index) => (
-                <div key={index} className="image-item">
-                  <img src={image["data_url"]} alt="" width="100" />
-                  <div className="image-item__btn-wrapper">
-                    <button onClick={() => onImageUpdate(index)}>Update</button>
-                    <button onClick={() => onImageRemove(index)}>Remove</button>
-                  </div>
-                </div>
-              ))} */}
               </div>
               <div className={["bp-image_selector__upload_box__preview", imageUrl ? "+image-selected" : ""].join(" ")}>
                 {imageUrl && <img className="bp-image_selector__upload_box__preview__image" src={imageUrl} alt="preview" onClick={() => onImageUpdate(0)} {...dragProps} />}

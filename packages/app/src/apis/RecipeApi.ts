@@ -37,13 +37,13 @@ export const RecipeApi = rootApi.injectEndpoints({
       IRecipe,
       {
         id: string;
-        dto: IWriteRecipeDto;
+        formData: FormData;
       }
     >({
-      query: ({ dto, id }) => ({
+      query: ({ formData, id }) => ({
         url: `/meal-plan/recipes/${id}`,
         method: "PUT",
-        body: dto,
+        body: formData,
       }),
 
       invalidatesTags: (_result, _error, { id }) => [{ type: "Recipe", id }, { type: "Recipe", id: "LIST" }, { type: "Cuisine" }, { type: "RecipeTag" }, { type: "RecipeIngredient" }],

@@ -4,6 +4,7 @@ import Select, { SelectMethods, SelectProps, SelectState } from "react-dropdown-
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Form from "react-bootstrap/Form";
+import { forwardRef } from "react";
 
 export type Option = { id: string; name: string };
 export type SelectAdditionalMethods<T> = {
@@ -44,8 +45,10 @@ export type SelectInputProps<T extends object> = Omit<SelectProps<Option>, "opti
     additionalMethods: SelectAdditionalMethods<T>;
   }) => JSX.Element;
   searchFn?: (rendererProps: SelectRendererProps<T>) => Option[];
+  ref?: React.Ref<HTMLInputElement>;
 };
-export default function SelectInput<T extends object>(props: SelectInputProps<T>) {
+
+const SelectInput = forwardRef<HTMLInputElement, SelectInputProps<any>>((props, ref) => {
   const {
     list,
     idSelector,
@@ -91,7 +94,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
   );
 
   const addOption = useCallback(
-    (item: T) => {
+    (item: any) => {
       const newOption = { id: idSelector(item), name: nameSelector(item) };
       setOptions((prevOptions) => {
         const existingOption = prevOptions.find((option) => option.id === newOption.id);
@@ -105,7 +108,7 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
   );
 
   const removeOption = useCallback(
-    (item: T) => {
+    (item: any) => {
       const id = idSelector(item);
       setOptions((prevOptions) => {
         const newOptions = prevOptions.filter((option) => option.id !== id);
@@ -166,7 +169,8 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
 
   return (
     <Form.Group className="bp-select">
-      <Select
+      <input type="hidden" ref={ref} value={selectedOptions.map((option) => option.id)} />
+      <Select<Option>
         {...rest}
         {...(customDropdownRender ? { dropdownRenderer } : {})}
         {...(customItemRenderer ? { itemRenderer } : {})}
@@ -178,8 +182,11 @@ export default function SelectInput<T extends object>(props: SelectInputProps<T>
         onChange={onChange}
         labelField="name"
         valueField="id"
+        additionalProps={{}}
       />
       <span className={["bp-select__error_message", Boolean(error) ? "+visible" : ""].join(" ")}>{error}</span>
     </Form.Group>
   );
-}
+}) as <T extends object>(props: SelectInputProps<T> & { ref?: React.Ref<HTMLInputElement> }) => JSX.Element;
+
+export default SelectInput;

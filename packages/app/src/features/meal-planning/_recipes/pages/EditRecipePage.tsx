@@ -38,7 +38,7 @@ export default function EditRecipePage() {
   }, [isUpdateSuccess, navigate]);
 
   const handleUpdateRecipeSubmission = useCallback(
-    async (dto: IWriteRecipeDto) => {
+    async (dto: IWriteRecipeDto, formData: FormData) => {
       if (!id) {
         console.error("No ID provided for recipe update");
         return false;
@@ -46,7 +46,7 @@ export default function EditRecipePage() {
       console.log("Updating recipe with ID:", id, "and DTO:", dto);
       setItem(dto as IRecipe);
       try {
-        await updateRecipe({ id, dto }).unwrap();
+        await updateRecipe({ id, formData }).unwrap();
         return true;
       } catch (error) {
         console.error("Error updating recipe:", error);

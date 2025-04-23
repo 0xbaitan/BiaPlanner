@@ -14,13 +14,13 @@ export interface IRecipeIngredient extends IBaseEntity {
 }
 
 export const WriteRecipeIngredientDtoSchema = z.object({
-  title: z.string().min(1, { message: "Ingredient title is required" }),
+  title: z.coerce.string().min(1, { message: "Ingredient title is required" }),
   productCategories: z.array(ReadEntityDtoSchema).min(1, {
     message: "Ingredient must map to at least one product category",
   }),
-  measurement: z.object(CookingMeasurementSchema),
-  recipeId: z.string().optional(),
-  id: z.string().optional(),
+  measurement: z.object(CookingMeasurementSchema).passthrough(),
+  recipeId: z.coerce.string().optional(),
+  id: z.coerce.string().optional(),
 });
 export type IWriteRecipeIngredientDto = z.infer<typeof WriteRecipeIngredientDtoSchema>;
 

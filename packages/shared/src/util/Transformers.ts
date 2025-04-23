@@ -60,3 +60,29 @@ export function transform(params: TransformFnParams, transformFn: (value: unknow
   const { value } = params;
   return transformFn(value);
 }
+
+export function transformFlatObjectToJson(object: Record<string, unknown>): object {
+  const transformedObject: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(object)) {
+    const keys = key.split(".");
+    let currentLevel = transformedObject;
+
+    for (let i = 0; i < keys.length; i++) {
+      const subKey = keys[i];
+
+      if (i === keys.length - 1) {
+        // Assign the value at the deepest level
+        currentLevel[subKey] = value;
+      } else {
+        // Create nested objects if they don't exist
+        if (!currentLevel[subKey] || typeof currentLevel[subKey] !== "object") {
+          currentLevel[subKey] = {};
+        }
+        currentLevel = currentLevel[subKey] as Record<string, unknown>;
+      }
+    }
+  }
+
+  return transformedObject;
+}

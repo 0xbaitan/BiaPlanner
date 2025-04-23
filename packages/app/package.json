@@ -31,6 +31,7 @@
     "fuzzysearch": "^1.0.3",
     "multiselect-react-dropdown": "^2.0.25",
     "nestjs-paginate": "^11.1.1",
+    "object-to-formdata": "^4.5.1",
     "path-browserify": "^1.0.1",
     "qs": "^6.14.0",
     "react": "^18.2.0",
@@ -66,7 +67,8 @@
     "use-session-storage-state": "^19.0.1",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zod-form-data": "^2.0.7"
   },
   "optionalDependencies": {
     "sass-embedded": "^1.70.0"

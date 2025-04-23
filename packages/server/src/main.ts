@@ -12,6 +12,7 @@ import { AuthenticationService } from './features/user-info/authentication/authe
 import { JwtGuard } from './features/user-info/authentication/jwt.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ValidationExceptionFilter } from './features/errors/validation-error.filter';
+import { ZodValidationPipe } from 'nestjs-zod';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {

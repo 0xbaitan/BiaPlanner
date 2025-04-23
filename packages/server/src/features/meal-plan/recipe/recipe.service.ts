@@ -30,7 +30,8 @@ export class RecipeService {
   }
 
   async createRecipe(dto: IWriteRecipeDto): Promise<IRecipe> {
-    const recipe = this.recipeRepository.create(dto);
+    const { file, ...rest } = dto;
+    const recipe = this.recipeRepository.create(rest as IRecipe);
     return this.recipeRepository.save(recipe);
   }
 
@@ -51,7 +52,7 @@ export class RecipeService {
     if (tags && tags.length > 0) {
       await this.recipeTagHelperService.updateExistingRecipeTags(id, tags);
     }
-    await this.recipeRepository.update(id, rest);
+    await this.recipeRepository.update(id, rest as IRecipe);
     const savedRecipe = await this.recipeRepository.findOne({
       where: { id },
       relations: ['cuisine', 'ingredients', 'tags'],

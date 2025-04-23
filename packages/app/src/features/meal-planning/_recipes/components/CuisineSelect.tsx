@@ -1,7 +1,7 @@
+import FilterSelect, { FilterSelectProps } from "@/components/forms/FilterSelect";
 import InputLabel, { InputLabelProps } from "@/components/forms/InputLabel";
 import { useEffect, useMemo, useState } from "react";
 
-import FilterSelect from "@/components/forms/FilterSelect";
 import Form from "react-bootstrap/esm/Form";
 import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { ICuisine } from "@biaplanner/shared";
@@ -13,7 +13,7 @@ export type CuisineSelectProps = {
   onChange: (cuisine: ICuisine) => void;
   error?: string;
   inputLabelProps?: Omit<InputLabelProps, "children">;
-} & Omit<FormSelectProps, "value" | "onChange" | "defaultValue">;
+} & Omit<FilterSelectProps<ICuisine>, "list" | "idSelector" | "nameSelector" | "selectedValues" | "onChange">;
 
 export default function CuisineSelect(props: CuisineSelectProps) {
   const { onChange, defaultValue, inputLabelProps, error } = props;

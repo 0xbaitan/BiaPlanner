@@ -18,6 +18,7 @@ import React from "react";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
+import { serialize } from "object-to-formdata";
 import { useDeleteImageMutation } from "@/apis/FilesApi";
 import useGetImageFile from "@/hooks/useImageFile";
 import { useNavigate } from "react-router-dom";
@@ -26,50 +27,60 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
   initialValue?: IRecipe;
-  onSubmit: (dto: IWriteRecipeDto) => Promise<boolean>;
+  onSubmit: (dto: IWriteRecipeDto, data: FormData) => Promise<boolean>;
   type: "create" | "update";
   disableSubmit?: boolean;
 };
 
-function convertRecipeToDto(recipe?: IRecipe): IWriteRecipeDto {
+function convertToFormData(data: IWriteRecipeDto): FormData {
+  const serializedData = serialize(data, { indices: true, nullsAsUndefineds: true, allowEmptyArrays: true, dotsForObjectNotation: true });
+  return serializedData;
+}
+
+function getDefaultValues(recipe: IRecipe | undefined): IWriteRecipeDto {
   if (!recipe) {
     return {
       title: "",
-      difficultyLevel: DifficultyLevels.EASY,
-      cuisine: { id: "1" },
-      prepTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
-      cookingTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
-      tags: [],
-      ingredients: [],
       description: "",
       instructions: "",
-      coverImageId: undefined,
+      prepTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+      cookingTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+      file: undefined,
+
+      difficultyLevel: DifficultyLevels.EASY,
+      cuisine: { id: "" },
+      tags: [],
+      ingredients: [],
     };
   }
-
-  return {
+  const defaultValues: IWriteRecipeDto = {
     title: recipe.title,
-    difficultyLevel: recipe.difficultyLevel ?? DifficultyLevels.EASY,
-    cuisine: {
-      id: recipe.cuisine?.id,
-    },
-    ingredients:
-      recipe.ingredients?.map((ingredient) => ({
-        id: ingredient.id,
-        title: ingredient.title || "", // Ensure title is a string
-        measurement: ingredient.measurement || { magnitude: 0, unit: Weights.GRAM }, // Provide a default measurement
-        productCategories: ingredient.productCategories?.map((category) => ({ id: category.id })) || [],
-      })) || [],
-
-    prepTime: recipe.prepTime,
-    cookingTime: recipe.cookingTime,
-    tags: recipe.tags?.map((tag) => ({ id: tag.id })) || [],
     description: recipe.description,
     instructions: recipe.instructions,
-    coverImageId: recipe.coverImageId,
-  };
-}
+    prepTime: recipe.prepTime,
+    cookingTime: recipe.cookingTime,
 
+    difficultyLevel: recipe.difficultyLevel as DifficultyLevels,
+    cuisine: {
+      id: recipe.cuisine.id,
+    },
+    tags:
+      recipe.tags?.map((tag) => ({
+        id: tag.id,
+      })) ?? [],
+
+    ingredients: recipe.ingredients.map((ingredient) => ({
+      title: ingredient.title || "", // Ensure title is always a string
+      productCategories: ingredient.productCategories.map((category) => ({
+        id: category.id,
+      })),
+      measurement: ingredient.measurement || { magnitude: 0, unit: Weights.GRAM }, // Provide default measurement
+      id: ingredient.id,
+      recipeId: ingredient.recipeId,
+    })),
+  };
+  return defaultValues;
+}
 const MemoizedTextInput = React.memo(TextInput);
 
 const MemoizedIngredientList = React.memo(IngredientList);
@@ -82,11 +93,8 @@ const MemoizedCuisineSelect = React.memo(CuisineSelect);
 
 export default function RecipeForm(props: RecipeFormProps) {
   const { initialValue, onSubmit, type, disableSubmit } = props;
-  const transformedInitialValue = useMemo(() => convertRecipeToDto(initialValue), [initialValue]);
-  const [recipeImageRaw, setRecipeImageRaw] = React.useState<ImageListType>();
-
-  const uploadImage = useUploadImageFile();
-  const [deleteImageFile] = useDeleteImageMutation();
+  const transformedInitialValue = useMemo(() => getDefaultValues(initialValue), [initialValue]);
+  const [coverImageFile, setCoverImageFile] = React.useState<File | undefined>(undefined);
   const navigate = useNavigate();
   const methods = useForm<IWriteRecipeDto>({
     defaultValues: transformedInitialValue,
@@ -96,37 +104,32 @@ export default function RecipeForm(props: RecipeFormProps) {
   const { handleSubmit, reset, setValue, watch, formState } = methods;
 
   useEffect(() => {
-    if (initialValue) {
+    if (!!initialValue) {
       reset(initialValue);
     }
   }, [initialValue, reset]);
 
-  const handleFormSubmit = useCallback(async () => {
-    const data = methods.getValues();
-    let imageId: string | undefined = undefined;
-    if (recipeImageRaw && recipeImageRaw.length > 0 && recipeImageRaw[0].file) {
-      const fileMetadata = await uploadImage(recipeImageRaw[0].file);
-      imageId = data.coverImageId = fileMetadata.id;
-      alert("Image uploaded successfully");
-    }
-    const isSuccess = await onSubmit(data);
-    if (!isSuccess) {
-      console.error("Error submitting form");
-      if (imageId) {
-        await deleteImageFile(imageId);
-      }
-    }
-  }, [methods, recipeImageRaw, onSubmit, uploadImage, deleteImageFile]);
+  const handleFormSubmit = useCallback(
+    async (values: IWriteRecipeDto) => {
+      const formData = convertToFormData({ ...values, file: coverImageFile });
+      return onSubmit(values, formData);
+
+      // console.log(coverImageFile?.name);
+      // console.log("Form data:", data);
+      // console.log("Form data (serialized):", formData);
+      // alert("Form data (serialized): " + JSON.stringify(data));
+      // alert("Form data: " + JSON.stringify(data));
+      // alert("Form data (serialized): " + JSON.stringify(transformedInitialValue));
+    },
+    [coverImageFile, onSubmit]
+  );
 
   const handleImageChange = useCallback(
-    (imageList: ImageListType) => {
-      if (imageList.length > 0) {
-        setRecipeImageRaw(imageList);
-      } else {
-        setRecipeImageRaw(undefined);
-      }
+    (file: File | undefined) => {
+      setValue("file", file);
+      setCoverImageFile(file);
     },
-    [setRecipeImageRaw]
+    [setValue]
   );
 
   return (
@@ -149,17 +152,9 @@ export default function RecipeForm(props: RecipeFormProps) {
           <DualPaneForm.Panel>
             <DualPaneForm.Panel.Pane md={4}>
               <Heading level={Heading.Level.H2}>General Information</Heading>
-              <MemoizedImageSelector onChange={handleImageChange} helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
+              <MemoizedImageSelector value={coverImageFile} valueMetadata={initialValue?.coverImage} onChange={handleImageChange} helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px." />
               <div className="bp-recipe_form__general_info">
-                <MemoizedTextInput
-                  label="Recipe title"
-                  name="title"
-                  value={watch("title")}
-                  inputLabelProps={{ required: true }}
-                  onChange={(e) => setValue("title", e.target.value)}
-                  placeholder="Enter recipe title"
-                  error={formState.errors?.title?.message}
-                />
+                <MemoizedTextInput {...methods.register("title")} label="Recipe title" name="title" inputLabelProps={{ required: true }} placeholder="Enter recipe title" error={formState.errors?.title?.message} />
                 <MemoizedDifficultyLevelSelect
                   onChange={(value) => {
                     setValue("difficultyLevel", value);

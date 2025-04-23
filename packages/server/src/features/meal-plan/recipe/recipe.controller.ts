@@ -7,9 +7,17 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
-import { WriteRecipeDto } from '@biaplanner/shared';
+import { IWriteRecipeDto, transform, WriteRecipeDto } from '@biaplanner/shared';
+import ZodValidationPipe, { ZodParsePipe } from '@/util/zod-validation.pipe';
+import { FormDataRequest } from 'nestjs-form-data';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+const WriteRecipeValidationPipe = new ZodParsePipe(WriteRecipeDto.schema, true);
 
 @Controller('/meal-plan/recipes')
 export class RecipeController {
@@ -28,12 +36,26 @@ export class RecipeController {
   }
 
   @Post()
+  @FormDataRequest({
+    cleanupAfterSuccessHandle: true,
+  })
   async createRecipe(@Body() dto: WriteRecipeDto) {
     return this.recipeService.createRecipe(dto);
   }
 
   @Put('/:id')
-  async updateRecipe(@Param('id') id: string, @Body() dto: WriteRecipeDto) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads/images',
+    }),
+  )
+  async updateRecipe(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body(WriteRecipeValidationPipe) dto: IWriteRecipeDto,
+  ) {
+    console.log('updateRecipe', dto);
+    return;
     return this.recipeService.updateRecipe(id, dto);
   }
 

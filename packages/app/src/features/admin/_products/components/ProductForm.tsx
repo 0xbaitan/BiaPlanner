@@ -234,8 +234,8 @@ function RequiredDetails(
       <ImageSelector
         className="bp-product_form__img_selector"
         helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px."
-        onChange={(imageList: ImageListType) => {
-          setCoverImage(imageList[0]?.file ?? null);
+        onChange={(file: File | undefined) => {
+          setCoverImage(file ?? null);
         }}
       />
       <Form.Group>

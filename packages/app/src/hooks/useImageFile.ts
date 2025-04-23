@@ -8,9 +8,9 @@ import { useCallback } from "react";
 
 export default function useGetImageFile() {
   const getImageFile = useCallback(
-    async (imageFile: IFile | undefined, cb: (im: ImageListType) => void) => {
+    async (imageFile: IFile | undefined) => {
       if (!imageFile) {
-        return cb([]);
+        return undefined;
       }
 
       const imagePath = getImagePath(imageFile);
@@ -25,7 +25,7 @@ export default function useGetImageFile() {
           id: imageFile.id,
         },
       ];
-      return cb(imageList);
+      return imageList;
     },
 
     []

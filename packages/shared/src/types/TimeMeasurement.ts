@@ -7,10 +7,10 @@ export type TimeMeasurement = {
 };
 
 export const SegmentedTimeSchema = z.object({
-  days: z.number().min(0).max(7),
-  hours: z.number().min(0).max(23),
-  minutes: z.number().min(0).max(59),
-  seconds: z.number().min(0).max(59),
+  days: z.coerce.number().min(0).max(7),
+  hours: z.coerce.number().min(0).max(23),
+  minutes: z.coerce.number().min(0).max(59),
+  seconds: z.coerce.number().min(0).max(59),
 });
 
 export type SegmentedTime = z.infer<typeof SegmentedTimeSchema>;
