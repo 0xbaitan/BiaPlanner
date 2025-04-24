@@ -15,6 +15,7 @@ import IngredientList from "./IngredientList";
 import InputLabel from "@/components/forms/InputLabel";
 import { MdCancel } from "react-icons/md";
 import React from "react";
+import RecipeDirectionList from "./RecipeDirectionList";
 import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
@@ -51,6 +52,7 @@ function getDefaultValues(recipe: IRecipe | undefined): IWriteRecipeDto {
       cuisine: { id: "" },
       tags: [],
       ingredients: [],
+      directions: [],
     };
   }
   const defaultValues: IWriteRecipeDto = {
@@ -78,6 +80,12 @@ function getDefaultValues(recipe: IRecipe | undefined): IWriteRecipeDto {
       id: ingredient.id,
       recipeId: ingredient.recipeId,
     })),
+    file: undefined,
+    directions:
+      recipe.directions?.map((direction) => ({
+        order: direction.order,
+        text: direction.text,
+      })) ?? [],
   };
   return defaultValues;
 }
@@ -209,6 +217,8 @@ export default function RecipeForm(props: RecipeFormProps) {
                 placeholder="Enter recipe instructions"
                 error={formState.errors?.instructions?.message}
               />
+
+              <RecipeDirectionList directions={watch("directions")} />
             </DualPaneForm.Panel.Pane>
           </DualPaneForm.Panel>
         </DualPaneForm>

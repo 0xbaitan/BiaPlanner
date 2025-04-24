@@ -16,6 +16,7 @@ import {
   DifficultyLevels,
   ICuisine,
   IRecipe,
+  IRecipeDirection,
   IRecipeIngredient,
   IRecipeTag,
   SegmentedTime,
@@ -156,4 +157,10 @@ export class RecipeEntity implements IRecipe {
     nullable: true,
   })
   coverImageId?: string;
+
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  directions?: IRecipeDirection[];
 }

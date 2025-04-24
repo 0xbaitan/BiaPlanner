@@ -6,6 +6,7 @@ import { IRecipe, IWriteRecipeDto } from '@biaplanner/shared';
 import { RecipeIngredientHelperService } from './recipe-ingredient/recipe-ingredient-helper.service';
 import { RecipeTagHelperService } from './recipe-tag/recipe-tag-helper.service';
 import { ManageRecipeImagesService } from './manage-recipe-images.service';
+import { DeepPartial } from 'utility-types';
 
 @Injectable()
 export class RecipeService {
@@ -34,7 +35,7 @@ export class RecipeService {
 
   async createRecipe(dto: IWriteRecipeDto): Promise<IRecipe> {
     const { file, ...rest } = dto;
-    const recipe = this.recipeRepository.create(rest as IRecipe);
+    const recipe = this.recipeRepository.create(rest as DeepPartial<IRecipe>);
     return this.recipeRepository.save(recipe);
   }
 
@@ -59,7 +60,7 @@ export class RecipeService {
     if (tags && tags.length > 0) {
       await this.recipeTagHelperService.updateExistingRecipeTags(id, tags);
     }
-    await this.recipeRepository.update(id, rest as IRecipe);
+    await this.recipeRepository.update(id, rest as DeepPartial<IRecipe>);
     const savedRecipe = await this.recipeRepository.findOne({
       where: { id },
       relations: ['cuisine', 'ingredients', 'tags'],

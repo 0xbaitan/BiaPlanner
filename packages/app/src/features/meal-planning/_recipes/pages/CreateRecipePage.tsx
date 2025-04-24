@@ -8,14 +8,14 @@ import { useCreateRecipeMutation } from "@/apis/RecipeApi";
 export default function CreateRecipePage() {
   const [createRecipeMutation, { isLoading, isError, isSuccess }] = useCreateRecipeMutation();
 
-  const { setItem } = useDefaultStatusToast<IRecipe>({
+  const { setItem } = useDefaultStatusToast<IWriteRecipeDto>({
     action: Action.CREATE,
     entityIdentifier: (entity) => entity.title,
     idPrefix: "recipes",
     isError,
     isLoading,
     isSuccess,
-    idSelector: (entity) => entity?.id ?? "new",
+    idSelector: (entity) => "new",
     toastProps: {
       autoClose: 5000,
     },
@@ -28,7 +28,7 @@ export default function CreateRecipePage() {
 
   const handleCreateRecipeSubmission = async (dto: IWriteRecipeDto) => {
     console.log("Creating recipe with DTO:", dto);
-    setItem(dto as IRecipe);
+    setItem(dto);
     try {
       await createRecipeMutation(dto).unwrap();
       return true;

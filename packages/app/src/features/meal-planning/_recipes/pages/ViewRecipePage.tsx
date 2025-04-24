@@ -182,6 +182,13 @@ export default function ViewRecipePage() {
           </div>
           <div className="bp-recipe_view__ingredients_directions__container__directions">
             <Heading level={Heading.Level.H2}>Directions</Heading>
+            <ol className="bp-recipe_view__ingredients_directions__container__directions__list">
+              {recipe.directions?.map((direction, index) => (
+                <li key={index} className="bp-recipe_view__ingredients_directions__container__directions__list__item">
+                  <div>{direction.text}</div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </div>

@@ -13,8 +13,8 @@ export default function EditRecipePage() {
   const { data: recipe, isLoading: isReadLoading, isError: isReadError } = useGetRecipeQuery(String(id));
   const [updateRecipe, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading: isUpdateLoading }] = useUpdateRecipeMutation();
   const navigate = useNavigate();
-  const { setItem } = useDefaultStatusToast<IRecipe>({
-    idSelector: (entity) => entity.id,
+  const { setItem } = useDefaultStatusToast<IWriteRecipeDto>({
+    idSelector: (entity) => "N/A",
     action: Action.UPDATE,
     entityIdentifier: (entity) => entity.title,
     isSuccess: isUpdateSuccess,
@@ -44,7 +44,7 @@ export default function EditRecipePage() {
         return false;
       }
       console.log("Updating recipe with ID:", id, "and DTO:", dto);
-      setItem(dto as IRecipe);
+      setItem(dto);
       try {
         await updateRecipe({ id, formData }).unwrap();
         return true;

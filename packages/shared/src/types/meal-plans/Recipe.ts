@@ -1,6 +1,7 @@
 import { DifficultyLevels, Time } from "../units";
 import { IBaseEntity, IReadEntityDto, ReadEntityDtoSchema } from "../BaseEntity";
 import { IFile, ImageTypeExtendedListSchema } from "../File";
+import { IRecipeDirection, RecipeDirectionSchema } from "./RecipeDirection";
 import { IRecipeIngredient, IWriteRecipeIngredientDto } from "./RecipeIngredient";
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsPositive, IsString, Validate } from "class-validator";
 import { IsStringArrayConstraint, toBoolean, toNumber, toString, toStringArray, transform, trimString } from "../../util";
@@ -32,6 +33,7 @@ export interface IRecipe extends IBaseEntity {
   notes?: string;
   source?: string;
   tags?: IRecipeTag[];
+  directions?: IRecipeDirection[];
 }
 
 export enum RecipeSortBy {
@@ -72,6 +74,8 @@ export const WriteRecipeValidationSchema = zfd.formData({
   tags: zfd.repeatable(z.array(zfd.json(z.object({ id: z.coerce.string() }))).min(1, { message: "At least one tag is required" })),
 
   file: zfd.file(z.instanceof(File).refine((file) => file.size > 0, "File required")).optional(),
+
+  directions: zfd.repeatable(z.array(zfd.json(RecipeDirectionSchema)).min(1, { message: "At least one direction is required" })),
 });
 
 export type IWriteRecipeDto = z.infer<typeof WriteRecipeValidationSchema>;
