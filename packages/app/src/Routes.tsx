@@ -10,7 +10,6 @@ import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/
 import AdminCuisinesPage from "./features/recipe-management/_cuisines/pages/AdminCuisinesPage";
 import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
 import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
-import AdminRecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/AdminRecipeTagsPage";
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
@@ -25,6 +24,7 @@ import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansP
 import PantryPage from "./features/pantry-management/_inventory/pages/PantryPage";
 import ProtectedPagesContainer from "./components/layouts/ProtectedPagesContainer";
 import PublicPagesContainer from "./components/layouts/PublicPagesContainer";
+import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/RecipeTagsPage";
 import RecipesListPage from "./features/recipe-management/_recipes/pages/RecipesListPage";
 import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
@@ -120,9 +120,9 @@ export default function Routes() {
 
           <Route path={RoutePaths.CUISINES_EDIT} element={<AdminUpdateCuisinePage />} />
 
-          <Route path={RoutePaths.RECIPE_TAGS} element={<AdminRecipeTagsPage />} />
+          <Route path={RoutePaths.RECIPE_TAGS} element={<RecipeTagsPage />} />
           <Route path={RoutePaths.RECIPE_TAGS_CREATE} element={<AdminCreateRecipeTagPage />} />
-          <Route path={RoutePaths.RECIPE_TAGS_VIEW} element={<AdminRecipeTagsPage />} />
+          <Route path={RoutePaths.RECIPE_TAGS_VIEW} element={<RecipeTagsPage />} />
           <Route path={RoutePaths.RECIPE_TAGS_EDIT} element={<AdminUpdateRecipeTagPage />} />
           <Route path={RoutePaths.SHOPPING_LISTS} element={<ShoppingListsPage />} />
 
