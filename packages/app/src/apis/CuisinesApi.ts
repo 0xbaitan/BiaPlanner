@@ -1,5 +1,6 @@
-import { ICreateCuisineDto, ICuisine, IUpdateCuisineDto } from "@biaplanner/shared";
+import { ICreateCuisineDto, ICuisine, IQueryCuisineParamsDto, IQueryCuisineResultsDto, IUpdateCuisineDto, Paginated } from "@biaplanner/shared";
 
+import qs from "qs";
 import { rootApi } from ".";
 
 export const cuisinesApi = rootApi.injectEndpoints({
@@ -51,10 +52,29 @@ export const cuisinesApi = rootApi.injectEndpoints({
         { type: "Cuisine", id: "LIST" },
       ],
     }),
+
+    searchCuisines: build.query<Paginated<IQueryCuisineResultsDto>, IQueryCuisineParamsDto>({
+      query: (query) => ({
+        url: `/query/cuisines?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Cuisine" as const, id })), { type: "Cuisine", id: "LIST" }] : [{ type: "Cuisine", id: "LIST" }]),
+    }),
   }),
 });
 
-export const { useGetCuisinesQuery, useLazyGetCuisinesQuery, useGetCuisineQuery, useCreateCuisineMutation, useUpdateCuisineMutation, useDeleteCuisineMutation } = cuisinesApi;
+export const {
+  useGetCuisinesQuery,
+  useLazyGetCuisinesQuery,
+  useGetCuisineQuery,
+  useCreateCuisineMutation,
+  useUpdateCuisineMutation,
+  useDeleteCuisineMutation,
+
+  useSearchCuisinesQuery,
+  useLazySearchCuisinesQuery,
+} = cuisinesApi;
+
 export const useCuisinesPrefetch = () => {
   const prefetch = cuisinesApi.usePrefetch("getCuisines" as const, { force: true, ifOlderThan: 0 });
 

@@ -19,7 +19,9 @@ export default function RecipeTagsPage() {
 
   const { recipeTagsQuery } = useRecipeTagsCrudListState();
   const { setSearch, setPage, setLimit, setSortBy } = useRecipeTagsCrudListActions();
-
+  const {
+    recipeTagsQuery: { search },
+  } = useRecipeTagsCrudListState();
   const { data: results, isError } = useSearchRecipeTagsQuery(recipeTagsQuery, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
@@ -56,7 +58,7 @@ export default function RecipeTagsPage() {
       />
 
       <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="recipe tags" searchTermUsed={searchTermUsed} />}
+        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="recipe tags" searchTermUsed={search} />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
             {totalItems === 0 || isError ? <NoResultsFound title="Oops! No recipe tags found" description="Try searching with different keywords or check the spelling." /> : recipeTagsTable}
