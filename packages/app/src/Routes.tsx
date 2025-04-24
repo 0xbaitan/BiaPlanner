@@ -23,12 +23,12 @@ import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateReci
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import EditRecipePage from "./features/meal-planning/_recipes/pages/EditRecipePage";
 import HomePage from "@/pages/HomePage";
-import InventoryPage from "./features/pantry-management/_inventory/pages/InventoryPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlanningPagesContainer from "./features/meal-planning/components/MealPlanningPagesContainer";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryInventoryPagesContainer from "./features/pantry-management/components/PantryInventoryPagesContainer";
+import PantryPage from "./features/pantry-management/_inventory/pages/PantryPage";
 import RecipesListPage from "./features/meal-planning/_recipes/pages/RecipesListPage";
 import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import ShoppingListPagesContainer from "./features/shopping-lists/components/ShoppingListPagesContainer";
@@ -48,7 +48,7 @@ export default function Routes() {
         </Route>
 
         <Route path="/pantry" element={<PantryInventoryPagesContainer />}>
-          <Route path="inventory" element={<InventoryPage />} />
+          <Route path={PantryPage.path} element={<PantryPage />} />
           <Route path="inventory/add-item" element={<AddPantryItemPage />} />
           <Route path="inventory/add-item/manual" element={<AddPantryItemManuallyPage />} />
         </Route>
@@ -92,10 +92,10 @@ export default function Routes() {
           <Route path="meal-plans/create" element={<CreateMealPlanPage />} />
         </Route>
 
-        <Route path="/shopping-lists" element={<ShoppingListPagesContainer />}>
-          <Route path="" element={<ShoppingListsPage />} />
-          <Route path="create" element={<CreateShoppingListPage />} />
-          <Route path="mark-shopping-done/:id" element={<MarkShoppingDonePage />} />
+        <Route path={ShoppingListPagesContainer.path} element={<ShoppingListPagesContainer />}>
+          <Route path={ShoppingListsPage.relativeToContainerPath} element={<ShoppingListsPage />} />
+          <Route path={CreateShoppingListPage.relativeToContainerPath} element={<CreateShoppingListPage />} />
+          <Route path={MarkShoppingDonePage.relativeToContainerPath} element={<MarkShoppingDonePage />} />
         </Route>
       </RoutingTable>
     </Router>

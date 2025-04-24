@@ -2,7 +2,7 @@ import BasicLayout from "@/layouts/BasicLayout";
 import { Outlet } from "react-router-dom";
 import Protected from "@/features/authentication/components/Protected";
 
-export default function ShoppingListPagesContainer() {
+function ShoppingListPagesContainer() {
   return (
     <Protected>
       <BasicLayout>
@@ -13,3 +13,7 @@ export default function ShoppingListPagesContainer() {
     </Protected>
   );
 }
+
+ShoppingListPagesContainer.path = "/shopping-lists/";
+
+export default ShoppingListPagesContainer;

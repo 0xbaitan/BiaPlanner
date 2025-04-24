@@ -1,11 +1,12 @@
 import Button from "react-bootstrap/esm/Button";
 import Heading from "@/components/Heading";
+import ShoppingListPagesContainer from "../components/ShoppingListPagesContainer";
 import ShoppingListTable from "../components/ShoppingListTable";
 import { useGetConcreteRecipesQuery } from "@/apis/ConcreteRecipeApi";
 import { useGetShoppingListsQuery } from "@/apis/ShoppingListsApi";
 import { useNavigate } from "react-router-dom";
 
-export default function ShoppingListsPage() {
+function ShoppingListsPage() {
   const navigate = useNavigate();
   const { data: shoppingLists, isLoading, isError, isSuccess } = useGetShoppingListsQuery();
 
@@ -20,3 +21,7 @@ export default function ShoppingListsPage() {
     </div>
   );
 }
+ShoppingListsPage.relativeToContainerPath = "";
+ShoppingListsPage.path = ShoppingListPagesContainer.path.concat(ShoppingListsPage.relativeToContainerPath);
+
+export default ShoppingListsPage;

@@ -1,9 +1,11 @@
 import "./styles/SideNavigationBar.scss";
 
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar";
 
-import { Link } from "react-router-dom";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
+import PantryPage from "@/features/pantry-management/_inventory/pages/PantryPage";
+import ShoppingListsPage from "@/features/shopping-lists/pages/ShoppingListsPage";
 
 export default function SideNavigationBar() {
   return (
@@ -33,11 +35,7 @@ export default function SideNavigationBar() {
         }}
       >
         <MenuItem>Dashboard</MenuItem>
-        <SubMenu title="Pantry" label="Pantry" className="+primary">
-          <MenuItem>
-            <Link to={"/pantry/inventory"}>Inventory</Link>
-          </MenuItem>
-        </SubMenu>
+        <PantryMenu />
         <SubMenu title="Meal Planning" label="Meal Planning" className="+primary">
           <MenuItem>
             <Link to={"/meal-planning/meal-plans"}>Meal Plans</Link>
@@ -46,9 +44,7 @@ export default function SideNavigationBar() {
             <Link to={"/meal-planning/recipes"}>Recipes</Link>
           </MenuItem>
         </SubMenu>
-        <MenuItem>
-          <Link to="/shopping-lists">Shopping Lists </Link>
-        </MenuItem>
+        <ShoppingListMenu />
         <SubMenu title="Admin" label="Admin" className="+primary">
           <MenuItem>
             <Link to={"/admin/brands"}>Brands</Link>
@@ -66,12 +62,64 @@ export default function SideNavigationBar() {
             <Link to={"/admin/recipe-tags"}>Recipe Tags</Link>
           </MenuItem>
         </SubMenu>
-        <MenuItem>Community </MenuItem>
-        <MenuItem>Settings</MenuItem>
+
+        <SettingsMenu />
         <MenuItem>
           <LogoutButton />
         </MenuItem>
       </Menu>
     </Sidebar>
+  );
+}
+
+function SettingsMenu() {
+  const navigate = useNavigate();
+  return (
+    <SubMenu label="Settings" className="+primary">
+      <MenuItem>Account</MenuItem>
+      <MenuItem>Privacy</MenuItem>
+      <MenuItem>Security</MenuItem>
+    </SubMenu>
+  );
+}
+
+function PantryMenu() {
+  const navigate = useNavigate();
+  return (
+    <MenuItem className="+primary" onClick={() => navigate(PantryPage.path)}>
+      Pantry
+    </MenuItem>
+  );
+}
+
+function MealPlansMenu() {
+  const navigate = useNavigate();
+
+  return (
+    <MenuItem className="+primary" onClick={() => navigate("/meal-planning/meal-plans")}>
+      Meal Plans
+    </MenuItem>
+  );
+}
+
+function RecipeManagementMenu() {
+  const navigate = useNavigate();
+
+  return (
+    <SubMenu label="Recipe Management" className="+primary">
+      <MenuItem onClick={() => navigate("/meal-planning/recipes")}>Recipes</MenuItem>
+      <MenuItem onClick={() => navigate("/meal-planning/recipe-tags")}>Recipe Tags</MenuItem>
+      <MenuItem onClick={() => navigate("/meal-planning/cuisines")}>Cuisines</MenuItem>
+    </SubMenu>
+  );
+}
+
+function ShoppingListMenu() {
+  const navigate = useNavigate();
+
+  return (
+    <MenuItem className="+primary" onClick={() => navigate(ShoppingListsPage.path)}>
+      Shopping Lists
+    </MenuItem>
   );
 }

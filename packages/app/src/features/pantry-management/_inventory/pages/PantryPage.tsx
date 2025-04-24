@@ -3,7 +3,7 @@ import PantryItemsTable from "../components/PantryItemsTable";
 import { useGetPantryItemsQuery } from "@/apis/PantryItemsApi";
 import { useNavigate } from "react-router-dom";
 
-export default function InventoryPage() {
+function PantryPage() {
   const { data: pantryItems, isError } = useGetPantryItemsQuery({});
   if (isError || !pantryItems) return <div>Failed to fetch pantry items</div>;
   return (
@@ -20,3 +20,7 @@ function NavigateToAddItemPageButton() {
   const navigate = useNavigate();
   return <Button onClick={() => navigate("/pantry/inventory/add-item")}>Add New Item</Button>;
 }
+
+PantryPage.path = "/pantry/inventory";
+
+export default PantryPage;
