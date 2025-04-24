@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { QueryRecipeTagController } from './query-recipe-tag.controller';
+import { QueryRecipeTagService } from './query-recipe-tag.service';
 import { RecipeTagController } from './recipe-tag.controller';
 import { RecipeTagEntity } from './recipe-tag.entity';
 import { RecipeTagHelperService } from './recipe-tag-helper.service';
@@ -7,8 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([RecipeTagEntity])],
-  controllers: [RecipeTagController],
-  providers: [RecipeTagService, RecipeTagHelperService],
+  controllers: [RecipeTagController, QueryRecipeTagController],
+  providers: [RecipeTagService, RecipeTagHelperService, QueryRecipeTagService],
   exports: [RecipeTagService, RecipeTagHelperService],
 })
 export class RecipeTagModule {}

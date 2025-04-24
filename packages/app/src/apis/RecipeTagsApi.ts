@@ -1,5 +1,6 @@
-import { ICreateRecipeTagDto, IRecipeTag, IUpdateRecipeTagDto } from "@biaplanner/shared";
+import { ICreateRecipeTagDto, IQueryRecipeTagDto, IQueryRecipeTagItemDto, IRecipeTag, IUpdateRecipeTagDto, Paginated } from "@biaplanner/shared";
 
+import qs from "qs";
 import { rootApi } from ".";
 
 const recipeTagsApi = rootApi.injectEndpoints({
@@ -51,7 +52,25 @@ const recipeTagsApi = rootApi.injectEndpoints({
         { type: "RecipeTag", id: "LIST" },
       ],
     }),
+
+    searchRecipeTags: build.query<Paginated<IQueryRecipeTagItemDto>, IQueryRecipeTagDto>({
+      query: (query) => ({
+        url: `/query/recipe-tags?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.items.filter((tag) => tag.id != null).map((tag) => ({ id: tag.id as string | number, type: "RecipeTag" as const })), { type: "RecipeTag", id: "LIST" }] : [{ type: "RecipeTag", id: "LIST" }]),
+    }),
   }),
 });
 
-export const { useGetRecipeTagsQuery, useLazyGetRecipeTagsQuery, useGetRecipeTagQuery, useCreateRecipeTagMutation, useUpdateRecipeTagMutation, useDeleteRecipeTagMutation } = recipeTagsApi;
+export const {
+  useGetRecipeTagsQuery,
+  useLazyGetRecipeTagsQuery,
+  useGetRecipeTagQuery,
+  useCreateRecipeTagMutation,
+  useUpdateRecipeTagMutation,
+  useDeleteRecipeTagMutation,
+
+  useSearchRecipeTagsQuery,
+  useLazySearchRecipeTagsQuery,
+} = recipeTagsApi;

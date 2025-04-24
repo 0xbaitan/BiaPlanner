@@ -1,14 +1,15 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { IQueryRecipeTagItemDto, IRecipeTag } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { IRecipeTag } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type RecipeTagsTableProps = {
-  data: IRecipeTag[];
+  data: IQueryRecipeTagItemDto[];
 };
 
 export default function RecipeTagsTable(props: RecipeTagsTableProps) {
@@ -17,29 +18,28 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
 
   const [deleteRecipeTag, { isSuccess, isError, isLoading }] = useDeleteRecipeTagMutation();
 
-  const { setItem } = useDefaultStatusToast<IRecipeTag>({
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "delete-recipe-tag",
+    successMessage: "Recipe tag deleted successfully",
+    errorMessage: "Failed to delete recipe tag",
+    loadingMessage: "Deleting recipe tag...",
     isSuccess,
     isError,
     isLoading,
-    idPrefix: "recipe-tag",
-    idSelector: (entity) => entity.id,
-    toastProps: {
-      autoClose: 5000,
-    },
-    action: Action.DELETE,
-    entityIdentifier: (entity) => entity.name,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IRecipeTag>({
+  const { notify: notifyDeletion } = useDeletionToast<IQueryRecipeTagItemDto>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
-      setItem(item);
-      await deleteRecipeTag(item.id);
+      if (!!item.id) {
+        notify();
+        await deleteRecipeTag(item.id);
+      }
     },
   });
 
   return (
-    <TabbedViewsTable<IRecipeTag>
+    <TabbedViewsTable<IQueryRecipeTagItemDto>
       data={data}
       views={[
         {
@@ -56,7 +56,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
             },
             {
               header: "Recipe Count",
-              accessorFn: (row) => row.recipes?.length ?? 0,
+              accessorFn: (row) => row.recipeCount,
               accessorKey: "recipe",
             },
           ],

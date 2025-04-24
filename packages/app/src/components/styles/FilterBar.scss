@@ -5,6 +5,14 @@
   padding: 1rem;
   justify-content: space-between;
   width: 100%;
+
+  &:has(> :only-child):has(.bp-filter_bar__sort_area) {
+    justify-content: flex-end;
+  }
+
+  &:has(> :only-child):has(.bp-filter_bar__filter_area) {
+    justify-content: flex-start;
+  }
 }
 
 .bp-filter_bar__prominent_checkbox {
