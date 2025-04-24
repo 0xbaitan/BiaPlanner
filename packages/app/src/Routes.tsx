@@ -17,6 +17,7 @@ import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBran
 import AdminUpdateCuisinePage from "./features/admin/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
 import AdminUpdateRecipeTagPage from "./features/admin/_recipe-tags/pages/AdminUpdateRecipeTagPage";
+import AuthenticationPagesContainer from "./features/authentication/components/AuthenticationPagesContainer";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/meal-planning/_recipes/pages/CreateRecipePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
@@ -41,15 +42,10 @@ export default function Routes() {
     <Router>
       <RoutingTable>
         <Route path="/" index element={<HomePage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route
-          path="/login"
-          element={
-            // <RedirectWhenAuthenticated>
-            <LoginPage />
-            // </RedirectWhenAuthenticated>
-          }
-        />
+        <Route path="/auth" element={<AuthenticationPagesContainer />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<SignUpPage />} />
+        </Route>
 
         <Route path="/pantry" element={<PantryInventoryPagesContainer />}>
           <Route path="inventory" element={<InventoryPage />} />

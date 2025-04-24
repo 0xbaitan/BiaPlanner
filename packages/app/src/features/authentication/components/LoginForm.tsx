@@ -1,14 +1,15 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { ILoginUserDto, IRefreshJWTObject } from "@biaplanner/shared";
 import { ZodType, z } from "zod";
+import { useCallback, useEffect } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
-import { useCallback } from "react";
+import { ILoginUserDto } from "@biaplanner/shared";
+import { toast } from "react-toastify";
+import { useAuthenticationActions } from "../reducers/AuthenticationReducer";
+import { useAuthenticationHookCallbacks } from "../hooks";
 import { useLoginUserMutation } from "@/apis/AuthenticationApi";
 import { useNavigate } from "react-router-dom";
-import useSessionStorageState from "use-session-storage-state";
-import { useSetAcessTokenObject } from "../hooks/useAuthenticationState";
 import useValidationErrors from "@/features/authentication/hooks/useValidationErrors";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -50,10 +51,11 @@ export default function LoginForm(props: LoginFormProps) {
     },
     resolver: zodResolver(LoginFormValidationSchema),
   });
-  const [, setRefreshTokenObj] = useSessionStorageState<IRefreshJWTObject>("refreshTokenObj");
 
-  const setAccessToken = useSetAcessTokenObject();
-  const [loginUser, { isError, error }] = useLoginUserMutation();
+  const { navigateToLoginPage, navigateToHomePage } = useAuthenticationHookCallbacks();
+
+  const { setAuthenticationState } = useAuthenticationActions();
+  const [loginUser, { isError, error, isSuccess, isLoading, data: loginData }] = useLoginUserMutation();
   const validationErrorsResponse = useValidationErrors(isError, error);
   const {
     formState: { errors },
@@ -63,19 +65,34 @@ export default function LoginForm(props: LoginFormProps) {
   const navigate = useNavigate();
   const userDoesNotExistMessage = validationErrorsResponse?.containsConstraint("login", "userExists") ? "User of this email/username does not exist" : undefined;
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(`You have successfully logged in as ${loginData?.user?.username}`);
+    } else if (isLoading) {
+      toast.info("Logging in...");
+    } else if (isError) {
+      if (validationErrorsResponse?.containsConstraint("login", "userExists")) {
+        toast.error("User of this email/username does not exist");
+      } else if (validationErrorsResponse?.containsConstraint("login", "password")) {
+        toast.error("Invalid password");
+      } else {
+        toast.error("Login failed");
+      }
+    }
+  }, [isError, isSuccess, isLoading, validationErrorsResponse, loginData]);
+
   const onSubmit = useCallback(
     async (data: LoginFormData) => {
-      const { accessTokenObj, refreshTokenObj } = await loginUser(data).unwrap();
-      if (accessTokenObj) {
-        setAccessToken(accessTokenObj);
-
-        if (process.env.NODE_ENV === "development") {
-          setRefreshTokenObj(refreshTokenObj);
-        }
-        navigate("/");
+      const { accessTokenObj, refreshTokenObj, user } = await loginUser(data).unwrap();
+      if (accessTokenObj && refreshTokenObj && user) {
+        setAuthenticationState(accessTokenObj, refreshTokenObj, user);
+        navigateToHomePage();
+      } else {
+        setAuthenticationState(undefined, undefined, undefined);
+        navigateToLoginPage();
       }
     },
-    [loginUser, setAccessToken, navigate, setRefreshTokenObj]
+    [loginUser, setAuthenticationState, navigateToHomePage, navigateToLoginPage]
   );
 
   return (

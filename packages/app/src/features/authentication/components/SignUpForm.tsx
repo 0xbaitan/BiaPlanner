@@ -26,9 +26,8 @@ export const SignUpFormValidationSchema: ZodType<SignUpFormData> = z
       .string()
       .min(1, { message: "Username is required" })
       .regex(/^[a-zA-Z][a-zA-Z0-9._-]{1,18}$/, {
-        message:
-          "Username must start with a letter and can contain only \
-        alphabets, numbers, dashes, periods and underscores",
+        message: `Username must start with a letter and can contain only 
+        alphabets, numbers, dashes, periods and underscores`,
       })
       .min(3, { message: "Username must be at least 3 characters long" })
       .max(20, { message: "Username must be at most 20 characters long" }),

@@ -13,6 +13,7 @@ export interface IUser extends IBaseEntity {
   phoneEntries?: IPhoneEntry[];
   pantryItems?: IPantryItem[];
   products?: IProduct[];
+  isAdmin?: boolean;
 }
 
 export interface ICreateUserDto {
@@ -22,6 +23,7 @@ export interface ICreateUserDto {
   dateOfBirth: string;
   email: string;
   password: string;
+  isAdmin?: boolean;
 }
 export interface IUpdateUserDto {
   firstName?: string;
@@ -30,6 +32,7 @@ export interface IUpdateUserDto {
   dateOfBirth?: string;
   email?: string;
   password?: string;
+  isAdmin?: boolean;
 }
 
 export interface ILoginUserDto {

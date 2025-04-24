@@ -13,7 +13,7 @@ export const authenticationApi = rootApi.injectEndpoints({
       invalidatesTags: ["User", "PhoneEntry", "Brand", "Product", "ProductCategory", "Reminder", "Cuisine", "Recipe", "RecipeTag"],
     }),
 
-    loginUser: build.mutation<{ accessTokenObj: IAccessJWTObject; refreshTokenObj: IRefreshJWTObject }, ILoginUserDto>({
+    loginUser: build.mutation<{ accessTokenObj: IAccessJWTObject; refreshTokenObj: IRefreshJWTObject; user: IUser }, ILoginUserDto>({
       query: (dto) => ({
         url: `/auth/login`,
         method: "POST",

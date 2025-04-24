@@ -72,4 +72,7 @@ export class UserEntity implements IUser {
     nullable: true,
   })
   deletedAt?: string;
+
+  @Column({ default: false })
+  isAdmin: boolean;
 }

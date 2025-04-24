@@ -34,6 +34,7 @@ export class AppController {
   ): Promise<{
     accessTokenObj: IAccessJWTObject;
     refreshTokenObj: IRefreshJWTObject;
+    user: IUser;
   }> {
     console.log('Logging in user:', user);
     const { accessTokenObj, refreshTokenObj } =
@@ -45,7 +46,7 @@ export class AppController {
       domain:
         process.env.NODE_ENV === 'production' ? 'biaplanner.com' : 'localhost',
     });
-    return { accessTokenObj, refreshTokenObj };
+    return { accessTokenObj, refreshTokenObj, user };
   }
 
   @Post('/auth/logout')

@@ -1,7 +1,10 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 
+import { all } from "redux-saga/effects";
 import authenticationReducer from "@/features/authentication/reducers/AuthenticationReducer";
+import authenticationSaga from "@/features/authentication/reducers/AuthenticationSaga";
+import createSagaMiddleware from "redux-saga";
 import mealPlanningReducer from "@/features/meal-planning/reducers";
 import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
@@ -23,12 +26,18 @@ const rootReducer = combineReducers({
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(rootApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(rootApi.middleware).concat(sagaMiddleware),
 });
 
+function* rootSaga() {
+  yield all([authenticationSaga()]);
+}
+
+sagaMiddleware.run(rootSaga);
 export default store;
 export type StoreState = ReturnType<typeof store.getState>;
 

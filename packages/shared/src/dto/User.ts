@@ -7,6 +7,7 @@ export class CreateUserDto implements ICreateUserDto {
   lastName: string;
   password: string;
   username: string;
+  isAdmin?: boolean | undefined;
 }
 
 export class UpdateUserDto implements IUpdateUserDto {
@@ -16,6 +17,7 @@ export class UpdateUserDto implements IUpdateUserDto {
   lastName?: string | undefined;
   password?: string | undefined;
   username?: string | undefined;
+  isAdmin?: boolean | undefined;
 }
 
 export class LoginUserDto implements ILoginUserDto {
