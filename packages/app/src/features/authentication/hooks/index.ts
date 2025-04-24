@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { RoutePaths } from "@/Routes";
+import { useAuthenticationState } from "../reducers/AuthenticationReducer";
 
 export * from "./useValidationErrors";
 
@@ -8,10 +9,12 @@ export function useAuthenticationHookCallbacks() {
   const navigateToLoginPage = useNavigateToLoginPage();
   const navigateToHomePage = useNavigateToHomePage();
   const navigateToRegisterPage = useNavigateToRegisterPage();
+  const isAdminLoggedIn = useIsAdminLoggedIn();
   return {
     navigateToLoginPage,
     navigateToHomePage,
     navigateToRegisterPage,
+    isAdminLoggedIn,
   };
 }
 export function useNavigateToLoginPage() {
@@ -45,4 +48,9 @@ export function useNavigateToRegisterPage() {
     });
   };
   return navigateToRegisterPage;
+}
+
+export function useIsAdminLoggedIn() {
+  const { user } = useAuthenticationState();
+  return user?.isAdmin;
 }

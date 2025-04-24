@@ -11,7 +11,7 @@ import { IconType } from "react-icons";
 import Button from "react-bootstrap/esm/Button";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-
+import "../styles/TabbedViewsTable.scss";
 export type TabbedViewsTableActionType = "update" | "delete" | "view" | string;
 export type TabbedViewsTableAction<T> = {
   type: TabbedViewsTableActionType;
@@ -47,9 +47,9 @@ function ViewTabs<T>(props: ViewTabsProps<T>) {
   const { views, tabsProps, activeKey, handleTabChange } = props;
 
   return (
-    <Tabs {...tabsProps} defaultActiveKey={activeKey} onSelect={(key) => key && handleTabChange(key)}>
+    <Tabs {...tabsProps} defaultActiveKey={activeKey} onSelect={(key) => key && handleTabChange(key)} className="bp-tabbed_views_table__tabs">
       {views.map((view) => {
-        return <Tab key={`tab-${view.viewKey}`} eventKey={view.viewKey} title={view.viewTitle} />;
+        return <Tab key={`tab-${view.viewKey}`} eventKey={view.viewKey} title={view.viewTitle} className="bp-tabbed_views_table__tab" />;
       })}
     </Tabs>
   );
@@ -72,28 +72,29 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
       const kebabContent = actions?.map((action) => {
         const ActionIcon = action.icon;
         return (
-          <Dropdown.Item key={action.label} onClick={() => action.onClick(row)}>
-            <div>
-              <ActionIcon className="me-2" />
-              {action.label}
+          <Dropdown.Item key={action.label} onClick={() => action.onClick(row)} className="bp-tabbed_views_table__dropdown_item">
+            <div className="bp-tabbed_views_table__dropdown_item_content">
+              <ActionIcon className="bp-tabbed_views_table__action_icon me-2" />
+              <span className="bp-tabbed_views_table__action_label">{action.label}</span>
             </div>
           </Dropdown.Item>
         );
       });
 
-      const kebabMenu = <Dropdown>{kebabContent}</Dropdown>;
+      const kebabMenu = <Dropdown className="bp-tabbed_views_table__kebab_dropdown">{kebabContent}</Dropdown>;
       const kebabMenuPopup = (
         <Popup
+          className="bp-tabbed_views_table__popup"
           trigger={
-            <Button size="sm">
-              <KebabIcon size={"16px"} />
-            </Button>
+            <button className="bp-tabbed_views_table__kebab_button">
+              <KebabIcon size={"16px"} className="bp-tabbed_views_table__kebab_icon" />
+            </button>
           }
           position="right center"
           on="click"
           closeOnDocumentClick={true}
         >
-          {kebabMenu}
+          <div className="bp-tabbed_views_table__kebab_menu">{kebabMenu}</div>
         </Popup>
       );
 
@@ -205,23 +206,27 @@ export default function TabbedViewsTable<T>(props: TabbedViewsTableProps<T>) {
   }, [views, activeKey, handleTabChange]);
 
   return (
-    <div>
+    <div className="bp-tabbed_views_table__container">
       {tabs}
-      <BootstrapTable striped bordered hover responsive>
-        <thead>
+      <BootstrapTable className="bp-tabbed_views_table__table" bordered hover responsive>
+        <thead className="bp-tabbed_views_table__thead">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="bp-tabbed_views_table__header_row">
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</th>
+                <th key={header.id} className="bp-tabbed_views_table__header_cell">
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="bp-tabbed_views_table__tbody">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.id} className="bp-tabbed_views_table__body_row">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                <td key={cell.id} className="bp-tabbed_views_table__body_cell">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
             </tr>
           ))}

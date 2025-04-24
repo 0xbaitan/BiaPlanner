@@ -1,0 +1,154 @@
+.bp-tabbed_views_table__container {
+  width: 100%;
+  margin: 1rem 0;
+  background-color: #f8f9fa; // White background for the table container
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elegance
+  overflow: hidden;
+  padding: 1em;
+}
+
+.bp-tabbed_views_table__tabs {
+  background-color: #f8f9fa; // Light gray background for tabs
+  border-bottom: 1px solid #dee2e6; // Subtle border for separation
+  padding: 0.5rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+
+  .nav-link {
+    color: #495057; // Dark gray text for inactive tabs
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #313131 !important; // Dark border for inactive tabs
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+
+    &:hover {
+      background-color: #e9ecef; // Slight hover effect
+      color: #212529; // Darker text on hover
+    }
+
+    &.active {
+      background-color: $colors-main !important; // Primary color for active tab
+      color: #ffffff !important; // White text for active tab
+      border: 0 !important;
+    }
+
+    &.active:hover {
+      background-color: darken($colors-main, 10%) !important; // Primary color for active tab
+      color: #ffffff !important; // White text for active tab
+    }
+  }
+}
+
+.bp-tabbed_views_table__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #ffffff; // White background for the table
+  border-radius: 8px;
+  overflow: hidden;
+
+  thead {
+    background-color: #f1f3f5; // Light gray background for the header
+    color: #495057; // Dark gray text for the header
+    font-weight: bold;
+    text-align: left;
+
+    th {
+      padding: 1em 0.5rem;
+      font-size: 0.95rem;
+      border-bottom: 2px solid #dee2e6; // Subtle border for separation
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(even) {
+        background-color: #f8f9fa; // Alternating row background
+      }
+
+      &:hover {
+        background-color: #e9ecef; // Highlight row on hover
+      }
+    }
+
+    td {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      color: #495057; // Dark gray text for table cells
+      border-bottom: 1px solid #dee2e6; // Subtle border for separation
+    }
+  }
+}
+
+.bp-tabbed_views_table__thead {
+  th {
+    text-transform: capitalize;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+  }
+}
+
+.bp-tabbed_views_table__body_row {
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #e9ecef; // Highlight row on hover
+  }
+}
+
+.bp-tabbed_views_table__kebab_dropdown {
+  background-color: #ffffff; // White background for dropdown
+  border: 0.5px solid #dee2e6; // Subtle border for dropdown
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elegance
+}
+
+.bp-tabbed_views_table__kebab_button {
+  background-color: transparent;
+  border: none;
+  padding: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e9ecef; // Slight hover effect
+  }
+
+  .bp-tabbed_views_table__kebab_icon {
+    color: #495057; // Dark gray icon color
+  }
+}
+
+.bp-tabbed_views_table__dropdown_item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem;
+  color: #495057; // Dark gray text for dropdown items
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+
+  &:hover {
+    background-color: $colors-main !important; // Primary color on hover
+    color: #ffffff !important; // White text on hover
+  }
+
+  .bp-tabbed_views_table__action_icon {
+    font-size: 0.9rem;
+  }
+
+  .bp-tabbed_views_table__action_label {
+    margin-left: 0.5rem;
+  }
+}
+
+.bp-tabbed_views_table__popup {
+  .bp-tabbed_views_table__kebab_menu {
+    padding: 0.5rem;
+  }
+}

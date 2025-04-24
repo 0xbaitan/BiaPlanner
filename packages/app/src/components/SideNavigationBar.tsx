@@ -4,6 +4,7 @@ import { BiSolidCategory, BiSolidFridge } from "react-icons/bi";
 import { ElementStyles, Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar";
 import { FaBook, FaBowlRice, FaGear, FaKitchenSet, FaShop, FaTags } from "react-icons/fa6";
 import { GiMeal, GiMilkCarton } from "react-icons/gi";
+import { useAuthenticationHookCallbacks, useIsAdminLoggedIn } from "@/features/authentication/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { AiFillProduct } from "react-icons/ai";
@@ -12,6 +13,8 @@ import { IoMdNotifications } from "react-icons/io";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { RoutePaths } from "@/Routes";
+import { useAuthenticationState } from "@/features/authentication/reducers/AuthenticationReducer";
+import { useEffect } from "react";
 
 export default function SideNavigationBar() {
   return (
@@ -115,10 +118,21 @@ function SettingsMenu() {
 }
 
 function PantryMenu() {
+  // const isAdmin = useIsAdminLoggedIn();
+
+  // if (isAdmin) {
+  //   return null;
+  // }
+
   return <NavigationMenuItem label="Pantry" path={RoutePaths.PANTRY} icon={<BiSolidFridge size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
 function MealPlansMenu() {
+  // const isAdmin = useIsAdminLoggedIn();
+
+  // if (isAdmin) {
+  //   return null;
+  // }
   return <NavigationMenuItem label="Meal Plans" path={RoutePaths.MEAL_PLANS} icon={<GiMeal size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
@@ -133,6 +147,11 @@ function RecipeManagementMenu() {
 }
 
 function ShoppingListMenu() {
+  // const isAdmin = useIsAdminLoggedIn();
+
+  // if (isAdmin) {
+  //   return null;
+  // }
   return <NavigationMenuItem label="Shopping Lists" path={RoutePaths.SHOPPING_LISTS} icon={<FaShoppingCart size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
