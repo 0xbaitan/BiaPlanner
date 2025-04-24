@@ -25,7 +25,7 @@ export class FilesController {
   @Post('/')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File): Promise<IFile> {
-    return this.filesService.registerFile(file);
+    return this.filesService.registerNewFile(file, 'files');
   }
 
   @Post('/image')
@@ -48,7 +48,7 @@ export class FilesController {
     )
     file: Express.Multer.File,
   ) {
-    return this.filesService.registerFile(file);
+    return this.filesService.registerNewFile(file, 'images');
   }
 
   @Get('/:id')
@@ -70,6 +70,6 @@ export class FilesController {
 
   @Delete('/:id')
   async deleteFile(@Param('id') id: string): Promise<void> {
-    return this.filesService.deleteFile(id);
+    return this.filesService.unregisterExistingFile(id);
   }
 }

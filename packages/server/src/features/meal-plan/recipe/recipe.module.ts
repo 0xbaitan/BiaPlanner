@@ -1,5 +1,7 @@
 import { ConcretRecipeModule } from './concrete-recipe/concrete-recipe.module';
 import { ConcreteIngredientModule } from './concrete-ingredient/concrete-ingredient.module';
+import { FilesModule } from '@/features/files/files.module';
+import { ManageRecipeImagesService } from './manage-recipe-images.service';
 import { Module } from '@nestjs/common';
 import PantryItemModule from '@/features/pantry/pantry-item/pantry-item.module';
 import { PantryItemPortionModule } from './pantry-item-portion/pantry-item-portion.module';
@@ -23,13 +25,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ConcretRecipeModule,
     PantryItemPortionModule,
     PantryItemModule,
+    FilesModule,
   ],
   controllers: [
     RecipeController,
     RecipeSuggestionsController,
     QueryRecipeController,
   ],
-  providers: [RecipeService, RecipeSuggestionsService, QueryRecipeService],
+  providers: [
+    RecipeService,
+    RecipeSuggestionsService,
+    QueryRecipeService,
+    ManageRecipeImagesService,
+  ],
   exports: [
     RecipeService,
     RecipeIngredientModule,
@@ -38,6 +46,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     PantryItemPortionModule,
     RecipeTagModule,
     RecipeSuggestionsService,
+    ManageRecipeImagesService,
   ],
 })
 export class RecipeModule {}

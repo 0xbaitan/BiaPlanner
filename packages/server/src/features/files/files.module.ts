@@ -19,7 +19,7 @@ import { v6 as uuuidv6 } from 'uuid';
     }),
     MulterModule.register({
       storage: diskStorage({
-        destination: path.resolve('uploads'),
+        destination: path.resolve('/tmp'),
         filename: (_req, file, cb) => {
           const ext = mime.extension(file.mimetype);
           const fileIdentifier = uuuidv6();
@@ -31,6 +31,6 @@ import { v6 as uuuidv6 } from 'uuid';
   ],
   controllers: [FilesController],
   providers: [FilesService],
-  exports: [],
+  exports: [FilesService],
 })
 export class FilesModule {}

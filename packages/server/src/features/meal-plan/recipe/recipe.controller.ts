@@ -5,6 +5,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Put,
   UploadedFile,
@@ -18,6 +19,17 @@ import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 const WriteRecipeValidationPipe = new ZodParsePipe(WriteRecipeDto.schema, true);
+const ImageFileValidationPipe = new ParseFilePipeBuilder()
+  .addFileTypeValidator({
+    fileType: /\/(jpg|jpeg|png|gif|avif)$/,
+  })
+  .addMaxSizeValidator({
+    maxSize: 1024 * 1024, // 1MB
+    message: 'File size must be less than 1MB',
+  })
+  .build({
+    fileIsRequired: false, // Allow the file to be optional
+  });
 
 @Controller('/meal-plan/recipes')
 export class RecipeController {
@@ -46,17 +58,15 @@ export class RecipeController {
   @Put('/:id')
   @UseInterceptors(
     FileInterceptor('file', {
-      dest: 'uploads/images',
+      dest: 'tmp/',
     }),
   )
   async updateRecipe(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
     @Body(WriteRecipeValidationPipe) dto: IWriteRecipeDto,
   ) {
-    console.log('updateRecipe', dto);
-    return;
-    return this.recipeService.updateRecipe(id, dto);
+    return this.recipeService.updateRecipe(id, dto, file);
   }
 
   @Delete('/:id')

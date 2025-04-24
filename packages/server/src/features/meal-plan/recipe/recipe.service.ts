@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { IRecipe, IWriteRecipeDto } from '@biaplanner/shared';
 import { RecipeIngredientHelperService } from './recipe-ingredient/recipe-ingredient-helper.service';
 import { RecipeTagHelperService } from './recipe-tag/recipe-tag-helper.service';
+import { ManageRecipeImagesService } from './manage-recipe-images.service';
 
 @Injectable()
 export class RecipeService {
@@ -15,6 +16,8 @@ export class RecipeService {
     private readonly recipeIngredientHelperService: RecipeIngredientHelperService,
     @Inject(RecipeTagHelperService)
     private readonly recipeTagHelperService: RecipeTagHelperService,
+    @Inject(ManageRecipeImagesService)
+    private readonly manageRecipeImagesService: ManageRecipeImagesService,
   ) {}
 
   async findOne(id: string): Promise<IRecipe> {
@@ -35,7 +38,11 @@ export class RecipeService {
     return this.recipeRepository.save(recipe);
   }
 
-  async updateRecipe(id: string, dto: IWriteRecipeDto): Promise<IRecipe> {
+  async updateRecipe(
+    id: string,
+    dto: IWriteRecipeDto,
+    file: Express.Multer.File,
+  ): Promise<IRecipe> {
     const recipe = await this.recipeRepository.findOne({
       where: { id },
     });
@@ -57,6 +64,9 @@ export class RecipeService {
       where: { id },
       relations: ['cuisine', 'ingredients', 'tags'],
     });
+
+    this.manageRecipeImagesService.manageRecipeCoverImage(id, file);
+
     return savedRecipe;
   }
 
