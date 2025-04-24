@@ -5,7 +5,6 @@ import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducer
 import BrowseProductsOffcanvas from "../components/BrowseProductsOffcanvas";
 import { IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
 import MarkShoppingDoneForm from "../components/MarkShoppingDoneForm";
-import ShoppingListPagesContainer from "../components/ShoppingListPagesContainer";
 import { Status } from "@/hooks/useStatusToast";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -71,6 +70,4 @@ function MarkShoppingDonePage() {
   );
 }
 
-MarkShoppingDonePage.relativeToContainerPath = "mark-shopping-done/:id";
-MarkShoppingDonePage.path = ShoppingListPagesContainer.path.concat(MarkShoppingDonePage.relativeToContainerPath);
 export default MarkShoppingDonePage;

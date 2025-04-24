@@ -1,7 +1,7 @@
 import "../styles/IngredientInput.scss";
 
 import { Weights, getCookingMeasurement } from "@biaplanner/shared";
-import { useRecipeFormActions, useRecipeFormState } from "../../reducers/RecipeFormReducer";
+import { useRecipeFormActions, useRecipeFormState } from "../../../meal-planning/reducers/RecipeFormReducer";
 
 import Form from "react-bootstrap/Form";
 import MeasurementInput from "./MeasurementInput";

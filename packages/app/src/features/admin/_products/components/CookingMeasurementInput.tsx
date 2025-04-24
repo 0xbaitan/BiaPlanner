@@ -4,7 +4,7 @@ import { CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurem
 import React, { useCallback, useEffect, useReducer } from "react";
 
 import Form from "react-bootstrap/Form";
-import MeasurementInput from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import MeasurementInput from "@/features/recipe-management/_recipes/components/MeasurementInput";
 import ScopedMeasurementSelect from "@/features/meal-planning/_meal-plans/components/ScopedMeasurementSelect";
 
 export type CookingMeasurementInputProps = {

@@ -1,6 +1,5 @@
 import Button from "react-bootstrap/esm/Button";
 import Heading from "@/components/Heading";
-import ShoppingListPagesContainer from "../components/ShoppingListPagesContainer";
 import ShoppingListTable from "../components/ShoppingListTable";
 import { useGetConcreteRecipesQuery } from "@/apis/ConcreteRecipeApi";
 import { useGetShoppingListsQuery } from "@/apis/ShoppingListsApi";
@@ -21,7 +20,5 @@ function ShoppingListsPage() {
     </div>
   );
 }
-ShoppingListsPage.relativeToContainerPath = "";
-ShoppingListsPage.path = ShoppingListPagesContainer.path.concat(ShoppingListsPage.relativeToContainerPath);
 
 export default ShoppingListsPage;

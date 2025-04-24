@@ -1,6 +1,6 @@
 import { IWriteRecipeDto, IWriteRecipeIngredientDto, WriteRecipeIngredientDtoSchema } from "@biaplanner/shared";
 import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
-import { useRecipeFormActions, useRecipeFormState } from "../../reducers/RecipeFormReducer";
+import { useRecipeFormActions, useRecipeFormState } from "../../../meal-planning/reducers/RecipeFormReducer";
 
 import Button from "react-bootstrap/Button";
 import IngredientInput from "./IngredientInput";

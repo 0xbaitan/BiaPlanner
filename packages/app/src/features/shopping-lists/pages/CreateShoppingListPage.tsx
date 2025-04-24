@@ -2,7 +2,6 @@ import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import { IShoppingList } from "@biaplanner/shared";
 import ShoppingListForm from "../components/ShoppingListForm";
-import ShoppingListPagesContainer from "../components/ShoppingListPagesContainer";
 import { Status } from "@/hooks/useStatusToast";
 import { useCreateShoppingListMutation } from "@/apis/ShoppingListsApi";
 
@@ -43,6 +42,5 @@ function CreateShoppingListPage() {
 }
 
 CreateShoppingListPage.relativeToContainerPath = "create";
-CreateShoppingListPage.path = ShoppingListPagesContainer.path.concat(CreateShoppingListPage.relativeToContainerPath);
 
 export default CreateShoppingListPage;

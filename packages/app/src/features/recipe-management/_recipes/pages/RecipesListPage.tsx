@@ -1,4 +1,4 @@
-import { setPage, useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
+import { setPage, useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";

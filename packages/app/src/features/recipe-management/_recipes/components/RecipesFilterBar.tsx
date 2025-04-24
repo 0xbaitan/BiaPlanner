@@ -2,7 +2,7 @@ import "../styles/RecipeFilterBar.scss";
 
 import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag, RecipeSortBy } from "@biaplanner/shared";
 import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
-import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reducers/RecipesCrudListReducer";
+import { useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
 
 import FilterBar from "@/components/forms/FilterBar";
 import normaliseEnumKey from "@/util/normaliseEnumKey";

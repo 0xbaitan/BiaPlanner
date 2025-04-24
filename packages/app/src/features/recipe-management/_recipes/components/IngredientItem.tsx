@@ -7,7 +7,7 @@ import { FaTrash } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";
-import { useRecipeFormActions } from "../../reducers/RecipeFormReducer";
+import { useRecipeFormActions } from "../../../meal-planning/reducers/RecipeFormReducer";
 
 type IngredientItemProps = {
   ingredient: IWriteRecipeIngredientDto;

@@ -1,10 +1,12 @@
 import { Outlet } from "react-router-dom";
 import PublicLayout from "@/layouts/PublicLayout";
 
-export default function AuthenticationPagesContainer() {
+export default function ProtectedPagesContainer() {
   return (
     <PublicLayout className="p-4">
-      <Outlet />
+      <div className="p-4">
+        <Outlet />
+      </div>
     </PublicLayout>
   );
 }

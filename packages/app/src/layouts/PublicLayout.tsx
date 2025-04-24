@@ -1,8 +1,8 @@
 import { HTMLAttributes } from "react";
 import { ToastContainer } from "react-toastify";
 
-export type AuthenticationLayoutProps = HTMLAttributes<HTMLDivElement>;
-export default function AuthenticationLayout(props: AuthenticationLayoutProps) {
+export type PublicLayoutProps = HTMLAttributes<HTMLDivElement>;
+export default function PublicLayout(props: PublicLayoutProps) {
   const { children, className, ...rest } = props;
 
   return (

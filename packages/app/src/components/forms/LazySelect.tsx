@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 
 import Form from "react-bootstrap/Form";
 import { ICookingMeasurement } from "@biaplanner/shared";
-import MeasurementInput from "@/features/meal-planning/_recipes/components/MeasurementInput";
+import MeasurementInput from "@/features/recipe-management/_recipes/components/MeasurementInput";
 
 export type LazySelectProps<T extends object> = Omit<SelectInputProps<T>, "list"> & {
   loadList: (searchText: string) => Promise<T[]>;

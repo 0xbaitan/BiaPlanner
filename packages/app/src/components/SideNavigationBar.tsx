@@ -5,6 +5,7 @@ import { Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar
 
 import LogoutButton from "@/features/authentication/components/LogoutButton";
 import PantryPage from "@/features/pantry-management/_inventory/pages/PantryPage";
+import { RoutePaths } from "@/Routes";
 import ShoppingListsPage from "@/features/shopping-lists/pages/ShoppingListsPage";
 
 export default function SideNavigationBar() {
@@ -34,34 +35,11 @@ export default function SideNavigationBar() {
           },
         }}
       >
-        <MenuItem>Dashboard</MenuItem>
         <PantryMenu />
-        <SubMenu title="Meal Planning" label="Meal Planning" className="+primary">
-          <MenuItem>
-            <Link to={"/meal-planning/meal-plans"}>Meal Plans</Link>
-          </MenuItem>
-          <MenuItem>
-            <Link to={"/meal-planning/recipes"}>Recipes</Link>
-          </MenuItem>
-        </SubMenu>
         <ShoppingListMenu />
-        <SubMenu title="Admin" label="Admin" className="+primary">
-          <MenuItem>
-            <Link to={"/admin/brands"}>Brands</Link>
-          </MenuItem>
-          <MenuItem>
-            <Link to={"/admin/products"}>Products</Link>
-          </MenuItem>
-          <MenuItem>
-            <Link to={"/admin/product-categories"}>Product Categories</Link>
-          </MenuItem>
-          <MenuItem>
-            <Link to={"/admin/cuisines"}>Cuisines</Link>
-          </MenuItem>
-          <MenuItem>
-            <Link to={"/admin/recipe-tags"}>Recipe Tags</Link>
-          </MenuItem>
-        </SubMenu>
+        <MealPlansMenu />
+        <ProductCatalogueMenu />
+        <RecipeManagementMenu />
 
         <SettingsMenu />
         <MenuItem>
@@ -72,13 +50,23 @@ export default function SideNavigationBar() {
   );
 }
 
+function ProductCatalogueMenu() {
+  const navigate = useNavigate();
+  return (
+    <SubMenu label="Product Catalogue" className="+primary">
+      <MenuItem onClick={() => navigate(RoutePaths.PRODUCTS)}>Products</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.BRANDS)}>Brands</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.PRODUCT_CATEGORIES)}>Product Categories</MenuItem>
+    </SubMenu>
+  );
+}
+
 function SettingsMenu() {
   const navigate = useNavigate();
   return (
     <SubMenu label="Settings" className="+primary">
-      <MenuItem>Account</MenuItem>
-      <MenuItem>Privacy</MenuItem>
-      <MenuItem>Security</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.SETTINGS_ACCOUNT)}>Account</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.SETTINGS_NOTIFICATIONS)}>Notifications</MenuItem>
     </SubMenu>
   );
 }
@@ -86,7 +74,7 @@ function SettingsMenu() {
 function PantryMenu() {
   const navigate = useNavigate();
   return (
-    <MenuItem className="+primary" onClick={() => navigate(PantryPage.path)}>
+    <MenuItem className="+primary" onClick={() => navigate(RoutePaths.PANTRY)}>
       Pantry
     </MenuItem>
   );
@@ -96,7 +84,7 @@ function MealPlansMenu() {
   const navigate = useNavigate();
 
   return (
-    <MenuItem className="+primary" onClick={() => navigate("/meal-planning/meal-plans")}>
+    <MenuItem className="+primary" onClick={() => navigate(RoutePaths.MEAL_PLANS)}>
       Meal Plans
     </MenuItem>
   );
@@ -106,10 +94,10 @@ function RecipeManagementMenu() {
   const navigate = useNavigate();
 
   return (
-    <SubMenu label="Recipe Management" className="+primary">
-      <MenuItem onClick={() => navigate("/meal-planning/recipes")}>Recipes</MenuItem>
-      <MenuItem onClick={() => navigate("/meal-planning/recipe-tags")}>Recipe Tags</MenuItem>
-      <MenuItem onClick={() => navigate("/meal-planning/cuisines")}>Cuisines</MenuItem>
+    <SubMenu label="Recipe Catalogue" className="+primary">
+      <MenuItem onClick={() => navigate(RoutePaths.RECIPES)}>Recipes</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.CUISINES)}>Cuisines</MenuItem>
+      <MenuItem onClick={() => navigate(RoutePaths.RECIPE_TAGS)}>Recipe Tags</MenuItem>
     </SubMenu>
   );
 }
@@ -118,7 +106,7 @@ function ShoppingListMenu() {
   const navigate = useNavigate();
 
   return (
-    <MenuItem className="+primary" onClick={() => navigate(ShoppingListsPage.path)}>
+    <MenuItem className="+primary" onClick={() => navigate(RoutePaths.SHOPPING_LISTS)}>
       Shopping Lists
     </MenuItem>
   );

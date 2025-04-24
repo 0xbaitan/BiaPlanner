@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { IWriteRecipeDto } from "@biaplanner/shared";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
-import { useRecipeFormActions } from "../../reducers/RecipeFormReducer";
+import { useRecipeFormActions } from "../../../meal-planning/reducers/RecipeFormReducer";
 
 export default function IngredientList() {
   const formMethods = useFormContext<IWriteRecipeDto>();

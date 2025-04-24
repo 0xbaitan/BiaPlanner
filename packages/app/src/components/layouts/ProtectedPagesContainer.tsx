@@ -2,7 +2,7 @@ import BasicLayout from "@/layouts/BasicLayout";
 import { Outlet } from "react-router-dom";
 import Protected from "@/features/authentication/components/Protected";
 
-export default function AdminPagesContainer() {
+export default function ProtectedPagesContainer() {
   return (
     <Protected>
       <BasicLayout>
