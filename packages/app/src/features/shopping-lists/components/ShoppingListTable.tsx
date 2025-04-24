@@ -1,4 +1,5 @@
 import { FaShoppingCart, FaTrash } from "react-icons/fa";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import TabbedViewsTable, { TabbedViewsTableProps } from "@/components/tables/TabbedViewsTable";
 
 import { FaPencil } from "react-icons/fa6";
@@ -56,7 +57,7 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           label: "Mark as done",
           icon: FaShoppingCart,
           onClick(row) {
-            navigate(`./mark-shopping-done/${row.id}`);
+            navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_MARK_DONE, { id: row.id }));
           },
         },
       ]}

@@ -1,6 +1,10 @@
-.bp-sidenavigationbar {
+.bp-sidenavigationbar .pro-sidebar {
   @include typography-mulish-font(1rem);
 
   border-right: 1px solid $colors-silver;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.bp-logout_btn {
+  justify-self: center;
 }

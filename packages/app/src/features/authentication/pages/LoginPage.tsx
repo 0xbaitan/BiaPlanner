@@ -1,17 +1,16 @@
 import LoginForm from "../components/LoginForm";
+import { useAuthenticationHookCallbacks } from "../hooks";
 import { useAuthenticationState } from "../reducers/AuthenticationReducer";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
 export default function LoginPage() {
-  const navigate = useNavigate();
+  const { navigateToHomePage } = useAuthenticationHookCallbacks();
   const { isAuthenticated } = useAuthenticationState();
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/", {
-        replace: true,
-      });
+      navigateToHomePage();
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigateToHomePage]);
   return (
     <div>
       <h1>Login</h1>

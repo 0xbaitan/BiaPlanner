@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { RoutePaths } from "@/Routes";
+
 export * from "./useValidationErrors";
 
 export function useAuthenticationHookCallbacks() {
@@ -16,7 +18,7 @@ export function useNavigateToLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const navigateToLoginPage = () => {
-    navigate("/auth/login", {
+    navigate(RoutePaths.LOGIN, {
       state: {
         from: location.pathname,
       },
@@ -29,7 +31,7 @@ export function useNavigateToLoginPage() {
 export function useNavigateToHomePage() {
   const navigate = useNavigate();
   const navigateToHomePage = () => {
-    navigate("/", {
+    navigate(RoutePaths.MEAL_PLANS, {
       replace: true,
     });
   };
@@ -38,7 +40,7 @@ export function useNavigateToHomePage() {
 export function useNavigateToRegisterPage() {
   const navigate = useNavigate();
   const navigateToRegisterPage = () => {
-    navigate("/auth/register", {
+    navigate(RoutePaths.SIGNUP, {
       replace: true,
     });
   };

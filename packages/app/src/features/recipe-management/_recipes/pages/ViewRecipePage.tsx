@@ -2,6 +2,7 @@ import "../styles/ViewRecipePage.scss";
 
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "react-bootstrap";
@@ -81,11 +82,11 @@ export default function ViewRecipePage() {
       breadcrumbs={[
         {
           label: "Recipes",
-          href: "/meal-planning/recipes",
+          href: RoutePaths.RECIPES,
         },
         {
           label: `${recipe.title}`,
-          href: `/meal-planning/recipes/view/${recipe.id}`,
+          href: fillParametersInPath(RoutePaths.RECIPES_VIEW, { id: recipe.id }),
         },
       ]}
       title={recipe.title}
@@ -94,7 +95,7 @@ export default function ViewRecipePage() {
           <Button
             variant="secondary"
             onClick={() => {
-              navigate(`/meal-planning/recipes/update/${recipe.id}`);
+              navigate(fillParametersInPath(RoutePaths.RECIPES_EDIT, { id: recipe.id }));
             }}
           >
             <FaPencil />
