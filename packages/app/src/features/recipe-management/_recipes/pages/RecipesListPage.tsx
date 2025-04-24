@@ -1,4 +1,4 @@
-import { setPage, useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
+import { useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
@@ -19,7 +19,7 @@ export default function RecipesListPage() {
   const navigate = useNavigate();
 
   const { recipesQuery, view } = useRecipesCrudListState();
-  const { setView, setSearch } = useRecipesCrudListActions();
+  const { setView, setSearch, setPage } = useRecipesCrudListActions();
   const {
     recipesQuery: { limit },
   } = useRecipesCrudListState();
