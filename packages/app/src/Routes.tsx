@@ -2,14 +2,11 @@ import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-ro
 
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
 import AddProductPage from "./features/admin/_products/pages/AddProductPage";
-import AdminBrandsPage from "./features/admin/_brands/pages/AdminBrandsPage";
+import AdminBrandsPage from "./features/admin/_brands/pages/BrandsPage";
 import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBrandPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
-import AdminCuisinesPage from "./features/recipe-management/_cuisines/pages/AdminCuisinesPage";
-import AdminProductCategoriesPage from "./features/admin/_product-categories/pages/AdminProductCategoriesPage";
-import AdminProductsPage from "./features/admin/_products/pages/AdminProductsPage";
 import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
@@ -17,11 +14,14 @@ import AdminUpdateRecipeTagPage from "./features/recipe-management/_recipe-tags/
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
+import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryPage from "./features/pantry-management/_inventory/pages/PantryPage";
+import ProductCategoriesPage from "./features/admin/_product-categories/pages/ProductCategoriesPage";
+import ProductsPage from "./features/admin/_products/pages/ProductsPage";
 import ProtectedPagesContainer from "./components/layouts/ProtectedPagesContainer";
 import PublicPagesContainer from "./components/layouts/PublicPagesContainer";
 import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/RecipeTagsPage";
@@ -114,9 +114,9 @@ export default function Routes() {
           <Route path={RoutePaths.RECIPES_VIEW} element={<ViewRecipePage />} />
           <Route path={RoutePaths.RECIPES_EDIT} element={<EditRecipePage />} />
 
-          <Route path={RoutePaths.CUISINES} element={<AdminCuisinesPage />} />
+          <Route path={RoutePaths.CUISINES} element={<CuisinesPage />} />
           <Route path={RoutePaths.CUISINES_CREATE} element={<AdminCreateCuisinePage />} />
-          <Route path={RoutePaths.CUISINES_VIEW} element={<AdminCuisinesPage />} />
+          <Route path={RoutePaths.CUISINES_VIEW} element={<CuisinesPage />} />
 
           <Route path={RoutePaths.CUISINES_EDIT} element={<AdminUpdateCuisinePage />} />
 
@@ -131,9 +131,9 @@ export default function Routes() {
           <Route path={RoutePaths.SHOPPING_LISTS_EDIT} element={<ShoppingListsPage />} />
           <Route path={RoutePaths.SHOPPING_LISTS_MARK_DONE} element={<MarkShoppingDonePage />} />
 
-          <Route path={RoutePaths.PRODUCTS} element={<AdminProductsPage />} />
+          <Route path={RoutePaths.PRODUCTS} element={<ProductsPage />} />
           <Route path={RoutePaths.PRODUCTS_CREATE} element={<AddProductPage />} />
-          <Route path={RoutePaths.PRODUCTS_VIEW} element={<AdminProductsPage />} />
+          <Route path={RoutePaths.PRODUCTS_VIEW} element={<ProductsPage />} />
           <Route path={RoutePaths.PRODUCTS_EDIT} element={<UpdateProductPage />} />
 
           <Route path={RoutePaths.BRANDS} element={<AdminBrandsPage />} />
@@ -141,9 +141,9 @@ export default function Routes() {
           <Route path={RoutePaths.BRANDS_VIEW} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.BRANDS_EDIT} element={<AdminUpdateBrandPage />} />
 
-          <Route path={RoutePaths.PRODUCT_CATEGORIES} element={<AdminProductCategoriesPage />} />
+          <Route path={RoutePaths.PRODUCT_CATEGORIES} element={<ProductCategoriesPage />} />
           <Route path={RoutePaths.PRODUCT_CATEGORIES_CREATE} element={<AdminCreateProductCategoryPage />} />
-          <Route path={RoutePaths.PRODUCT_CATEGORIES_VIEW} element={<AdminProductCategoriesPage />} />
+          <Route path={RoutePaths.PRODUCT_CATEGORIES_VIEW} element={<ProductCategoriesPage />} />
           <Route path={RoutePaths.PRODUCT_CATEGORIES_EDIT} element={<AdminUpdateProductCategoryPage />} />
 
           <Route path={RoutePaths.SETTINGS_ACCOUNT} element={<AdminBrandsPage />} />
