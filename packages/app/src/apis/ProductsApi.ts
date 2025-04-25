@@ -1,7 +1,6 @@
-import { FuzzyQuery, ICreateProductDto, IProduct, IQueryProductView, IUpdateProductDto, PaginateQuery } from "@biaplanner/shared";
+import { ICreateProductDto, IProduct, IQueryProductParamsDto, IQueryProductResultsDto, IUpdateProductDto, Paginated } from "@biaplanner/shared";
 
-import { DeepPartial } from "react-hook-form";
-import { Paginated } from "nestjs-paginate/lib/paginate";
+import qs from "qs";
 import { rootApi } from ".";
 
 export const productsApi = rootApi.injectEndpoints({
@@ -61,17 +60,12 @@ export const productsApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchProducts: build.query<Paginated<IProduct>, { paginateQuery: Omit<PaginateQuery, "path">; fuzzyQuery?: FuzzyQuery }>({
-      query: ({ paginateQuery, fuzzyQuery }) => {
-        return {
-          url: "/query/products",
-          method: "GET",
-          params: {
-            ...paginateQuery,
-            fuzzy: fuzzyQuery,
-          },
-        };
-      },
+    searchProducts: build.query<Paginated<IQueryProductResultsDto>, IQueryProductParamsDto>({
+      query: (query) => ({
+        url: `/query/products?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
   }),
 });
