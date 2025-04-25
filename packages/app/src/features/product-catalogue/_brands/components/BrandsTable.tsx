@@ -1,22 +1,24 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { IBrand } from "@biaplanner/shared";
+import { IQueryBrandResultsDto } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteBrandMutation } from "@/apis/BrandsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
 
 export type BrandsTableProps = {
-  data: IBrand[];
+  data: IQueryBrandResultsDto[];
 };
 
 export default function BrandsTable(props: BrandsTableProps) {
   const { data } = props;
   const navigate = useNavigate();
+
   const [deleteBrand, { isSuccess, isError, isLoading }] = useDeleteBrandMutation();
 
-  const { setItem } = useDefaultStatusToast<IBrand>({
+  const { setItem } = useDefaultStatusToast<IQueryBrandResultsDto>({
     isSuccess,
     isError,
     isLoading,
@@ -29,7 +31,7 @@ export default function BrandsTable(props: BrandsTableProps) {
     entityIdentifier: (brand) => brand.name,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IBrand>({
+  const { notify: notifyDeletion } = useDeletionToast<IQueryBrandResultsDto>({
     identifierSelector: (brand) => brand.name,
     onConfirm: async (item) => {
       setItem(item);
@@ -38,29 +40,29 @@ export default function BrandsTable(props: BrandsTableProps) {
   });
 
   return (
-    <TabbedViewsTable<IBrand>
+    <TabbedViewsTable<IQueryBrandResultsDto>
       data={data}
       views={[
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["name", "description"],
+          columnAccessorKeys: ["name", "description", "productCount"],
+          default: true,
           columnDefs: [
             {
-              header: "Name",
+              header: "Brand Name",
               accessorFn: (row) => row.name,
-            },
-            {
-              header: "Logo",
-
-              cell: (cell) => {
-                const fileName = cell.row.original.logo?.fileName;
-                return <img src={`http://localhost:4000/uploads/${fileName}`} alt={fileName} style={{ width: 50, height: 50 }} />;
-              },
+              accessorKey: "name",
             },
             {
               header: "Description",
-              accessorFn: (row) => row.description,
+              accessorFn: (row) => row.description ?? "N/A",
+              accessorKey: "description",
+            },
+            {
+              header: "Product Count",
+              accessorFn: (row) => row.productCount ?? 0,
+              accessorKey: "productCount",
             },
           ],
         },
@@ -68,13 +70,12 @@ export default function BrandsTable(props: BrandsTableProps) {
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Update Brand Details",
+          label: "Edit Brand",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.id}`);
+            navigate(fillParametersInPath(RoutePaths.BRANDS_EDIT, { id: row.id }));
           },
         },
-
         {
           icon: FaTrashAlt,
           label: "Delete Brand",
