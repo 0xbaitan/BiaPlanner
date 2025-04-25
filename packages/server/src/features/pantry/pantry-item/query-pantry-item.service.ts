@@ -69,9 +69,8 @@ export class QueryPantryItemService {
     const {
       sortBy,
       search,
-      isExpired,
-      isNonExpirable,
-      isLoose,
+      expiredItemsVisibility,
+      showLooseOnly,
       brandIds,
       productCategoryIds,
       productIds,
@@ -105,19 +104,17 @@ export class QueryPantryItemService {
       );
     }
 
-    // Apply additional filters
-    if (isExpired !== undefined) {
-      qb.andWhere('pantryItem.isExpired = :isExpired', { isExpired });
+    if (expiredItemsVisibility) {
+      if (expiredItemsVisibility === 'SHOW_EXPIRED_ONLY') {
+        qb.andWhere('pantryItem.isExpired = true');
+      } else if (expiredItemsVisibility === 'SHOW_FRESH_ONLY') {
+        qb.andWhere('pantryItem.isExpired = false');
+      }
+      // If expiredItemsVisibility is SHOW_ALL, do not apply any filter
     }
 
-    if (isNonExpirable !== undefined) {
-      qb.andWhere('product.canExpire = :canExpire', {
-        canExpire: !isNonExpirable,
-      });
-    }
-
-    if (isLoose !== undefined) {
-      qb.andWhere('product.isLoose = :isLoose', { isLoose });
+    if (showLooseOnly) {
+      qb.andWhere('product.isLoose = true');
     }
 
     if (brandIds?.length) {

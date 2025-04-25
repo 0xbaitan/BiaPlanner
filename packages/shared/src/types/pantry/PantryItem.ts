@@ -4,6 +4,7 @@ import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
 import { IUser } from "../User";
+import exp from "constants";
 import { z } from "zod";
 
 export interface IPantryItem extends IBaseEntity {
@@ -93,12 +94,17 @@ export enum PantryItemSortBy {
   OLDEST = "OLDEST",
 }
 
+export enum ExpiredItemsVisibility {
+  SHOW_EXPIRED_ONLY = "SHOW_EXPIRED_ONLY",
+  SHOW_FRESH_ONLY = "SHOW_FRESH_ONLY",
+  SHOW_ALL = "SHOW_ALL",
+}
+
 export const QueryPantryItemParamsSchema = FilterParamsSchema.extend({
   search: z.string().optional(),
   sortBy: z.nativeEnum(PantryItemSortBy).optional(),
-  isExpired: z.coerce.boolean().optional(),
-  isNonExpirable: z.coerce.boolean().optional(),
-  isLoose: z.coerce.boolean().optional(),
+  expiredItemsVisibility: z.nativeEnum(ExpiredItemsVisibility).default(ExpiredItemsVisibility.SHOW_ALL).optional(),
+  showLooseOnly: z.boolean().optional(),
   brandIds: z.array(z.string()).optional(),
   productCategoryIds: z.array(z.string()).optional(),
   productIds: z.array(z.string()).optional(),

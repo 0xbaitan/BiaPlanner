@@ -6,6 +6,7 @@ import authenticationReducer from "@/features/authentication/reducers/Authentica
 import authenticationSaga from "@/features/authentication/reducers/AuthenticationSaga";
 import createSagaMiddleware from "redux-saga";
 import mealPlanningReducer from "@/features/meal-planning/reducers";
+import pantryReducer from "@/features/pantry-management/_inventory/reducers";
 import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 import productCatalogueReducer from "@/features/product-catalogue/reducers";
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   shoppingLists: shoppingListsReducer,
   recipeCatalogue: recipeCatalogueReducer,
   productCatalogue: productCatalogueReducer,
+  pantry: pantryReducer,
   [rootApi.reducerPath]: rootApi.reducer,
 });
 
