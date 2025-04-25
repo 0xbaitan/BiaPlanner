@@ -1,5 +1,6 @@
-import { IConcreteRecipe, ICreateConcreteRecipeDto } from "@biaplanner/shared";
+import { IConcreteRecipe, ICreateConcreteRecipeDto, IQueryConcreteRecipeFilterParams, IQueryConcreteRecipeResultsDto, Paginated } from "@biaplanner/shared";
 
+import qs from "qs";
 import { rootApi } from ".";
 
 export const concreteRecipesApi = rootApi.injectEndpoints({
@@ -26,7 +27,26 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
         },
       ],
     }),
+
+    searchConcreteRecipes: build.query<Paginated<IQueryConcreteRecipeResultsDto>, IQueryConcreteRecipeFilterParams>({
+      query: (query) => ({
+        url: `/query/concrete-recipes?${qs.stringify(query, {
+          arrayFormat: "brackets",
+        })}`,
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map(({ concreteRecipeId }) => ({
+                type: "ConcreteRecipe" as const,
+                concreteRecipeId,
+              })),
+              { type: "ConcreteRecipe", id: "LIST" },
+            ]
+          : [{ type: "ConcreteRecipe", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useCreateConcreteRecipeMutation, useGetConcreteRecipesQuery } = concreteRecipesApi;
+export const { useCreateConcreteRecipeMutation, useGetConcreteRecipesQuery, useSearchConcreteRecipesQuery, useLazyGetConcreteRecipesQuery } = concreteRecipesApi;

@@ -3,6 +3,8 @@ import { ConcreteRecipeController } from './concrete-recipe.controller';
 import { ConcreteRecipeEntity } from './concrete-recipe.entity';
 import { ConcreteRecipeService } from './concrete-recipe.service';
 import { Module } from '@nestjs/common';
+import { QueryConcreteRecipeController } from './query-concrete-recipe.controller';
+import { QueryConcreteRecipeService } from './query-concrete-recipe.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -10,8 +12,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forFeature([ConcreteRecipeEntity]),
     ConcreteIngredientModule,
   ],
-  controllers: [ConcreteRecipeController],
-  providers: [ConcreteRecipeService],
+  controllers: [ConcreteRecipeController, QueryConcreteRecipeController],
+  providers: [ConcreteRecipeService, QueryConcreteRecipeService],
   exports: [ConcreteRecipeService],
 })
 export class ConcretRecipeModule {}

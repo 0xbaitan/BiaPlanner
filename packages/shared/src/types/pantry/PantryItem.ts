@@ -3,6 +3,7 @@ import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
 import { IUser } from "../User";
+import { z } from "zod";
 
 export interface IPantryItem extends IBaseEntity {
   createdBy?: IUser;
@@ -67,3 +68,13 @@ export class UpdatePantryItemDto implements IUpdatePantryItemDto {
   isExpired?: boolean;
   totalMeasurements?: CookingMeasurement | undefined;
 }
+
+export const PantryItemSchema = {
+  productId: z.string().optional(),
+  quantity: z.number().min(0, { message: "Quantity must be greater than 0" }),
+  expiryDate: z.string().optional(),
+  bestBeforeDate: z.string().optional(),
+  openedDate: z.string().optional(),
+  manufacturedDate: z.string().optional(),
+  isExpired: z.boolean().optional(),
+};

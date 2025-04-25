@@ -1,7 +1,9 @@
-import { CookingMeasurement } from "../CookingMeasurement";
+import { CookingMeasurement, CookingMeasurementSchema } from "../CookingMeasurement";
+
 import { IBaseEntity } from "../BaseEntity";
 import { IConcreteIngredient } from "./ConcreteIngredient";
 import { IPantryItem } from "../pantry";
+import { z } from "zod";
 
 export interface IPantryItemPortion extends IBaseEntity {
   pantryItemId: string;
@@ -30,3 +32,9 @@ export class CreatePantryItemPortionDto implements ICreatePantryItemPortionDto {
 export class UpdatePantryItemPortionDto implements IUpdatePantryItemPortionDto {
   portion?: CookingMeasurement;
 }
+
+export const PantryItemPortionSchema = {
+  pantryItemId: z.string(),
+  portion: z.object(CookingMeasurementSchema).optional(),
+  concreteIngredientId: z.string().optional(),
+};
