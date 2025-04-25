@@ -20,6 +20,10 @@ export class BrandService {
   public async findBrandById(id: string) {
     const brand = await this.brandRepository.findOneOrFail({
       where: { id },
+      relations: {
+        products: true,
+        logo: true,
+      },
     });
     return brand;
   }

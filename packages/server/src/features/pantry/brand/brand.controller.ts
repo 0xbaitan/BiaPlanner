@@ -37,7 +37,8 @@ export class BrandController {
   }
 
   @Delete('/:id')
-  async deleteBrand(@Param('id') id: string) {
-    return this.brandService.deleteBrand(id);
+  async deleteBrand(@Param('id') id: string): Promise<void> {
+    await this.brandService.deleteBrand(id);
+    return;
   }
 }

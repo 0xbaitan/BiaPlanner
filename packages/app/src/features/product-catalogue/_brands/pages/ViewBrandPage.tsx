@@ -1,14 +1,21 @@
 import "../styles/ViewBrandPage.scss";
 
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useNavigate, useParams } from "react-router-dom";
 
+import Alert from "@/components/Alert";
 import Button from "react-bootstrap/Button";
 import CrudViewPageLayout from "@/components/CrudViewPageLayout";
 import Heading from "@/components/Heading";
+import { IBrand } from "@biaplanner/shared";
+import { getImagePath } from "@/util/imageFunctions";
+import { useCallback } from "react";
+import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useGetBrandQuery } from "@/apis/BrandsApi";
+import { useGetTopBrandedProductsQuery } from "@/apis/ProductsApi";
 
+const TOP_BRANDED_PRODUCTS_LIMIT = 10;
 export default function ViewBrandPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,6 +26,31 @@ export default function ViewBrandPage() {
   } = useGetBrandQuery(String(id), {
     refetchOnMountOrArgChange: true,
   });
+
+  const { data: topBrandedProducts } = useGetTopBrandedProductsQuery(
+    {
+      brandId: String(brand?.id),
+      limit: TOP_BRANDED_PRODUCTS_LIMIT,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+      skip: !brand?.id,
+    }
+  );
+
+  const { notify: notifyDeletion } = useDeletionToast<IBrand>({
+    identifierSelector(item) {
+      return item.name;
+    },
+    onConfirm: async (item) => {
+      console.log(`Delete brand with ID: ${item.id}`);
+      // Add your delete logic here
+    },
+  });
+
+  const handleDeleteBrand = useCallback(() => {
+    brand && notifyDeletion(brand);
+  }, [brand, notifyDeletion]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !brand) return <div>Error loading brand details.</div>;
@@ -40,17 +72,17 @@ export default function ViewBrandPage() {
         <div className="bp-brand_view__actions">
           <Button variant="primary" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_EDIT, { id: brand.id }))}>
             <FaEdit />
-            &ensp;Edit
+            &ensp;Edit brand
           </Button>
-          <Button variant="danger" onClick={() => console.log(`Delete brand with ID: ${brand.id}`)}>
+          <Button variant="danger" onClick={handleDeleteBrand}>
             <FaTrash />
-            &ensp;Delete
+            &ensp;Delete brand
           </Button>
         </div>
       }
     >
       <div className="bp-brand_view__details_container">
-        <div className="bp-brand_view__image_container">{brand.logoId ? <img src={`/files/${brand.logoId}`} alt={brand.name} className="bp-brand_view__image" /> : <div className="bp-brand_view__image_placeholder">No Logo</div>}</div>
+        <div className="bp-brand_view__image_container">{brand.logoId ? <img src={getImagePath(brand.logo)} alt={brand.name} className="bp-brand_view__image" /> : <div className="bp-brand_view__image_placeholder">No Logo</div>}</div>
         <div className="bp-brand_view__info_container">
           <Heading level={Heading.Level.H1} className="bp-brand_view__title">
             About the brand
@@ -59,17 +91,24 @@ export default function ViewBrandPage() {
         </div>
       </div>
       <div className="bp-brand_view__products_container">
-        <Heading level={Heading.Level.H2}>Products</Heading>
-        {brand.products?.length && brand.products.length > 0 ? (
-          <ul className="bp-brand_view__products_list">
+        <Heading level={Heading.Level.H2} className="bp-brand_view__products_heading">
+          Most popular products
+        </Heading>
+        {topBrandedProducts?.length && topBrandedProducts.length > 0 ? (
+          <ol className="bp-brand_view__products_list">
             {brand.products?.map((product) => (
               <li key={product.id} className="bp-brand_view__products_list_item">
-                {product.name}
+                <img src={getImagePath(product.cover)} alt={product.name} className="bp-brand_view__products_list_item_image" />
+                <span className="bp-brand_view__products_list_item_name">{product.name}</span>
+                <Button variant="outline-primary" size="sm" className="bp-brand_view__products_list_item_button" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }))}>
+                  <FaEye />
+                  &ensp;View
+                </Button>
               </li>
             ))}
-          </ul>
+          </ol>
         ) : (
-          <p>No products associated with this brand.</p>
+          <Alert variant="warning" title="No Products Found" message="This brand does not have any associated products." />
         )}
       </div>
     </CrudViewPageLayout>

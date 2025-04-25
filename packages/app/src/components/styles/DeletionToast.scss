@@ -1,0 +1,90 @@
+.bp-deletion-toast__container {
+  padding: 0 !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for elegance */
+  margin: 0 !important;
+}
+#deletion-toast {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.bp-deletion-toast {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  background-color: #fff;
+  margin: 0;
+
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+
+  &__header {
+    background-color: #ffe066; /* Lighter chrome gold background */
+    border-bottom: 1px solid #ffd54f; /* Lighter gold-like border */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 0; /* Removed padding for seamless integration */
+
+    .bp-deletion-toast__title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: $colors-secondary;
+      margin: 0.75rem 1rem; /* Added margin for spacing */
+    }
+
+    .close {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      color: #721c24;
+      cursor: pointer;
+    }
+  }
+
+  &__body {
+    padding: 1rem;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1.05rem 1rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+
+    button {
+      min-width: 70px;
+    }
+  }
+
+  /* Timer bar styling */
+  &__timer {
+    height: 4px;
+    background-color: #ffc107; /* Timer color */
+    animation: timer 5s linear forwards; /* Adjust duration as needed */
+  }
+
+  @keyframes timer {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0;
+    }
+  }
+}
+
+.bp-deletion-toast__icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem; /* Space between icon and text */
+}

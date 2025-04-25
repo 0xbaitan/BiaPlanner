@@ -54,3 +54,9 @@ export const QueryBrandResultsSchema = z.object({
 });
 
 export type IQueryBrandResultsDto = z.infer<typeof QueryBrandResultsSchema>;
+
+export const QueryTopBrandedProductsParamsSchema = z.object({
+  brandId: z.string(),
+  limit: z.coerce.number().optional().default(10),
+});
+export type IQueryTopBrandedProductsParamsDto = z.infer<typeof QueryTopBrandedProductsParamsSchema>;

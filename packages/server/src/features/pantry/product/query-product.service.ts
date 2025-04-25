@@ -6,6 +6,7 @@ import { ProductEntity } from './product.entity';
 import {
   IQueryProductParamsDto,
   IQueryProductResultsDto,
+  IQueryTopBrandedProductsParamsDto,
   QueryProductResultsSchema,
 } from '@biaplanner/shared';
 
@@ -152,5 +153,46 @@ export class QueryProductService {
       rawResults.meta,
       rawResults.links,
     );
+  }
+
+  async queryTopBrandedProducts(params: IQueryTopBrandedProductsParamsDto) {
+    const { brandId, limit = 10 } = params;
+    const qb = this.productRepository.createQueryBuilder('product');
+    qb.select([
+      'product.id as id',
+      'COUNT(DISTINCT pantryItem.id) as distinctPantryItemCount',
+      'COUNT(DISTINCT shoppingItem.id) as distinctShoppingItemCount',
+    ]);
+
+    qb.leftJoin('product.brand', 'brand')
+      .leftJoin('product.pantryItems', 'pantryItem')
+      .leftJoin('product.shoppingItems', 'shoppingItem');
+
+    qb.where('brand.id = :brandId', { brandId });
+
+    qb.groupBy('product.id');
+    qb.orderBy('distinctShoppingItemCount', 'DESC');
+    qb.addOrderBy('distinctPantryItemCount', 'DESC');
+    qb.limit(limit);
+
+    const rawResults = await qb.getRawMany<{
+      id: string;
+      distinctPantryItemCount: number;
+      distinctShoppingItemCount: number;
+    }>();
+
+    const hydratedResults = await Promise.all(
+      rawResults.map((item) => {
+        const product = this.productRepository.findOne({
+          where: { id: item.id },
+          loadEagerRelations: false,
+          relations: {
+            cover: true,
+          },
+        });
+        return product;
+      }),
+    );
+    return hydratedResults;
   }
 }

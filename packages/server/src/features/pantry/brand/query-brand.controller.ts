@@ -21,7 +21,6 @@ export class QueryBrandController {
     private readonly queryBrandService: QueryBrandService,
   ) {}
 
-  @Public()
   @Get()
   async queryBrands(
     @Query(QueryBrandParamsValidationPipe) query: IQueryBrandParamsDto,

@@ -1,0 +1,18 @@
+.bp-alert {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  &__message {
+    margin: 0;
+    color: #555;
+  }
+}
