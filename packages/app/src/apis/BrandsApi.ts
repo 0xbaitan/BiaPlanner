@@ -1,5 +1,6 @@
-import { IBrand, ICreateBrandDto, IUpdateBrandDto } from "@biaplanner/shared";
+import { IBrand, ICreateBrandDto, IQueryBrandParamsDto, IQueryBrandResultsDto, IUpdateBrandDto, Paginated } from "@biaplanner/shared";
 
+import qs from "qs";
 import { rootApi } from ".";
 
 export const brandsApi = rootApi.injectEndpoints({
@@ -45,7 +46,16 @@ export const brandsApi = rootApi.injectEndpoints({
         { type: "Brand", id: "LIST" },
       ],
     }),
+
+    // New searchBrands query
+    searchBrands: build.query<Paginated<IQueryBrandResultsDto>, IQueryBrandParamsDto>({
+      query: (query) => ({
+        url: `/query/brands?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Brand" as const, id })), { type: "Brand", id: "LIST" }] : [{ type: "Brand", id: "LIST" }]),
+    }),
   }),
 });
 
-export const { useGetBrandsQuery, useLazyGetBrandsQuery, useCreateBrandMutation, useGetBrandQuery, useLazyGetBrandQuery, useUpdateBrandMutation, useDeleteBrandMutation } = brandsApi;
+export const { useGetBrandsQuery, useLazyGetBrandsQuery, useCreateBrandMutation, useGetBrandQuery, useLazyGetBrandQuery, useUpdateBrandMutation, useDeleteBrandMutation, useSearchBrandsQuery, useLazySearchBrandsQuery } = brandsApi;

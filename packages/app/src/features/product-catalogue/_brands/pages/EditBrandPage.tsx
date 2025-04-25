@@ -6,7 +6,7 @@ import BrandForm from "../components/BrandForm";
 import { Status } from "@/hooks/useStatusToast";
 import { useParams } from "react-router-dom";
 
-export default function AdminUpdateBrandPage() {
+export default function EditBrandPage() {
   const { id } = useParams();
   const { data: brand } = useGetBrandQuery(String(id));
   const [updateBrand, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading }] = useUpdateBrandMutation();

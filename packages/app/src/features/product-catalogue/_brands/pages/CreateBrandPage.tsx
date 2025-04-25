@@ -6,7 +6,7 @@ import { useErrorToast } from "@/components/toasts/ErrorToast";
 import { useLoadingToast } from "@/components/toasts/LoadingToast";
 import { useSuccessWithRedirectToast } from "@/components/toasts/SuccessWithRedirectToast";
 
-export default function AdminCreateBrandPage() {
+export default function CreateBrandPage() {
   const [createBrand, { isError, isSuccess, isLoading, data: createdBrand, error }] = useCreateBrandMutation();
   const { notify: notifyOnSuccess } = useSuccessWithRedirectToast({
     redirectUrl: "/admin/brands",

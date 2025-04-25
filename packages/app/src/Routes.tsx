@@ -2,19 +2,19 @@ import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-ro
 
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
 import AddProductPage from "./features/admin/_products/pages/AddProductPage";
-import AdminBrandsPage from "./features/admin/_brands/pages/BrandsPage";
-import AdminCreateBrandPage from "./features/admin/_brands/pages/AdminCreateBrandPage";
+import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
-import AdminUpdateBrandPage from "./features/admin/_brands/pages/AdminUpdateBrandPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
 import AdminUpdateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminUpdateRecipeTagPage";
+import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
+import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
@@ -137,9 +137,9 @@ export default function Routes() {
           <Route path={RoutePaths.PRODUCTS_EDIT} element={<UpdateProductPage />} />
 
           <Route path={RoutePaths.BRANDS} element={<AdminBrandsPage />} />
-          <Route path={RoutePaths.BRANDS_CREATE} element={<AdminCreateBrandPage />} />
+          <Route path={RoutePaths.BRANDS_CREATE} element={<CreateBrandPage />} />
           <Route path={RoutePaths.BRANDS_VIEW} element={<AdminBrandsPage />} />
-          <Route path={RoutePaths.BRANDS_EDIT} element={<AdminUpdateBrandPage />} />
+          <Route path={RoutePaths.BRANDS_EDIT} element={<EditBrandPage />} />
 
           <Route path={RoutePaths.PRODUCT_CATEGORIES} element={<ProductCategoriesPage />} />
           <Route path={RoutePaths.PRODUCT_CATEGORIES_CREATE} element={<AdminCreateProductCategoryPage />} />
