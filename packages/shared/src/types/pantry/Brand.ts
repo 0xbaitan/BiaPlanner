@@ -4,6 +4,7 @@ import { FilterParamsSchema } from "../../util";
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 export interface IBrand extends IBaseEntity {
   name: string;
@@ -13,22 +14,25 @@ export interface IBrand extends IBaseEntity {
   products?: IProduct[];
 }
 
-export interface ICreateBrandDto extends Pick<IBrand, "name" | "logoId" | "description"> {}
+export const WriteBrandDtoSchema = zfd.formData({
+  name: z.string().min(1, { message: "Brand name is required" }),
+  description: z.string().optional(),
+  logoId: z.string().optional(),
+  file: zfd
+    .file(
+      z.string().refine(
+        (fileName) => {
+          const validImageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "avif", "tiff"];
+          const fileExtension = fileName.split(".").pop()?.toLowerCase();
+          return fileExtension ? validImageExtensions.includes(fileExtension) : false;
+        },
+        { message: "File must be an image type (jpg, jpeg, png, gif, bmp, webp, svg, avif, tiff)" }
+      )
+    )
+    .optional(),
+});
 
-export interface IUpdateBrandDto extends Partial<ICreateBrandDto>, Pick<IBrand, "id"> {}
-
-export class CreateBrandDto implements ICreateBrandDto {
-  name: string;
-  logoId?: string;
-  description?: string;
-}
-
-export class UpdateBrandDto implements IUpdateBrandDto {
-  id: string;
-  name?: string;
-  logoId?: string;
-  description?: string;
-}
+export type IWriteBrandDto = z.infer<typeof WriteBrandDtoSchema>;
 
 export enum BrandSortBy {
   BRAND_NAME_A_TO_Z = "BRAND_NAME_A_TO_Z",

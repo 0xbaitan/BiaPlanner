@@ -1,0 +1,39 @@
+.bp-brand_form__pane_content {
+  padding: clamp(1em, 2vw, 2em);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; // Align content to the top
+  align-items: center; // Center all elements horizontally
+  gap: clamp(1em, 2vw, 2em);
+  width: 100%;
+}
+
+.bp-brand_form__logo_selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Center the logo selector horizontally
+  justify-content: center;
+  padding: 1.5rem; // Add padding around the image selector
+  border: 1px dashed #ced4da; // Dashed border for the dropzone
+  border-radius: 0.5rem; // Rounded corners
+  background-color: #f8f9fa; // Light gray background
+
+  margin: 0 auto; // Center the image selector within the form
+
+  img {
+    max-width: 100%; // Ensure the image fits within the container
+    width: clamp(40em, 30vh, 60em); // Responsive height
+    aspect-ratio: 2/1;
+    object-fit: contain; // Ensure the image scales proportionally
+    border-radius: 0.25rem; // Slightly rounded corners for the image
+    border: 1px solid #dee2e6; // Add a border around the image
+    background-color: #ffffff; // White background for the image
+  }
+
+  .help-text {
+    margin-top: 0.5rem; // Add spacing above the help text
+    font-size: 0.875rem; // Smaller font size for help text
+    color: #6c757d; // Muted text color
+    text-align: center; // Center-align the help text
+  }
+}

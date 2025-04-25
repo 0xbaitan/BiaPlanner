@@ -1,0 +1,41 @@
+.bp-form {
+  &__breadcrumbs {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: #6c757d; // Bootstrap muted text color
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+
+    &__title {
+      font-weight: bold;
+    }
+
+    &__actions {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  &__single_panel__pane {
+    border: 1px solid #dee2e6; // Light gray border
+    border-radius: 0.5rem; // Rounded corners
+    width: 100%;
+    padding: 2rem; // Increased padding for better spacing
+    background-color: #ffffff; // White background
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elevation
+    margin-top: 1rem; // Add spacing between header and pane
+    min-height: calc(100vh - 8em); // Adjust height to fit the viewport
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; // Add spacing between form fields
+  }
+}

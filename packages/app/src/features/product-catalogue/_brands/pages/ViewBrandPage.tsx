@@ -2,6 +2,7 @@ import "../styles/ViewBrandPage.scss";
 
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
+import { useDeleteBrandMutation, useGetBrandQuery } from "@/apis/BrandsApi";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Alert from "@/components/Alert";
@@ -12,8 +13,8 @@ import { IBrand } from "@biaplanner/shared";
 import { getImagePath } from "@/util/imageFunctions";
 import { useCallback } from "react";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
-import { useGetBrandQuery } from "@/apis/BrandsApi";
 import { useGetTopBrandedProductsQuery } from "@/apis/ProductsApi";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 const TOP_BRANDED_PRODUCTS_LIMIT = 10;
 export default function ViewBrandPage() {
@@ -27,6 +28,8 @@ export default function ViewBrandPage() {
     refetchOnMountOrArgChange: true,
   });
 
+  const [deleteBrand, { isError: isDeletionFailure, isLoading: isDeletionPending, isSuccess: isDeletionSuccess }] = useDeleteBrandMutation();
+
   const { data: topBrandedProducts } = useGetTopBrandedProductsQuery(
     {
       brandId: String(brand?.id),
@@ -38,13 +41,29 @@ export default function ViewBrandPage() {
     }
   );
 
+  const { notify: notifyOnDeletion } = useSimpleStatusToast({
+    isError: isDeletionFailure,
+    isLoading: isDeletionPending,
+    isSuccess: isDeletionSuccess,
+    successMessage: "Brand deleted successfully.",
+    errorMessage: "Failed to delete brand.",
+    loadingMessage: "Deleting brand...",
+    idPrefix: "brand-deletion",
+    onFailure: () => {
+      console.error("Failed to delete brand");
+    },
+    onSuccess: () => {
+      navigate(RoutePaths.BRANDS);
+    },
+  });
+
   const { notify: notifyDeletion } = useDeletionToast<IBrand>({
     identifierSelector(item) {
       return item.name;
     },
     onConfirm: async (item) => {
-      console.log(`Delete brand with ID: ${item.id}`);
-      // Add your delete logic here
+      notifyOnDeletion();
+      await deleteBrand(item.id);
     },
   });
 

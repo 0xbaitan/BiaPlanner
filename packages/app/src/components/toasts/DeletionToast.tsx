@@ -28,6 +28,7 @@ export default function DeletionToast<T>(props: DeletionToastProps<T>) {
       </div>
       <div className="bp-deletion-toast__body">
         <p>{message || `Are you sure you want to delete ${identifierSelector(item)}?`}</p>
+        <p className="bp-deletion-toast__body__extra_info">This action is irreversible. Click yes to continue.</p>
       </div>
       <div className="bp-deletion-toast__footer">
         <Button
@@ -84,7 +85,7 @@ export function useDeletionToast<T>(props: Omit<DeletionToastProps<T>, "item">) 
           {
             ...props.toastProps,
             type: "warning",
-            autoClose: 30 * 1000,
+            autoClose: 10 * 1000,
             toastId: "deletion-toast",
             icon: false,
 

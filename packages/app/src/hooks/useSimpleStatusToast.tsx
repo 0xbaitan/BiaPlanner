@@ -19,10 +19,12 @@ export type StatusToastProps = DeepPartial<ToastContentProps> & {
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
+  onFailure?: () => void;
+  onSuccess?: () => void;
 };
 
 export default function useSimpleStatusToast(props: StatusToastProps) {
-  const { idPrefix, successMessage, errorMessage, loadingMessage, isSuccess, isError, isLoading } = props;
+  const { idPrefix, successMessage, errorMessage, loadingMessage, isSuccess, isError, isLoading, onFailure, onSuccess } = props;
 
   const notify = useCallback(() => {
     const toastId = `${idPrefix}`;
@@ -56,8 +58,19 @@ export default function useSimpleStatusToast(props: StatusToastProps) {
     if (isSuccess || isError || isLoading) {
       notify();
     }
-    console.log("useStatusToast", { isSuccess, isError, isLoading });
-  }, [isError, isLoading, isSuccess, notify]);
+
+    if (isSuccess && onSuccess) {
+      onSuccess();
+    }
+
+    if (isError && onFailure) {
+      onFailure();
+    }
+
+    return () => {
+      toast.dismiss(`${idPrefix}`);
+    };
+  }, [idPrefix, isError, isLoading, isSuccess, notify, onFailure, onSuccess]);
 
   return { notify };
 }

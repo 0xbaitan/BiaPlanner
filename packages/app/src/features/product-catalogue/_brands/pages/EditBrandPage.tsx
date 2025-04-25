@@ -1,31 +1,31 @@
-import { IBrand, IUpdateBrandDto } from "@biaplanner/shared";
+import { IBrand, IWriteBrandDto } from "@biaplanner/shared";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetBrandQuery, useUpdateBrandMutation } from "@/apis/BrandsApi";
+import { useNavigate, useParams } from "react-router-dom";
 
 import BrandForm from "../components/BrandForm";
-import { Status } from "@/hooks/useStatusToast";
-import { useParams } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function EditBrandPage() {
   const { id } = useParams();
   const { data: brand } = useGetBrandQuery(String(id));
   const [updateBrand, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading }] = useUpdateBrandMutation();
-
-  const { setItem } = useDefaultStatusToast<IBrand>({
-    idSelector: (brand) => brand.id,
-    action: Action.UPDATE,
-    entityIdentifier: (brand) => brand.name,
-    isSuccess: isUpdateSuccess,
+  const navigate = useNavigate();
+  const { notify: notifyOnUpdateTrigger } = useSimpleStatusToast({
     isError: isUpdateError,
-    idPrefix: "brand",
     isLoading,
-    toastProps: {
-      autoClose: 5000,
+    isSuccess: isUpdateSuccess,
+    successMessage: "Brand updated successfully.",
+    errorMessage: "Failed to update brand.",
+    loadingMessage: "Updating brand...",
+    idPrefix: "brand-update",
+    onFailure: () => {
+      console.error("Failed to update brand");
     },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectButtonText: "Return to Brands",
-      redirectUrl: "/admin/brands",
+    onSuccess: () => {
+      console.log("Brand updated successfully");
+      navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: String(brand?.id) }));
     },
   });
 
@@ -36,9 +36,8 @@ export default function EditBrandPage() {
       type="update"
       initialValue={brand}
       onSubmit={async (brandDto) => {
-        // setPauseNotificationStatus(false);
-        setItem(brandDto as IBrand);
-        await updateBrand(brandDto as IUpdateBrandDto);
+        notifyOnUpdateTrigger();
+        await updateBrand({ id: String(brand.id), dto: brandDto });
       }}
     />
   );

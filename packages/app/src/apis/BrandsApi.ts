@@ -1,4 +1,4 @@
-import { IBrand, ICreateBrandDto, IQueryBrandParamsDto, IQueryBrandResultsDto, IUpdateBrandDto, Paginated } from "@biaplanner/shared";
+import { IBrand, IQueryBrandParamsDto, IQueryBrandResultsDto, IWriteBrandDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -20,7 +20,7 @@ export const brandsApi = rootApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: "Brand", id }],
     }),
-    createBrand: build.mutation<IBrand, ICreateBrandDto>({
+    createBrand: build.mutation<IBrand, IWriteBrandDto>({
       query: (data) => ({
         url: "/brands",
         method: "POST",
@@ -28,7 +28,7 @@ export const brandsApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Brand", id: "LIST" }],
     }),
-    updateBrand: build.mutation<IBrand, IUpdateBrandDto>({
+    updateBrand: build.mutation<IBrand, { id: string; dto: IWriteBrandDto }>({
       query: ({ id, ...dto }) => ({
         url: `/brands/${id}`,
         method: "PUT",

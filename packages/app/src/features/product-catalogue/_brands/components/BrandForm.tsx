@@ -1,53 +1,49 @@
-import { IBrand, ICreateBrandDto, IUpdateBrandDto } from "@biaplanner/shared";
+import "../styles/BrandForm.scss";
+
+import { IBrand, IWriteBrandDto, WriteBrandDtoSchema } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
 
-import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/Form";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import Button from "react-bootstrap/Button";
+import { FaSave } from "react-icons/fa";
 import ImageDropzone from "@/components/forms/ImageDropzone";
+import ImageSelector from "@/components/forms/ImageSelector";
+import { MdCancel } from "react-icons/md";
+import { RoutePaths } from "@/Routes";
+import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import useUploadImageFile from "@/hooks/useUploadImageFile";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-export type BrandFormValues = ICreateBrandDto | IUpdateBrandDto;
 
 export type BrandFormProps = {
   type: "create" | "update";
   disableSubmit?: boolean;
   initialValue?: Partial<IBrand>;
-  onSubmit: (values: BrandFormValues) => void;
+  onSubmit: (values: IWriteBrandDto) => void;
 };
-
-export const CreateBrandValidationSchema: z.ZodType<ICreateBrandDto> = z.object({
-  name: z.string().min(1, { message: "Brand name is required" }),
-  description: z.string().optional(),
-  logoId: z.string().optional(),
-});
-
-export const UpdateBrandValidationSchema: z.ZodType<IUpdateBrandDto> = z.object({
-  id: z.string().min(1, { message: "Brand id is required" }),
-  name: z.string().optional(),
-  description: z.string().optional(),
-  logoId: z.string().optional(),
-});
 
 export default function BrandForm(props: BrandFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
 
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File>();
   const uploadImage = useUploadImageFile();
 
-  const methods = useForm<BrandFormValues>({
+  const methods = useForm<IWriteBrandDto>({
     defaultValues: initialValue,
     mode: "onBlur",
-    resolver: zodResolver(type === "create" ? CreateBrandValidationSchema : UpdateBrandValidationSchema),
+    resolver: zodResolver(WriteBrandDtoSchema),
   });
+
+  const navigate = useNavigate();
 
   const {
     handleSubmit,
     getValues,
     setValue,
+    watch,
     formState: { errors },
   } = methods;
 
@@ -61,39 +57,67 @@ export default function BrandForm(props: BrandFormProps) {
   }, [getValues, logoFile, onSubmit, uploadImage]);
 
   return (
-    <div>
-      <h1>Brands Form</h1>
-      <Form onSubmit={handleSubmit(initiateSubmit)}>
-        <TextInput
-          label="Brand Name"
-          defaultValue={initialValue?.name ?? undefined}
-          error={errors.name ? errors.name.message : undefined}
-          onChange={(e) => {
-            const value = e.target.value;
-            setValue("name", value);
-          }}
-        />
-        <TextInput
-          label="Description"
-          defaultValue={initialValue?.description ?? undefined}
-          error={errors.description ? errors.description.message : undefined}
-          onChange={(e) => {
-            const value = e.target.value;
-            setValue("description", value);
-          }}
-          as="textarea"
-        />
-        <ImageDropzone
-          initialImages={initialValue?.logo ? [initialValue.logo] : undefined}
-          onChange={([logo]) => {
-            setLogoFile(logo);
-          }}
-        />
-
-        <Button type="submit" disabled={disableSubmit}>
-          Submit
-        </Button>
-      </Form>
-    </div>
+    <SinglePaneForm
+      onSubmit={handleSubmit(initiateSubmit)}
+      className="bp-brand_form"
+      breadcrumbs={
+        <Breadcrumb>
+          <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+          <Breadcrumb.Item href="/brands">Brands</Breadcrumb.Item>
+          <Breadcrumb.Item active>{type === "create" ? "Create Brand" : "Update Brand"}</Breadcrumb.Item>
+        </Breadcrumb>
+      }
+      headerTitle={type === "create" ? "Create Brand" : "Update Brand"}
+      headerActions={
+        <>
+          <Button type="button" variant="outline-secondary" onClick={() => navigate(RoutePaths.BRANDS)}>
+            <MdCancel />
+            <span className="ms-2">Cancel</span>
+          </Button>
+          <Button type="submit" variant="primary" disabled={disableSubmit}>
+            <FaSave />
+            <span className="ms-2">Save recipe</span>
+          </Button>
+        </>
+      }
+      paneContent={
+        <div className="bp-brand_form__pane_content">
+          <TextInput
+            inputLabelProps={{
+              required: true,
+            }}
+            value={watch("name")}
+            label="Brand Name"
+            defaultValue={initialValue?.name ?? undefined}
+            error={errors.name ? errors.name.message : undefined}
+            onChange={(e) => {
+              const value = e.target.value;
+              setValue("name", value);
+            }}
+          />
+          <TextInput
+            label="Description (optional)"
+            value={watch("description")}
+            defaultValue={initialValue?.description ?? undefined}
+            error={errors.description ? errors.description.message : undefined}
+            onChange={(e) => {
+              const value = e.target.value;
+              setValue("description", value);
+            }}
+            as="textarea"
+          />
+          <div className="bp-brand_form__logo_selector">
+            <ImageSelector
+              value={logoFile}
+              valueMetadata={initialValue?.logo}
+              onChange={(file) => {
+                setLogoFile(file);
+              }}
+              helpText="Upload a logo for this brand. Recommended image dimensions are 1200 x 800 px."
+            />
+          </div>
+        </div>
+      }
+    />
   );
 }
