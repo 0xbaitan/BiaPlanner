@@ -1,13 +1,13 @@
 import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-router-dom";
 
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
-import AddProductPage from "./features/admin/_products/pages/AddProductPage";
+import AddProductPage from "./features/product-catalogue/_products/pages/AddProductPage";
 import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
-import AdminCreateProductCategoryPage from "./features/admin/_product-categories/pages/AdminCreateProductCategoryPage";
+import AdminCreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/AdminCreateProductCategoryPage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
-import AdminUpdateProductCategoryPage from "./features/admin/_product-categories/pages/AdminUpdateProductCategoryPage";
+import AdminUpdateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/AdminUpdateProductCategoryPage";
 import AdminUpdateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminUpdateRecipeTagPage";
 import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
@@ -20,8 +20,8 @@ import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
 import PantryPage from "./features/pantry-management/_inventory/pages/PantryPage";
-import ProductCategoriesPage from "./features/admin/_product-categories/pages/ProductCategoriesPage";
-import ProductsPage from "./features/admin/_products/pages/ProductsPage";
+import ProductCategoriesPage from "./features/product-catalogue/_product-categories/pages/ProductCategoriesPage";
+import ProductsPage from "./features/product-catalogue/_products/pages/ProductsPage";
 import ProtectedPagesContainer from "./components/layouts/ProtectedPagesContainer";
 import PublicPagesContainer from "./components/layouts/PublicPagesContainer";
 import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/RecipeTagsPage";
@@ -29,7 +29,7 @@ import RecipesListPage from "./features/recipe-management/_recipes/pages/Recipes
 import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
-import UpdateProductPage from "./features/admin/_products/pages/UpdateProductPage";
+import UpdateProductPage from "./features/product-catalogue/_products/pages/UpdateProductPage";
 import ViewRecipePage from "./features/recipe-management/_recipes/pages/ViewRecipePage";
 
 export enum RoutePaths {

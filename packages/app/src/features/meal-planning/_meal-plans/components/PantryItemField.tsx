@@ -3,7 +3,7 @@ import "../styles/PantryItemField.scss";
 import { IPantryItem, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { useMemo, useState } from "react";
 
-import CookingMeasurementInput from "@/features/admin/_products/components/CookingMeasurementInput";
+import CookingMeasurementInput from "@/features/product-catalogue/_products/components/CookingMeasurementInput";
 import Form from "react-bootstrap/Form";
 import dayjs from "dayjs";
 import { useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";

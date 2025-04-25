@@ -1,4 +1,4 @@
-import { CookingMeasurement, CookingMeasurementType } from "../CookingMeasurement";
+import { CookingMeasurement, CookingMeasurementSchema, CookingMeasurementType } from "../CookingMeasurement";
 import { Volumes, Weights } from "../units";
 
 import { FilterParamsSchema } from "../../util";
@@ -95,8 +95,8 @@ export const QueryProductParamsSchema = FilterParamsSchema.extend({
 export type IQueryProductParamsDto = z.infer<typeof QueryProductParamsSchema>;
 
 export const QueryProductResultsSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1).max(255),
+  productId: z.string(),
+  productName: z.string().min(1).max(255),
   description: z.string().optional().nullable(),
   brandId: z.string(),
   brandName: z.string(),
@@ -104,10 +104,7 @@ export const QueryProductResultsSchema = z.object({
   productCategoryNames: z.array(z.string()).optional(),
   coverImagePath: z.string().optional().nullable(),
   measurementType: z.nativeEnum(CookingMeasurementType).optional(),
-  measurement: z.object({
-    type: z.nativeEnum(CookingMeasurementType),
-    value: z.union([z.number(), z.object({ value: z.number(), unit: z.nativeEnum(Weights) }), z.object({ value: z.number(), unit: z.nativeEnum(Volumes) })]),
-  }),
+  measurement: z.object(CookingMeasurementSchema).optional(),
 });
 
 export type IQueryProductResultsDto = z.infer<typeof QueryProductResultsSchema>;

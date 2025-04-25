@@ -7,7 +7,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
     getProductCategories: build.query<IProductCategory[], void>({
       query: () => ({
-        url: "/pantry/product-categories",
+        url: "/product-categories",
         method: "GET",
       }),
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),
@@ -15,7 +15,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     getProductCategory: build.query<IProductCategory, string>({
       query: (id) => ({
-        url: `/pantry/product-categories/${id}`,
+        url: `/product-categories/${id}`,
         method: "GET",
       }),
       providesTags: (result, error, id) => [{ type: "ProductCategory", id }],
@@ -23,7 +23,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     createProductCategory: build.mutation<IProductCategory, ICreateProductCategoryDto>({
       query: (dto: ICreateProductCategoryDto) => ({
-        url: "/pantry/product-categories",
+        url: "/product-categories",
         method: "POST",
         body: dto,
       }),
@@ -32,7 +32,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     updateProductCategory: build.mutation<IProductCategory, IUpdateProductCategoryDto>({
       query: (dto) => ({
-        url: `/pantry/product-categories/${dto.id}`,
+        url: `/product-categories/${dto.id}`,
         method: "PUT",
         body: dto,
       }),
@@ -44,7 +44,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     deleteProductCategory: build.mutation<void, string>({
       query: (id) => ({
-        url: `/pantry/product-categories/${id}`,
+        url: `/product-categories/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [
@@ -55,7 +55,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     getAllergens: build.query<IProductCategory[], void>({
       query: () => ({
-        url: "/query/product-categories/allergens",
+        url: "query/product-categories/allergens",
         method: "GET",
       }),
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),

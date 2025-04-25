@@ -67,8 +67,8 @@ export class QueryProductService {
     const qb = this.productRepository.createQueryBuilder('product');
 
     qb.select([
-      'product.id as id',
-      'product.name as name',
+      'product.id as productId',
+      'product.name as productName',
       'product.description as description',
       'product.brandId as brandId',
       'brand.name as brandName',
@@ -83,6 +83,8 @@ export class QueryProductService {
     qb.leftJoin('product.brand', 'brand');
     qb.leftJoin('product.pantryItems', 'pantryItem');
     qb.leftJoin('product.shoppingItems', 'shoppingItem');
+    qb.leftJoin('product.productCategories', 'productCategory');
+    qb.leftJoin('product.cover', 'cover');
 
     // Apply search filter
     if (search.trim().length > 0) {
@@ -116,7 +118,6 @@ export class QueryProductService {
       qb.andWhere('productCategory.id IN (:...productCategoryIds)', {
         productCategoryIds,
       });
-      qb.leftJoin('product.productCategories', 'productCategory');
     }
 
     // Apply sorting

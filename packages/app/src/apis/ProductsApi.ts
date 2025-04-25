@@ -65,7 +65,7 @@ export const productsApi = rootApi.injectEndpoints({
         url: `/query/products?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.items.filter(({ productId }) => productId != null).map(({ productId }) => ({ type: "Product" as const, id: productId })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
   }),
 });

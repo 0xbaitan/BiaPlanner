@@ -4,9 +4,8 @@ import { ProductController } from './product.controller';
 import { ProductEntity } from './product.entity';
 import { ProductService } from './product.service';
 import { QueryProductController } from './query-product.controller';
-import { QueryProductViewController } from './query-product.view.controller';
+import { QueryProductService } from './query-product.service';
 import { QueryProductViewEntity } from './query-product.view.entity';
-import { QueryProductViewService } from './query-product.view.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -14,12 +13,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forFeature([ProductEntity, QueryProductViewEntity]),
     ProductCategoryModule,
   ],
-  controllers: [
-    ProductController,
-    QueryProductViewController,
-    QueryProductController,
-  ],
-  providers: [ProductService, QueryProductViewService, QueryProductViewService],
+  controllers: [ProductController, QueryProductController],
+  providers: [ProductService, QueryProductService],
   exports: [TypeOrmModule, ProductCategoryModule, ProductService],
 })
 export default class ProductModule {}

@@ -25,7 +25,7 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchProducts, { data: productsPagination, isLoading }] = useLazySearchProductsQuery();
-  const numItems = productsPagination?.data.length || 0;
+  const numItems = productsPagination?.items.length || 0;
   const currentPage = productsPagination?.meta.currentPage || 1;
   const totalItems = productsPagination?.meta.totalItems || 0;
   const searchTermUsed = productsPagination?.meta.search || undefined;
@@ -35,7 +35,7 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
 
   const totalPages = productsPagination?.meta.totalPages || 1;
   const handleSearch = (term: string) => {
-    searchProducts({ paginateQuery: { page: currentPage, limit, search: term, searchBy: ["name", "description"] } });
+    // searchProducts({ paginateQuery: { page: currentPage, limit, search: term, searchBy: ["name", "description"] } });
   };
 
   return (
@@ -94,7 +94,7 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
         {productsPagination && (
           <div className="bp-browse_products_offcanvas__main">
             {isLoading && <div>Loading...</div>}
-            <ProductCardList products={productsPagination.data} type={type} />
+            {/* <ProductCardList products={productsPagination.items as IProduct[]} type={type} /> */}
             <div className="bp-browse_products_offcanvas__main__pagination">
               <PaginationComponent
                 currentPage={currentPage}
@@ -102,7 +102,7 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
                 numberOfPagesToShowOnTruncation={8}
                 showFirstLast={totalPages >= 25}
                 onPageChange={(page) => {
-                  searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
+                  // searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
                 }}
               />
             </div>
