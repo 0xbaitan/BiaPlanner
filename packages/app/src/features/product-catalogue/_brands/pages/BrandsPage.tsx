@@ -1,3 +1,4 @@
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import calculatePaginationElements, { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import { useBrandsCrudListActions, useBrandsCrudListState } from "../reducers/BrandsCrudListReducer";
 
@@ -35,7 +36,7 @@ export default function BrandsPage() {
       <BrandGrid
         brands={results?.items ?? []}
         onClick={(brand) => {
-          navigate(`./view/${brand.id}`);
+          navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: brand.id }));
         }}
       />
     );

@@ -2,6 +2,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
+import { FaEye } from "react-icons/fa6";
 import { IQueryBrandResultsDto } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteBrandMutation } from "@/apis/BrandsApi";
@@ -68,6 +69,14 @@ export default function BrandsTable(props: BrandsTableProps) {
         },
       ]}
       actions={[
+        {
+          icon: FaEye,
+          label: "View Brand",
+          type: "view",
+          onClick: (row) => {
+            navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: row.id }));
+          },
+        },
         {
           icon: FaPencilAlt,
           label: "Edit Brand",

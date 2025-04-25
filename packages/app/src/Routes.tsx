@@ -30,6 +30,7 @@ import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectR
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/product-catalogue/_products/pages/UpdateProductPage";
+import ViewBrandPage from "@/features/product-catalogue/_brands/pages/ViewBrandPage";
 import ViewRecipePage from "./features/recipe-management/_recipes/pages/ViewRecipePage";
 
 export enum RoutePaths {
@@ -138,7 +139,7 @@ export default function Routes() {
 
           <Route path={RoutePaths.BRANDS} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.BRANDS_CREATE} element={<CreateBrandPage />} />
-          <Route path={RoutePaths.BRANDS_VIEW} element={<AdminBrandsPage />} />
+          <Route path={RoutePaths.BRANDS_VIEW} element={<ViewBrandPage />} />
           <Route path={RoutePaths.BRANDS_EDIT} element={<EditBrandPage />} />
 
           <Route path={RoutePaths.PRODUCT_CATEGORIES} element={<ProductCategoriesPage />} />
