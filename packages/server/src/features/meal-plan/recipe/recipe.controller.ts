@@ -17,19 +17,8 @@ import { IWriteRecipeDto, transform, WriteRecipeDto } from '@biaplanner/shared';
 import ZodValidationPipe, { ZodParsePipe } from '@/util/zod-validation.pipe';
 import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { ImageFileValidationPipe } from '@/util/image-validation.pipe';
 const WriteRecipeValidationPipe = new ZodParsePipe(WriteRecipeDto.schema, true);
-const ImageFileValidationPipe = new ParseFilePipeBuilder()
-  .addFileTypeValidator({
-    fileType: /\/(jpg|jpeg|png|gif|avif)$/,
-  })
-  .addMaxSizeValidator({
-    maxSize: 1024 * 1024, // 1MB
-    message: 'File size must be less than 1MB',
-  })
-  .build({
-    fileIsRequired: false, // Allow the file to be optional
-  });
 
 @Controller('/meal-plan/recipes')
 export class RecipeController {

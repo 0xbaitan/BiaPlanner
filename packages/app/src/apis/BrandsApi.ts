@@ -2,6 +2,8 @@ import { IBrand, IQueryBrandParamsDto, IQueryBrandResultsDto, IWriteBrandDto, Pa
 
 import qs from "qs";
 import { rootApi } from ".";
+import serialiseIntoFormData from "@/util/serialiseIntoFormData";
+import { serialize } from "object-to-formdata";
 
 export const brandsApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
@@ -20,20 +22,21 @@ export const brandsApi = rootApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: "Brand", id }],
     }),
-    createBrand: build.mutation<IBrand, IWriteBrandDto>({
-      query: (data) => ({
+    createBrand: build.mutation<IBrand, FormData>({
+      query: (dto) => ({
         url: "/brands",
         method: "POST",
-        body: data,
+        body: dto,
       }),
       invalidatesTags: [{ type: "Brand", id: "LIST" }],
     }),
-    updateBrand: build.mutation<IBrand, { id: string; dto: IWriteBrandDto }>({
-      query: ({ id, ...dto }) => ({
+    updateBrand: build.mutation<IBrand, { id: string; dto: FormData }>({
+      query: ({ id, dto }) => ({
         url: `/brands/${id}`,
         method: "PUT",
         body: dto,
       }),
+
       invalidatesTags: (_result, _error, { id }) => [{ type: "Brand", id }],
     }),
     deleteBrand: build.mutation<void, string>({

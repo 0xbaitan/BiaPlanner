@@ -8,10 +8,16 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BrandService } from './brand.service';
-import { CreateBrandDto, UpdateBrandDto } from '@biaplanner/shared';
+import { IWriteBrandDto, WriteBrandDtoSchema } from '@biaplanner/shared';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { ZodParsePipe } from '@/util/zod-validation.pipe';
 
+const WriteBrandValidationPipe = new ZodParsePipe(WriteBrandDtoSchema, true);
 @Controller('/brands')
 export class BrandController {
   constructor(@Inject(BrandService) private brandService: BrandService) {}
@@ -27,13 +33,30 @@ export class BrandController {
   }
 
   @Post('/')
-  async createBrand(@Body() dto: CreateBrandDto) {
-    return this.brandService.createBrand(dto);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'tmp/',
+    }),
+  )
+  async createBrand(
+    @Body(WriteBrandValidationPipe) dto: IWriteBrandDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.brandService.createBrand(dto, file);
   }
 
   @Put('/:id')
-  async updateBrand(@Param('id') id: string, @Body() dto: UpdateBrandDto) {
-    return this.brandService.updateBrand(id, dto);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'tmp/',
+    }),
+  )
+  async updateBrand(
+    @Param('id') id: string,
+    @Body(WriteBrandValidationPipe) dto: IWriteBrandDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.brandService.updateBrand(id, dto, file);
   }
 
   @Delete('/:id')

@@ -66,10 +66,6 @@ export default function useSimpleStatusToast(props: StatusToastProps) {
     if (isError && onFailure) {
       onFailure();
     }
-
-    return () => {
-      toast.dismiss(`${idPrefix}`);
-    };
   }, [idPrefix, isError, isLoading, isSuccess, notify, onFailure, onSuccess]);
 
   return { notify };

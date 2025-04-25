@@ -6,33 +6,33 @@ import { useCallback, useState } from "react";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Button from "react-bootstrap/Button";
 import { FaSave } from "react-icons/fa";
-import ImageDropzone from "@/components/forms/ImageDropzone";
 import ImageSelector from "@/components/forms/ImageSelector";
 import { MdCancel } from "react-icons/md";
 import { RoutePaths } from "@/Routes";
 import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
+import serialiseIntoFormData from "@/util/serialiseIntoFormData";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import useUploadImageFile from "@/hooks/useUploadImageFile";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type BrandFormProps = {
   type: "create" | "update";
   disableSubmit?: boolean;
   initialValue?: Partial<IBrand>;
-  onSubmit: (values: IWriteBrandDto) => void;
+  onSubmit: (values: FormData) => void;
 };
 
 export default function BrandForm(props: BrandFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
 
   const [logoFile, setLogoFile] = useState<File>();
-  const uploadImage = useUploadImageFile();
 
   const methods = useForm<IWriteBrandDto>({
-    defaultValues: initialValue,
+    defaultValues: {
+      name: initialValue?.name ?? "",
+      description: initialValue?.description ?? "",
+    },
     mode: "onBlur",
     resolver: zodResolver(WriteBrandDtoSchema),
   });
@@ -41,24 +41,25 @@ export default function BrandForm(props: BrandFormProps) {
 
   const {
     handleSubmit,
-    getValues,
     setValue,
     watch,
     formState: { errors },
   } = methods;
 
-  const initiateSubmit = useCallback(async () => {
-    const values = getValues();
-    if (logoFile) {
-      const fileMetadata = await uploadImage(logoFile);
-      values.logoId = fileMetadata.id;
-    }
-    onSubmit(values);
-  }, [getValues, logoFile, onSubmit, uploadImage]);
+  const submitForm = useCallback(
+    async (values: IWriteBrandDto) => {
+      const formData = serialiseIntoFormData({
+        ...values,
+        file: logoFile,
+      });
+      onSubmit(formData);
+    },
+    [logoFile, onSubmit]
+  );
 
   return (
     <SinglePaneForm
-      onSubmit={handleSubmit(initiateSubmit)}
+      onSubmit={handleSubmit(submitForm)}
       className="bp-brand_form"
       breadcrumbs={
         <Breadcrumb>
@@ -67,7 +68,7 @@ export default function BrandForm(props: BrandFormProps) {
           <Breadcrumb.Item active>{type === "create" ? "Create Brand" : "Update Brand"}</Breadcrumb.Item>
         </Breadcrumb>
       }
-      headerTitle={type === "create" ? "Create Brand" : "Update Brand"}
+      headerTitle={type === "create" ? "Create brand" : "Edit brand"}
       headerActions={
         <>
           <Button type="button" variant="outline-secondary" onClick={() => navigate(RoutePaths.BRANDS)}>
@@ -97,7 +98,7 @@ export default function BrandForm(props: BrandFormProps) {
           />
           <TextInput
             label="Description (optional)"
-            value={watch("description")}
+            value={watch("description") ?? undefined}
             defaultValue={initialValue?.description ?? undefined}
             error={errors.description ? errors.description.message : undefined}
             onChange={(e) => {

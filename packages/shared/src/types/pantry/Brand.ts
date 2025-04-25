@@ -16,20 +16,8 @@ export interface IBrand extends IBaseEntity {
 
 export const WriteBrandDtoSchema = zfd.formData({
   name: z.string().min(1, { message: "Brand name is required" }),
-  description: z.string().optional(),
-  logoId: z.string().optional(),
-  file: zfd
-    .file(
-      z.string().refine(
-        (fileName) => {
-          const validImageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "avif", "tiff"];
-          const fileExtension = fileName.split(".").pop()?.toLowerCase();
-          return fileExtension ? validImageExtensions.includes(fileExtension) : false;
-        },
-        { message: "File must be an image type (jpg, jpeg, png, gif, bmp, webp, svg, avif, tiff)" }
-      )
-    )
-    .optional(),
+  description: z.string().optional().nullable(),
+  file: zfd.file().optional().nullable(),
 });
 
 export type IWriteBrandDto = z.infer<typeof WriteBrandDtoSchema>;
