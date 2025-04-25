@@ -1,12 +1,12 @@
 import "../styles/RecipeFilterBar.scss";
 
 import { DifficultyLevels, ICuisine, IProductCategory, IRecipeTag, RecipeSortBy } from "@biaplanner/shared";
-import { useCuisinesPrefetch, useGetCuisinesQuery } from "@/apis/CuisinesApi";
 import { useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
 
 import FilterBar from "@/components/forms/FilterBar";
 import normaliseEnumKey from "@/util/normaliseEnumKey";
 import { useGetAllergensQuery } from "@/apis/ProductCategoryApi";
+import { useGetCuisinesQuery } from "@/apis/CuisinesApi";
 import { useGetRecipeTagsQuery } from "@/apis/RecipeTagsApi";
 import { useMemo } from "react";
 
@@ -15,33 +15,36 @@ export default function RecipesFilterBar() {
   const { resetFilters } = useRecipesCrudListActions();
 
   return (
-    <FilterBar>
-      <FilterBar.Group type="prominent-filters">
-        <CuisineProminentMultiselect />
-        <AllergenProminentMultiselect />
-      </FilterBar.Group>
-      <FilterBar.Group type="hidden-filters">
-        <div className="bp-recipe_filter_bar__hidden-filters">
-          <div className="bp-recipe_filter_bar__checkbox_filters">
-            <FilterBar.Checkbox label="Own recipes" />
-            <FilterBar.Checkbox label="My favourites" />
-            <FilterBar.Checkbox label="Use what I have" />
+    <FilterBar
+      prominentFiltersGroup={
+        <FilterBar.Group type="prominent-filters">
+          <CuisineProminentMultiselect />
+          <AllergenProminentMultiselect />
+        </FilterBar.Group>
+      }
+      hiddenFiltersGroup={
+        <FilterBar.Group type="hidden-filters">
+          <div className="bp-recipe_filter_bar__hidden-filters">
+            <div className="bp-recipe_filter_bar__checkbox_filters">
+              <FilterBar.Checkbox label="Own recipes" />
+              <FilterBar.Checkbox label="My favourites" />
+              <FilterBar.Checkbox label="Use what I have" />
+            </div>
+            <div className="bp-recipe_filter_bar__multiselect_filters">
+              <DifficultyLevelMultiselect />
+              <RecipeTagsMultiselect />
+            </div>
           </div>
-          <div className="bp-recipe_filter_bar__multiselect_filters">
-            <DifficultyLevelMultiselect />
-            <RecipeTagsMultiselect />
-          </div>
-        </div>
-      </FilterBar.Group>
-      <FilterBar.ResetButton
-        onClick={() => {
-          resetFilters();
-        }}
-      />
-      <FilterBar.Group type="sorter">
-        <RecipeSorter />
-      </FilterBar.Group>
-    </FilterBar>
+        </FilterBar.Group>
+      }
+      sorterGroup={
+        <FilterBar.Group type="sorter">
+          <RecipeSorter />
+        </FilterBar.Group>
+      }
+      showResetButton={true}
+      onResetFilters={() => resetFilters()}
+    />
   );
 }
 
@@ -55,7 +58,7 @@ function RecipeSorter() {
     <FilterBar.Sorter
       value={sortBy}
       onChange={(e) => {
-        const value = e.target.value;
+        const value = (e.target as HTMLSelectElement).value;
         setSortBy(value as RecipeSortBy);
       }}
     >
@@ -94,7 +97,7 @@ function CuisineProminentMultiselect() {
     return <div>Failed to fetch cuisines</div>;
   }
   return (
-    <FilterBar.Select
+    <FilterBar.FilterSelect
       selectLabel="Cuisines"
       list={isSuccess ? data : []}
       selectedValues={mappedCuisines}
@@ -135,7 +138,7 @@ function AllergenProminentMultiselect() {
   }
 
   return (
-    <FilterBar.Select
+    <FilterBar.FilterSelect
       selectLabel="Allergens excluded"
       selectedValues={mappedAllergens}
       onChange={(selectedList) => {
@@ -177,7 +180,7 @@ function DifficultyLevelMultiselect() {
   }, [difficultyLevel, options]);
 
   return (
-    <FilterBar.Select
+    <FilterBar.FilterSelect
       selectLabel="Difficulty level"
       selectedValues={mappedDifficultyLevel}
       onChange={(selectedList) => {
@@ -216,7 +219,7 @@ function RecipeTagsMultiselect() {
     return <div>Failed to fetch recipe tags</div>;
   }
   return (
-    <FilterBar.Select
+    <FilterBar.FilterSelect
       selectedValues={mappedRecipeTags}
       onChange={(selectedList) => {
         const selectedRecipeTags = selectedList.map((item) => item.id);

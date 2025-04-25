@@ -55,7 +55,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
 
     getAllergens: build.query<IProductCategory[], void>({
       query: () => ({
-        url: "/query/product-categories",
+        url: "/query/product-categories/allergens",
         method: "GET",
       }),
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),

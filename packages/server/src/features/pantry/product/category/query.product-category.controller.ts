@@ -11,16 +11,16 @@ export class QueryProductCategoryController {
     private readonly queryProductCategoryService: QueryProductCategoryService,
   ) {}
 
-  @Get('/')
-  async query(
-    @Paginate() paginatedQuery: PaginateQuery,
-    @FuzzyQueryParam() fuzzyQuery?: FuzzyQuery,
-  ) {
-    return this.queryProductCategoryService.queryProductCategories(
-      paginatedQuery,
-      fuzzyQuery,
-    );
-  }
+  // @Get('/')
+  // async query(
+  //   @Paginate() paginatedQuery: PaginateQuery,
+  //   @FuzzyQueryParam() fuzzyQuery?: FuzzyQuery,
+  // ) {
+  //   return this.queryProductCategoryService.queryProductCategories(
+  //     paginatedQuery,
+  //     fuzzyQuery,
+  //   );
+  // }
 
   @Get('/allergens')
   async findAllAllergens() {
