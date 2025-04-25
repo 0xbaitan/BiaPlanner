@@ -95,8 +95,22 @@ export class QueryBrandService {
 
     console.log(rawResults);
 
+    const hydratedResults = await Promise.all(
+      rawResults.items.map(async (item) => {
+        const brand = await this.brandRepository.findOne({
+          where: { id: item.id },
+          relations: ['logo'],
+        });
+
+        return {
+          ...item,
+          imageFileMetadata: brand?.logo,
+        };
+      }),
+    );
+
     // Transform raw results using Zod schema
-    const transformedResults = rawResults.items.map((item) =>
+    const transformedResults = hydratedResults.map((item) =>
       QueryBrandResultsSchema.parse(item),
     );
 

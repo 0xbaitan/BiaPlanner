@@ -1,6 +1,7 @@
+import { FileSchema, IFile } from "../File";
+
 import { FilterParamsSchema } from "../../util";
 import { IBaseEntity } from "../BaseEntity";
-import { IFile } from "../File";
 import { IProduct } from "./Product";
 import { z } from "zod";
 
@@ -48,7 +49,7 @@ export const QueryBrandResultsSchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(255),
   description: z.string().optional().nullable(),
-  logoId: z.string().optional().nullable(),
+  imageFileMetadata: FileSchema.optional().nullable(),
   productCount: z.coerce.number().optional(),
 });
 

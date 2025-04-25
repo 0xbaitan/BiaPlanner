@@ -81,6 +81,10 @@
       font-size: 0.9rem;
       color: #495057; // Dark gray text for table cells
       border-bottom: 1px solid #dee2e6; // Subtle border for separation
+      max-width: clamp(200px, 20vw, 300px); // Responsive max width
+      min-width: clamp(50px, 5vw, 100px); // Responsive min width
+      text-overflow: ellipsis;
+      text-wrap: break-word;
     }
   }
 }

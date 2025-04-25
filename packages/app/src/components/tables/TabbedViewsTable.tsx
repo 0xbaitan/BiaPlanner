@@ -90,7 +90,7 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
               <KebabIcon size={"16px"} className="bp-tabbed_views_table__kebab_icon" />
             </button>
           }
-          position="right center"
+          position="left center"
           on="click"
           closeOnDocumentClick={true}
         >
