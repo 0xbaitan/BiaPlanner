@@ -1,0 +1,14 @@
+.bp-brand_grid {
+  justify-self: center;
+
+  &__row {
+    display: flex;
+    justify-content: left;
+    row-gap: clamp(1rem, 2vw, 2rem);
+  }
+
+  &__col {
+    display: flex;
+    align-content: stretch;
+  }
+}

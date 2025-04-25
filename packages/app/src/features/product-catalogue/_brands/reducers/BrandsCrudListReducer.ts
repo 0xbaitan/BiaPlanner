@@ -2,8 +2,11 @@ import { BrandSortBy, IQueryBrandParamsDto } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
+import { ViewType } from "@/components/ViewSegmentedButton";
+
 export type BrandsCrudListState = {
   brandsQuery: IQueryBrandParamsDto;
+  view: ViewType;
 };
 
 const initialState: BrandsCrudListState = {
@@ -13,6 +16,7 @@ const initialState: BrandsCrudListState = {
     search: "",
     sortBy: BrandSortBy.DEFAULT,
   },
+  view: "grid",
 };
 
 export type BrandFilter = Omit<IQueryBrandParamsDto, "page" | "limit" | "search" | "sortBy">;
@@ -48,10 +52,13 @@ export const brandsCrudListSlice = createSlice({
         search: state.brandsQuery.search,
       };
     },
+    setView: (state, action: PayloadAction<ViewType>) => {
+      state.view = action.payload;
+    },
   },
 });
 
-export const { setFilter, setPage, setLimit, setSearch, resetFilters, setSortBy } = brandsCrudListSlice.actions;
+export const { setFilter, setPage, setLimit, setSearch, resetFilters, setSortBy, setView } = brandsCrudListSlice.actions;
 export default brandsCrudListSlice.reducer;
 
 export function useBrandsCrudListState() {
@@ -69,5 +76,6 @@ export function useBrandsCrudListActions() {
     setSearch: (search: string) => dispatch(setSearch(search)),
     resetFilters: () => dispatch(resetFilters()),
     setSortBy: (sortBy: BrandSortBy) => dispatch(setSortBy(sortBy)),
+    setView: (view: ViewType) => dispatch(setView(view)),
   };
 }

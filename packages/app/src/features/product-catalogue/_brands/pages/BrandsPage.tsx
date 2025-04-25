@@ -1,36 +1,54 @@
+import calculatePaginationElements, { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import { useBrandsCrudListActions, useBrandsCrudListState } from "../reducers/BrandsCrudListReducer";
 
+import BrandGrid from "../components/BrandGrid";
 import BrandsFilterBar from "../components/BrandsFilterBar";
 import BrandsTable from "../components/BrandsTable";
 import Button from "react-bootstrap/esm/Button";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
 import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
-import { calculatePaginationMeta } from "@/util/calculatePaginationElements";
+import { ViewType } from "@/components/ViewSegmentedButton";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchBrandsQuery } from "@/apis/BrandsApi";
 
 export default function BrandsPage() {
   const navigate = useNavigate();
-  const { brandsQuery } = useBrandsCrudListState();
-  const { setSearch, setLimit, setPage } = useBrandsCrudListActions();
-  const { data: brands, isError } = useSearchBrandsQuery(brandsQuery, {
+  const { brandsQuery, view } = useBrandsCrudListState();
+  const { setView, setSearch, setPage, setLimit } = useBrandsCrudListActions();
+  const { data: results, isError } = useSearchBrandsQuery(brandsQuery, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = calculatePaginationMeta(brandsQuery.limit ?? 25, brands);
+  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationMeta(brandsQuery.limit ?? 25, results);
+
+  const brandsTable = useMemo(() => {
+    return <BrandsTable data={results?.items ?? []} />;
+  }, [results?.items]);
+
+  const brandsGrid = useMemo(() => {
+    return (
+      <BrandGrid
+        brands={results?.items ?? []}
+        onClick={(brand) => {
+          navigate(`./view/${brand.id}`);
+        }}
+      />
+    );
+  }, [navigate, results?.items]);
 
   return (
     <CrudListPageLayout>
       <CrudListPageLayout.Header
-        pageTitle="Brands"
         searchTerm={brandsQuery.search}
         onSearch={(searchTerm) => {
           setSearch(searchTerm);
         }}
+        pageTitle="Brands"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
             <Button variant="primary" onClick={() => navigate("./create")}>
@@ -46,7 +64,7 @@ export default function BrandsPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="brands" />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
-            {isError || !brands?.items || brands.items.length === 0 ? <NoResultsFound title="Oops! No brands found" description="Try creating a new brand to get started." /> : <BrandsTable data={brands.items} />}
+            {totalItems === 0 || isError ? <NoResultsFound title={"Oops! No brands found"} description={"Try searching with different keywords or check the spelling."} /> : view === "grid" ? brandsGrid : brandsTable}
           </CrudListPageLayout.Body.Content>
         }
         itemsPerPageCountSelectorComponent={
@@ -54,6 +72,14 @@ export default function BrandsPage() {
             itemsCount={constrainItemsPerPage(brandsQuery.limit ?? 25)}
             onChange={(limit) => {
               setLimit(limit);
+            }}
+          />
+        }
+        viewSegmentedButtonComponent={
+          <CrudListPageLayout.Body.ViewSegmentedButton
+            view={view}
+            onChange={(view: ViewType) => {
+              setView(view);
             }}
           />
         }
