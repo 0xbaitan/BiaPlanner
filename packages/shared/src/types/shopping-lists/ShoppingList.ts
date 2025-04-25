@@ -1,6 +1,8 @@
 import { ICreateShoppingItemDto, ICreateShoppingItemExtendedDto, IShoppingItem, IUpdateShoppingItemDto, IUpdateShoppingItemExtendedDto } from "./ShoppingItem";
 
+import { FilterParamsSchema } from "../../util";
 import { IBaseEntity } from "../BaseEntity";
+import { z } from "zod";
 
 export interface IShoppingList extends IBaseEntity {
   title: string;
@@ -46,3 +48,39 @@ export class UpdateShoppingListExtendedDto implements IUpdateShoppingListExtende
   isShoppingComplete?: boolean | undefined;
   items: IUpdateShoppingItemExtendedDto[] | undefined;
 }
+
+export enum ShoppingListSortBy {
+  TITLE_A_TO_Z = "TITLE_A_TO_Z",
+  TITLE_Z_TO_A = "TITLE_Z_TO_A",
+  NEWEST = "NEWEST",
+  OLDEST = "OLDEST",
+  MOST_URGENT = "MOST_URGENT",
+  LEAST_URGENT = "LEAST_URGENT",
+}
+
+export const QueryShoppingListParamsSchema = FilterParamsSchema.extend({
+  sortBy: z.nativeEnum(ShoppingListSortBy).optional(),
+  search: z.string().optional(),
+  plannedDate: z.coerce.date().optional(),
+});
+
+export const QueryShoppingListResultsSchema = z.object({
+  shoppingListId: z.string(),
+  title: z.string(),
+  notes: z.string().optional().nullable(),
+  plannedDate: z.coerce.date().optional().nullable(),
+  isShoppingComplete: z.coerce.boolean().optional(),
+  items: z
+    .array(
+      z.object({
+        productId: z.string(),
+        quantity: z.number(),
+      })
+    )
+    .optional()
+    .nullable(),
+});
+
+export type IQueryShoppingListResultsDto = z.infer<typeof QueryShoppingListResultsSchema>;
+
+export type IQueryShoppingListFilterParams = z.infer<typeof QueryShoppingListParamsSchema>;

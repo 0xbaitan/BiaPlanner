@@ -1,9 +1,9 @@
 import { FaShoppingCart, FaTrash } from "react-icons/fa";
+import { IQueryShoppingListResultsDto, IShoppingList } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
-import TabbedViewsTable, { TabbedViewsTableProps } from "@/components/tables/TabbedViewsTable";
 
 import { FaPencil } from "react-icons/fa6";
-import { IShoppingList } from "@biaplanner/shared";
+import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useNavigate } from "react-router-dom";
 
 export type ShoppingListTableProps = {
@@ -29,7 +29,7 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
             },
             {
               header: "Planned Date",
-              accessorFn: (row) => row.plannedDate,
+              accessorFn: (row) => (row.plannedDate ? new Date(row.plannedDate).toLocaleDateString() : "N/A"),
               accessorKey: "plannedDate",
             },
           ],
@@ -41,7 +41,7 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           label: "Edit shopping list",
           icon: FaPencil,
           onClick(row) {
-            console.log("Edit action triggered for row:", row);
+            navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_EDIT, { id: row.id }));
           },
         },
         {
@@ -57,6 +57,10 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           label: "Mark as done",
           icon: FaShoppingCart,
           onClick(row) {
+            if (row.isShoppingComplete) {
+              return;
+            }
+
             navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_MARK_DONE, { id: row.id }));
           },
         },

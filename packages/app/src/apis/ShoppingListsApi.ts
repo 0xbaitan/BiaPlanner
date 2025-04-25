@@ -1,4 +1,5 @@
-import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingListDto, IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
+import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingListDto, IUpdateShoppingListExtendedDto, Paginated } from "@biaplanner/shared";
+import { IQueryShoppingListFilterParams, IQueryShoppingListResultsDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
 
@@ -54,7 +55,26 @@ export const shoppingListsApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg.id }],
     }),
+
+    searchShoppingLists: build.query<Paginated<IShoppingList>, IQueryShoppingListFilterParams>({
+      query: (query) => ({
+        url: `/query/shopping-lists`,
+        method: "GET",
+        params: query,
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map(({ id }) => ({
+                type: "ShoppingList" as const,
+                id: id,
+              })),
+              { type: "ShoppingList", id: "LIST" },
+            ]
+          : [{ type: "ShoppingList", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useGetShoppingListsQuery, useCreateShoppingListMutation, useUpdateShoppingListMutation, useDeleteShoppingListMutation, useGetShoppingListQuery, useMarkShoppingDoneMutation } = shoppingListsApi;
+export const { useGetShoppingListsQuery, useCreateShoppingListMutation, useUpdateShoppingListMutation, useDeleteShoppingListMutation, useGetShoppingListQuery, useMarkShoppingDoneMutation, useSearchShoppingListsQuery, useLazyGetShoppingListQuery } =
+  shoppingListsApi;
