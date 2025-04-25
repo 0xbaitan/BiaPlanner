@@ -8,6 +8,7 @@ import createSagaMiddleware from "redux-saga";
 import mealPlanningReducer from "@/features/meal-planning/reducers";
 import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
+import productCatalogueReducer from "@/features/product-catalogue/reducers";
 import recipeCatalogueReducer from "@/features/recipe-management/reducers";
 import { rootApi } from "@/apis";
 import sessionStorage from "redux-persist/lib/storage/session";
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   mealPlanning: mealPlanningReducer,
   shoppingLists: shoppingListsReducer,
   recipeCatalogue: recipeCatalogueReducer,
+  productCatalogue: productCatalogueReducer,
   [rootApi.reducerPath]: rootApi.reducer,
 });
 

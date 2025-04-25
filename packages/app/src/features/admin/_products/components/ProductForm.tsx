@@ -14,7 +14,6 @@ import Heading from "@/components/Heading";
 import { ImageListType } from "react-images-uploading";
 import ImageSelector from "@/components/forms/ImageSelector";
 import { MdCancel } from "react-icons/md";
-import ProductCategoryLazySelect from "@/components/forms/ProductCategoryLazySelect";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";

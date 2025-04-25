@@ -40,8 +40,9 @@ export class ProductCategoryController {
   }
 
   @Delete('/:id')
-  async deleteProductCategory(@Param('id') id: string) {
-    return this.productCategoriesService.deleteProductCategory(id);
+  async deleteProductCategory(@Param('id') id: string): Promise<void> {
+    await this.productCategoriesService.deleteProductCategory(id);
+    return;
   }
 
   @Post()

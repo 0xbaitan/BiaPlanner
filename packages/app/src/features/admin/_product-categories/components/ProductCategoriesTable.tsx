@@ -1,14 +1,16 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { IProductCategory } from "@biaplanner/shared";
+import { IQueryProductCategoryResultsDto } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteProductCategoryMutation } from "@/apis/ProductCategoryApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type ProductCategoriesTableProps = {
-  data: IProductCategory[];
+  data: IQueryProductCategoryResultsDto[];
 };
 
 export default function ProductCategoriesTable(props: ProductCategoriesTableProps) {
@@ -17,29 +19,28 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
 
   const [deleteProductCategory, { isSuccess, isError, isLoading }] = useDeleteProductCategoryMutation();
 
-  const { setItem } = useDefaultStatusToast<IProductCategory>({
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "delete-product-category",
+    successMessage: "Product category deleted successfully",
+    errorMessage: "Failed to delete product category",
+    loadingMessage: "Deleting product category...",
     isSuccess,
     isError,
     isLoading,
-    idPrefix: "product-category",
-    idSelector: (entity) => entity.id,
-    toastProps: {
-      autoClose: 5000,
-    },
-    action: Action.DELETE,
-    entityIdentifier: (entity) => entity.name,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IProductCategory>({
+  const { notify: notifyDeletion } = useDeletionToast<IQueryProductCategoryResultsDto>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
-      setItem(item);
+      if (!!item.id) {
+        notify();
+      }
       await deleteProductCategory(item.id);
     },
   });
 
   return (
-    <TabbedViewsTable<IProductCategory>
+    <TabbedViewsTable<IQueryProductCategoryResultsDto>
       data={data}
       views={[
         {
@@ -56,7 +57,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
             },
             {
               header: "Product Count",
-              accessorFn: (row) => row.products?.length ?? 0,
+              accessorFn: (row) => row.productCount ?? 0,
               accessorKey: "productCount",
             },
           ],
@@ -65,16 +66,16 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Edit Category",
+          label: "Edit Product Category",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.id}`);
+            navigate(fillParametersInPath(RoutePaths.PRODUCT_CATEGORIES_EDIT, { id: row.id }));
           },
         },
 
         {
           icon: FaTrashAlt,
-          label: "Delete Category",
+          label: "Delete Product Category",
           type: "delete",
           onClick: (row) => {
             notifyDeletion(row);

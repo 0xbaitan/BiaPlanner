@@ -21,10 +21,17 @@ function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   );
 }
 
-export type OrdinarySelectProps = FormSelectProps;
+export type OrdinarySelectProps = FormSelectProps & {
+  label: string;
+};
 function OrdinarySelect(props: OrdinarySelectProps) {
   const { className, ...rest } = props;
-  return <Form.Select {...rest} className={["bp-filter_bar__ordinary_select", className].join(" ")} />;
+  return (
+    <div className="bp-filter_bar__ordinary_select_wrapper">
+      <label className="bp-filter_bar__ordinary_select_label">{props.label}</label>
+      <Form.Select {...rest} className={["bp-filter_bar__ordinary_select", className].join(" ")} />
+    </div>
+  );
 }
 
 export type CheckboxProps = FormCheckProps & {

@@ -144,3 +144,23 @@
   gap: 0.5rem;
   font-size: 0.9rem;
 }
+
+.bp-filter_bar__ordinary_select {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bp-filter_bar__ordinary_select_wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bp-filter_bar__ordinary_select_label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #495057; // Dark gray text
+}
