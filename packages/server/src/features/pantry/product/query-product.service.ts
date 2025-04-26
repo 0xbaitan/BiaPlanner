@@ -101,21 +101,21 @@ export class QueryProductService {
     }
 
     // Apply additional filters
-    if (isLoose !== undefined) {
-      qb.andWhere('product.isLoose = :isLoose', { isLoose });
-    }
+    // if (isLoose !== undefined) {
+    //   qb.andWhere('product.isLoose = :isLoose', { isLoose });
+    // }
 
-    if (isNonExpirable !== undefined) {
-      qb.andWhere('product.canExpire = :canExpire', {
-        canExpire: !isNonExpirable,
-      });
-    }
+    // if (isNonExpirable !== undefined) {
+    //   qb.andWhere('product.canExpire = :canExpire', {
+    //     canExpire: !isNonExpirable,
+    //   });
+    // }
 
-    if (brandIds?.length) {
+    if (brandIds?.length && brandIds.length > 0) {
       qb.andWhere('product.brandId IN (:...brandIds)', { brandIds });
     }
 
-    if (productCategoryIds?.length) {
+    if (productCategoryIds?.length && productCategoryIds.length > 0) {
       qb.andWhere('productCategory.id IN (:...productCategoryIds)', {
         productCategoryIds,
       });
@@ -144,8 +144,8 @@ export class QueryProductService {
     console.log(rawResults);
 
     // Transform raw results using Zod schema
-    const transformedResults = rawResults.items.map((item) =>
-      QueryProductResultsSchema.parse(item),
+    const transformedResults = rawResults.items.map(
+      (item) => QueryProductResultsSchema.safeParse(item).data,
     );
 
     return new Pagination<IQueryProductResultsDto>(

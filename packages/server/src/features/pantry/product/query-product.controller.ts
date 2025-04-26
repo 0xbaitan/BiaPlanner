@@ -33,12 +33,12 @@ export class QueryProductController {
     return this.queryProductService.query(query);
   }
 
-  @Public()
-  @Get('/top-branded')
-  async queryTopBrandedProducts(
-    @Query(QueryTopBrandedProductsParamsValidationPipe)
-    query: IQueryTopBrandedProductsParamsDto,
-  ): Promise<IProduct[]> {
-    return this.queryProductService.queryTopBrandedProducts(query);
-  }
+  // @Public()
+  // @Get('/top-branded')
+  // async queryTopBrandedProducts(
+  //   @Query(QueryTopBrandedProductsParamsValidationPipe)
+  //   query: IQueryTopBrandedProductsParamsDto,
+  // ): Promise<IProduct[]> {
+  //   return this.queryProductService.queryTopBrandedProducts(query);
+  // }
 }

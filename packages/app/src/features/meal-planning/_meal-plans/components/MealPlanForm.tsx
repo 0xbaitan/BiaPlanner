@@ -2,6 +2,7 @@ import "../styles/MealPlanForm.scss";
 
 import { FormProvider, useForm } from "react-hook-form";
 import { IConcreteRecipe, ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
+import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import DualPaneForm from "@/components/forms/DualPaneForm";
@@ -11,6 +12,8 @@ import Heading from "@/components/Heading";
 import IngredientList from "./IngredientList";
 import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
+import RecipeSelectOffcanvas from "./RecipeSelectOffcanvas";
+import { getImagePath } from "@/util/imageFunctions";
 import { useConfirmedIngredients } from "../../reducers/IngredientManagementReducer";
 import { useNavigate } from "react-router-dom";
 
@@ -34,6 +37,8 @@ export default function MealPlanForm(props: MealPlanFormValues) {
   const disableSubmit = props.disableSubmit ?? false;
   const confirmedIngredients = useConfirmedIngredients();
   const { handleSubmit, getValues, setValue, reset } = methods;
+  const { showRecipeSelectionOffcanvas } = useMealPlanFormActions();
+  const { selectedRecipe } = useMealPlanFormState();
   return (
     <FormProvider {...methods}>
       <DualPaneForm
@@ -64,6 +69,27 @@ export default function MealPlanForm(props: MealPlanFormValues) {
         </DualPaneForm.Header>
         <DualPaneForm.Panel>
           <DualPaneForm.Panel.Pane>
+            <RecipeSelectOffcanvas />
+            <Button onClick={showRecipeSelectionOffcanvas} variant="outline-primary" className="mb-3">
+              Select Recipe
+            </Button>
+            <div className="recipe-info">
+              <div className="recipe-info__image">
+                <img className="recipe-info__image__img" src={getImagePath(selectedRecipe?.coverImage) ?? ""} alt={selectedRecipe?.title ?? "No recipe selected"} />
+              </div>
+              <div className="recipe-info__title">
+                {selectedRecipe?.title ?? "No recipe selected"}
+                {selectedRecipe && <span className="badge bg-primary">Selected</span>}
+              </div>
+              <div className="recipe-info__description">{selectedRecipe?.description}</div>
+              <div className="recipe-info__categories">
+                {selectedRecipe?.tags?.map((category) => (
+                  <span key={category.id} className="badge bg-secondary me-1">
+                    {category.name}
+                  </span>
+                ))}
+              </div>
+            </div>
             <Form.Group>
               <Form.Label>Meal type</Form.Label>
               <MealTypeSelect

@@ -1,0 +1,38 @@
+.bp-recipe_select_offcanvas__search_area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bp-recipe_select_offcanvas__search_area__input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bp-recipe_select_offcanvas__search_box {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.bp-recipe_select_offcanvas__search_button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.bp-recipe_select_offcanvas__filter_button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

@@ -1,3 +1,4 @@
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useConcreteRecipesCrudListActions, useConcreteRecipesCrudListState } from "../../reducers/ConcreteRecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -30,7 +31,7 @@ export default function MealPlansPage() {
         pageTitle="Meal Plans"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate("./create")}>
+            <Button variant="primary" onClick={() => navigate(RoutePaths.MEAL_PLANS_CREATE)}>
               <FaPlus />
               &ensp;Create Meal Plan
             </Button>

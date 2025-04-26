@@ -35,3 +35,62 @@ $pane-bg-color: #fff;
     }
   }
 }
+
+.recipe-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  &__image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-height: 200px; // Limit the height of the image container
+  }
+
+  &__image__img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; // Ensure the image is contained within the box
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .badge {
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+
+  &__description {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .badge {
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem;
+      background-color: #e9ecef;
+      color: #495057;
+    }
+  }
+}

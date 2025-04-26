@@ -1,5 +1,6 @@
 import SelectInput, { SelectInputProps } from "@/components/forms/SelectInput";
 
+import FilterSelect from "@/components/forms/FilterSelect";
 import Form from "react-bootstrap/Form";
 import { IRecipe } from "@biaplanner/shared";
 import { useGetRecipesQuery } from "@/apis/RecipeApi";
@@ -15,7 +16,7 @@ export default function RecipeSelect(props: RecipeSelectProps) {
   return (
     <Form.Group>
       <Form.Label>{label ?? "Select a recipe"}</Form.Label>
-      <SelectInput<IRecipe> {...rest} list={isSuccess ? recipes : []} idSelector={(recipe) => recipe.id} nameSelector={(recipe) => recipe.title} noDataLabel="No recipes available" />
+
       <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
     </Form.Group>
   );

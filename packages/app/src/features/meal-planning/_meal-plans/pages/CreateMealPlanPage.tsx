@@ -4,17 +4,19 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useResetMealPlanForm, useSelectRecipe } from "../../reducers/IngredientManagementReducer";
 
 import MealPlanForm from "../components/MealPlanForm";
+import { RoutePaths } from "@/Routes";
 import { Status } from "@/hooks/useStatusToast";
 import dayjs from "dayjs";
 import { useCreateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
 import { useEffect } from "react";
 import { useGetRecipeQuery } from "@/apis/RecipeApi";
+import { useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
 export default function CreateMealPlanPage() {
   const [searchParams] = useSearchParams();
-  const recipeId = searchParams.get("recipeId");
+  const { selectedRecipe } = useMealPlanFormState();
   const navigate = useNavigate();
-  const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(recipeId));
+  const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(selectedRecipe?.id));
   const resetMealPlanForm = useResetMealPlanForm();
   const [createConcreteRecipeMutation, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
   const selectRecipe = useSelectRecipe();
@@ -37,12 +39,6 @@ export default function CreateMealPlanPage() {
   });
 
   useEffect(() => {
-    if (recipeId === null) {
-      navigate("/meal-planning/meal-plans/select-recipe");
-    }
-  }, [navigate, recipeId]);
-
-  useEffect(() => {
     if (recipeIsSuccess && recipe) {
       selectRecipe(recipe);
     }
@@ -60,23 +56,23 @@ export default function CreateMealPlanPage() {
     };
   }, [resetMealPlanForm]);
 
-  if (recipeIsError) {
-    return <div>There was an error</div>;
-  }
+  // if (recipeIsError) {
+  //   return <div>There was an error</div>;
+  // }
 
-  if (recipeIsLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (recipeIsLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (!recipeIsSuccess || !recipe) {
-    return <div>Recipe not found</div>;
-  }
+  // if (!recipeIsSuccess || !recipe) {
+  //   return <div>Recipe not found</div>;
+  // }
   return (
     <div>
       <MealPlanForm
         initialValue={{
           recipe: recipe,
-          recipeId: recipe.id,
+          recipeId: recipe?.id,
         }}
         type="create"
         onSubmit={async (values) => {

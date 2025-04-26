@@ -15,7 +15,7 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { RecipeEntity } from './recipe.entity';
-import { FilterOperator, paginate } from 'nestjs-paginate';
+import { paginate, Paginated } from 'nestjs-paginate';
 
 @Injectable()
 export class QueryRecipeService {
@@ -93,13 +93,14 @@ export class QueryRecipeService {
         break;
     }
   }
-  async query(query: IQueryRecipeDto) {
+  async query(query: IQueryRecipeDto): Promise<Paginated<IRecipe>> {
     console.log('Querying recipes with query:', query);
 
     const { sortBy, ...searchAndFilterQuery } = query;
     const qb = this.recipeRepository.createQueryBuilder('recipe');
 
-    qb.leftJoinAndSelect('recipe.cuisine', 'cuisine')
+    qb.distinct(true)
+      .leftJoinAndSelect('recipe.cuisine', 'cuisine')
       .leftJoinAndSelect('recipe.ingredients', 'ingredient')
       .leftJoinAndSelect('ingredient.productCategories', 'productCategory')
       .leftJoinAndSelect('recipe.tags', 'tag')
@@ -176,17 +177,27 @@ export class QueryRecipeService {
 
     this.applySorting(qb, sortBy);
 
-    return paginate(
+    qb.addGroupBy('recipe.id')
+      .addGroupBy('cuisine.id')
+      .addGroupBy('ingredient.id')
+      .addGroupBy('productCategory.id')
+      .addGroupBy('tag.id');
+
+    const results = await paginate<IRecipe>(
       {
-        ...searchAndFilterQuery,
         path: '/query/recipes',
+        page: query.page,
+        limit: query.limit,
       },
       qb,
       {
-        defaultLimit: 25,
         sortableColumns: ['createdAt'],
+
+        defaultLimit: 10,
       },
     );
+
+    return results;
   }
 
   async findOne(id: string): Promise<IRecipe> {

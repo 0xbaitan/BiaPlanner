@@ -26,7 +26,6 @@ import ProtectedPagesContainer from "./components/layouts/ProtectedPagesContaine
 import PublicPagesContainer from "./components/layouts/PublicPagesContainer";
 import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/RecipeTagsPage";
 import RecipesListPage from "./features/recipe-management/_recipes/pages/RecipesListPage";
-import SelectRecipePage from "./features/meal-planning/_meal-plans/pages/SelectRecipePage";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/product-catalogue/_products/pages/UpdateProductPage";
@@ -107,7 +106,7 @@ export default function Routes() {
 
           <Route path={RoutePaths.MEAL_PLANS} element={<MealPlansPage />} />
           <Route path={RoutePaths.MEAL_PLANS_CREATE} element={<CreateMealPlanPage />} />
-          <Route path={RoutePaths.MEAL_PLANS_SELECT_RECIPE} element={<SelectRecipePage />} />
+
           <Route path={RoutePaths.MEAL_PLANS_VIEW} element={<ViewRecipePage />} />
           <Route path={RoutePaths.MEAL_PLANS_EDIT} element={<EditRecipePage />} />
           <Route path={RoutePaths.RECIPES} element={<RecipesListPage />} />
