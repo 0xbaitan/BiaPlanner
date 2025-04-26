@@ -3,6 +3,7 @@ import { IQueryShoppingListResultsDto, IShoppingList } from "@biaplanner/shared"
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { FaPencil } from "react-icons/fa6";
+import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteShoppingListMutation } from "@/apis/ShoppingListsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
@@ -54,6 +55,16 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
               accessorFn: (row) => (row.plannedDate ? new Date(row.plannedDate).toLocaleDateString() : "N/A"),
               accessorKey: "plannedDate",
             },
+            {
+              accessorKey: "Status",
+              cell: (cell) => {
+                const status = cell.row.original.isShoppingComplete;
+                if (status) {
+                  return <Pill status="success">Done</Pill>;
+                }
+                return <Pill status="warning">Pending</Pill>;
+              },
+            },
           ],
         },
       ]}
@@ -65,6 +76,7 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           onClick(row) {
             navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_EDIT, { id: row.id }));
           },
+          hideConditionally: (row) => !!row.isShoppingComplete,
         },
         {
           type: "delete",
@@ -79,11 +91,9 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           label: "Mark as done",
           icon: FaShoppingCart,
           onClick(row) {
-            if (row.isShoppingComplete) {
-              return;
-            }
             navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_MARK_DONE, { id: row.id }));
           },
+          hideConditionally: (row) => !!row.isShoppingComplete,
         },
       ]}
     />

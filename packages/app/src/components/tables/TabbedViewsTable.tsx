@@ -8,7 +8,6 @@ import { IconBase } from "react-icons";
 import { FaEllipsisV as KebabIcon } from "react-icons/fa";
 import BootstrapTable from "react-bootstrap/Table";
 import { IconType } from "react-icons";
-import Button from "react-bootstrap/esm/Button";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import "../styles/TabbedViewsTable.scss";
@@ -18,6 +17,7 @@ export type TabbedViewsTableAction<T> = {
   label: string;
   icon: IconType;
   onClick: (row: T) => void;
+  hideConditionally?: (row: T) => boolean;
 };
 export type TabbedViewsTableProps<T> = {
   data: T[];
@@ -69,17 +69,24 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
   const { actions } = props;
   const renderActionsKebabMenu = useCallback(
     (row: T) => {
-      const kebabContent = actions?.map((action) => {
-        const ActionIcon = action.icon;
-        return (
-          <Dropdown.Item key={action.label} onClick={() => action.onClick(row)} className="bp-tabbed_views_table__dropdown_item">
-            <div className="bp-tabbed_views_table__dropdown_item_content">
-              <ActionIcon className="bp-tabbed_views_table__action_icon me-2" />
-              <span className="bp-tabbed_views_table__action_label">{action.label}</span>
-            </div>
-          </Dropdown.Item>
-        );
-      });
+      const kebabContent = actions
+        ?.filter((action) => {
+          if (action.hideConditionally) {
+            return !action.hideConditionally(row);
+          }
+          return true;
+        })
+        .map((action) => {
+          const ActionIcon = action.icon;
+          return (
+            <Dropdown.Item key={action.label} onClick={() => action.onClick(row)} className="bp-tabbed_views_table__dropdown_item">
+              <div className="bp-tabbed_views_table__dropdown_item_content">
+                <ActionIcon className="bp-tabbed_views_table__action_icon me-2" />
+                <span className="bp-tabbed_views_table__action_label">{action.label}</span>
+              </div>
+            </Dropdown.Item>
+          );
+        });
 
       const kebabMenu = <Dropdown className="bp-tabbed_views_table__kebab_dropdown">{kebabContent}</Dropdown>;
       const kebabMenuPopup = (

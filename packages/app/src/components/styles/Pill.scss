@@ -1,11 +1,42 @@
 .bp-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5em 1em;
-  border-radius: 1em;
-  background-color: $colors-dark-grey;
-  color: $colors-white;
-  font-size: 0.9rem;
+  display: inline-block;
+  padding: 0.8em 1.5em;
+  font-size: 0.85rem;
   font-weight: 600;
+  border-radius: 1.5em;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  color: #fff;
+
+  &.default {
+    background-color: $colors-secondary;
+    border: 1px solid darken($colors-secondary, 10);
+  }
+
+  &.success {
+    background-color: #28a745; /* Green */
+    border: 1px solid #218838;
+  }
+
+  &.warning {
+    background-color: #ffc107; /* Yellow */
+    border: 1px solid #e0a800;
+    color: #212529;
+  }
+
+  &.error {
+    background-color: #dc3545; /* Red */
+    border: 1px solid #c82333;
+  }
+
+  &.info {
+    background-color: #17a2b8; /* Blue */
+    border: 1px solid #117a8b;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
 }
