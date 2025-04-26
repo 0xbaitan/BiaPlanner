@@ -10,10 +10,14 @@ import {
 } from '@nestjs/common';
 import { CuisineService } from './cuisine.service';
 import {
-  CreateCuisineDto,
   ICuisine,
-  UpdateCuisineDto,
+  IWriteCuisineDto,
+  IWriteRecipeDto,
+  WriteCuisineDtoSchema,
 } from '@biaplanner/shared';
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const WriteCuisineValidationPipe = new ZodValidationPipe(WriteCuisineDtoSchema);
 
 @Controller('/meal-plan/cuisines')
 export class CuisineController {
@@ -32,7 +36,9 @@ export class CuisineController {
   }
 
   @Post('/')
-  async createCuisine(@Body() dto: CreateCuisineDto): Promise<ICuisine> {
+  async createCuisine(
+    @Body(WriteCuisineValidationPipe) dto: ICuisine,
+  ): Promise<ICuisine> {
     const newCuisine = await this.cuisineService.create(dto);
     return newCuisine;
   }
@@ -40,7 +46,7 @@ export class CuisineController {
   @Put('/:id')
   async updateCuisine(
     @Param('id') id: string,
-    @Body() dto: UpdateCuisineDto,
+    @Body(WriteCuisineValidationPipe) dto: IWriteCuisineDto,
   ): Promise<ICuisine> {
     const updatedCuisine = await this.cuisineService.update(id, dto);
     return updatedCuisine;

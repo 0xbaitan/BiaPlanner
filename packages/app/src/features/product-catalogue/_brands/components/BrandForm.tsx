@@ -61,13 +61,16 @@ export default function BrandForm(props: BrandFormProps) {
     <SinglePaneForm
       onSubmit={handleSubmit(submitForm)}
       className="bp-brand_form"
-      breadcrumbs={
-        <Breadcrumb>
-          <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-          <Breadcrumb.Item href="/brands">Brands</Breadcrumb.Item>
-          <Breadcrumb.Item active>{type === "create" ? "Create Brand" : "Update Brand"}</Breadcrumb.Item>
-        </Breadcrumb>
-      }
+      breadcrumbs={[
+        {
+          label: "Brands",
+          href: RoutePaths.BRANDS,
+        },
+        {
+          label: type === "create" ? "Create brand" : "Edit brand",
+          href: undefined,
+        },
+      ]}
       headerTitle={type === "create" ? "Create brand" : "Edit brand"}
       headerActions={
         <>
@@ -77,7 +80,7 @@ export default function BrandForm(props: BrandFormProps) {
           </Button>
           <Button type="submit" variant="primary" disabled={disableSubmit}>
             <FaSave />
-            <span className="ms-2">Save recipe</span>
+            <span className="ms-2">Save brand</span>
           </Button>
         </>
       }

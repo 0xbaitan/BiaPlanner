@@ -1,41 +1,36 @@
-import { ICreateCuisineDto, ICuisine } from "@biaplanner/shared";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
-
 import CuisinesForm from "../components/CuisinesForm";
-import { Status } from "@/hooks/useStatusToast";
+import { RoutePaths } from "@/Routes";
 import { useCreateCuisineMutation } from "@/apis/CuisinesApi";
+import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function AdminCreateCuisinePage() {
   const [createCuisine, { isLoading, isSuccess, isError }] = useCreateCuisineMutation();
-
-  const { setItem } = useDefaultStatusToast<ICuisine>({
-    action: Action.CREATE,
-    entityIdentifier: (entity) => entity.name,
-    idPrefix: "cuisine",
+  const navigate = useNavigate();
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "create-cuisine",
+    successMessage: "Cuisine created successfully",
+    errorMessage: "Failed to create cuisine",
+    loadingMessage: "Creating cuisine...",
+    isSuccess,
     isError,
     isLoading,
-    isSuccess,
-    idSelector: (entity) => entity?.id ?? "new",
-    toastProps: {
-      autoClose: 5000,
+    onSuccess: () => {
+      console.log("Cuisine created successfully");
+      navigate(RoutePaths.CUISINES_VIEW);
     },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectUrl: "/admin/cuisines",
-      redirectButtonText: "Return to Cuisines",
+    onFailure: () => {
+      console.error("Failed to create cuisine");
     },
   });
-  return (
-    <div>
-      <h1>Create Cuisine</h1>
 
-      <CuisinesForm
-        type="create"
-        onSubmit={async (dto) => {
-          setItem(dto as ICuisine);
-          await createCuisine(dto as ICreateCuisineDto);
-        }}
-      />
-    </div>
+  return (
+    <CuisinesForm
+      type="create"
+      onSubmit={async (dto) => {
+        notify();
+        await createCuisine(dto);
+      }}
+    />
   );
 }

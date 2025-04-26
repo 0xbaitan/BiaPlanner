@@ -1,4 +1,4 @@
-import { ICreateRecipeTagDto, IQueryRecipeTagDto, IQueryRecipeTagItemDto, IRecipeTag, IUpdateRecipeTagDto, Paginated } from "@biaplanner/shared";
+import { IQueryRecipeTagDto, IQueryRecipeTagItemDto, IRecipeTag, IWriteRecipeTagDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -21,7 +21,7 @@ const recipeTagsApi = rootApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "RecipeTag", id }],
     }),
 
-    createRecipeTag: build.mutation<void, ICreateRecipeTagDto>({
+    createRecipeTag: build.mutation<void, IWriteRecipeTagDto>({
       query: (dto) => ({
         url: "/meal-plan/recipe-tags",
         method: "POST",
@@ -30,9 +30,9 @@ const recipeTagsApi = rootApi.injectEndpoints({
       invalidatesTags: [{ type: "RecipeTag" as const, id: "LIST" }],
     }),
 
-    updateRecipeTag: build.mutation<void, IUpdateRecipeTagDto>({
-      query: (dto) => ({
-        url: `/meal-plan/recipe-tags/${dto.id}`,
+    updateRecipeTag: build.mutation<void, { id: string; dto: IWriteRecipeTagDto }>({
+      query: ({ id, dto }) => ({
+        url: `/meal-plan/recipe-tags/${id}`,
         method: "PUT",
         body: dto,
       }),

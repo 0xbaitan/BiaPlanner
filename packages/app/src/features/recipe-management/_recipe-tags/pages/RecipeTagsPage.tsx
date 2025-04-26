@@ -18,7 +18,7 @@ export default function RecipeTagsPage() {
   const navigate = useNavigate();
 
   const { recipeTagsQuery } = useRecipeTagsCrudListState();
-  const { setSearch, setPage, setLimit, setSortBy } = useRecipeTagsCrudListActions();
+  const { setSearch, setPage, setLimit } = useRecipeTagsCrudListActions();
   const {
     recipeTagsQuery: { search },
   } = useRecipeTagsCrudListState();
@@ -28,7 +28,7 @@ export default function RecipeTagsPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, searchTermUsed, totalPages } = calculatePaginationMeta(recipeTagsQuery.limit ?? 25, results);
+  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationMeta(recipeTagsQuery.limit ?? 25, results);
 
   const recipeTagsTable = useMemo(() => {
     return <RecipeTagsTable data={results?.items ?? []} />;

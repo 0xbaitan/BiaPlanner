@@ -1,41 +1,31 @@
-import { ICreateRecipeTagDto, IRecipeTag, IUpdateRecipeTagDto } from "@biaplanner/shared";
+import { IRecipeTag, IWriteRecipeTagDto, WriteRecipeTagDtoSchema } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/esm/Button";
-import Form from "react-bootstrap/Form";
+import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type RecipeTagFormValues = ICreateRecipeTagDto | ICreateRecipeTagDto;
-
 export type RecipeTagFormProps = {
   type: "create" | "update";
   disableSubmit?: boolean;
   initialValue?: Partial<IRecipeTag>;
-  onSubmit: (values: RecipeTagFormValues) => void;
+  onSubmit: (values: IWriteRecipeTagDto) => void;
 };
-
-export const CreateRecipeTagValidationSchema: z.ZodType<ICreateRecipeTagDto> = z.object({
-  name: z.string().min(1, { message: "Recipe tag name is required" }),
-});
-
-export const UpdateRecipeTagValidationSchema: z.ZodType<IUpdateRecipeTagDto> = z.object({
-  id: z.string().min(1, { message: "Recipe tag id is required" }),
-  name: z.string().min(1, { message: "Recipe tag name is required" }),
-});
 
 export default function RecipeTagForm(props: RecipeTagFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
 
-  const methods = useForm<RecipeTagFormValues>({
+  const methods = useForm<IWriteRecipeTagDto>({
     defaultValues: {
       ...initialValue,
       name: initialValue?.name ?? "",
+      description: initialValue?.description ?? "",
     },
     mode: "onBlur",
-    resolver: zodResolver(type === "create" ? CreateRecipeTagValidationSchema : UpdateRecipeTagValidationSchema),
+    resolver: zodResolver(WriteRecipeTagDtoSchema),
   });
 
   const {
@@ -45,26 +35,57 @@ export default function RecipeTagForm(props: RecipeTagFormProps) {
     formState: { errors },
   } = methods;
 
-  const initiateSubmit = useCallback(async () => {
-    const values = getValues();
-    onSubmit(values);
-  }, [getValues, onSubmit]);
+  const initiateSubmit = useCallback(
+    async (values: IWriteRecipeTagDto) => {
+      onSubmit(values);
+    },
+    [onSubmit]
+  );
 
   return (
-    <Form onSubmit={handleSubmit(initiateSubmit)}>
-      <TextInput
-        label="Recipe tag name"
-        defaultValue={initialValue?.name ?? ""}
-        error={errors.name ? errors.name.message : undefined}
-        onChange={(e) => {
-          const value = e.target.value;
-          setValue("name", value);
-        }}
-      />
-
-      <Button type="submit" disabled={disableSubmit}>
-        Submit
-      </Button>
-    </Form>
+    <SinglePaneForm
+      onSubmit={handleSubmit(initiateSubmit)}
+      className="bp-recipe_tag_form"
+      breadcrumbs={[
+        {
+          label: "Recipe Tags",
+          href: "/recipe-tags",
+        },
+        {
+          label: type === "create" ? "Create Recipe Tag" : "Edit Recipe Tag",
+        },
+      ]}
+      headerTitle={type === "create" ? "Create Recipe Tag" : "Edit Recipe Tag"}
+      headerActions={
+        <Button type="submit" variant="primary" disabled={disableSubmit}>
+          Submit
+        </Button>
+      }
+      paneContent={
+        <div className="bp-recipe_tag_form__pane_content">
+          <TextInput
+            label="Tag Name"
+            defaultValue={initialValue?.name ?? ""}
+            value={getValues("name")}
+            error={errors.name ? errors.name.message : undefined}
+            onChange={(e) => {
+              const value = e.target.value;
+              setValue("name", value);
+            }}
+          />
+          <TextInput
+            label="Tag Description"
+            defaultValue={initialValue?.description ?? ""}
+            value={getValues("description") ?? undefined}
+            error={errors.description ? errors.description.message : undefined}
+            onChange={(e) => {
+              const value = e.target.value;
+              setValue("description", value);
+            }}
+            as="textarea"
+          />
+        </div>
+      }
+    />
   );
 }

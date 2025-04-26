@@ -8,7 +8,6 @@ import AdminCreateProductCategoryPage from "./features/product-catalogue/_produc
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import AdminUpdateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/AdminUpdateProductCategoryPage";
-import AdminUpdateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminUpdateRecipeTagPage";
 import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
@@ -16,6 +15,7 @@ import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppi
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
+import EditRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/EditRecipeTagPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
@@ -124,7 +124,7 @@ export default function Routes() {
           <Route path={RoutePaths.RECIPE_TAGS} element={<RecipeTagsPage />} />
           <Route path={RoutePaths.RECIPE_TAGS_CREATE} element={<AdminCreateRecipeTagPage />} />
           <Route path={RoutePaths.RECIPE_TAGS_VIEW} element={<RecipeTagsPage />} />
-          <Route path={RoutePaths.RECIPE_TAGS_EDIT} element={<AdminUpdateRecipeTagPage />} />
+          <Route path={RoutePaths.RECIPE_TAGS_EDIT} element={<EditRecipeTagPage />} />
           <Route path={RoutePaths.SHOPPING_LISTS} element={<ShoppingListsPage />} />
 
           <Route path={RoutePaths.SHOPPING_LISTS_CREATE} element={<CreateShoppingListPage />} />

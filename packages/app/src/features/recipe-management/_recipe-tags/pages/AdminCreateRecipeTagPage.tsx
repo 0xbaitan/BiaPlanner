@@ -1,41 +1,36 @@
-import { ICreateRecipeTagDto, IRecipeTag } from "@biaplanner/shared";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
-
 import RecipeTagForm from "../components/RecipeTagForm";
-import { Status } from "@/hooks/useStatusToast";
+import { RoutePaths } from "@/Routes";
 import { useCreateRecipeTagMutation } from "@/apis/RecipeTagsApi";
+import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function AdminCreateRecipeTagPage() {
   const [createRecipeTag, { isLoading, isSuccess, isError }] = useCreateRecipeTagMutation();
 
-  const { setItem } = useDefaultStatusToast<IRecipeTag>({
-    action: Action.CREATE,
-    entityIdentifier: (entity) => entity.name,
-    idPrefix: "recipe-tag",
+  const navigate = useNavigate();
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "create-recipe-tag",
+    successMessage: "Recipe tag created successfully",
+    errorMessage: "Failed to create recipe tag",
+    loadingMessage: "Creating recipe tag...",
+    isSuccess,
     isError,
     isLoading,
-    isSuccess,
-    idSelector: (entity) => entity?.id ?? "new",
-    toastProps: {
-      autoClose: 5000,
+    onSuccess: () => {
+      console.log("Recipe tag created successfully");
+      navigate(RoutePaths.RECIPE_TAGS);
     },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectUrl: "/admin/recipe-tags",
-      redirectButtonText: "Return to Recipe tags",
+    onFailure: () => {
+      console.error("Failed to create recipe tag");
     },
   });
   return (
-    <div>
-      <h1>Create Recipe Tag</h1>
-
-      <RecipeTagForm
-        type="create"
-        onSubmit={async (dto) => {
-          setItem(dto as IRecipeTag);
-          await createRecipeTag(dto as ICreateRecipeTagDto);
-        }}
-      />
-    </div>
+    <RecipeTagForm
+      type="create"
+      onSubmit={async (dto) => {
+        notify();
+        await createRecipeTag(dto);
+      }}
+    />
   );
 }

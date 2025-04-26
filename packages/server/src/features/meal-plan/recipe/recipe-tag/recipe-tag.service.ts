@@ -1,12 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RecipeTagEntity } from './recipe-tag.entity';
 import { Repository } from 'typeorm';
-import {
-  ICreateRecipeTagDto,
-  IRecipeTag,
-  IUpdateRecipeTagDto,
-} from '@biaplanner/shared';
+import { IRecipeTag, IWriteRecipeTagDto } from '@biaplanner/shared';
 
 @Injectable()
 export class RecipeTagService {
@@ -30,15 +26,18 @@ export class RecipeTagService {
     });
   }
 
-  async create(dto: ICreateRecipeTagDto): Promise<IRecipeTag> {
+  async create(dto: IWriteRecipeTagDto): Promise<IRecipeTag> {
     const recipeTag = this.recipeTagRepository.create(dto);
     return this.recipeTagRepository.save(recipeTag);
   }
 
-  async update(id: string, dto: IUpdateRecipeTagDto): Promise<IRecipeTag> {
+  async update(id: string, dto: IWriteRecipeTagDto): Promise<IRecipeTag> {
+    const result = await this.recipeTagRepository.update(id, dto);
+    if (!result.affected) {
+      throw new BadRequestException('Recipe tag not found');
+    }
     const recipeTag = await this.findOne(id);
-    const updatedRecipeTag = this.recipeTagRepository.merge(recipeTag, dto);
-    return this.recipeTagRepository.save(updatedRecipeTag);
+    return recipeTag;
   }
 
   async delete(id: string): Promise<void> {

@@ -1,5 +1,6 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { IQueryRecipeTagItemDto, IRecipeTag } from "@biaplanner/shared";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
@@ -68,7 +69,8 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
           label: "Edit Recipe Tag",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.id}`);
+            if (!row.id) return;
+            navigate(fillParametersInPath(RoutePaths.RECIPE_TAGS_EDIT, { id: row.id }));
           },
         },
 

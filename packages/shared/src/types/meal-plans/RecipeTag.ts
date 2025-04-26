@@ -9,20 +9,12 @@ export interface IRecipeTag extends IBaseEntity {
   recipes?: IRecipe[];
 }
 
-export interface ICreateRecipeTagDto extends Pick<IRecipeTag, "name" | "description"> {}
+export const WriteRecipeTagDtoSchema = z.object({
+  name: z.string().min(1, { message: "Recipe tag name is required" }),
+  description: z.string().optional().nullable(),
+});
 
-export interface IUpdateRecipeTagDto extends Partial<ICreateRecipeTagDto>, Pick<IRecipeTag, "id"> {}
-
-export class CreateRecipeTagDto implements ICreateRecipeTagDto {
-  name: string;
-  description?: string;
-}
-
-export class UpdateRecipeTagDto implements IUpdateRecipeTagDto {
-  id: string;
-  name?: string;
-  description?: string;
-}
+export type IWriteRecipeTagDto = z.infer<typeof WriteRecipeTagDtoSchema>;
 
 export enum RecipeTagSortBy {
   RECIPE_TAG_NAME_A_TO_Z = "RECIPE_TAG_NAME_A_TO_Z",

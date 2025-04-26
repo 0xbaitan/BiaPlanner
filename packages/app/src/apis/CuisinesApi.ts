@@ -1,4 +1,4 @@
-import { ICreateCuisineDto, ICuisine, IQueryCuisineParamsDto, IQueryCuisineResultsDto, IUpdateCuisineDto, Paginated } from "@biaplanner/shared";
+import { ICuisine, IQueryCuisineParamsDto, IQueryCuisineResultsDto, IWriteCuisineDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -21,8 +21,8 @@ export const cuisinesApi = rootApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Cuisine", id }],
     }),
 
-    createCuisine: build.mutation<ICuisine, ICreateCuisineDto>({
-      query: (dto: ICreateCuisineDto) => ({
+    createCuisine: build.mutation<ICuisine, IWriteCuisineDto>({
+      query: (dto: IWriteCuisineDto) => ({
         url: "/meal-plan/cuisines",
         method: "POST",
         body: dto,
@@ -30,9 +30,15 @@ export const cuisinesApi = rootApi.injectEndpoints({
       invalidatesTags: [{ type: "Cuisine", id: "LIST" }],
     }),
 
-    updateCuisine: build.mutation<ICuisine, IUpdateCuisineDto>({
-      query: (dto) => ({
-        url: `/meal-plan/cuisines/${dto.id}`,
+    updateCuisine: build.mutation<
+      ICuisine,
+      {
+        id: string;
+        dto: IWriteCuisineDto;
+      }
+    >({
+      query: ({ id, dto }) => ({
+        url: `/meal-plan/cuisines/${id}`,
         method: "PUT",
         body: dto,
       }),

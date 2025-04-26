@@ -1,10 +1,10 @@
-import { IRecipe, IRecipeTag, IUpdateRecipeTagDto, IWriteRecipeDto } from "@biaplanner/shared";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
-import { useGetRecipeTagQuery, useUpdateRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useNavigate, useParams } from "react-router-dom";
 
+// import GenericSinglePaneFormPage from "@/pages/GenericSinglePaneFormPage";
+import { IWriteRecipeDto } from "@biaplanner/shared";
 import RecipeForm from "../components/RecipeForm";
 import { Status } from "@/hooks/useStatusToast";
 
@@ -58,14 +58,6 @@ export default function EditRecipePage() {
 
   if (isReadLoading) {
     return <div>Loading...</div>;
-  }
-
-  if (isReadError) {
-    return <div>Error loading recipe</div>;
-  }
-
-  if (!recipe) {
-    return <div>Could not find the recipe</div>;
   }
 
   return <div>{recipe ? <RecipeForm type="update" initialValue={recipe} onSubmit={handleUpdateRecipeSubmission} disableSubmit={isUpdateLoading} /> : <div>Could not find the recipe</div>}</div>;

@@ -9,7 +9,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { RecipeTagService } from './recipe-tag.service';
-import { CreateRecipeTagDto, UpdateRecipeTagDto } from '@biaplanner/shared';
+import {
+  IWriteRecipeTagDto,
+  WriteRecipeTagDtoSchema,
+} from '@biaplanner/shared';
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const WriteRecipeDtoValidationPipe = new ZodValidationPipe(
+  WriteRecipeTagDtoSchema,
+);
 
 @Controller('meal-plan/recipe-tags')
 export class RecipeTagController {
@@ -29,12 +37,15 @@ export class RecipeTagController {
   }
 
   @Post()
-  async create(@Body() dto: CreateRecipeTagDto) {
+  async create(@Body(WriteRecipeDtoValidationPipe) dto: IWriteRecipeTagDto) {
     return this.recipeTagService.create(dto);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateRecipeTagDto) {
+  async update(
+    @Param('id') id: string,
+    @Body(WriteRecipeDtoValidationPipe) dto: IWriteRecipeTagDto,
+  ) {
     return this.recipeTagService.update(id, dto);
   }
 

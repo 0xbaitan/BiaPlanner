@@ -1,0 +1,26 @@
+.bp-form__loading,
+.bp-form__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.bp-form__loading__spinner {
+  width: 3rem;
+  height: 3rem;
+  color: #0d6efd; // Bootstrap primary color
+}
+
+.bp-form__loading__message,
+.bp-form__error__message {
+  font-size: 1.125rem;
+  color: #6c757d; // Bootstrap muted text color
+}
+
+.bp-form__error__retry_button {
+  margin-top: 1rem;
+}

@@ -9,20 +9,12 @@ export interface ICuisine extends IBaseEntity {
   recipes?: IRecipe[];
 }
 
-export interface ICreateCuisineDto extends Pick<ICuisine, "name" | "description"> {}
+export const WriteCuisineDtoSchema = z.object({
+  name: z.string().min(1, { message: "Cuisine name is required" }),
+  description: z.string().optional().nullable(),
+});
 
-export interface IUpdateCuisineDto extends Partial<ICreateCuisineDto>, Pick<ICuisine, "id"> {}
-
-export class CreateCuisineDto implements ICreateCuisineDto {
-  name: string;
-  description?: string;
-}
-
-export class UpdateCuisineDto implements IUpdateCuisineDto {
-  id: string;
-  name?: string;
-  description?: string;
-}
+export type IWriteCuisineDto = z.infer<typeof WriteCuisineDtoSchema>;
 
 export enum CuisineSortBy {
   CUISINE_NAME_A_TO_Z = "CUISINE_NAME_A_TO_Z",
