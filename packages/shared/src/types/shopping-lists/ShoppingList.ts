@@ -70,6 +70,12 @@ export const WriteShoppingListSchema = z.object({
 
 export type IWriteShoppingListDto = z.infer<typeof WriteShoppingListSchema>;
 
+export const MarkShoppingListDoneSchema = WriteShoppingListSchema.extend({
+  items: z.array(WriteShoppingListItemSchema).min(1, "At least one item is required"),
+});
+
+export type IMarkShoppingListDoneDto = z.infer<typeof MarkShoppingListDoneSchema>;
+
 export enum ShoppingListSortBy {
   TITLE_A_TO_Z = "TITLE_A_TO_Z",
   TITLE_Z_TO_A = "TITLE_Z_TO_A",

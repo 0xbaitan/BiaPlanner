@@ -1,4 +1,4 @@
-import { ICreateShoppingListDto, IShoppingList, IUpdateShoppingListDto, IUpdateShoppingListExtendedDto, IWriteShoppingListDto, Paginated } from "@biaplanner/shared";
+import { ICreateShoppingListDto, IMarkShoppingListDoneDto, IShoppingList, IUpdateShoppingListDto, IUpdateShoppingListExtendedDto, IWriteShoppingListDto, Paginated } from "@biaplanner/shared";
 import { IQueryShoppingListFilterParams, IQueryShoppingListResultsDto } from "@biaplanner/shared";
 
 import { rootApi } from ".";
@@ -53,11 +53,11 @@ export const shoppingListsApi = rootApi.injectEndpoints({
       providesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg }],
     }),
 
-    markShoppingDone: build.mutation<IShoppingList, IUpdateShoppingListExtendedDto>({
-      query: (body) => ({
-        url: `/mark-shopping-done`,
-        method: "POST",
-        body,
+    markShoppingDone: build.mutation<IShoppingList, { id: string; dto: IMarkShoppingListDoneDto }>({
+      query: ({ id, dto }) => ({
+        url: `/mark-shopping-done/${id}`,
+        method: "PUT",
+        body: dto,
       }),
       invalidatesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg.id }],
     }),

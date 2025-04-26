@@ -1,13 +1,15 @@
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetShoppingListQuery, useMarkShoppingDoneMutation } from "@/apis/ShoppingListsApi";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
+import { useNavigate, useParams } from "react-router-dom";
 
 import BrowseProductsOffcanvas from "../components/BrowseProductsOffcanvas";
 import { IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
 import MarkShoppingDoneForm from "../components/MarkShoppingDoneForm";
+import { RoutePaths } from "@/Routes";
 import { Status } from "@/hooks/useStatusToast";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 function MarkShoppingDonePage() {
   const { id } = useParams();
@@ -22,29 +24,24 @@ function MarkShoppingDonePage() {
     refetchOnFocus: true,
     refetchOnReconnect: true,
   });
+  const navigate = useNavigate();
 
   const [markShoppingDone, { isSuccess: isMarkingSuccess, isError: isMarkingError, isLoading: isMarkingLoading }] = useMarkShoppingDoneMutation();
 
   const { resetFormState } = useMarkShoppingDoneActions();
 
-  const { notify, setItem } = useDefaultStatusToast<IUpdateShoppingListExtendedDto>({
-    action: Action.UPDATE,
-    entityIdentifier: (item) => item.title ?? "Shopping List",
-    idPrefix: "shopping-list",
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "mark-shopping-done",
+    errorMessage: "Error marking shopping list as done",
+    successMessage: "Shopping list marked as done",
+    loadingMessage: "Currently marking shopping list as done...",
     isError: isMarkingError,
     isLoading: isMarkingLoading,
     isSuccess: isMarkingSuccess,
-    idSelector: (item) => item?.id ?? "new",
-    toastProps: {
-      autoClose: 5000,
-    },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectUrl: "/shopping-lists",
-      redirectButtonText: "Return to Shopping Lists",
+    onSuccess: () => {
+      navigate(RoutePaths.SHOPPING_LISTS);
     },
   });
-
   useEffect(() => {
     return () => {
       resetFormState();
@@ -60,9 +57,12 @@ function MarkShoppingDonePage() {
         <MarkShoppingDoneForm
           initialValue={shoppingList}
           onSubmit={async (values) => {
-            setItem(values);
+            if (!id) {
+              console.error("No id provided");
+              return;
+            }
             notify();
-            await markShoppingDone(values);
+            await markShoppingDone({ id, dto: values });
           }}
         />
       )}

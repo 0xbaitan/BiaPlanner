@@ -9,11 +9,11 @@ import NormalVariantProductCard from "./NormalVariantProductCard";
 import ReplacementVariantProductCard from "./ReplacementVariantProductCard";
 
 export type ShoppingListItemFunctions = {
-  addItemToShoppingList: (item: IWriteShoppingItemDto) => void;
-  removeItemFromShoppingList: (productId: string) => void;
-  updateItemInShoppingList: (item: IWriteShoppingItemDto) => void;
-  getItemInShoppingList: (productId: string) => IWriteShoppingItemDto | null;
-  isPresentInList: (productId: string) => boolean;
+  addItemToShoppingList?: (item: IWriteShoppingItemDto) => void;
+  removeItemFromShoppingList?: (productId: string) => void;
+  updateItemInShoppingList?: (item: IWriteShoppingItemDto) => void;
+  getItemInShoppingList?: (productId: string) => IWriteShoppingItemDto | null;
+  isPresentInList?: (productId: string) => boolean;
 };
 
 export type ProductCardProps = {

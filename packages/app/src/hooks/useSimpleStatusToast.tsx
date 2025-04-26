@@ -60,7 +60,7 @@ export default function useSimpleStatusToast(props: StatusToastProps) {
       notify();
     }
 
-    if (isSuccess) {
+    if (isSuccess || isError) {
       setIsActive(false);
     }
 

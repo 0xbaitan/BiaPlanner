@@ -15,8 +15,8 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
   const imagePath = getImagePath(product.cover as IFile);
   const { addItemToShoppingList, getItemInShoppingList, isPresentInList, removeItemFromShoppingList, updateItemInShoppingList } = shoppingListItemFunctions;
 
-  const item = getItemInShoppingList(product.id);
-  const alreadyAdded = isPresentInList(product.id);
+  const item = getItemInShoppingList?.(product.id);
+  const alreadyAdded = isPresentInList?.(product.id);
 
   console.log("aleadyAdded", alreadyAdded);
 
@@ -47,7 +47,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
             <Button
               variant="outline-primary"
               onClick={() =>
-                addItemToShoppingList({
+                addItemToShoppingList?.({
                   quantity: 1,
                   productId: product.id,
                 })
@@ -66,9 +66,9 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity - 1 : 0;
                   if (newQuantity > 0) {
-                    updateItemInShoppingList({ productId: product.id, quantity: newQuantity });
+                    updateItemInShoppingList?.({ productId: product.id, quantity: newQuantity });
                   } else {
-                    removeItemFromShoppingList(product.id);
+                    removeItemFromShoppingList?.(product.id);
                   }
                 }}
               >
@@ -81,7 +81,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
                 size="sm"
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity + 1 : 0;
-                  updateItemInShoppingList({ productId: product.id, quantity: newQuantity });
+                  updateItemInShoppingList?.({ productId: product.id, quantity: newQuantity });
                 }}
               >
                 <FaPlus />
@@ -97,7 +97,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
               className="bp-cancel_button"
               size="sm"
               onClick={() => {
-                removeItemFromShoppingList(product.id);
+                removeItemFromShoppingList?.(product.id);
               }}
             >
               <FaTrashCan />

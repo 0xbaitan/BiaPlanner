@@ -5,6 +5,9 @@ import {
   IShoppingItem,
   IUpdateShoppingListExtendedDto,
   ICreatePantryItemDto,
+  IMarkShoppingListDoneDto,
+  IWriteShoppingItemWithExpiryDto,
+  IWriteShoppingItemExtendedDto,
 } from '@biaplanner/shared';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShoppingListEntity } from './shopping-list.entity';
@@ -20,8 +23,8 @@ export class MarkShoppingDoneService {
     private readonly pantryItemService: PantryItemService,
   ) {}
 
-  private createPantryItems(
-    items: IUpdateShoppingItemExtendedDto[],
+  private reshapeToCreatePantryItemDto(
+    items: IWriteShoppingItemExtendedDto[],
   ): ICreatePantryItemDto[] {
     return items
       .map((item): ICreatePantryItemDto => {
@@ -47,12 +50,11 @@ export class MarkShoppingDoneService {
   }
 
   async markShoppingDone(
-    dto: IUpdateShoppingListExtendedDto,
+    dto: IMarkShoppingListDoneDto,
     createdById: string,
   ): Promise<IUpdateShoppingListExtendedDto> {
-    const pantryItems: ICreatePantryItemDto[] = this.createPantryItems(
-      dto.items,
-    );
+    const pantryItems: ICreatePantryItemDto[] =
+      this.reshapeToCreatePantryItemDto(dto.items);
 
     const updatedShoppingList = await this.shoppingListRepository.save({
       ...dto,

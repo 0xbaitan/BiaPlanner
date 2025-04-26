@@ -1,7 +1,7 @@
 import "../styles/MarkShoppingDoneForm.scss";
 
 import { FaCheckCircle, FaSave } from "react-icons/fa";
-import { IShoppingList, IUpdateShoppingItemExtendedDto, IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
+import { IMarkShoppingListDoneDto, IShoppingList, IUpdateShoppingItemExtendedDto, IUpdateShoppingListExtendedDto, MarkShoppingListDoneSchema } from "@biaplanner/shared";
 import { useCallback, useEffect, useMemo } from "react";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
@@ -12,12 +12,13 @@ import { FormProvider } from "react-hook-form";
 import Heading from "@/components/Heading";
 import MarkShoppingItemsTable from "./MarkShoppingItemsTable";
 import { MdCancel } from "react-icons/md";
+import { useErrorToast } from "@/components/toasts/ErrorToast";
 import { useNavigate } from "react-router-dom";
 
 export type MarkShoppingDoneFormProps = {
   disableSubmit?: boolean;
   initialValue: IShoppingList;
-  onSubmit: (values: IUpdateShoppingListExtendedDto) => void;
+  onSubmit: (values: IMarkShoppingListDoneDto) => void;
 };
 
 export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
@@ -31,6 +32,8 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
     }
     return updatedShoppingItems;
   }, [isInEditMode, transientUpdatedShoppingItems, updatedShoppingItems]);
+
+  const { notify: notifyError } = useErrorToast();
   console.log("updatedShoppingItems", updatedShoppingItems);
   useEffect(() => {
     if (!isInitialised) {
@@ -43,12 +46,29 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
       ...initialValue,
       items: updatedShoppingItems,
     };
-    onSubmit(dto);
-  }, [initialValue, onSubmit, updatedShoppingItems]);
+
+    const validated = MarkShoppingListDoneSchema.safeParse(dto);
+    if (!validated.success) {
+      console.error("Validation failed", validated.error.format());
+      notifyError(
+        <div>
+          <p>Validation failed</p>
+          <ul>
+            {validated.error.format()._errors.map((error) => (
+              <li key={error}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      );
+      return;
+    }
+    const data: IMarkShoppingListDoneDto = validated.data;
+    console.log("data", data);
+    return onSubmit(data);
+  }, [initialValue, notifyError, onSubmit, updatedShoppingItems]);
 
   return (
     <div>
-      <BrowseProductsOffcanvas hideOffcanvas={hideOffcanvas} showOffcanvas={showOffcanvas} type={offCanvasType ?? "normal"} replacedProductName={currentItemToReplace?.name} />
       <DualPaneForm
         onSubmit={(e) => {
           e.preventDefault();
@@ -72,6 +92,8 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
         <DualPaneForm.Panel>
           <DualPaneForm.Panel.Pane className="bp-mark_done_form__shopping_list_details">
             <div>
+              <BrowseProductsOffcanvas showOffcanvas={showOffcanvas} hideOffcanvas={hideOffcanvas} type={offCanvasType ?? "normal"} shoppingListItemFunctions={{}} />
+
               <Heading level={Heading.Level.H2} className="bp-mark_done_form__shopping_list_details__title">
                 Review Shopping Items
               </Heading>

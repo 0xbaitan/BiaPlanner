@@ -21,7 +21,7 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
   const { data } = props;
   const { isInEditMode } = useMarkShoppingDoneState();
   const { updateQuantity, updateExpiryDate, cancelShoppingItem, uncancelShoppingItem, getIsItemOriginal, resetItemToOriginal, removeExtraShoppingItem, showReplacementOffcanvas, getOriginalItem } = useMarkShoppingDoneActions();
-  console.log("MarkShoppingItemsTable", data);
+
   return (
     <TabbedViewsTable<IShoppingItemExtended>
       data={data}

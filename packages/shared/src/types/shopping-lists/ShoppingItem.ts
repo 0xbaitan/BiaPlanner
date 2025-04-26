@@ -29,12 +29,23 @@ export const WriteShoppingListItemSchema = z.object({
   isCancelled: z.coerce.boolean().optional(),
 });
 
-export const WriteShoppingListItemSchemaExtended = WriteShoppingListItemSchema.extend({
-  replacement: WriteShoppingListItemSchema.optional(),
+export const WriteShoppingItemWithExpiry = WriteShoppingListItemSchema.extend({
+  expiryDate: z.coerce
+    .string()
+    .refine((val) => {
+      const date = new Date(val);
+      return !isNaN(date.getTime());
+    })
+    .optional(),
+});
+
+export const WriteShoppingItemExtended = WriteShoppingItemWithExpiry.extend({
+  replacement: WriteShoppingItemWithExpiry.optional(),
 });
 
 export type IWriteShoppingItemDto = z.infer<typeof WriteShoppingListItemSchema>;
-export type IWriteShoppingItemExtendedDto = z.infer<typeof WriteShoppingListItemSchemaExtended>;
+export type IWriteShoppingItemExtendedDto = z.infer<typeof WriteShoppingItemExtended>;
+export type IWriteShoppingItemWithExpiryDto = z.infer<typeof WriteShoppingItemWithExpiry>;
 
 export interface ICreateShoppingItemDto extends Pick<IShoppingItem, "productId" | "quantity"> {}
 
