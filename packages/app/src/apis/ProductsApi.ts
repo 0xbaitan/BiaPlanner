@@ -61,6 +61,20 @@ export const productsApi = rootApi.injectEndpoints({
       ],
     }),
 
+    deleteProduct: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Product", id },
+        {
+          type: "Product",
+          id: "LIST",
+        },
+      ],
+    }),
+
     searchProducts: build.query<Paginated<IProduct>, IQueryProductParamsDto>({
       query: (query) => ({
         url: `/query/products?${qs.stringify(query)}`,
@@ -90,4 +104,5 @@ export const {
   useLazySearchProductsQuery,
   useGetTopBrandedProductsQuery,
   useLazyGetTopBrandedProductsQuery,
+  useDeleteProductMutation,
 } = productsApi;

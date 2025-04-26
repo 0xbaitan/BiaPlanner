@@ -31,6 +31,7 @@ import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import UpdateProductPage from "./features/product-catalogue/_products/pages/UpdateProductPage";
 import ViewBrandPage from "@/features/product-catalogue/_brands/pages/ViewBrandPage";
+import ViewProductPage from "./features/product-catalogue/_products/pages/ViewProductPage";
 import ViewRecipePage from "./features/recipe-management/_recipes/pages/ViewRecipePage";
 
 export enum RoutePaths {
@@ -134,7 +135,7 @@ export default function Routes() {
 
           <Route path={RoutePaths.PRODUCTS} element={<ProductsPage />} />
           <Route path={RoutePaths.PRODUCTS_CREATE} element={<AddProductPage />} />
-          <Route path={RoutePaths.PRODUCTS_VIEW} element={<ProductsPage />} />
+          <Route path={RoutePaths.PRODUCTS_VIEW} element={<ViewProductPage />} />
           <Route path={RoutePaths.PRODUCTS_EDIT} element={<UpdateProductPage />} />
 
           <Route path={RoutePaths.BRANDS} element={<AdminBrandsPage />} />

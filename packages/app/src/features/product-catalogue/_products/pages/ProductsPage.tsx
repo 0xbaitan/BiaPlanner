@@ -35,7 +35,7 @@ export default function ProductsPage() {
       <ProductGrid
         products={results?.data ?? []}
         onClick={(product) => {
-          navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }));
+          navigate(fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }));
         }}
       />
     );
