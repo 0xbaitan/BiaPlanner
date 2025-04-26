@@ -5,12 +5,12 @@ import {
   IProduct,
   IQueryProductParamsDto,
   IQueryTopBrandedProductsParamsDto,
-  Paginated,
   QueryTopBrandedProductsParamsSchema,
 } from '@biaplanner/shared';
 import { ZodQuery } from '@/util/zod-query.decorator';
 import { QueryProductParamsSchema } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { Paginated } from 'nestjs-paginate';
 
 const QueryProductParamsValidationPipe = new ZodValidationPipe(
   QueryProductParamsSchema,
@@ -29,16 +29,16 @@ export class QueryProductController {
   @Get()
   async queryProducts(
     @Query(QueryProductParamsValidationPipe) query: IQueryProductParamsDto,
-  ): Promise<Paginated<any>> {
+  ): Promise<Paginated<IProduct>> {
     return this.queryProductService.query(query);
   }
 
-  // @Public()
-  // @Get('/top-branded')
-  // async queryTopBrandedProducts(
-  //   @Query(QueryTopBrandedProductsParamsValidationPipe)
-  //   query: IQueryTopBrandedProductsParamsDto,
-  // ): Promise<IProduct[]> {
-  //   return this.queryProductService.queryTopBrandedProducts(query);
-  // }
+  @Public()
+  @Get('/top-branded')
+  async queryTopBrandedProducts(
+    @Query(QueryTopBrandedProductsParamsValidationPipe)
+    query: IQueryTopBrandedProductsParamsDto,
+  ): Promise<IProduct[]> {
+    return this.queryProductService.queryTopBrandedProducts(query);
+  }
 }

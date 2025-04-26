@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate, Paginated } from 'nestjs-paginate';
 import { ProductEntity } from './product.entity';
 import {
+  IProduct,
   IQueryProductParamsDto,
   IQueryProductResultsDto,
   IQueryTopBrandedProductsParamsDto,
@@ -50,9 +51,7 @@ export class QueryProductService {
   /**
    * Query products with filters, search, and sorting.
    */
-  async query(
-    query: IQueryProductParamsDto,
-  ): Promise<Pagination<IQueryProductResultsDto>> {
+  async query(query: IQueryProductParamsDto): Promise<Paginated<IProduct>> {
     console.log('Querying products with query:', query);
     const {
       sortBy = 'DEFAULT',
@@ -67,25 +66,12 @@ export class QueryProductService {
 
     const qb = this.productRepository.createQueryBuilder('product');
 
-    qb.select([
-      'product.id as productId',
-      'product.name as productName',
-      'product.description as description',
-      'product.brandId as brandId',
-      'brand.name as brandName',
-      'product.coverId as coverImagePath',
-      'product.measurementType as measurementType',
-      'product.measurement as measurement',
-      'COUNT(pantryItem.id) as pantryItemCount',
-      'COUNT(shoppingItem.id) as shoppingItemCount',
-    ]);
-
     // Join related entities
-    qb.leftJoin('product.brand', 'brand');
-    qb.leftJoin('product.pantryItems', 'pantryItem');
-    qb.leftJoin('product.shoppingItems', 'shoppingItem');
-    qb.leftJoin('product.productCategories', 'productCategory');
-    qb.leftJoin('product.cover', 'cover');
+    qb.leftJoinAndSelect('product.brand', 'brand');
+    qb.leftJoinAndSelect('product.pantryItems', 'pantryItem');
+    qb.leftJoinAndSelect('product.shoppingItems', 'shoppingItem');
+    qb.leftJoinAndSelect('product.productCategories', 'productCategory');
+    qb.leftJoinAndSelect('product.cover', 'cover');
 
     // Apply search filter
     if (search.trim().length > 0) {
@@ -101,16 +87,6 @@ export class QueryProductService {
     }
 
     // Apply additional filters
-    // if (isLoose !== undefined) {
-    //   qb.andWhere('product.isLoose = :isLoose', { isLoose });
-    // }
-
-    // if (isNonExpirable !== undefined) {
-    //   qb.andWhere('product.canExpire = :canExpire', {
-    //     canExpire: !isNonExpirable,
-    //   });
-    // }
-
     if (brandIds?.length && brandIds.length > 0) {
       qb.andWhere('product.brandId IN (:...brandIds)', { brandIds });
     }
@@ -125,34 +101,24 @@ export class QueryProductService {
     this.applySorting(qb, sortBy);
 
     // Group by product ID to get counts
-    qb.groupBy(
-      'product.id, product.name, product.description, product.brandId, brand.name, product.coverId, product.measurementType, product.measurement',
+
+    // Paginate the results using nestjs-paginate
+    const paginatedResults = await paginate<ProductEntity>(
+      {
+        path: '/query/products',
+        page,
+        limit,
+      },
+      qb,
+      {
+        sortableColumns: ['createdAt'],
+        defaultSortBy: [['createdAt', 'DESC']],
+        defaultLimit: 25,
+        maxLimit: 100,
+      },
     );
 
-    // Paginate the results
-    const rawResults = await paginateRaw(qb, {
-      page,
-      limit,
-      metaTransformer: (meta) => ({
-        ...meta,
-        search: query.search,
-        sortBy: query.sortBy,
-        limit: query.limit,
-      }),
-    });
-
-    console.log(rawResults);
-
-    // Transform raw results using Zod schema
-    const transformedResults = rawResults.items.map(
-      (item) => QueryProductResultsSchema.safeParse(item).data,
-    );
-
-    return new Pagination<IQueryProductResultsDto>(
-      transformedResults,
-      rawResults.meta,
-      rawResults.links,
-    );
+    return paginatedResults;
   }
 
   async queryTopBrandedProducts(params: IQueryTopBrandedProductsParamsDto) {

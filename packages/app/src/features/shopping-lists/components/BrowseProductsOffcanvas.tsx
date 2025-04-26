@@ -1,7 +1,8 @@
 import "../styles/BrowseProductsOffcanvas.scss";
 
 import { FaFilter, FaMagnifyingGlass } from "react-icons/fa6";
-import { ShoppingListItemsActions, useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
+import { useCallback, useState } from "react";
+import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
@@ -9,8 +10,8 @@ import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import PaginationComponent from "@/components/PaginationComponent";
 import ProductCardList from "./ProductCardList";
-import { useLazySearchProductsQuery } from "@/apis/ProductsApi";
-import { useState } from "react";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
+import { useSearchProductsQuery } from "@/apis/ProductsApi";
 
 export type BrowseProductsType = "normal" | "add-extra" | "replacement";
 export type BrowseProductsOffcanvasProps = {
@@ -24,30 +25,24 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
   const { showOffcanvas, hideOffcanvas, type, replacedProductName } = props;
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchProducts, { data: productsPagination, isLoading }] = useLazySearchProductsQuery();
-  const numItems = productsPagination?.items.length || 0;
-  const currentPage = productsPagination?.meta.currentPage || 1;
-  const totalItems = productsPagination?.meta.totalItems || 0;
-  const searchTermUsed = productsPagination?.meta.search || undefined;
-  const limit = 10;
-  const numItemStartOnPage = (currentPage - 1) * limit + 1;
-  const numItemEndOnPage = Math.min(currentPage * limit, totalItems);
+  const { setSearch, setPage } = useShoppingListItemsActions();
 
-  const totalPages = productsPagination?.meta.totalPages || 1;
-  const handleSearch = (term: string) => {
-    // searchProducts({ paginateQuery: { page: currentPage, limit, search: term, searchBy: ["name", "description"] } });
-  };
+  const { paginateQuery } = useShoppingListItemsState();
+  const searchTermUsed = paginateQuery.search ?? "";
 
+  const { data: productsPagination, isLoading } = useSearchProductsQuery(paginateQuery, {
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+  });
+  const { numItems, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages, currentPage } = calculatePaginationElements(paginateQuery.limit ?? 25, productsPagination);
+
+  const handleSearch = useCallback(() => {
+    setSearch(searchTerm);
+  }, [searchTerm, setSearch]);
+  console.log(productsPagination);
   return (
-    <Offcanvas
-      show={showOffcanvas}
-      onHide={() => {
-        hideOffcanvas();
-      }}
-      backdrop="static"
-      placement="end"
-      scroll
-    >
+    <Offcanvas show={showOffcanvas} onHide={hideOffcanvas} className="bp-browse_products_offcanvas" placement="end">
       <Offcanvas.Header closeButton>
         <Offcanvas.Title>
           <Heading level={Heading.Level.H2}>
@@ -61,10 +56,10 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
         <div className="bp-browse_products_offcanvas__search_area">
           <div className="bp-browse_products_offcanvas__search_area__input">
             <Form.Group>
-              <Form.Control className="bp-browse_products_offcanvas__search_box" type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search products..." isInvalid={searchTerm.trim().length === 0} />
+              <Form.Control className="bp-browse_products_offcanvas__search_box" type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search products..." />
               <Form.Control.Feedback type="invalid">Please enter a non-empty search query.</Form.Control.Feedback>
             </Form.Group>
-            <Button onClick={() => handleSearch(searchTerm)} disabled={searchTerm.trim().length === 0} variant="primary" className="bp-browse_products_offcanvas__search_button">
+            <Button onClick={handleSearch} variant="primary" className="bp-browse_products_offcanvas__search_button">
               <FaMagnifyingGlass />
               &emsp;Search products
             </Button>
@@ -73,41 +68,39 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
               &emsp;Filter products
             </Button>
           </div>
-          <div>
-            {numItems > 0 && (
-              <div>
-                <hr />
-                <div className="bp-browse_products_offcanvas__search_result_counts">
-                  Showing {numItemStartOnPage} - {numItemEndOnPage} of {totalItems} products for "{searchTermUsed}"
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        {(!productsPagination || numItems === 0) && !isLoading ? (
-          <div className="bp-browse_products_offcanvas__no_results">
-            <Heading level={Heading.Level.H3}>{searchTermUsed ? <>No products found for "{searchTermUsed}"</> : <>Search for products</>}</Heading>
-            <p>{searchTermUsed ? "Try searching with different keywords or check the spelling." : "You can search for products by name or description."}</p>
-          </div>
-        ) : null}
 
-        {productsPagination && (
-          <div className="bp-browse_products_offcanvas__main">
-            {isLoading && <div>Loading...</div>}
-            {/* <ProductCardList products={productsPagination.items as IProduct[]} type={type} /> */}
-            <div className="bp-browse_products_offcanvas__main__pagination">
-              <PaginationComponent
-                currentPage={currentPage}
-                numPages={totalPages}
-                numberOfPagesToShowOnTruncation={8}
-                showFirstLast={totalPages >= 25}
-                onPageChange={(page) => {
-                  // searchProducts({ paginateQuery: { page, limit: 10, search: searchTermUsed, searchBy: ["name", "description"] } });
-                }}
-              />
+          {numItems > 0 && (
+            <div>
+              <hr />
+              <div className="bp-browse_products_offcanvas__search_result_counts">
+                Showing {numItemStartOnPage} - {numItemEndOnPage} of {totalItems} products for "{searchTerm}"
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          {(!productsPagination || numItems === 0) && !isLoading ? (
+            <div className="bp-browse_products_offcanvas__no_results">
+              <Heading level={Heading.Level.H3}>{searchTerm ? <>No products found for "{searchTermUsed}"</> : <>Search for products</>}</Heading>
+              <p>{searchTerm ? "Try searching with different keywords or check the spelling." : "You can search for products by name or description."}</p>
+            </div>
+          ) : null}
+          {productsPagination && (
+            <div className="bp-browse_products_offcanvas__main">
+              {isLoading && <div>Loading...</div>}
+              <ProductCardList products={productsPagination.data} type={type} />
+              <div className="bp-browse_products_offcanvas__main__pagination">
+                <PaginationComponent
+                  onPageChange={(page) => {
+                    setPage(page);
+                  }}
+                  numberOfPagesToShowOnTruncation={8}
+                  showFirstLast={totalPages >= 25}
+                  numPages={totalPages}
+                  currentPage={currentPage}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </Offcanvas.Body>
     </Offcanvas>
   );

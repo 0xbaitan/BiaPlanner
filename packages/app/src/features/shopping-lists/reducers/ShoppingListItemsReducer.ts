@@ -1,4 +1,4 @@
-import { ICreateShoppingItemDto, IProduct } from "@biaplanner/shared";
+import { IProduct, IQueryProductParamsDto, ProductSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
@@ -12,12 +12,24 @@ export type ShoppingListItem = {
 
 export type ShoppingListItemsState = {
   selectedItems: ShoppingListItem[];
-
+  paginateQuery: IQueryProductParamsDto;
   showOffcanvas: boolean;
+};
+
+const initialPaginateQuery: IQueryProductParamsDto = {
+  sortBy: ProductSortBy.DEFAULT,
+  search: "",
+  page: 1,
+  limit: 25,
+  isLoose: false,
+  brandIds: [],
+  productCategoryIds: [],
+  isNonExpirable: false,
 };
 
 const initialState: ShoppingListItemsState = {
   selectedItems: [],
+  paginateQuery: initialPaginateQuery,
 
   showOffcanvas: false,
 };
@@ -51,10 +63,48 @@ export const shoppingListItemsSlice = createSlice({
     hideOffcanvas: (state) => {
       state.showOffcanvas = false;
     },
+
+    setFilter: (state, action: PayloadAction<Partial<IQueryProductParamsDto>>) => {
+      const { payload } = action;
+      state.paginateQuery = {
+        ...state.paginateQuery,
+        ...payload,
+      };
+    },
+
+    setSortBy: (state, action: PayloadAction<ProductSortBy>) => {
+      const { payload } = action;
+      state.paginateQuery.sortBy = payload;
+    },
+
+    setPage: (state, action: PayloadAction<number>) => {
+      const { payload } = action;
+      state.paginateQuery.page = payload;
+    },
+
+    setLimit: (state, action: PayloadAction<number>) => {
+      const { payload } = action;
+      state.paginateQuery.limit = payload;
+    },
+
+    setSearch: (state, action: PayloadAction<string>) => {
+      const { payload } = action;
+      state.paginateQuery.search = payload;
+    },
+
+    resetFilters: (state) => {
+      state.paginateQuery = {
+        ...initialPaginateQuery,
+        page: state.paginateQuery.page,
+        limit: state.paginateQuery.limit,
+        sortBy: state.paginateQuery.sortBy,
+        search: state.paginateQuery.search,
+      };
+    },
   },
 });
 
-export const { resetShoppingListItems, addShoppingListItem, removeShoppingListItem, showOffcanvas, hideOffcanvas } = shoppingListItemsSlice.actions;
+export const { resetShoppingListItems, addShoppingListItem, removeShoppingListItem, showOffcanvas, hideOffcanvas, setFilter, setSortBy, setPage, setLimit, setSearch, resetFilters } = shoppingListItemsSlice.actions;
 export default shoppingListItemsSlice.reducer;
 
 export function useShoppingListItemsState(): ShoppingListItemsState {
@@ -104,6 +154,45 @@ export function useShoppingListItemsActions() {
     dispatch(hideOffcanvas());
   }, [dispatch]);
 
+  const setFilterCallback = useCallback(
+    (payload: Partial<IQueryProductParamsDto>) => {
+      dispatch(setFilter(payload));
+    },
+    [dispatch]
+  );
+
+  const setSortByCallback = useCallback(
+    (payload: ProductSortBy) => {
+      dispatch(setSortBy(payload));
+    },
+    [dispatch]
+  );
+
+  const setPageCallback = useCallback(
+    (payload: number) => {
+      dispatch(setPage(payload));
+    },
+    [dispatch]
+  );
+
+  const setLimitCallback = useCallback(
+    (payload: number) => {
+      dispatch(setLimit(payload));
+    },
+    [dispatch]
+  );
+
+  const setSearchCallback = useCallback(
+    (payload: string) => {
+      dispatch(setSearch(payload));
+    },
+    [dispatch]
+  );
+
+  const resetFiltersCallback = useCallback(() => {
+    dispatch(resetFilters());
+  }, [dispatch]);
+
   return {
     resetShoppingListItems: resetShoppingListItemsCallback,
     addShoppingListItem: addShoppingListItemCallback,
@@ -112,6 +201,12 @@ export function useShoppingListItemsActions() {
     showOffcanvas: showOffcanvasCallback,
     hideOffcanvas: hideOffcanvasCallback,
     getItem: getItemCallback,
+    setFilter: setFilterCallback,
+    setSortBy: setSortByCallback,
+    setPage: setPageCallback,
+    setLimit: setLimitCallback,
+    setSearch: setSearchCallback,
+    resetFilters: resetFiltersCallback,
   };
 }
 

@@ -1,4 +1,4 @@
-import { ICreateShoppingItemDto, ICreateShoppingItemExtendedDto, IShoppingItem, IUpdateShoppingItemDto, IUpdateShoppingItemExtendedDto } from "./ShoppingItem";
+import { ICreateShoppingItemDto, ICreateShoppingItemExtendedDto, IShoppingItem, IUpdateShoppingItemDto, IUpdateShoppingItemExtendedDto, WriteShoppingListItemSchema } from "./ShoppingItem";
 
 import { FilterParamsSchema } from "../../util";
 import { IBaseEntity } from "../BaseEntity";
@@ -48,6 +48,15 @@ export class UpdateShoppingListExtendedDto implements IUpdateShoppingListExtende
   isShoppingComplete?: boolean | undefined;
   items: IUpdateShoppingItemExtendedDto[] | undefined;
 }
+
+export const WriteShoppingListSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  notes: z.string().optional(),
+  plannedDate: z.coerce.date().optional(),
+  items: z.array(WriteShoppingListItemSchema).min(1, "At least one item is required"),
+});
+
+export type IWriteShoppingListDto = z.infer<typeof WriteShoppingListSchema>;
 
 export enum ShoppingListSortBy {
   TITLE_A_TO_Z = "TITLE_A_TO_Z",

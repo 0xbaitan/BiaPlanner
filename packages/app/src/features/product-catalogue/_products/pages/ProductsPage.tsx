@@ -1,3 +1,4 @@
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useProductsCrudListActions, useProductsCrudListState } from "../reducers/ProductsCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -15,22 +16,30 @@ export default function ProductsPage() {
   const navigate = useNavigate();
   const { productsQuery, view } = useProductsCrudListState();
   const { setView, setSearch, setPage, setLimit } = useProductsCrudListActions();
-  const { data: results, isError } = useSearchProductsQuery(productsQuery);
+  const {
+    data: results,
+    isError,
+    isLoading,
+  } = useSearchProductsQuery(productsQuery, {
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
 
   const productsTable = useMemo(() => {
-    return <ProductsTable data={results?.items ?? []} />;
-  }, [results?.items]);
+    return <ProductsTable data={results?.data ?? []} />;
+  }, [results?.data]);
 
   const productsGrid = useMemo(() => {
     return (
       <ProductGrid
-        products={results?.items ?? []}
+        products={results?.data ?? []}
         onClick={(product) => {
-          navigate(`./view/${product.productId}`);
+          navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }));
         }}
       />
     );
-  }, [navigate, results?.items]);
+  }, [navigate, results?.data]);
 
   return (
     <CrudListPageLayout>
@@ -42,7 +51,7 @@ export default function ProductsPage() {
         pageTitle="Products"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate("./create")}>
+            <Button variant="primary" onClick={() => navigate(RoutePaths.PRODUCTS_CREATE)}>
               <FaPlus />
               &ensp;Add New Product
             </Button>
@@ -59,7 +68,7 @@ export default function ProductsPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={results?.meta?.totalItems ?? 0} itemsStart={1} itemsEnd={results?.meta?.totalItems ?? 0} itemDescription="products" />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
-            {isError || !results?.items || results.items.length === 0 ? <NoResultsFound title="Oops! No products found" description="Try adding a new product to get started." /> : view === "grid" ? productsGrid : productsTable}
+            {isError || !results?.data || results.data.length === 0 ? <NoResultsFound title="Oops! No products found" description="Try adding a new product to get started." /> : view === "grid" ? productsGrid : productsTable}
           </CrudListPageLayout.Body.Content>
         }
       />

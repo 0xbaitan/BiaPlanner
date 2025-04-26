@@ -1,11 +1,11 @@
-import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 
-import { IQueryProductResultsDto } from "@biaplanner/shared";
+import { IProduct } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useNavigate } from "react-router-dom";
 
 export type ProductsTableProps = {
-  data: IQueryProductResultsDto[];
+  data: IProduct[];
 };
 
 export default function ProductsTable(props: ProductsTableProps) {
@@ -13,7 +13,7 @@ export default function ProductsTable(props: ProductsTableProps) {
   const { data } = props;
 
   return (
-    <TabbedViewsTable<IQueryProductResultsDto>
+    <TabbedViewsTable<IProduct>
       showSerialNumber
       data={data}
       views={[
@@ -25,17 +25,17 @@ export default function ProductsTable(props: ProductsTableProps) {
           columnDefs: [
             {
               header: "Product Name",
-              accessorFn: (row) => row.productName,
+              accessorFn: (row) => row.name,
               accessorKey: "name",
             },
             {
               header: "Brand",
-              accessorFn: (row) => row.brandName ?? "N/A",
+              accessorFn: (row) => row.brand ?? "N/A",
               accessorKey: "brandName",
             },
             {
               header: "Categories",
-              accessorFn: (row) => row.productCategoryNames?.join(", ") ?? "N/A",
+              accessorFn: (row) => row.productCategories?.join(", ") ?? "N/A",
               accessorKey: "productCategoryNames",
             },
           ],
@@ -47,7 +47,7 @@ export default function ProductsTable(props: ProductsTableProps) {
           type: "edit",
           icon: FaPencilAlt,
           onClick: (row) => {
-            navigate(`./update/${row.productId}`);
+            navigate(`./update/${row.id}`);
           },
         },
         {
@@ -55,7 +55,7 @@ export default function ProductsTable(props: ProductsTableProps) {
           type: "delete",
           icon: FaTrash,
           onClick: (row) => {
-            console.log("Delete product clicked", row.productId);
+            console.log("Delete product clicked", row.id);
           },
         },
       ]}

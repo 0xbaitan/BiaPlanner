@@ -1,5 +1,6 @@
-import { ICreateProductDto, IProduct, IQueryProductParamsDto, IQueryProductResultsDto, IQueryTopBrandedProductsParamsDto, IUpdateProductDto, Paginated } from "@biaplanner/shared";
+import { ICreateProductDto, IProduct, IQueryProductParamsDto, IQueryProductResultsDto, IQueryTopBrandedProductsParamsDto, IUpdateProductDto } from "@biaplanner/shared";
 
+import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
 import { rootApi } from ".";
 
@@ -60,12 +61,12 @@ export const productsApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchProducts: build.query<Paginated<IQueryProductResultsDto>, IQueryProductParamsDto>({
+    searchProducts: build.query<Paginated<IProduct>, IQueryProductParamsDto>({
       query: (query) => ({
         url: `/query/products?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter(({ productId }) => productId != null).map(({ productId }) => ({ type: "Product" as const, id: productId })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.data?.filter(({ id }) => id != null).map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
 
     getTopBrandedProducts: build.query<IProduct[], IQueryTopBrandedProductsParamsDto>({

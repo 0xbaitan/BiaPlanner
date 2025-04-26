@@ -31,7 +31,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>((props, ref
   return (
     <Form.Group className={["bp-text_input", formGroupClassName ?? ""].join(" ")}>
       <InputLabel {...inputLabelProps}>{label}</InputLabel>
-      <Form.Control {...rest} isInvalid={!!error} ref={ref} value={text} onChange={handleChange} type="text" />
+      <Form.Control {...rest} isInvalid={!!error} ref={ref} value={text} onChange={handleChange} />
       {error && <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>}
     </Form.Group>
   );

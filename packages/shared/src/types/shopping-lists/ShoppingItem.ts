@@ -1,6 +1,7 @@
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "../pantry";
 import { IShoppingList } from "./ShoppingList";
+import { z } from "zod";
 
 export interface IShoppingItem extends IBaseEntity {
   productId: string;
@@ -15,6 +16,24 @@ export interface IShoppingItem extends IBaseEntity {
   isExtra?: boolean;
   isCancelled?: boolean;
 }
+
+export const WriteShoppingListItemSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  quantity: z.coerce.number().int().positive("Quantity is required"),
+  replacementId: z.string().optional(),
+  shoppingListId: z.string().optional(),
+  isReplaced: z.coerce.boolean().optional(),
+  isChecked: z.coerce.boolean().optional(),
+  isExtra: z.coerce.boolean().optional(),
+  isCancelled: z.coerce.boolean().optional(),
+});
+
+export const WriteShoppingListItemSchemaExtended = WriteShoppingListItemSchema.extend({
+  replacement: WriteShoppingListItemSchema.optional(),
+});
+
+export type WriteShoppingListItemSchemaType = z.infer<typeof WriteShoppingListItemSchema>;
+export type WriteShoppingListItemSchemaExtendedType = z.infer<typeof WriteShoppingListItemSchemaExtended>;
 
 export interface ICreateShoppingItemDto extends Pick<IShoppingItem, "productId" | "quantity"> {}
 

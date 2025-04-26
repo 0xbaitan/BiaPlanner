@@ -1,15 +1,16 @@
 import "../styles/ProductGrid.scss";
 
+import { IProduct, IQueryProductResultsDto } from "@biaplanner/shared";
+
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import { IQueryProductResultsDto } from "@biaplanner/shared";
 import ProductCard from "./ProductCard";
 import Row from "react-bootstrap/Row";
 import { useMemo } from "react";
 
 export type ProductGridProps = {
-  products: IQueryProductResultsDto[];
-  onClick?: (product: IQueryProductResultsDto) => void;
+  products: IProduct[];
+  onClick?: (product: IProduct) => void;
 };
 
 export default function ProductGrid(props: ProductGridProps) {
@@ -17,7 +18,7 @@ export default function ProductGrid(props: ProductGridProps) {
 
   const productCards = useMemo(() => {
     return products.map((product) => (
-      <Col xs={12} sm={6} lg={4} xxl={3} key={product.productId} className="bp-product_grid__col">
+      <Col xs={12} sm={6} lg={4} xxl={3} key={product.id} className="bp-product_grid__col">
         <ProductCard product={product} onClick={onClick} />
       </Col>
     ));

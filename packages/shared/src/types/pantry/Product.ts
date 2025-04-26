@@ -86,10 +86,10 @@ export const QueryProductParamsSchema = FilterParamsSchema.extend({
       ProductSortBy.DEFAULT,
     ])
     .optional(),
-  isLoose: z.boolean().optional(),
+  isLoose: z.coerce.boolean().optional(),
   brandIds: z.array(z.string()).optional(),
   productCategoryIds: z.array(z.string()).optional(),
-  isNonExpirable: z.boolean().optional(),
+  isNonExpirable: z.coerce.boolean().optional(),
 });
 
 export type IQueryProductParamsDto = z.infer<typeof QueryProductParamsSchema>;

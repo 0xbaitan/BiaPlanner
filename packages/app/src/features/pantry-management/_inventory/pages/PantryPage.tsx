@@ -6,6 +6,7 @@ import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import PantryItemsFilterBar from "../components/PantryItemsFilterBar";
 import PantryItemsTable from "../components/PantryItemsTable";
+import { RoutePaths } from "@/Routes";
 import { useNavigate } from "react-router-dom";
 import { useSearchPantryItemsQuery } from "@/apis/PantryItemsApi";
 
@@ -25,7 +26,7 @@ function PantryPage() {
         pageTitle="Pantry"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate("/pantry/inventory/add-item")}>
+            <Button variant="primary" onClick={() => navigate(RoutePaths.PANTRY_ADD_ITEM)}>
               <FaPlus />
               &ensp;Add New Item
             </Button>
