@@ -35,14 +35,20 @@ export class ProductService {
 
   async findAllProducts(): Promise<IProduct[]> {
     return this.productRepository.find({
-      relations: ['productCategories', 'pantryItems', 'createdBy', 'brand'],
+      relations: [
+        'productCategories',
+        'pantryItems',
+        'createdBy',
+        'brand',
+        'cover',
+      ],
     });
   }
 
   async readProductById(id: string): Promise<IProduct> {
     return this.productRepository.findOneOrFail({
       where: { id },
-      relations: ['productCategories', 'pantryItems', 'createdBy'],
+      relations: ['productCategories', 'pantryItems', 'createdBy', 'cover'],
     });
   }
 

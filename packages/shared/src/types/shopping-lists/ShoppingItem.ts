@@ -18,6 +18,7 @@ export interface IShoppingItem extends IBaseEntity {
 }
 
 export const WriteShoppingListItemSchema = z.object({
+  id: z.string().optional(),
   productId: z.string().min(1, "Product is required"),
   quantity: z.coerce.number().int().positive("Quantity is required"),
   replacementId: z.string().optional(),
@@ -32,8 +33,8 @@ export const WriteShoppingListItemSchemaExtended = WriteShoppingListItemSchema.e
   replacement: WriteShoppingListItemSchema.optional(),
 });
 
-export type WriteShoppingListItemSchemaType = z.infer<typeof WriteShoppingListItemSchema>;
-export type WriteShoppingListItemSchemaExtendedType = z.infer<typeof WriteShoppingListItemSchemaExtended>;
+export type IWriteShoppingItemDto = z.infer<typeof WriteShoppingListItemSchema>;
+export type IWriteShoppingItemExtendedDto = z.infer<typeof WriteShoppingListItemSchemaExtended>;
 
 export interface ICreateShoppingItemDto extends Pick<IShoppingItem, "productId" | "quantity"> {}
 

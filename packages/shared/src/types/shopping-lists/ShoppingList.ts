@@ -50,9 +50,21 @@ export class UpdateShoppingListExtendedDto implements IUpdateShoppingListExtende
 }
 
 export const WriteShoppingListSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  id: z.string().optional(),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .refine((title) => title.trim().length > 0, "Title cannot be empty")
+    .refine((title) => title.length <= 100, "Title cannot exceed 100 characters"),
   notes: z.string().optional(),
-  plannedDate: z.coerce.date().optional(),
+  plannedDate: z.coerce
+    .string(
+      z
+        .string()
+        .min(1, "Planned date has to be in the correct format")
+        .refine((date) => !isNaN(Date.parse(date)), "Invalid date format")
+    )
+    .optional(),
   items: z.array(WriteShoppingListItemSchema).min(1, "At least one item is required"),
 });
 

@@ -1,15 +1,16 @@
 import "../styles/BrowseProductsOffcanvas.scss";
 
 import { FaFilter, FaMagnifyingGlass } from "react-icons/fa6";
+import ProductCardList, { ShoppingListItemFunctions } from "./ProductCardList";
 import { useCallback, useState } from "react";
 import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Heading from "@/components/Heading";
+import { IWriteShoppingItemDto } from "@biaplanner/shared";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import PaginationComponent from "@/components/PaginationComponent";
-import ProductCardList from "./ProductCardList";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
 import { useSearchProductsQuery } from "@/apis/ProductsApi";
 
@@ -19,10 +20,11 @@ export type BrowseProductsOffcanvasProps = {
   hideOffcanvas: () => void;
   type: BrowseProductsType;
   replacedProductName?: string;
+  shoppingListItemFunctions: ShoppingListItemFunctions;
 };
 
 export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasProps) {
-  const { showOffcanvas, hideOffcanvas, type, replacedProductName } = props;
+  const { showOffcanvas, hideOffcanvas, type, replacedProductName, shoppingListItemFunctions } = props;
 
   const [searchTerm, setSearchTerm] = useState("");
   const { setSearch, setPage } = useShoppingListItemsActions();
@@ -86,7 +88,7 @@ export default function BrowseProductsOffcanvas(props: BrowseProductsOffcanvasPr
           {productsPagination && (
             <div className="bp-browse_products_offcanvas__main">
               {isLoading && <div>Loading...</div>}
-              <ProductCardList products={productsPagination.data} type={type} />
+              <ProductCardList shoppingListItemFunctions={shoppingListItemFunctions} products={productsPagination.data} type={type} />
               <div className="bp-browse_products_offcanvas__main__pagination">
                 <PaginationComponent
                   onPageChange={(page) => {

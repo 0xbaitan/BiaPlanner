@@ -1,7 +1,8 @@
 import "../styles/ShoppingListForm.scss";
 
-import { FormProvider, useForm } from "react-hook-form";
-import { ICreateShoppingListDto, IShoppingList } from "@biaplanner/shared";
+import { FieldErrors, FormProvider, useForm } from "react-hook-form";
+import { ICreateShoppingListDto, IShoppingList, IWriteShoppingListDto, WriteShoppingListItemSchema, WriteShoppingListSchema } from "@biaplanner/shared";
+import { useCallback, useEffect } from "react";
 import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 
 import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
@@ -11,75 +12,85 @@ import { FaSave } from "react-icons/fa";
 import Heading from "@/components/Heading";
 import { MdCancel } from "react-icons/md";
 import ProductCardList from "./ProductCardList";
+import ShoppingListItemCardList from "./ShoppingListItemCardList";
 import TextInput from "@/components/forms/TextInput";
-import { useCallback } from "react";
+import dayjs from "dayjs";
 import { useErrorToast } from "@/components/toasts/ErrorToast";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type ShoppingListFormValues = ICreateShoppingListDto;
-
 export type ShoppingListFormProps = {
   initialValue?: IShoppingList;
-  onSubmit: (values: ShoppingListFormValues) => void;
+  onSubmit: (values: IWriteShoppingListDto) => void;
   disableSubmit?: boolean;
   type: "create" | "update";
 };
 
-const ShoppingItemSchema = z.object({
-  productId: z.string().min(1, "Product is required"),
-  quantity: z.number().int().positive("Quantity is required"),
-});
-
-const CreateShoppingListValidationSchema = z.object({
-  title: z.string().min(1, "Title cannot be empty"),
-  notes: z.string().optional(),
-  plannedDate: z.string().min(1, "Planned date has to be in the correct format"),
-  items: z.array(ShoppingItemSchema).optional(),
-});
-
 export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit, type }: ShoppingListFormProps) {
-  const { showOffcanvas, hideOffcanvas } = useShoppingListItemsActions();
-  const { selectedItems, showOffcanvas: show } = useShoppingListItemsState();
+  const { showOffcanvas } = useShoppingListItemsActions();
+  useShoppingListItemsState();
   const navigate = useNavigate();
 
-  const formMethods = useForm<ShoppingListFormValues>({
-    defaultValues: initialValue ?? {},
+  const formMethods = useForm<IWriteShoppingListDto>({
+    defaultValues: initialValue ?? {
+      title: "",
+      plannedDate: dayjs().format("YYYY-MM-DD"),
+      notes: "",
+      items: [],
+    },
+
     mode: "onBlur",
-    resolver: zodResolver(CreateShoppingListValidationSchema),
+    resolver: zodResolver(WriteShoppingListSchema),
   });
 
   const {
     setValue,
-    clearErrors,
-    trigger,
+    watch,
     formState: { errors },
-    getValues,
     handleSubmit,
   } = formMethods;
 
-  const products = selectedItems.map((item) => item.product).filter(Boolean);
-
   const { notify: notifyError } = useErrorToast({});
 
-  const onSubmitForm = useCallback(() => {
-    const values = getValues();
-    values.items = selectedItems.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-    }));
-    if (values.items.length === 0) {
-      notifyError("You need to add at least one product to the shopping list to save it.");
-      return;
-    }
-    onSubmit(values);
-  }, [getValues, notifyError, onSubmit, selectedItems]);
+  const items = watch();
+
+  useEffect(() => {
+    console.log("items", items);
+  }, [items]);
+  const onSubmitForm = useCallback(
+    (values: IWriteShoppingListDto) => {
+      onSubmit(values);
+    },
+    [onSubmit]
+  );
+
+  const onSubmitError = useCallback(
+    (errors: FieldErrors<IWriteShoppingListDto>) => {
+      const errorMessages = Object.values(errors).map((error) => {
+        return error.message;
+      });
+
+      if (errorMessages.length > 0) {
+        notifyError(
+          <p>
+            You have the following errors in the form:
+            <ul>
+              {errorMessages.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+            Please correct them and try again.
+          </p>
+        );
+      }
+    },
+    [notifyError]
+  );
 
   return (
     <FormProvider {...formMethods}>
-      <BrowseProductsOffcanvas type="normal" showOffcanvas={show} hideOffcanvas={hideOffcanvas} />
-      <DualPaneForm onSubmit={handleSubmit(onSubmitForm)}>
+      <DualPaneForm onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Update current shopping list"}</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>
@@ -102,42 +113,39 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
               <TextInput
                 inputLabelProps={{ required: true }}
                 label="Shopping list title"
+                value={watch("title")}
                 name="title"
                 error={errors.title?.message}
                 placeholder="Enter shopping list title"
                 onChange={(e) => {
                   const value = e.target.value;
                   setValue("title", value);
-                  clearErrors("title");
-                  trigger("title");
                 }}
               />
               <TextInput
                 label="Planned date"
                 name="plannedDate"
                 type="date"
+                value={watch("plannedDate")}
                 placeholder="Select a date"
                 error={errors.plannedDate?.message}
                 inputLabelProps={{ required: true }}
                 onChange={(e) => {
                   const value = e.target.value;
                   setValue("plannedDate", value);
-                  clearErrors("plannedDate");
-                  trigger("plannedDate");
                 }}
               />
               <TextInput
                 label="Notes (optional)"
                 className="bp-shopping_list_form__notes"
                 name="notes"
+                value={watch("notes")}
                 placeholder="Enter notes"
                 error={errors.notes?.message}
                 as="textarea"
                 onChange={(e) => {
                   const value = e.target.value;
                   setValue("notes", value);
-                  clearErrors("notes");
-                  trigger("notes");
                 }}
               />
             </div>
@@ -167,14 +175,7 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
                   </div>
                 )}
               </div>
-              {products.length === 0 ? (
-                <div className="bp-shopping_list_form__no_items">
-                  <Heading level={Heading.Level.H3}>No items added yet</Heading>
-                  <p>Click on the button above to add products to your shopping list.</p>
-                </div>
-              ) : (
-                <ProductCardList type="normal" products={products} hideAddedBadge />
-              )}
+              <ShoppingListItemCardList />
             </div>
           </DualPaneForm.Panel.Pane>
         </DualPaneForm.Panel>

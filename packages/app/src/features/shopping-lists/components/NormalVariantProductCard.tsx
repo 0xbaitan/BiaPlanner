@@ -11,12 +11,15 @@ import { ProductCardProps } from "./ProductCardList";
 import { getImagePath } from "@/util/imageFunctions";
 
 export default function NormalVariantProductCard(props: ProductCardProps) {
-  const { product, hideAddedBadge } = props;
+  const { product, hideAddedBadge, shoppingListItemFunctions } = props;
   const imagePath = getImagePath(product.cover as IFile);
-  const { isItemPresent, getItem, addShoppingListItem, removeShoppingListItem } = useShoppingListItemsActions();
+  const { addItemToShoppingList, getItemInShoppingList, isPresentInList, removeItemFromShoppingList, updateItemInShoppingList } = shoppingListItemFunctions;
 
-  const isPresentInList = isItemPresent(product.id);
-  const item = getItem(product.id);
+  const item = getItemInShoppingList(product.id);
+  const alreadyAdded = isPresentInList(product.id);
+
+  console.log("aleadyAdded", alreadyAdded);
+
   return (
     <div className="bp-product_item_card">
       <div className="bp-product_item_card__main">
@@ -24,7 +27,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
           <img className="bp-product_item_card__img" src={imagePath} alt={product.name} />
           <div className="bp-product_item_card__product_info__details">
             <div className="bp-product_item_card__product_name">
-              {product.name} {isPresentInList && !hideAddedBadge && <span className="bp-product_item_card__badge active">Already added</span>}
+              {product.name} {alreadyAdded && <span className="bp-product_item_card__badge active">Already added</span>}
             </div>
             <div className="bp-product_item_card__measurement">
               {product.measurement.magnitude} {product.measurement.unit}
@@ -40,14 +43,13 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
         </div>
 
         <div className="bp-product_item_card__actions">
-          {!isPresentInList && (
+          {!alreadyAdded && (
             <Button
               variant="outline-primary"
               onClick={() =>
-                addShoppingListItem({
-                  productId: product.id,
+                addItemToShoppingList({
                   quantity: 1,
-                  product,
+                  productId: product.id,
                 })
               }
             >
@@ -55,7 +57,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
             </Button>
           )}
 
-          {isPresentInList && (
+          {alreadyAdded && (
             <div className="bp-product_item_card__quantity_actions">
               <Button
                 variant="outline-primary"
@@ -64,9 +66,9 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity - 1 : 0;
                   if (newQuantity > 0) {
-                    addShoppingListItem({ productId: product.id, quantity: newQuantity, product });
+                    updateItemInShoppingList({ productId: product.id, quantity: newQuantity });
                   } else {
-                    removeShoppingListItem(product.id);
+                    removeItemFromShoppingList(product.id);
                   }
                 }}
               >
@@ -79,7 +81,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
                 size="sm"
                 onClick={() => {
                   const newQuantity = item?.quantity ? item.quantity + 1 : 0;
-                  addShoppingListItem({ productId: product.id, quantity: newQuantity, product });
+                  updateItemInShoppingList({ productId: product.id, quantity: newQuantity });
                 }}
               >
                 <FaPlus />
@@ -88,14 +90,14 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
           )}
         </div>
 
-        {isPresentInList && (
+        {alreadyAdded && (
           <div className="bp-product_item_card__remove_button">
             <Button
               variant="outline-danger"
               className="bp-cancel_button"
               size="sm"
               onClick={() => {
-                removeShoppingListItem(product.id);
+                removeItemFromShoppingList(product.id);
               }}
             >
               <FaTrashCan />

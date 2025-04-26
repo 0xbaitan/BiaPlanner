@@ -10,16 +10,16 @@ import {
 import { ShoppingListService } from './shopping-list.service';
 import {
   CreateShoppingListDto,
-  ICreateShoppingListDto,
-  IUpdateShoppingItemExtendedDto,
-  IUpdateShoppingListDto,
-  IUpdateShoppingListExtendedDto,
-  IUser,
+  IWriteShoppingListDto,
   UpdateShoppingListDto,
-  UpdateShoppingListExtendedDto,
+  WriteShoppingListItemSchema,
+  WriteShoppingListSchema,
 } from '@biaplanner/shared';
-import { User } from '../user-info/authentication/user.decorator';
-import { MarkShoppingDoneService } from './mark-shopping-done.service';
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const WriteShoppingListDtoValidationPipe = new ZodValidationPipe(
+  WriteShoppingListSchema,
+);
 
 @Controller('/shopping-lists')
 export class ShoppingListController {
@@ -40,17 +40,20 @@ export class ShoppingListController {
   }
 
   @Post('/')
-  async create(@Body() dto: CreateShoppingListDto) {
+  async create(
+    @Body(WriteShoppingListDtoValidationPipe) dto: IWriteShoppingListDto,
+  ) {
     return this.shoppingListService.create(dto);
   }
 
   @Post('/:id')
-  async update(@Param('id') id: string, @Body() dto: UpdateShoppingListDto) {
+  async update(@Param('id') id: string, @Body() dto: IWriteShoppingListDto) {
     return this.shoppingListService.update(id, dto);
   }
 
   @Delete('/:id')
   async delete(@Param('id') id: string) {
-    return this.shoppingListService.delete(id);
+    await this.shoppingListService.delete(id);
+    return { message: 'Shopping list deleted successfully' };
   }
 }

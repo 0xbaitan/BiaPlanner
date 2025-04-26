@@ -1,12 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ShoppingListEntity } from './shopping-list.entity';
 import { Repository } from 'typeorm';
 import {
   CreateShoppingListDto,
   IUpdateShoppingListDto,
+  IWriteShoppingListDto,
+  WriteShoppingListItemSchema,
 } from '@biaplanner/shared';
 import { ShoppingItemService } from './shopping-item/shopping-item.service';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 @Injectable()
 export class ShoppingListService {
@@ -30,19 +33,22 @@ export class ShoppingListService {
     return shoppingList;
   }
 
-  public async create(dto: CreateShoppingListDto) {
+  public async create(dto: IWriteShoppingListDto) {
     const shoppingList = this.shoppingListRepository.create(dto);
     return this.shoppingListRepository.save(shoppingList);
   }
 
-  public async update(id: string, dto: IUpdateShoppingListDto) {
-    const shoppingList = await this.findOne(id);
-    delete shoppingList.items;
-    const updatedShoppingList = this.shoppingListRepository.merge(
-      shoppingList,
-      dto,
-    );
-    return this.shoppingListRepository.save(updatedShoppingList);
+  public async update(id: string, dto: IWriteShoppingListDto) {
+    const shoppingListExists = await this.shoppingListRepository.exists({
+      where: { id },
+    });
+    if (!shoppingListExists) {
+      const errorMessage = `Shopping list with ID ${id} does not exist.`;
+      console.error(errorMessage);
+      throw new BadRequestException(errorMessage);
+    }
+
+    return this.shoppingListRepository.save(dto);
   }
 
   public async delete(id: string) {
