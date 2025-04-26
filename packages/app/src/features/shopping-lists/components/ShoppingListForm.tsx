@@ -139,7 +139,7 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
                 label="Notes (optional)"
                 className="bp-shopping_list_form__notes"
                 name="notes"
-                value={watch("notes")}
+                value={watch("notes") ?? undefined}
                 placeholder="Enter notes"
                 error={errors.notes?.message}
                 as="textarea"

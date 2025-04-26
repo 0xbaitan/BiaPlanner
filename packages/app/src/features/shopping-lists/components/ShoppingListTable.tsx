@@ -4,13 +4,35 @@ import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { FaPencil } from "react-icons/fa6";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useDeleteShoppingListMutation } from "@/apis/ShoppingListsApi";
+import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type ShoppingListTableProps = {
   data: IShoppingList[];
 };
 export default function ShoppingListTable(props: ShoppingListTableProps) {
   const navigate = useNavigate();
+  const [deleteShoppingList, { isLoading: isDeleting, isSuccess: isDeleted, isError: isDeleteError, error: deleteError }] = useDeleteShoppingListMutation();
+
+  const { notify: notifyOnDeletion } = useDeletionToast<IShoppingList>({
+    identifierSelector: (row) => row.title,
+    onConfirm: async (row) => {
+      notifyAfterDeletion();
+      await deleteShoppingList(row.id);
+    },
+  });
+
+  const { notify: notifyAfterDeletion } = useSimpleStatusToast({
+    isLoading: isDeleting,
+    isSuccess: isDeleted,
+    isError: isDeleteError,
+    idPrefix: "delete-shopping-list",
+    errorMessage: "Failed to delete shopping list",
+    successMessage: "Shopping list deleted successfully",
+    loadingMessage: "Deleting shopping list...",
+  });
 
   return (
     <TabbedViewsTable<IShoppingList>
@@ -49,7 +71,7 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
           label: "Delete shopping list",
           icon: FaTrash,
           onClick(row) {
-            console.log("Delete action triggered for row:", row);
+            notifyOnDeletion(row);
           },
         },
         {
@@ -60,7 +82,6 @@ export default function ShoppingListTable(props: ShoppingListTableProps) {
             if (row.isShoppingComplete) {
               return;
             }
-
             navigate(fillParametersInPath(RoutePaths.SHOPPING_LISTS_MARK_DONE, { id: row.id }));
           },
         },

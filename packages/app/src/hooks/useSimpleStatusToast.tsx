@@ -25,9 +25,10 @@ export type StatusToastProps = DeepPartial<ToastContentProps> & {
 
 export default function useSimpleStatusToast(props: StatusToastProps) {
   const { idPrefix, successMessage, errorMessage, loadingMessage, isSuccess, isError, isLoading, onFailure, onSuccess } = props;
-
+  const [isActive, setIsActive] = useState(false);
   const notify = useCallback(() => {
     const toastId = `${idPrefix}`;
+    setIsActive(true);
     const status: Status = isSuccess ? Status.SUCCESS : isError ? Status.ERROR : isLoading ? Status.LOADING : Status.DEFAULT;
 
     if (status === Status.DEFAULT) {
@@ -55,8 +56,12 @@ export default function useSimpleStatusToast(props: StatusToastProps) {
   }, [errorMessage, idPrefix, isError, isLoading, isSuccess, loadingMessage, props, successMessage]);
 
   useEffect(() => {
-    if (isSuccess || isError || isLoading) {
+    if ((isSuccess || isError || isLoading) && isActive) {
       notify();
+    }
+
+    if (isSuccess) {
+      setIsActive(false);
     }
 
     if (isSuccess && onSuccess) {
@@ -66,7 +71,7 @@ export default function useSimpleStatusToast(props: StatusToastProps) {
     if (isError && onFailure) {
       onFailure();
     }
-  }, [idPrefix, isError, isLoading, isSuccess, notify, onFailure, onSuccess]);
+  }, [idPrefix, isActive, isError, isLoading, isSuccess, notify, onFailure, onSuccess]);
 
   return { notify };
 }
