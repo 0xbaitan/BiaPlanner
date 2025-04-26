@@ -57,7 +57,7 @@ export class ShoppingItemEntity implements IShoppingItem {
   @JoinColumn({ name: 'replacementId' })
   replacement?: IShoppingItem;
 
-  @Column({ type: 'bigint', nullable: false })
+  @Column({ type: 'bigint', nullable: true })
   shoppingListId?: string;
 
   @ManyToOne(() => ShoppingListEntity, (shoppingList) => shoppingList.id)

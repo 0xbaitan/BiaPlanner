@@ -53,7 +53,7 @@ export class ShoppingListEntity implements IShoppingList {
   @OneToMany(
     () => ShoppingItemEntity,
     (shoppingItem) => shoppingItem.shoppingList,
-    { cascade: true, eager: true, onDelete: 'CASCADE' },
+    { cascade: true, eager: true, onDelete: 'SET NULL' },
   )
   items?: IShoppingItem[];
 }

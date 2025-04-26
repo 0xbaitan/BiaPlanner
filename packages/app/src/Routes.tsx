@@ -16,6 +16,7 @@ import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesP
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import EditRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/EditRecipeTagPage";
+import EditShoppingListPage from "./features/shopping-lists/pages/EditShoppingListPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
@@ -128,7 +129,7 @@ export default function Routes() {
 
           <Route path={RoutePaths.SHOPPING_LISTS_CREATE} element={<CreateShoppingListPage />} />
           <Route path={RoutePaths.SHOPPING_LISTS_VIEW} element={<ShoppingListsPage />} />
-          <Route path={RoutePaths.SHOPPING_LISTS_EDIT} element={<ShoppingListsPage />} />
+          <Route path={RoutePaths.SHOPPING_LISTS_EDIT} element={<EditShoppingListPage />} />
           <Route path={RoutePaths.SHOPPING_LISTS_MARK_DONE} element={<MarkShoppingDonePage />} />
 
           <Route path={RoutePaths.PRODUCTS} element={<ProductsPage />} />

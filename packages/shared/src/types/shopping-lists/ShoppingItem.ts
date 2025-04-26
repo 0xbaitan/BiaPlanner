@@ -21,7 +21,7 @@ export const WriteShoppingListItemSchema = z.object({
   id: z.string().optional(),
   productId: z.string().min(1, "Product is required"),
   quantity: z.coerce.number().int().positive("Quantity is required"),
-  replacementId: z.string().optional(),
+  replacementId: z.string().optional().nullable(),
   shoppingListId: z.string().optional(),
   isReplaced: z.coerce.boolean().optional(),
   isChecked: z.coerce.boolean().optional(),

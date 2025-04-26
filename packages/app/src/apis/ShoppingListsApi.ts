@@ -22,11 +22,17 @@ export const shoppingListsApi = rootApi.injectEndpoints({
       invalidatesTags: [{ type: "ShoppingList", id: "LIST" }],
     }),
 
-    updateShoppingList: build.mutation<IShoppingList, IWriteShoppingListDto>({
-      query: (body) => ({
-        url: `/shopping-lists/${body.id}`,
+    updateShoppingList: build.mutation<
+      IShoppingList,
+      {
+        id: string;
+        dto: IWriteShoppingListDto;
+      }
+    >({
+      query: ({ id, dto }) => ({
+        url: `/shopping-lists/${id}`,
         method: "POST",
-        body,
+        body: dto,
       }),
       invalidatesTags: (result, error, arg) => [{ type: "ShoppingList", id: arg.id }],
     }),

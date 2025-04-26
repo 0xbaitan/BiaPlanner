@@ -56,7 +56,7 @@ export const WriteShoppingListSchema = z.object({
     .min(1, "Title is required")
     .refine((title) => title.trim().length > 0, "Title cannot be empty")
     .refine((title) => title.length <= 100, "Title cannot exceed 100 characters"),
-  notes: z.string().optional(),
+  notes: z.string().optional().nullable(),
   plannedDate: z.coerce
     .string(
       z

@@ -48,7 +48,19 @@ export class ShoppingListService {
       throw new BadRequestException(errorMessage);
     }
 
-    return this.shoppingListRepository.save(dto);
+    const { items, ...self } = dto;
+
+    await this.shoppingItemService.manageShoppingItemsForShoppingList(
+      id,
+      items,
+    );
+
+    await this.shoppingListRepository.update(id, self);
+
+    return this.shoppingListRepository.findOneOrFail({
+      where: { id },
+      relations: ['items', 'items.product', 'items.replacement'],
+    });
   }
 
   public async delete(id: string) {
