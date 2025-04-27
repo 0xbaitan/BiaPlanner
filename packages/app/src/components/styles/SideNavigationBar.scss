@@ -8,3 +8,10 @@
 .bp-logout_btn {
   justify-self: center;
 }
+
+.bp-side_navbar__logo {
+  display: block;
+  width: 100%;
+  margin: clamp(2rem, 2vw + 1rem, 3rem) auto;
+  object-fit: contain;
+}

@@ -1,20 +1,18 @@
 import "./styles/SideNavigationBar.scss";
 
 import { BiSolidCategory, BiSolidFridge } from "react-icons/bi";
-import { ElementStyles, Menu, MenuItem, Sidebar, SubMenu, menuClasses } from "react-pro-sidebar";
+import { ElementStyles, Menu, MenuItem, Sidebar, SubMenu } from "react-pro-sidebar";
 import { FaBook, FaBowlRice, FaGear, FaKitchenSet, FaShop, FaTags } from "react-icons/fa6";
 import { GiMeal, GiMilkCarton } from "react-icons/gi";
-import { useAuthenticationHookCallbacks, useIsAdminLoggedIn } from "@/features/authentication/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { AiFillProduct } from "react-icons/ai";
+import BiaPlannerLogo from "@/icons/bia-planner-logo.svg";
 import { FaShoppingCart } from "react-icons/fa";
 import { IoMdNotifications } from "react-icons/io";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { RoutePaths } from "@/Routes";
-import { useAuthenticationState } from "@/features/authentication/reducers/AuthenticationReducer";
-import { useEffect } from "react";
 
 export default function SideNavigationBar() {
   return (
@@ -25,10 +23,25 @@ export default function SideNavigationBar() {
       rootStyles={{
         display: "flex",
         flexDirection: "column",
-
         height: "100%",
       }}
     >
+      <div>
+        <img
+          src={BiaPlannerLogo}
+          alt="Bia Planner Logo"
+          className="bp-side_navbar__logo"
+          style={{
+            width: "100%",
+            height: "auto",
+            padding: "10px",
+            marginBottom: "20px",
+            display: "block",
+            objectFit: "contain",
+            objectPosition: "center",
+          }}
+        />
+      </div>
       <Menu
         closeOnClick={true}
         menuItemStyles={{
@@ -60,7 +73,7 @@ export default function SideNavigationBar() {
             }
 
             if (open) {
-              styles.backgroundColor = "#d9d9d9"; // Deeper grey for menus with active submenus
+              styles.backgroundColor = "#d9d9d9";
             }
 
             return styles;
@@ -68,31 +81,16 @@ export default function SideNavigationBar() {
         }}
       >
         <PantryMenu />
+
         <ShoppingListMenu />
         <MealPlansMenu />
         <ProductCatalogueMenu />
         <RecipeManagementMenu />
 
         <SettingsMenu />
-        <MenuItem
-          rootStyles={{
-            backgroundColor: "transparent",
-            paddingTop: "20px",
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            borderTop: "1px solid #e6e6e6",
-            "&:hover": {
-              backgroundColor: "transparent",
-              color: "inherit",
-            },
-          }}
-        >
+        <div style={{ flexGrow: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "2em 1em", marginTop: "1.5em", borderTop: "1px solid #e0e0e0" }}>
           <LogoutButton />
-        </MenuItem>
+        </div>
       </Menu>
     </Sidebar>
   );
@@ -118,21 +116,10 @@ function SettingsMenu() {
 }
 
 function PantryMenu() {
-  // const isAdmin = useIsAdminLoggedIn();
-
-  // if (isAdmin) {
-  //   return null;
-  // }
-
   return <NavigationMenuItem label="Pantry" path={RoutePaths.PANTRY} icon={<BiSolidFridge size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
 function MealPlansMenu() {
-  // const isAdmin = useIsAdminLoggedIn();
-
-  // if (isAdmin) {
-  //   return null;
-  // }
   return <NavigationMenuItem label="Meal Plans" path={RoutePaths.MEAL_PLANS} icon={<GiMeal size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
@@ -147,11 +134,6 @@ function RecipeManagementMenu() {
 }
 
 function ShoppingListMenu() {
-  // const isAdmin = useIsAdminLoggedIn();
-
-  // if (isAdmin) {
-  //   return null;
-  // }
   return <NavigationMenuItem label="Shopping Lists" path={RoutePaths.SHOPPING_LISTS} icon={<FaShoppingCart size={20} className="bp-side_navbar__menu_item_icon" />} />;
 }
 
