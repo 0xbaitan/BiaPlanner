@@ -22,6 +22,7 @@ import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import { serialize } from "object-to-formdata";
 import { useNavigate } from "react-router-dom";
+import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
@@ -41,13 +42,15 @@ function getDefaultValues(recipe: IRecipe | undefined): IWriteRecipeDto {
     return {
       title: "",
       description: "",
-      instructions: "",
+
       prepTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
       cookingTime: { days: 0, hours: 0, minutes: 0, seconds: 0 },
       file: undefined,
 
       difficultyLevel: DifficultyLevels.EASY,
-      cuisine: { id: "" },
+      cuisine: {
+        id: "1",
+      },
       tags: [],
       ingredients: [],
       directions: [],
@@ -56,7 +59,7 @@ function getDefaultValues(recipe: IRecipe | undefined): IWriteRecipeDto {
   const defaultValues: IWriteRecipeDto = {
     title: recipe.title,
     description: recipe.description,
-    instructions: recipe.instructions,
+
     prepTime: recipe.prepTime,
     cookingTime: recipe.cookingTime,
 
@@ -123,6 +126,8 @@ export default function RecipeForm(props: RecipeFormProps) {
     [coverImageFile, onSubmit]
   );
 
+  const { onSubmitError } = useValidationErrorToast();
+
   const handleImageChange = useCallback(
     (file: File | undefined) => {
       setValue("file", file);
@@ -134,7 +139,7 @@ export default function RecipeForm(props: RecipeFormProps) {
   return (
     <FormProvider {...methods}>
       <div className="bp-recipe_form">
-        <DualPaneForm onSubmit={handleSubmit(handleFormSubmit)}>
+        <DualPaneForm onSubmit={handleSubmit(handleFormSubmit, onSubmitError)}>
           <DualPaneForm.Header className="bp-recipe_form__header">
             <DualPaneForm.Header.Title className="bp-recipe_form__header__title">{type === "create" ? "Create Recipe" : "Edit Recipe"}</DualPaneForm.Header.Title>
             <DualPaneForm.Header.Actions className="bp-recipe_form__header__actions">
@@ -156,10 +161,24 @@ export default function RecipeForm(props: RecipeFormProps) {
                 value={coverImageFile}
                 valueMetadata={initialValue?.coverImage}
                 onChange={handleImageChange}
-                helpText="Upload a cover image for this recipe. Recommended image dimensions are 1200 x 800 px."
+                helpText="Upload an optional cover image for this recipe. Recommended image dimensions are 1200 x 800 px."
               />
               <div className="bp-recipe_form__general_info">
                 <MemoizedTextInput {...methods.register("title")} label="Recipe title" name="title" inputLabelProps={{ required: true }} placeholder="Enter recipe title" error={formState.errors?.title?.message} />
+
+                <MemoizedTextInput
+                  label="Recipe Description (optional)"
+                  value={watch("description") ?? undefined}
+                  name="description"
+                  as="textarea"
+                  onChange={(e) => setValue("description", e.target.value)}
+                  placeholder="Enter recipe description"
+                  error={formState.errors?.description?.message}
+                />
+
+                <MemoizedTextInput label="Recipe Source (optional)" value={watch("source") ?? undefined} name="source" onChange={(e) => setValue("source", e.target.value)} placeholder="Enter recipe source" error={formState.errors?.source?.message} />
+                <hr />
+
                 <MemoizedDifficultyLevelSelect
                   onChange={(value) => {
                     setValue("difficultyLevel", value);
@@ -180,42 +199,23 @@ export default function RecipeForm(props: RecipeFormProps) {
                     )
                   }
                 />
+                <hr />
 
                 <Form.Group>
-                  <InputLabel required>Preparation time</InputLabel>
+                  <InputLabel>Preparation time (optional)</InputLabel>
                   <MemoizedSegmentedTimeInput initialValue={watch("prepTime")} onChange={(value) => setValue("prepTime", value)} />
                 </Form.Group>
                 <Form.Group>
-                  <InputLabel required>Cooking time</InputLabel>
+                  <InputLabel>Cooking time (optional)</InputLabel>
                   <MemoizedSegmentedTimeInput initialValue={watch("cookingTime")} onChange={(value) => setValue("cookingTime", value)} />
                 </Form.Group>
-
-                <MemoizedTextInput
-                  label="Recipe Description (optional)"
-                  value={watch("description")}
-                  name="description"
-                  as="textarea"
-                  onChange={(e) => setValue("description", e.target.value)}
-                  placeholder="Enter recipe description"
-                  error={formState.errors?.description?.message}
-                />
               </div>
             </DualPaneForm.Panel.Pane>
             <DualPaneForm.Panel.Pane className="bp-recipe_form__dual_pane__pane">
-              <Heading level={Heading.Level.H2}>Ingredients</Heading>
               <div className="bp-recipe_form__ingredients">
                 <MemoizedIngredientList />
               </div>
-              <MemoizedTextInput
-                formGroupClassName="mt-5"
-                label="Instructions"
-                name="instructions"
-                as="textarea"
-                value={watch("instructions")}
-                onChange={(e) => setValue("instructions", e.target.value)}
-                placeholder="Enter recipe instructions"
-                error={formState.errors?.instructions?.message}
-              />
+
               <div className="bp-recipe_form__directions">
                 <RecipeDirectionList directions={watch("directions")} />
               </div>

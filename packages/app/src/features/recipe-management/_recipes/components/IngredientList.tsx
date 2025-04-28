@@ -1,6 +1,8 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { Button } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa";
+import Heading from "@/components/Heading";
 import { IWriteRecipeDto } from "@biaplanner/shared";
 import IngredientItem from "./IngredientItem";
 import IngredientModal from "./IngredientModal";
@@ -26,7 +28,7 @@ export default function IngredientList() {
   });
 
   return (
-    <div>
+    <div className="bp-ingredient_list">
       <IngredientModal
         appendIngredient={(ingredient) => {
           append(ingredient);
@@ -35,21 +37,37 @@ export default function IngredientList() {
           update(index, ingredient);
         }}
       />
-      <Button onClick={openCreateIngredientModal}>Add ingredient</Button>
-      <ol>
-        {fields.length === 0 && <div>No ingredients</div>}
-        {fields.length > 0 &&
-          fields.map((field, index: number) => (
-            <IngredientItem
-              key={field.fieldId}
-              index={index}
-              ingredient={field}
-              onRemove={(index) => {
-                remove(index);
-              }}
-            />
-          ))}
-      </ol>
+      <div className="bp-ingredient_list__header">
+        <div className="bp-ingredient_list__header__title">
+          <Heading level={Heading.Level.H2}>Ingredients</Heading>
+          <small className="text-muted">Click on the 'Add Ingredient' button to add a new ingredient</small>
+        </div>
+        <Button onClick={openCreateIngredientModal} className="bp-ingredient_list__add_btn">
+          <FaPlus className="me-2" />
+          Add ingredient
+        </Button>
+      </div>
+
+      <div className="bp-ingredient_list__content">
+        {fields.length === 0 ? (
+          <div className="bp-ingredient_list__empty">
+            <p>No ingredients added yet</p>
+          </div>
+        ) : (
+          <ol className="bp-ingredient_list__items">
+            {fields.map((field, index: number) => (
+              <IngredientItem
+                key={field.fieldId}
+                index={index}
+                ingredient={field}
+                onRemove={(index) => {
+                  remove(index);
+                }}
+              />
+            ))}
+          </ol>
+        )}
+      </div>
     </div>
   );
 }

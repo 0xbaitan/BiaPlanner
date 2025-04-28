@@ -66,9 +66,9 @@ export const WriteRecipeValidationSchema = zfd.formData({
   difficultyLevel: zfd.text(z.string()),
   cuisine: zfd.json(z.object({ id: z.coerce.string() })),
 
-  cookingTime: zfd.json(SegmentedTimeSchema).optional().nullable(),
-  prepTime: zfd.json(SegmentedTimeSchema).optional().nullable(),
-
+  cookingTime: zfd.json(SegmentedTimeSchema).optional(),
+  prepTime: zfd.json(SegmentedTimeSchema).optional(),
+  source: zfd.text(z.string().optional().nullable()),
   tags: zfd.repeatable(z.array(zfd.json(z.object({ id: z.coerce.string() }))).min(1, { message: "At least one tag is required" })),
 
   file: zfd.file(z.instanceof(File).refine((file) => file.size > 0, "File required")).optional(),
