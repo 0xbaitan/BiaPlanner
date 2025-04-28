@@ -101,26 +101,26 @@ export default function SegmentedTimeInput(props: SegmentedTimeInputProps) {
   const [time, dispatch] = useReducer(segmentedTimeReducer, initialValue ?? initialTimeState);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  useEffect(() => {
-    onChange(time);
-  }, [time, onChange]);
+  const onMagnitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, actionType: SegmentedTimeActionType, max: number, min: number) => {
+      const rawValue = e.target.value;
+      const noNonDigits = rawValue.replace(/\D/g, "");
 
-  const onMagnitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, actionType: SegmentedTimeActionType, max: number, min: number) => {
-    const rawValue = e.target.value;
-    const noNonDigits = rawValue.replace(/\D/g, "");
+      let magnitude = parseInt(noNonDigits);
 
-    let magnitude = parseInt(noNonDigits);
+      if (isNaN(magnitude)) {
+        magnitude = 0;
+      } else if (magnitude > max) {
+        magnitude = max;
+      } else if (magnitude < min) {
+        magnitude = min;
+      }
 
-    if (isNaN(magnitude)) {
-      magnitude = 0;
-    } else if (magnitude > max) {
-      magnitude = max;
-    } else if (magnitude < min) {
-      magnitude = min;
-    }
-
-    dispatch({ type: actionType, payload: magnitude });
-  }, []);
+      dispatch({ type: actionType, payload: magnitude });
+      onChange({ ...time });
+    },
+    [onChange, time]
+  );
 
   return (
     <div className={["bp-segmented_time_input", isEditing ? "+focus" : ""].join(" ")} onDoubleClick={() => setIsEditing(true)}>

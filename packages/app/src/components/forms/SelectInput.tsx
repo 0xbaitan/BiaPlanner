@@ -71,12 +71,6 @@ const SelectInput = forwardRef<HTMLInputElement, SelectInputProps<any>>((props, 
     return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
   });
 
-  useEffect(() => {
-    setSelectedOptions(() => {
-      return defaultSelectedValues?.map((selectedValue) => ({ id: idSelector(selectedValue), name: nameSelector(selectedValue) })) ?? [];
-    });
-  }, [defaultSelectedValues, idSelector, nameSelector]);
-
   const getValueCounterPart = useCallback(
     (option: Option) => {
       return list.find((item) => idSelector(item) === option.id)!;

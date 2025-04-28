@@ -17,22 +17,11 @@ export default function CuisineSelect(props: CuisineSelectProps) {
   const { onChange, defaultValue, inputLabelProps, error } = props;
   const { data: cuisineOptions, isSuccess, isLoading, isError } = useGetCuisinesQuery();
 
-  const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>(undefined);
-
-  useEffect(() => {
-    if (defaultValue && cuisineOptions) {
-      const matchingCuisine = cuisineOptions.find((cuisine) => cuisine.id === defaultValue.id);
-      if (matchingCuisine && selectedValue?.id !== matchingCuisine.id) {
-        setSelectedValue(matchingCuisine);
-      }
-    }
-  }, [cuisineOptions, defaultValue, selectedValue?.id]);
-
-  useEffect(() => {
-    if (selectedValue) {
-      onChange(selectedValue);
-    }
-  }, [onChange, selectedValue]);
+  const selectedValue = useMemo(() => {
+    if (!defaultValue) return null;
+    const matchingCuisine = cuisineOptions?.find((cuisine) => cuisine.id === defaultValue.id);
+    return matchingCuisine ?? null;
+  }, [cuisineOptions, defaultValue]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -55,7 +44,9 @@ export default function CuisineSelect(props: CuisineSelectProps) {
         nameSelector={(item) => item.name}
         selectedValues={selectedValue ? [selectedValue] : []}
         onChange={([selectedValue]) => {
-          setSelectedValue(selectedValue);
+          if (selectedValue) {
+            onChange(selectedValue);
+          }
         }}
         multi={false}
       />
