@@ -50,13 +50,16 @@ export const productsCrudListSlice = createSlice({
         search: state.productsQuery.search,
       };
     },
+    resetAll: (state) => {
+      state = initialState;
+    },
     setView: (state, action: PayloadAction<ViewType>) => {
       state.view = action.payload;
     },
   },
 });
 
-export const { setFilter, setPage, setLimit, setSearch, resetFilters, setSortBy, setView } = productsCrudListSlice.actions;
+export const { setFilter, setPage, setLimit, setSearch, resetFilters, setSortBy, setView, resetAll } = productsCrudListSlice.actions;
 export default productsCrudListSlice.reducer;
 
 export function useProductsCrudListState() {
@@ -75,5 +78,6 @@ export function useProductsCrudListActions() {
     resetFilters: () => dispatch(resetFilters()),
     setSortBy: (sortBy: ProductSortBy) => dispatch(setSortBy(sortBy)),
     setView: (view: ViewType) => dispatch(setView(view)),
+    resetAll: () => dispatch(resetAll()),
   };
 }

@@ -4,16 +4,16 @@ import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pant
 import AddProductPage from "./features/product-catalogue/_products/pages/AddProductPage";
 import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
-import AdminCreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/AdminCreateProductCategoryPage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
-import AdminUpdateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/AdminUpdateProductCategoryPage";
 import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
+import CreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/CreateProductCategoryPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
+import EditProductCategoryPage from "./features/product-catalogue/_product-categories/pages/EditProductCategorypage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import EditRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/EditRecipeTagPage";
 import EditShoppingListPage from "./features/shopping-lists/pages/EditShoppingListPage";
@@ -144,9 +144,9 @@ export default function Routes() {
           <Route path={RoutePaths.BRANDS_EDIT} element={<EditBrandPage />} />
 
           <Route path={RoutePaths.PRODUCT_CATEGORIES} element={<ProductCategoriesPage />} />
-          <Route path={RoutePaths.PRODUCT_CATEGORIES_CREATE} element={<AdminCreateProductCategoryPage />} />
+          <Route path={RoutePaths.PRODUCT_CATEGORIES_CREATE} element={<CreateProductCategoryPage />} />
           <Route path={RoutePaths.PRODUCT_CATEGORIES_VIEW} element={<ProductCategoriesPage />} />
-          <Route path={RoutePaths.PRODUCT_CATEGORIES_EDIT} element={<AdminUpdateProductCategoryPage />} />
+          <Route path={RoutePaths.PRODUCT_CATEGORIES_EDIT} element={<EditProductCategoryPage />} />
 
           <Route path={RoutePaths.SETTINGS_ACCOUNT} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.SETTINGS_NOTIFICATIONS} element={<AdminBrandsPage />} />

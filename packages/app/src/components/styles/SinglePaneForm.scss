@@ -23,12 +23,12 @@
   }
 
   &__single_panel__pane {
-    border: 1px solid #dee2e6; // Light gray border
     border-radius: 0.5rem; // Rounded corners
     width: 100%;
     padding: 2rem; // Increased padding for better spacing
     background-color: #ffffff; // White background
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elevation
+    background-color: #f8f9fa; // Light gray background for the panes
+    border: 1px solid #dee2e6;
     margin-top: 1rem; // Add spacing between header and pane
     min-height: max-content;
     padding-bottom: calc(2rem + 1rem); // Extra padding for the bottom

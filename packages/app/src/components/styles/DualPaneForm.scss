@@ -1,32 +1,54 @@
 .bp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; // Space between header and panels
+  height: 100%; // Ensure the form takes the full height of the container
+
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.875em;
-    padding: 0.5em;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #ffffff; // White background for the header
+    border-bottom: 1px solid #dee2e6; // Subtle border for separation
+
+    &__title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333333;
+    }
 
     &__actions {
       display: flex;
       gap: 1rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 4px;
+      }
     }
   }
+
   &__dual_panel {
     display: flex;
-    margin-top: 2rem;
-    gap: 1rem;
-    height: 100%;
+    gap: 2rem; // Space between the two panes
+    flex-grow: 1; // Allow the panel to grow and fill available space
+    align-items: stretch; // Ensure both panes stretch to the same height
 
     &__pane {
-      border: 0.5px solid $colors-silver;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-      padding: clamp(0.5em, 2vw, 1.25em);
-      height: calc(100vh - 8em);
-      background-color: $pane-bg-color;
-      width: 100%;
-      max-height: 100%;
-      overflow-y: scroll;
+      flex: 1; // Allow both panes to take equal width
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 1.5rem;
+      background-color: #f8f9fa; // Light gray background for the panes
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elegance
+      overflow: hidden; // Prevent content overflow
     }
   }
 }

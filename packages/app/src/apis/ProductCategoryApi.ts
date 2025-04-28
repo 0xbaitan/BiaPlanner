@@ -1,4 +1,4 @@
-import { ICreateProductCategoryDto, IProductCategory, IQueryProductCategoryParamsDto, IQueryProductCategoryResultsDto, IUpdateProductCategoryDto, Paginated } from "@biaplanner/shared";
+import { ICreateProductCategoryDto, IProductCategory, IQueryProductCategoryParamsDto, IQueryProductCategoryResultsDto, IWriteProductCategoryDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -30,9 +30,9 @@ export const productCategoriesApi = rootApi.injectEndpoints({
       invalidatesTags: [{ type: "ProductCategory", id: "LIST" }],
     }),
 
-    updateProductCategory: build.mutation<IProductCategory, IUpdateProductCategoryDto>({
-      query: (dto) => ({
-        url: `/product-categories/${dto.id}`,
+    updateProductCategory: build.mutation<IProductCategory, { id: string; dto: IWriteProductCategoryDto }>({
+      query: ({ id, dto }) => ({
+        url: `/product-categories/${id}`,
         method: "PUT",
         body: dto,
       }),

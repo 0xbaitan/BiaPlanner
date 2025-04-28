@@ -1,62 +1,50 @@
 .bp-recipe_form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; // Space between sections
+  height: 100%; // Ensure the form takes the full height of the container
+
+  &__dual_pane {
+    display: flex;
+    gap: 2rem; // Space between the two panes
+    flex-grow: 1; // Allow the panel to grow and fill available space
+    align-items: stretch; // Ensure both panes stretch to the same height
+    height: 100%; // Ensure the dual pane takes the full height of the container
+
+    &__pane {
+      flex: 1; // Allow both panes to take equal width
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      padding: 1.5rem;
+
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elegance
+      overflow: auto; // Allow scrolling if content overflows
+    }
+  }
+
   &__general_info {
     display: flex;
     flex-direction: column;
-    gap: 1.25em;
+    gap: 1.5rem; // Space between fields
+    margin-bottom: 2rem; // Space below the section
   }
-}
 
-.bp-ingredient_list_input {
-  &__fields {
+  &__ingredients {
     display: flex;
-    gap: 1em;
-    padding: 0.25em;
     flex-direction: column;
+    gap: 1.5rem; // Space between fields
+    margin-top: 2rem; // Space above the section
   }
 
-  &__add_ingredient_btn {
-    margin-top: 1.25em;
-    width: 100%;
-  }
-}
-
-.bp-ingredient_list {
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.875em;
-    padding: 0.5em;
-
-    &__actions {
-      display: flex;
-      gap: 1rem;
-    }
+  &__instructions {
+    margin-top: 2rem; // Space above the instructions section
   }
 
-  &__content {
-    display: flex;
-    width: 100%;
-    height: clamp(10em, 50vh, 20em);
-    justify-content: center;
-    align-items: center;
-    overflow-y: scroll;
-    border: 0.5px solid $colors-silver;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    padding: 1.5em;
-
-    &__list {
-      display: flex;
-      flex-direction: column;
-      gap: clamp(0.5em, 0.5vw, 2em);
-      width: 100%;
-    }
+  &__directions {
+    margin-top: 2rem; // Space above the directions section
   }
-}
-
-.bp-ingredient_list__content__no_list_message {
-  @include typography-mulish-font(1.2rem, normal);
-  color: #a9a9a9;
-  text-align: center;
 }

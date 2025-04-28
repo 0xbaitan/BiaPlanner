@@ -8,13 +8,14 @@ import ProductCategoriesFilterBar from "../components/ProductCategoriesFilterBar
 import ProductCategoriesTable from "../components/ProductCategoriesTable";
 import { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchProductCategoriesQuery } from "@/apis/ProductCategoryApi";
 
 export default function ProductCategoriesPage() {
   const navigate = useNavigate();
   const { productCategoriesQuery } = useProductCategoriesCrudListState();
-  const { setSearch, setPage, setLimit } = useProductCategoriesCrudListActions();
+  const { setSearch, setPage, setLimit, resetAll } = useProductCategoriesCrudListActions();
   const { data: productCategories, isError } = useSearchProductCategoriesQuery(productCategoriesQuery, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
@@ -23,6 +24,11 @@ export default function ProductCategoriesPage() {
 
   const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = calculatePaginationMeta(productCategoriesQuery.limit ?? 25, productCategories);
 
+  useEffect(() => {
+    return () => {
+      resetAll();
+    };
+  }, [resetAll]);
   return (
     <CrudListPageLayout>
       <CrudListPageLayout.Header

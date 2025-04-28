@@ -2,12 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductCategoryEntity } from './product-category.entity';
 import { In, Repository } from 'typeorm';
-import {
-  CreateProductCategoryDto,
-  ICreateProductCategoryDto,
-  IUpdateProductCategoryDto,
-  UpdateProductCategoryDto,
-} from '@biaplanner/shared';
+import { IWriteProductCategoryDto } from '@biaplanner/shared';
 
 @Injectable()
 export class ProductCategoryService {
@@ -31,12 +26,12 @@ export class ProductCategoryService {
     });
   }
 
-  async createProductCategory(dto: ICreateProductCategoryDto) {
+  async createProductCategory(dto: IWriteProductCategoryDto) {
     const productCategory = this.productCategoryRepository.create(dto);
     return this.productCategoryRepository.save(productCategory);
   }
 
-  async updateProductCategory(id: string, dto: IUpdateProductCategoryDto) {
+  async updateProductCategory(id: string, dto: IWriteProductCategoryDto) {
     const productCategory = await this.findProductCategoryById(id);
     const updatedProductCategory = this.productCategoryRepository.merge(
       productCategory,
@@ -69,12 +64,12 @@ export class ProductCategoryService {
     return productCategories;
   }
 
-  async createProductClassification(dto: CreateProductCategoryDto) {
+  async createProductClassification(dto: IWriteProductCategoryDto) {
     const productClassification = this.productCategoryRepository.create(dto);
     return this.productCategoryRepository.save(productClassification);
   }
 
-  async updateProductClassification(id: string, dto: UpdateProductCategoryDto) {
+  async updateProductClassification(id: string, dto: IWriteProductCategoryDto) {
     const productClassification =
       await this.productCategoryRepository.findOneOrFail({
         where: {

@@ -130,22 +130,25 @@
 .bp-tabbed_views_table__dropdown_item {
   display: flex;
   align-items: center;
-  padding: 0.5rem 1rem !important;
+  padding: 0.75rem 1rem !important;
   font-size: 0.9rem;
-  width: max-content;
+  white-space: nowrap; // Prevent text wrapping
+  min-width: 200px; // Set minimum width for dropdown items
+  width: 100%; // Take full width of parent
 
-  color: #495057; // Dark gray text for dropdown items
+  color: #495057;
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
 
   &:hover {
-    background-color: $colors-main !important; // Primary color on hover
-    color: #ffffff !important; // White text on hover
+    background-color: $colors-main !important;
+    color: #ffffff !important;
   }
 
   .bp-tabbed_views_table__action_icon {
     font-size: 0.9rem;
+    flex-shrink: 0; // Prevent icon from shrinking
   }
 
   .bp-tabbed_views_table__action_label {
@@ -156,5 +159,16 @@
 .bp-tabbed_views_table__popup {
   .bp-tabbed_views_table__kebab_menu {
     padding: 0.5rem;
+    min-width: 200px; // Match dropdown item min-width
+
+    .bp-tabbed_views_table__kebab_dropdown {
+      width: 100%; // Take full width of parent
+    }
   }
+}
+
+// Override reactjs-popup styles to accommodate wider content
+.popup-content {
+  min-width: max-content !important; // Ensure popup expands to fit content
+  padding: 0 !important; // Remove default padding
 }

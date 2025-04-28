@@ -1,41 +1,34 @@
-import { useCallback, useEffect } from "react";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
 import { useNavigate, useParams } from "react-router-dom";
 
-// import GenericSinglePaneFormPage from "@/pages/GenericSinglePaneFormPage";
 import { IWriteRecipeDto } from "@biaplanner/shared";
 import RecipeForm from "../components/RecipeForm";
-import { Status } from "@/hooks/useStatusToast";
+import { useCallback } from "react";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function EditRecipePage() {
   const { id } = useParams();
-  const { data: recipe, isLoading: isReadLoading, isError: isReadError } = useGetRecipeQuery(String(id));
+  const { data: recipe, isLoading: isReadLoading } = useGetRecipeQuery(String(id));
   const [updateRecipe, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading: isUpdateLoading }] = useUpdateRecipeMutation();
   const navigate = useNavigate();
-  const { setItem } = useDefaultStatusToast<IWriteRecipeDto>({
-    idSelector: (entity) => "N/A",
-    action: Action.UPDATE,
-    entityIdentifier: (entity) => entity.title,
-    isSuccess: isUpdateSuccess,
+
+  const { notify: notifyOnUpdateTrigger } = useSimpleStatusToast({
     isError: isUpdateError,
-    idPrefix: "recipe",
     isLoading: isUpdateLoading,
-    toastProps: {
-      autoClose: 5000,
+    isSuccess: isUpdateSuccess,
+    successMessage: "Recipe updated successfully.",
+    errorMessage: "Failed to update recipe.",
+    loadingMessage: "Updating recipe...",
+    idPrefix: "recipe-update",
+    onFailure: () => {
+      console.error("Failed to update recipe");
     },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectButtonText: "Return to Recipes",
-      redirectUrl: "/meal-planning/recipes",
+    onSuccess: () => {
+      console.log("Recipe updated successfully");
+      navigate(fillParametersInPath(RoutePaths.RECIPES_VIEW, { id: String(recipe?.id) }));
     },
   });
-
-  useEffect(() => {
-    if (isUpdateSuccess) {
-      navigate(-1);
-    }
-  }, [isUpdateSuccess, navigate]);
 
   const handleUpdateRecipeSubmission = useCallback(
     async (dto: IWriteRecipeDto, formData: FormData) => {
@@ -44,7 +37,7 @@ export default function EditRecipePage() {
         return false;
       }
       console.log("Updating recipe with ID:", id, "and DTO:", dto);
-      setItem(dto);
+      notifyOnUpdateTrigger();
       try {
         await updateRecipe({ id, formData }).unwrap();
         return true;
@@ -53,7 +46,7 @@ export default function EditRecipePage() {
         return false;
       }
     },
-    [id, updateRecipe, setItem]
+    [id, updateRecipe, notifyOnUpdateTrigger]
   );
 
   if (isReadLoading) {

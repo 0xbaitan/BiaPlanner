@@ -1,8 +1,8 @@
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaAllergies, FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import { IQueryProductCategoryResultsDto } from "@biaplanner/shared";
+import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteProductCategoryMutation } from "@/apis/ProductCategoryApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
@@ -46,7 +46,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["category", "productCount"],
+          columnAccessorKeys: ["category", "productCount", "isAllergen"],
           default: true,
 
           columnDefs: [
@@ -59,6 +59,17 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
               header: "Product Count",
               accessorFn: (row) => row.productCount ?? 0,
               accessorKey: "productCount",
+            },
+            {
+              header: "Allergen Status",
+              cell: (cell) => {
+                const row = cell.row.original;
+                return row.isAllergen ? (
+                  <Pill status="warning">
+                    <FaExclamationTriangle size={20} className="pe-2" /> Allergen
+                  </Pill>
+                ) : null;
+              },
             },
           ],
         },

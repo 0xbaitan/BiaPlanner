@@ -1,43 +1,33 @@
-import { ICreateProductCategoryDto, IProductCategory, IUpdateProductCategoryDto } from "@biaplanner/shared";
+import { ICreateProductCategoryDto, IProductCategory, IWriteProductCategoryDto, WriteProductCategoryDtoSchema } from "@biaplanner/shared";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 
-import Button from "react-bootstrap/esm/Button";
+import CancelButton from "@/components/buttons/CancelButton";
 import Form from "react-bootstrap/Form";
+import SaveButton from "@/components/buttons/SaveButton";
+import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type ProductCategoryFormValues = ICreateProductCategoryDto | IUpdateProductCategoryDto;
-
 export type ProductCategoryFormProps = {
   type: "create" | "update";
   disableSubmit?: boolean;
   initialValue?: Partial<IProductCategory>;
-  onSubmit: (values: ProductCategoryFormValues) => void;
+  onSubmit: (values: IWriteProductCategoryDto) => void;
 };
 
-export const CreateBrandValidationSchema: z.ZodType<ICreateProductCategoryDto> = z.object({
-  name: z.string().min(1, { message: "Product category name is required" }),
-  isAllergen: z.boolean().optional(),
-});
-
-export const UpdateBrandValidationSchema: z.ZodType<IUpdateProductCategoryDto> = z.object({
-  id: z.string().min(1, { message: "Product category name is required" }),
-  name: z.string().min(1, { message: "Product category name is required" }),
-  isAllergen: z.boolean().optional(),
-});
-
-export default function BrandForm(props: ProductCategoryFormProps) {
+export default function ProductCategoryForm(props: ProductCategoryFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
 
-  const methods = useForm<ProductCategoryFormValues>({
+  const methods = useForm<IWriteProductCategoryDto>({
     defaultValues: {
       ...initialValue,
       name: initialValue?.name ?? "",
     },
     mode: "onBlur",
-    resolver: zodResolver(type === "create" ? CreateBrandValidationSchema : UpdateBrandValidationSchema),
+    resolver: zodResolver(WriteProductCategoryDtoSchema),
   });
 
   const {
@@ -47,39 +37,68 @@ export default function BrandForm(props: ProductCategoryFormProps) {
     formState: { errors },
   } = methods;
 
-  const initiateSubmit = useCallback(async () => {
-    const values = getValues();
+  const initiateSubmit = useCallback(
+    async (values: IWriteProductCategoryDto) => {
+      onSubmit(values);
+    },
+    [onSubmit]
+  );
 
-    onSubmit(values);
-  }, [getValues, onSubmit]);
-  console.log("errors", errors);
   return (
-    <Form onSubmit={handleSubmit(initiateSubmit)}>
-      <TextInput
-        label="Product Category Name"
-        defaultValue={initialValue?.name ?? ""}
-        error={errors.name ? errors.name.message : undefined}
-        onChange={(e) => {
-          const value = e.target.value;
-          setValue("name", value);
-        }}
-      />
-      <Form.Group className="mb-3">
-        <Form.Check
-          type="checkbox"
-          label="Is Allergen?"
-          defaultChecked={initialValue?.isAllergen ?? false}
-          onChange={(e) => {
-            const value = e.target.checked;
-            setValue("isAllergen", value);
-          }}
-        />
-        {errors.isAllergen && <span className="text-danger">{errors.isAllergen.message}</span>}
-      </Form.Group>
-
-      <Button type="submit" disabled={disableSubmit}>
-        Submit
-      </Button>
-    </Form>
+    <SinglePaneForm
+      onSubmit={handleSubmit(initiateSubmit)}
+      className="bp-product_category_form"
+      breadcrumbs={[
+        {
+          label: "Product Categories",
+          href: RoutePaths.PRODUCT_CATEGORIES,
+        },
+        {
+          label: type === "create" ? "Create Product Category" : "Edit Product Category",
+          href:
+            type === "create"
+              ? RoutePaths.PRODUCT_CATEGORIES_CREATE
+              : fillParametersInPath(RoutePaths.PRODUCT_CATEGORIES_EDIT, {
+                  id: initialValue?.id ?? "",
+                }),
+        },
+      ]}
+      headerTitle={type === "create" ? "Create Product Category" : "Edit Product Category"}
+      headerActions={
+        <>
+          <CancelButton path={RoutePaths.PRODUCT_CATEGORIES} />
+          <SaveButton label="Save Product Category" disabled={disableSubmit} />
+        </>
+      }
+      paneContent={
+        <div className="bp-form_pane_content">
+          <TextInput
+            label="Product Category Name"
+            defaultValue={initialValue?.name ?? ""}
+            inputLabelProps={{
+              required: true,
+            }}
+            value={getValues("name")}
+            error={errors.name ? errors.name.message : undefined}
+            onChange={(e) => {
+              const value = e.target.value;
+              setValue("name", value);
+            }}
+          />
+          <Form.Group className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label="Is Allergen? (optional)"
+              defaultChecked={initialValue?.isAllergen ?? false}
+              onChange={(e) => {
+                const value = e.target.checked;
+                setValue("isAllergen", value);
+              }}
+            />
+            {errors.isAllergen && <span className="text-danger">{errors.isAllergen.message}</span>}
+          </Form.Group>
+        </div>
+      }
+    />
   );
 }

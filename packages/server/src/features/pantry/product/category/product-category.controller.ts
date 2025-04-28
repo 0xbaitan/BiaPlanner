@@ -10,9 +10,14 @@ import {
 } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
 import {
-  CreateProductCategoryDto,
-  UpdateProductCategoryDto,
+  WriteProductCategoryDtoSchema,
+  IWriteProductCategoryDto,
 } from '@biaplanner/shared';
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const WriteProductCategoryValidationPipe = new ZodValidationPipe(
+  WriteProductCategoryDtoSchema,
+);
 
 @Controller('/product-categories/')
 export class ProductCategoryController {
@@ -34,7 +39,7 @@ export class ProductCategoryController {
   @Put('/:id')
   async updateProductCategory(
     @Param('id') id: string,
-    @Body() dto: UpdateProductCategoryDto,
+    @Body(WriteProductCategoryValidationPipe) dto: IWriteProductCategoryDto,
   ) {
     return this.productCategoriesService.updateProductCategory(id, dto);
   }
@@ -46,7 +51,9 @@ export class ProductCategoryController {
   }
 
   @Post()
-  async createProductCategory(@Body() dto: CreateProductCategoryDto) {
+  async createProductCategory(
+    @Body(WriteProductCategoryValidationPipe) dto: IWriteProductCategoryDto,
+  ) {
     return this.productCategoriesService.createProductCategory(dto);
   }
 }

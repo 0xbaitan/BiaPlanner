@@ -2,6 +2,8 @@ import { IQueryProductCategoryParamsDto, ProductCategoryAllergenFilter, ProductC
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
+import { resetAll } from "../../_products/reducers/ProductsCrudListReducer";
+
 export type ProductCategoriesCrudListState = {
   productCategoriesQuery: IQueryProductCategoryParamsDto;
 };
@@ -46,6 +48,9 @@ export const productCategoriesCrudListSlice = createSlice({
         limit: state.productCategoriesQuery.limit, // Preserve current limit
       };
     },
+    resetAll: (state) => {
+      state = initialState;
+    },
   },
 });
 
@@ -67,5 +72,6 @@ export function useProductCategoriesCrudListActions() {
     setSearch: (search: string) => dispatch(setSearch(search)),
     setSortBy: (sortBy: ProductCategorySortBy) => dispatch(setSortBy(sortBy)),
     resetFilters: () => dispatch(resetFilters()),
+    resetAll: () => dispatch(resetAll()),
   };
 }

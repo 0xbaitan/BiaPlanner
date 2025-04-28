@@ -1,4 +1,5 @@
 .bp-image-dropzone {
+  background-color: white;
   .bp-container {
     display: flex;
     flex-direction: row;
@@ -8,6 +9,7 @@
     margin: 0.5em;
     padding: 2em;
     border: 2px dashed lightgray;
+    background-color: white;
   }
 
   .bp-image-card-list {

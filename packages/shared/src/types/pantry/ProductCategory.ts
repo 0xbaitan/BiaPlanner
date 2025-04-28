@@ -16,18 +16,12 @@ export interface ICreateProductCategoryDto {
   isAllergen?: boolean;
 }
 
-export interface IUpdateProductCategoryDto extends Partial<ICreateProductCategoryDto>, Pick<IProductCategory, "id"> {}
+export const WriteProductCategoryDtoSchema = z.object({
+  name: z.string().min(1, { message: "Product category name is required" }),
+  isAllergen: z.coerce.boolean().optional(),
+});
 
-export class CreateProductCategoryDto implements ICreateProductCategoryDto {
-  name: string;
-  isAllergen?: boolean | undefined;
-}
-
-export class UpdateProductCategoryDto implements IUpdateProductCategoryDto {
-  id: string;
-  name?: string | undefined;
-  isAllergen?: boolean | undefined;
-}
+export type IWriteProductCategoryDto = z.infer<typeof WriteProductCategoryDtoSchema>;
 
 export enum ProductCategorySortBy {
   PRODUCT_CATEGORY_NAME_A_TO_Z = "PRODUCT_CATEGORY_NAME_A_TO_Z",
