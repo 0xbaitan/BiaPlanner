@@ -1,6 +1,9 @@
 import { IRecipeTag, IWriteRecipeTagDto, WriteRecipeTagDtoSchema } from "@biaplanner/shared";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import Button from "react-bootstrap/esm/Button";
+import CancelButton from "@/components/buttons/CancelButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
@@ -16,7 +19,7 @@ export type RecipeTagFormProps = {
 };
 
 export default function RecipeTagForm(props: RecipeTagFormProps) {
-  const { initialValue, onSubmit, disableSubmit, type } = props;
+  const { initialValue, onSubmit, type } = props;
 
   const methods = useForm<IWriteRecipeTagDto>({
     defaultValues: {
@@ -49,23 +52,33 @@ export default function RecipeTagForm(props: RecipeTagFormProps) {
       breadcrumbs={[
         {
           label: "Recipe Tags",
-          href: "/recipe-tags",
+          href: RoutePaths.RECIPE_TAGS,
         },
         {
           label: type === "create" ? "Create Recipe Tag" : "Edit Recipe Tag",
+          href:
+            type === "create"
+              ? RoutePaths.RECIPE_TAGS_CREATE
+              : fillParametersInPath(RoutePaths.RECIPE_TAGS_EDIT, {
+                  id: initialValue?.id ?? "",
+                }),
         },
       ]}
-      headerTitle={type === "create" ? "Create Recipe Tag" : "Edit Recipe Tag"}
+      headerTitle={type === "create" ? "Create Recipe Tag" : `Edit Recipe Tag`}
       headerActions={
-        <Button type="submit" variant="primary" disabled={disableSubmit}>
-          Submit
-        </Button>
+        <>
+          <CancelButton path={RoutePaths.RECIPE_TAGS} />
+          <SaveButton label="Save Recipe Tag" />
+        </>
       }
       paneContent={
-        <div className="bp-recipe_tag_form__pane_content">
+        <div className="bp-form_pane_content">
           <TextInput
             label="Tag Name"
             defaultValue={initialValue?.name ?? ""}
+            inputLabelProps={{
+              required: true,
+            }}
             value={getValues("name")}
             error={errors.name ? errors.name.message : undefined}
             onChange={(e) => {
@@ -74,7 +87,7 @@ export default function RecipeTagForm(props: RecipeTagFormProps) {
             }}
           />
           <TextInput
-            label="Tag Description"
+            label="Tag Description (optional)"
             defaultValue={initialValue?.description ?? ""}
             value={getValues("description") ?? undefined}
             error={errors.description ? errors.description.message : undefined}

@@ -9,7 +9,6 @@ import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
-import { ImageListType } from "react-images-uploading";
 import ImageSelector from "@/components/forms/ImageSelector";
 import IngredientList from "./IngredientList";
 import InputLabel from "@/components/forms/InputLabel";
@@ -20,10 +19,7 @@ import RecipeTagsMultiselect from "./RecipeTagsMultiselect";
 import SegmentedTimeInput from "@/components/forms/SegmentedTimeInput";
 import TextInput from "@/components/forms/TextInput";
 import { serialize } from "object-to-formdata";
-import { useDeleteImageMutation } from "@/apis/FilesApi";
-import useGetImageFile from "@/hooks/useImageFile";
 import { useNavigate } from "react-router-dom";
-import useUploadImageFile from "@/hooks/useUploadImageFile";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type RecipeFormProps = {
@@ -121,13 +117,6 @@ export default function RecipeForm(props: RecipeFormProps) {
     async (values: IWriteRecipeDto) => {
       const formData = convertToFormData({ ...values, file: coverImageFile });
       return onSubmit(values, formData);
-
-      // console.log(coverImageFile?.name);
-      // console.log("Form data:", data);
-      // console.log("Form data (serialized):", formData);
-      // alert("Form data (serialized): " + JSON.stringify(data));
-      // alert("Form data: " + JSON.stringify(data));
-      // alert("Form data (serialized): " + JSON.stringify(transformedInitialValue));
     },
     [coverImageFile, onSubmit]
   );

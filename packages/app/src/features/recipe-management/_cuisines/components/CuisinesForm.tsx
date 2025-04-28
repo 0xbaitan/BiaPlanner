@@ -1,16 +1,17 @@
 import { ICuisine, IWriteRecipeTagDto, WriteRecipeTagDtoSchema } from "@biaplanner/shared";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Button from "react-bootstrap/esm/Button";
+import CancelButton from "@/components/buttons/CancelButton";
 import { FaSave } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { RoutePaths } from "@/Routes";
+import SaveButton from "@/components/buttons/SaveButton";
 import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type CuisinesFormProps = {
@@ -19,14 +20,6 @@ export type CuisinesFormProps = {
   initialValue?: Partial<ICuisine>;
   onSubmit: (values: IWriteRecipeTagDto) => void;
 };
-
-export const CreateCuisineValidationSchema = z.object({
-  name: z.string().min(3).max(255),
-});
-
-export const UpdateCuisineValidationSchema = z.object({
-  name: z.string().min(3).max(255),
-});
 
 export default function CuisinesForm(props: CuisinesFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
@@ -63,23 +56,18 @@ export default function CuisinesForm(props: CuisinesFormProps) {
         },
         {
           label: type === "create" ? "Create Cuisine" : "Edit Cuisine",
+          href: type === "create" ? RoutePaths.CUISINES_CREATE : fillParametersInPath(RoutePaths.CUISINES_EDIT, { id: initialValue?.id ?? "" }),
         },
       ]}
       headerTitle={type === "create" ? "Create Cuisine" : "Edit Cuisine"}
       headerActions={
         <>
-          <Button type="button" variant="outline-secondary" onClick={() => navigate(RoutePaths.BRANDS)}>
-            <MdCancel />
-            <span className="ms-2">Cancel</span>
-          </Button>
-          <Button type="submit" variant="primary" disabled={disableSubmit}>
-            <FaSave />
-            <span className="ms-2">Save brand</span>
-          </Button>
+          <CancelButton path={RoutePaths.CUISINES} />
+          <SaveButton label="Save Cuisine" type="submit" disabled={disableSubmit} className="ms-2" />
         </>
       }
       paneContent={
-        <div className="bp-cuisines_form__pane_content p-3">
+        <div className="bp-form_pane_content">
           <TextInput
             inputLabelProps={{
               required: true,

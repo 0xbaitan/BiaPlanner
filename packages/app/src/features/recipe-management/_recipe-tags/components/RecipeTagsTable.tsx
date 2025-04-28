@@ -66,7 +66,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Edit Recipe Tag",
+          label: "Edit Tag",
           type: "edit",
           onClick: (row) => {
             if (!row.id) return;
@@ -76,7 +76,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
 
         {
           icon: FaTrashAlt,
-          label: "Delete Receipe Tag",
+          label: "Delete Tag",
           type: "delete",
           onClick: (row) => {
             notifyDeletion(row);

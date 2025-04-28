@@ -132,6 +132,8 @@
   align-items: center;
   padding: 0.5rem 1rem !important;
   font-size: 0.9rem;
+  width: max-content;
+
   color: #495057; // Dark gray text for dropdown items
   transition:
     background-color 0.3s ease,

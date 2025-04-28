@@ -1,4 +1,5 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import { IRecipe } from "@biaplanner/shared";
@@ -65,16 +66,16 @@ export default function RecipesTable(props: RecipeTableProps) {
       actions={[
         {
           icon: FaPencilAlt,
-          label: "Edit Cuisine",
+          label: "Edit Recipe",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.id}`);
+            navigate(fillParametersInPath(RoutePaths.RECIPES_EDIT, { id: String(row.id) }));
           },
         },
 
         {
           icon: FaTrashAlt,
-          label: "Delete Cuisine",
+          label: "Delete Recipe",
           type: "delete",
           onClick: (row) => {
             notifyDeletion(row);

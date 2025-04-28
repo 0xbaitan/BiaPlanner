@@ -21,3 +21,10 @@
 .\+error {
   color: $colors-golden-cream;
 }
+
+.bp-form_pane_content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  padding: 2em;
+}
