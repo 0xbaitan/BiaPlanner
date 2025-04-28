@@ -1,3 +1,4 @@
+import { FilesModule } from '@/features/files/files.module';
 import { Module } from '@nestjs/common';
 import ProductCategoryModule from './category/product-category.module';
 import { ProductController } from './product.controller';
@@ -12,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forFeature([ProductEntity, QueryProductViewEntity]),
     ProductCategoryModule,
+    FilesModule,
   ],
   controllers: [ProductController, QueryProductController],
   providers: [ProductService, QueryProductService],

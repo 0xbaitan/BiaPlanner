@@ -81,9 +81,6 @@ export class ProductEntity implements IProduct {
   @Column({ type: 'bigint' })
   brandId?: string;
 
-  @Column({ type: 'boolean', default: false })
-  canQuicklyExpireAfterOpening?: boolean;
-
   @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product, {
     cascade: true,
   })
@@ -99,10 +96,24 @@ export class ProductEntity implements IProduct {
   @Column({ type: 'boolean', default: false })
   isGlobal?: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({
+    type: 'tinyint',
+    default: false,
+    transformer: {
+      to: (value: boolean) => (value ? 1 : 0),
+      from: (value: boolean) => Boolean(value),
+    },
+  })
   canExpire?: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({
+    type: 'tinyint',
+    default: false,
+    transformer: {
+      to: (value: boolean) => (value ? 1 : 0),
+      from: (value: boolean) => Boolean(value),
+    },
+  })
   isLoose?: boolean;
 
   @Column({
@@ -117,12 +128,6 @@ export class ProductEntity implements IProduct {
     nullable: true,
   })
   measurementType?: CookingMeasurementType;
-
-  @Column({
-    type: 'json',
-    default: null,
-  })
-  timeTillExpiryAfterOpening?: TimeMeasurement;
 
   @Column({ type: 'bigint', nullable: true })
   coverId?: string;

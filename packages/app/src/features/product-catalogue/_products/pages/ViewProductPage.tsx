@@ -5,7 +5,6 @@ import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useDeleteProductMutation, useGetProductByIdQuery } from "@/apis/ProductsApi";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Alert from "@/components/Alert";
 import Button from "react-bootstrap/Button";
 import CrudViewPageLayout from "@/components/CrudViewPageLayout";
 import Heading from "@/components/Heading";
@@ -69,7 +68,7 @@ export default function ViewProductPage() {
           href: RoutePaths.PRODUCTS,
         },
         {
-          label: `${product.name}`,
+          label: product.name,
           href: fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }),
         },
       ]}
@@ -90,43 +89,48 @@ export default function ViewProductPage() {
       <div className="bp-product_view__details_container">
         <div className="bp-product_view__image_container">{product.coverId ? <img src={getImagePath(product.cover)} alt={product.name} className="bp-product_view__image" /> : <div className="bp-product_view__image_placeholder">No Image</div>}</div>
         <div className="bp-product_view__info_container">
-          <Heading level={Heading.Level.H1} className="bp-product_view__title">
-            About the product
-          </Heading>
-          <p className="bp-product_view__description">{product.description || "No description provided."}</p>
-          <div className="bp-product_view__details">
-            <div>
-              <strong>Brand:</strong> {product.brand?.name || "No brand associated"}
-            </div>
-            <div>
-              <strong>Measurement:</strong> {product.measurement.magnitude} {product.measurement.unit}
-            </div>
-            <div>
-              <strong>Can Expire:</strong> {product.canExpire ? "Yes" : "No"}
-            </div>
-            {product.canQuicklyExpireAfterOpening && (
-              <div>
-                <strong>Expires Quickly After Opening:</strong> {product.timeTillExpiryAfterOpening?.magnitude} {product.timeTillExpiryAfterOpening?.unit}
-              </div>
+          <Heading level={Heading.Level.H2}>Product Details</Heading>
+          <dl className="bp-product_view__info_list">
+            <dt>Description</dt>
+            <dd>{product.description || "No description provided."}</dd>
+
+            <dt>Brand</dt>
+            <dd>
+              <Button variant="link" className="p-0" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: product.id }))}>
+                {product.brand?.name}
+              </Button>
+            </dd>
+
+            <dt>Categories</dt>
+            <dd>
+              {product.productCategories?.length ? (
+                <ul className="bp-product_view__category_list">
+                  {product.productCategories.map((category) => (
+                    <li key={category.id}>{category.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                "No categories"
+              )}
+            </dd>
+            {product.measurement && (
+              <>
+                <dt>Measurement</dt>
+                <dd>
+                  {product.measurement.magnitude} {product.measurement.unit}
+                </dd>
+              </>
             )}
-          </div>
+            <dt>Properties</dt>
+            <dd>
+              <ul className="bp-product_view__properties_list">
+                <li>Can expire: {product.canExpire ? "Yes" : "No"}</li>
+                <li>Sold as loose item: {product.isLoose ? "Yes" : "No"}</li>
+                <li>Global product: {product.isGlobal ? "Yes" : "No"}</li>
+              </ul>
+            </dd>
+          </dl>
         </div>
-      </div>
-      <div className="bp-product_view__categories_container">
-        <Heading level={Heading.Level.H2} className="bp-product_view__categories_heading">
-          Product Categories
-        </Heading>
-        {product.productCategories?.length && product.productCategories.length > 0 ? (
-          <ul className="bp-product_view__categories_list">
-            {product.productCategories.map((category) => (
-              <li key={category.id} className="bp-product_view__categories_list_item">
-                {category.name}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <Alert variant="warning" title="No Categories Found" message="This product does not belong to any categories." />
-        )}
       </div>
     </CrudViewPageLayout>
   );

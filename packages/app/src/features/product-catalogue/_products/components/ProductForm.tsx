@@ -1,270 +1,142 @@
 import "../styles/ProductForm.scss";
 
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { ICreateProductDto, IProduct, IUpdateProductDto } from "@biaplanner/shared";
+import { IProduct, IWriteProductDto, Weights, WriteProductDtoSchema } from "@biaplanner/shared";
 import { useCallback, useState } from "react";
 
 import BrandSingleSelect from "@/components/forms/BrandSingleSelect";
-import Button from "react-bootstrap/esm/Button";
+import Button from "react-bootstrap/Button";
 import CookingMeasurementInput from "./CookingMeasurementInput";
 import DualPaneForm from "@/components/forms/DualPaneForm";
 import { FaSave } from "react-icons/fa";
-import Form from "react-bootstrap/esm/Form";
-import Heading from "@/components/Heading";
-import { ImageListType } from "react-images-uploading";
+import Form from "react-bootstrap/Form";
 import ImageSelector from "@/components/forms/ImageSelector";
 import { MdCancel } from "react-icons/md";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
+import { RoutePaths } from "@/Routes";
+import SinglePaneForm from "@/components/forms/SinglePaneForm";
+import TextInput from "@/components/forms/TextInput";
 import { Time } from "@biaplanner/shared/build/types/units/Time";
 import TimeInput from "@/components/forms/TimeInput";
+import serialiseIntoFormData from "@/util/serialiseIntoFormData";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import useUploadImageFile from "@/hooks/useUploadImageFile";
-import z from "zod";
+import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export type FormAction = "create" | "update";
-
-export type ProductFormValues = ICreateProductDto | IUpdateProductDto;
-
 export type ProductFormProps = {
-  type: FormAction;
-  initialValues?: IProduct;
-  onSubmit: (values: ProductFormValues) => void;
-
+  type: "create" | "update";
   disableSubmit?: boolean;
+  initialValue?: IProduct;
+  onSubmit: (values: FormData) => void;
 };
 
-const ProductFormValidationSchema = z.object({
-  name: z.string().min(1, "Product name is required"),
-  // brandId: z.number().int().positive("Brand is required"),
-  // productCategoryIds: z.array(z.number()).min(1, "At least one product category is required"),
-  canExpire: z.boolean().optional(),
-  canQuicklyExpireAfterOpening: z.boolean().optional(),
-});
-
 export default function ProductForm(props: ProductFormProps) {
-  const { initialValues, onSubmit, disableSubmit } = props;
-  const formMethods = useForm<IProduct>({
-    defaultValues: initialValues,
-    resolver: zodResolver(ProductFormValidationSchema),
-  });
-  const uploadImage = useUploadImageFile();
-  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const { initialValue, onSubmit, disableSubmit, type } = props;
+  const [coverFile, setCoverFile] = useState<File>();
   const navigate = useNavigate();
 
-  const onSubmitForm = useCallback(async () => {
-    const values = formMethods.getValues();
-    if (coverImage) {
-      const fileMetadata = await uploadImage(coverImage);
-      values.coverId = fileMetadata.id;
-    }
-    console.log(values);
-    onSubmit(values);
-  }, [coverImage, formMethods, onSubmit, uploadImage]);
+  const methods = useForm<IWriteProductDto>({
+    defaultValues: {
+      name: initialValue?.name ?? undefined,
+      description: initialValue?.description ?? "",
+      brandId: initialValue?.brandId,
+      productCategoryIds: initialValue?.productCategories?.map((category) => category.id) ?? [],
+      canExpire: initialValue?.canExpire ?? false,
+
+      isLoose: initialValue?.isLoose ?? false,
+      measurement: initialValue?.measurement,
+    },
+    mode: "onBlur",
+    resolver: zodResolver(WriteProductDtoSchema),
+  });
+
+  const { onSubmitError } = useValidationErrorToast();
+
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = methods;
+
+  const submitForm = useCallback(
+    async (values: IWriteProductDto) => {
+      const formData = serialiseIntoFormData({
+        ...values,
+        file: coverFile,
+      });
+      console.log("formData", formData);
+      onSubmit(formData);
+    },
+    [coverFile, onSubmit]
+  );
 
   return (
-    <FormProvider {...formMethods}>
-      <DualPaneForm onSubmit={formMethods.handleSubmit(onSubmitForm)}>
-        <DualPaneForm.Header>
-          <DualPaneForm.Header.Title>
-            <Heading level={Heading.Level.H1}>Create a new product</Heading>
-          </DualPaneForm.Header.Title>
+    <DualPaneForm onSubmit={handleSubmit(submitForm, onSubmitError)} className="bp-product_form">
+      <DualPaneForm.Header>
+        <DualPaneForm.Header.Title>{type === "create" ? "Create Product" : "Edit Product"}</DualPaneForm.Header.Title>
+        <DualPaneForm.Header.Actions>
+          <Button type="button" variant="outline-secondary" onClick={() => navigate(RoutePaths.PRODUCTS)}>
+            <MdCancel />
+            <span className="ms-2">Cancel</span>
+          </Button>
+          <Button type="submit" variant="primary" disabled={disableSubmit}>
+            <FaSave />
+            <span className="ms-2">Save Product</span>
+          </Button>
+        </DualPaneForm.Header.Actions>
+      </DualPaneForm.Header>
 
-          <DualPaneForm.Header.Actions>
-            <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
-              <MdCancel />
-              <span className="ms-2">Cancel</span>
-            </Button>
-            <Button type="submit" disabled={disableSubmit}>
-              <FaSave />
-              <span className="ms-2">Save product</span>
-            </Button>
-          </DualPaneForm.Header.Actions>
-        </DualPaneForm.Header>
-      </DualPaneForm>
       <DualPaneForm.Panel>
-        <DualPaneForm.Panel.Pane className="bp-product_form__pane">
-          <Heading level={Heading.Level.H2}>General Details</Heading>
-          <RequiredDetails initialValues={initialValues} setCoverImage={setCoverImage} />
+        <DualPaneForm.Panel.Pane>
+          <div className="bp-product_form__general_info">
+            <ImageSelector value={coverFile} valueMetadata={initialValue?.cover} onChange={(file) => setCoverFile(file)} helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px." />
+            <TextInput label="Product Name" value={watch("name")} inputLabelProps={{ required: true }} error={errors.name?.message} onChange={(e) => setValue("name", e.target.value)} />
+            <BrandSingleSelect error={errors.brandId?.message} initialValueId={initialValue?.brandId} onChange={(brand) => setValue("brandId", brand.id)} />
+            <ProductCategoryMultiselect
+              error={errors.productCategoryIds?.message}
+              initialValues={initialValue?.productCategories ?? []}
+              onSelectionChange={(categories) =>
+                setValue(
+                  "productCategoryIds",
+                  categories.map((c) => c.id)
+                )
+              }
+            />
+          </div>
         </DualPaneForm.Panel.Pane>
-        <DualPaneForm.Panel.Pane className="bp-product_form__pane">
-          <Heading level={Heading.Level.H2}>Product Configuration</Heading>
-          <ProductConfiguration initialValues={initialValues} />
+
+        <DualPaneForm.Panel.Pane>
+          <div className="bp-product_form__configuration">
+            <Form.Group>
+              <Form.Switch
+                checked={watch("canExpire")}
+                onChange={(e) => {
+                  setValue("canExpire", e.target.checked);
+                }}
+                label="Can this product have an expiry date?"
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Switch
+                checked={watch("isLoose")}
+                onChange={(e) => {
+                  setValue("isLoose", e.target.checked);
+                  if (!e.target.checked) {
+                    setValue("measurement", {
+                      magnitude: 0,
+                      unit: Weights.GRAM,
+                    });
+                  }
+                }}
+                label="Is this product sold as a loose item?"
+              />
+              {!watch("isLoose") && <CookingMeasurementInput initialValue={initialValue?.measurement} onChange={(value) => setValue("measurement", value)} />}
+            </Form.Group>
+          </div>
         </DualPaneForm.Panel.Pane>
       </DualPaneForm.Panel>
-    </FormProvider>
-  );
-}
-function ProductConfiguration(props: Pick<ProductFormProps, "initialValues">) {
-  const { initialValues } = props;
-  const [canExpire, setCanExpire] = useState<boolean>(false);
-  const [canQuicklyExpireAfterOpening, setCanQuicklyExpireAfterOpening] = useState<boolean>(initialValues?.canQuicklyExpireAfterOpening ?? false);
-
-  const [isLoose, setIsLoose] = useState<boolean>(initialValues?.isLoose ?? false);
-
-  const formMethods = useFormContext<ProductFormValues>();
-  const {
-    register,
-
-    setValue,
-  } = formMethods;
-
-  return (
-    <>
-      <Form.Group>
-        <Form.Switch
-          checked={canExpire}
-          onChange={(e) => {
-            setCanExpire(e.target.checked);
-            setValue("canExpire", e.target.checked);
-            if (!e.target.checked) {
-              setValue("canQuicklyExpireAfterOpening", false);
-              setValue("timeTillExpiryAfterOpening", undefined);
-            }
-          }}
-          label="Can this product have an expiry date?"
-        />
-        {canExpire && (
-          <Form.Group>
-            <Form.Switch
-              {...register("canQuicklyExpireAfterOpening")}
-              checked={canQuicklyExpireAfterOpening}
-              onChange={(e) => {
-                setCanQuicklyExpireAfterOpening(e.target.checked);
-                if (!e.target.checked) {
-                  setValue("timeTillExpiryAfterOpening", undefined);
-                }
-              }}
-              label="Can this product expire at a quicker rate after opening?"
-            />
-            {canQuicklyExpireAfterOpening && (
-              <Form.Group className="my-3">
-                <Form.Label>How long will the product remain consumable after opening?</Form.Label>
-                <TimeInput
-                  defaultMagnitude={initialValues?.timeTillExpiryAfterOpening?.magnitude}
-                  defaultUnit={Time.MINUTE}
-                  magnitudeControlProps={{
-                    min: 0,
-                  }}
-                  onChange={(magnitude, unit) => {
-                    setValue("timeTillExpiryAfterOpening", { magnitude, unit });
-                  }}
-                  filter={{
-                    units: [Time.MINUTE, Time.HOUR, Time.DAY, Time.WEEK, Time.MONTH],
-                    type: "include",
-                  }}
-                  constraints={[
-                    {
-                      unit: Time.MINUTE,
-                      maxMagnitude: 60,
-                    },
-                    {
-                      unit: Time.HOUR,
-                      maxMagnitude: 24,
-                    },
-                    {
-                      unit: Time.DAY,
-                      maxMagnitude: 366,
-                    },
-                    {
-                      unit: Time.WEEK,
-                      maxMagnitude: 53,
-                    },
-                    {
-                      unit: Time.MONTH,
-                      maxMagnitude: 24,
-                    },
-                  ]}
-                  strictOnConstraints
-                />
-              </Form.Group>
-            )}
-          </Form.Group>
-        )}
-      </Form.Group>
-      <Form.Group>
-        <Form.Switch
-          {...register("isLoose")}
-          label="Is this product sold as a loose item?"
-          checked={isLoose}
-          onChange={(e) => {
-            setIsLoose(e.target.checked);
-            if (!e.target.checked) {
-              setValue("measurement", undefined);
-            }
-          }}
-        />
-        {!isLoose && (
-          <CookingMeasurementInput
-            initialValue={
-              initialValues?.measurement
-                ? {
-                    magnitude: initialValues.measurement.magnitude,
-                    unit: initialValues.measurement.unit,
-                  }
-                : undefined
-            }
-            onChange={(value) => {
-              console.log("cooking measurement", value);
-              setValue("measurement", value);
-            }}
-          />
-        )}
-      </Form.Group>
-    </>
-  );
-}
-function RequiredDetails(
-  props: Pick<ProductFormProps, "initialValues"> & {
-    setCoverImage: (image: File | null) => void;
-  }
-) {
-  console.log("initialValues", props.initialValues);
-  const { initialValues, setCoverImage } = props;
-  const formMethods = useFormContext<ProductFormValues>();
-  const {
-    register,
-    formState: { errors },
-    setValue,
-  } = formMethods;
-
-  return (
-    <>
-      <ImageSelector
-        className="bp-product_form__img_selector"
-        helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px."
-        onChange={(file: File | undefined) => {
-          setCoverImage(file ?? null);
-        }}
-      />
-      <Form.Group>
-        <Form.Label>Product Name</Form.Label>
-        <Form.Control {...formMethods.register("name")} isInvalid={!!errors.name} />
-        {formMethods.formState.errors.name && <Form.Control.Feedback type="invalid">{errors?.name?.message}</Form.Control.Feedback>}
-      </Form.Group>
-      <BrandSingleSelect
-        error={errors.brandId?.message}
-        initialValueId={initialValues?.brandId}
-        onChange={(brand) => {
-          setValue("brandId", brand.id);
-        }}
-      />
-
-      {/* <ProductCategoryLazySelect /> */}
-
-      <ProductCategoryMultiselect
-        error={errors.productCategories?.message}
-        initialValues={initialValues?.productCategories ?? []}
-        onSelectionChange={(productCategories) => {
-          console.log("productCategories", productCategories);
-          setValue(
-            "productCategories",
-            productCategories.map((category) => {
-              return { id: category.id };
-            })
-          );
-        }}
-      />
-    </>
+    </DualPaneForm>
   );
 }

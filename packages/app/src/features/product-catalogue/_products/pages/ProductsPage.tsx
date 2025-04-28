@@ -41,6 +41,10 @@ export default function ProductsPage() {
     );
   }, [navigate, results?.data]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <CrudListPageLayout>
       <CrudListPageLayout.Header
@@ -53,7 +57,7 @@ export default function ProductsPage() {
           <CrudListPageLayout.Header.Actions>
             <Button variant="primary" onClick={() => navigate(RoutePaths.PRODUCTS_CREATE)}>
               <FaPlus />
-              &ensp;Add New Product
+              &ensp;Create Product
             </Button>
           </CrudListPageLayout.Header.Actions>
         }

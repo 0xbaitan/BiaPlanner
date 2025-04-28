@@ -1,4 +1,4 @@
-import { ICreateProductDto, IProduct, IQueryProductParamsDto, IQueryProductResultsDto, IQueryTopBrandedProductsParamsDto, IUpdateProductDto } from "@biaplanner/shared";
+import { IProduct, IQueryProductParamsDto, IQueryTopBrandedProductsParamsDto } from "@biaplanner/shared";
 
 import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
@@ -11,7 +11,7 @@ export const productsApi = rootApi.injectEndpoints({
         url: "/products",
         method: "GET",
       }),
-      providesTags: ["Product"],
+      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
 
     getProductById: build.query<IProduct, string>({
@@ -19,45 +19,31 @@ export const productsApi = rootApi.injectEndpoints({
         url: `/products/${id}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [{ type: "Product", id: result.id }] : []),
+      providesTags: (_result, _error, id) => [{ type: "Product", id }],
     }),
 
-    createProduct: build.mutation<IProduct, ICreateProductDto>({
-      query: (dto) => ({
+    createProduct: build.mutation<IProduct, FormData>({
+      query: (formData) => ({
         url: "/products",
         method: "POST",
-        body: dto,
+        body: formData,
       }),
       invalidatesTags: ["Product", { type: "Product", id: "LIST" }, "ProductCategory"],
     }),
 
-    updateProduct: build.mutation<IProduct, { id: string; dto: IUpdateProductDto }>({
+    updateProduct: build.mutation<IProduct, { id: string; dto: FormData }>({
       query: ({ id, dto }) => ({
         url: `/products/${id}`,
         method: "PUT",
         body: dto,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_result, _error, { id }) => [
         { type: "Product", id },
-        {
-          type: "Product",
-          id: "LIST",
-        },
-        {
-          type: "ProductCategory",
-          id: "LIST",
-        },
-        {
-          type: "PantryItem",
-          id: "LIST",
-        },
-        {
-          type: "RecipeIngredient",
-          id: "LIST",
-        },
-        {
-          type: "PantryItem",
-        },
+        { type: "Product", id: "LIST" },
+        { type: "ProductCategory", id: "LIST" },
+        { type: "PantryItem", id: "LIST" },
+        { type: "RecipeIngredient", id: "LIST" },
+        { type: "PantryItem" },
       ],
     }),
 
@@ -66,12 +52,9 @@ export const productsApi = rootApi.injectEndpoints({
         url: `/products/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         { type: "Product", id },
-        {
-          type: "Product",
-          id: "LIST",
-        },
+        { type: "Product", id: "LIST" },
       ],
     }),
 

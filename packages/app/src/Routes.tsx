@@ -1,7 +1,7 @@
 import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-router-dom";
 
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
-import AddProductPage from "./features/product-catalogue/_products/pages/AddProductPage";
+import AddProductPage from "./features/product-catalogue/_products/pages/CreateProductPage";
 import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
@@ -14,6 +14,7 @@ import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppi
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
 import EditProductCategoryPage from "./features/product-catalogue/_product-categories/pages/EditProductCategorypage";
+import EditProductPage from "./features/product-catalogue/_products/pages/EditProductPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import EditRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/EditRecipeTagPage";
 import EditShoppingListPage from "./features/shopping-lists/pages/EditShoppingListPage";
@@ -29,7 +30,6 @@ import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/Reci
 import RecipesListPage from "./features/recipe-management/_recipes/pages/RecipesListPage";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
-import UpdateProductPage from "./features/product-catalogue/_products/pages/UpdateProductPage";
 import ViewBrandPage from "@/features/product-catalogue/_brands/pages/ViewBrandPage";
 import ViewProductPage from "./features/product-catalogue/_products/pages/ViewProductPage";
 import ViewRecipePage from "./features/recipe-management/_recipes/pages/ViewRecipePage";
@@ -136,7 +136,7 @@ export default function Routes() {
           <Route path={RoutePaths.PRODUCTS} element={<ProductsPage />} />
           <Route path={RoutePaths.PRODUCTS_CREATE} element={<AddProductPage />} />
           <Route path={RoutePaths.PRODUCTS_VIEW} element={<ViewProductPage />} />
-          <Route path={RoutePaths.PRODUCTS_EDIT} element={<UpdateProductPage />} />
+          <Route path={RoutePaths.PRODUCTS_EDIT} element={<EditProductPage />} />
 
           <Route path={RoutePaths.BRANDS} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.BRANDS_CREATE} element={<CreateBrandPage />} />

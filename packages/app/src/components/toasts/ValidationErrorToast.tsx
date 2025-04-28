@@ -7,8 +7,14 @@ import { useErrorToast } from "./ErrorToast";
 function ValidationErrorToastContent<T extends ZodSchema>(props: { errors: FieldErrors<T> }) {
   const { errors } = props;
 
-  const errorMessages = Object.values(errors).map((error) => {
-    return error?.message;
+  const errorMessages = Object.entries(errors).map(([key, error]) => {
+    if (error?.message) {
+      return `${key}: ${error.message}`;
+    }
+    if (error?.types) {
+      return Object.values(error.types).join(", ");
+    }
+    return null;
   });
 
   return (
