@@ -1,8 +1,10 @@
 import "../styles/ViewRecipePage.scss";
 
 import { FaPencil, FaTrash } from "react-icons/fa6";
+import { IRecipe, SegmentedTime } from "@biaplanner/shared";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
+import { useDeleteRecipeMutation, useGetRecipeQuery } from "@/apis/RecipeApi";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "react-bootstrap";
@@ -11,14 +13,14 @@ import { FaInfoCircle } from "react-icons/fa";
 import Heading from "@/components/Heading";
 import { IconType } from "react-icons";
 import { PiChefHatFill } from "react-icons/pi";
-import { SegmentedTime } from "@biaplanner/shared";
 import { SiLevelsdotfyi } from "react-icons/si";
 import { TbBowlSpoonFilled } from "react-icons/tb";
 import Tooltip from "@/components/Tooltip";
 import convertToSentenceCase from "@/util/convertToSentenceCase";
 import { formatSegmentedTimeAsString } from "@/components/layouts/RecipeCard";
 import { getImagePath } from "@/util/imageFunctions";
-import { useGetRecipeQuery } from "@/apis/RecipeApi";
+import { useDeletionToast } from "@/components/toasts/DeletionToast";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function ViewRecipePage() {
   const { id } = useParams();
@@ -29,6 +31,30 @@ export default function ViewRecipePage() {
     isError,
   } = useGetRecipeQuery(String(id), {
     refetchOnMountOrArgChange: true,
+  });
+
+  const [deleteRecipe, { isSuccess: isDeleteSuccess, isError: isDeleteError, isLoading: isDeleteLoading }] = useDeleteRecipeMutation();
+
+  const { notify: notifyAfterDeletion } = useSimpleStatusToast({
+    idPrefix: "delete-recipe",
+    successMessage: "Recipe deleted successfully",
+    errorMessage: "Failed to delete recipe",
+    loadingMessage: "Deleting recipe...",
+    isSuccess: isDeleteSuccess,
+    isError: isDeleteError,
+    isLoading: isDeleteLoading,
+    onSuccess: () => {
+      console.log("Recipe deleted successfully");
+      navigate(RoutePaths.RECIPES);
+    },
+  });
+
+  const { notify: notifyDeletion } = useDeletionToast<IRecipe>({
+    identifierSelector: (entity) => entity.title,
+    onConfirm: async (item) => {
+      notifyAfterDeletion();
+      await deleteRecipe(item.id);
+    },
   });
 
   const metaItems = [
@@ -105,7 +131,7 @@ export default function ViewRecipePage() {
           <Button
             variant="outline-danger"
             onClick={() => {
-              // Handle delete action
+              notifyDeletion(recipe);
             }}
           >
             <FaTrash />

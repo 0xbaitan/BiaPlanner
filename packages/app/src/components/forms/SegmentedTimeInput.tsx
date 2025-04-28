@@ -41,6 +41,51 @@ function segmentedTimeReducer(state: SegmentedTime, action: SegmentedTimeAction)
   }
 }
 
+export function sumSegementedTime(a: SegmentedTime, b: SegmentedTime): SegmentedTime {
+  let totalSeconds = a.seconds + b.seconds;
+  let totalMinutes = a.minutes + b.minutes;
+  let totalHours = a.hours + b.hours;
+  let totalDays = a.days + b.days;
+  if (totalSeconds >= 60) {
+    totalSeconds -= 60;
+    totalMinutes += 1;
+  }
+  if (totalMinutes >= 60) {
+    totalMinutes -= 60;
+    totalHours += 1;
+  }
+  if (totalHours >= 24) {
+    totalHours -= 24;
+    totalDays += 1;
+  }
+  return {
+    days: totalDays,
+    hours: totalHours,
+    minutes: totalMinutes,
+    seconds: totalSeconds,
+  };
+}
+
+export function stringifySegmentedTime(time: SegmentedTime): string {
+  const { days, hours, minutes, seconds } = time;
+  const parts: string[] = [];
+
+  if (days > 0) {
+    parts.push(`${padWithZeroes(days)}d`);
+  }
+  if (hours > 0) {
+    parts.push(`${padWithZeroes(hours)}hr`);
+  }
+  if (minutes > 0) {
+    parts.push(`${padWithZeroes(minutes)}min`);
+  }
+  if (seconds > 0) {
+    parts.push(`${padWithZeroes(seconds)}s`);
+  }
+
+  return parts.join(" ");
+}
+
 function padWithZeroes(value: number): string {
   return String(value).padStart(2, "0");
 }

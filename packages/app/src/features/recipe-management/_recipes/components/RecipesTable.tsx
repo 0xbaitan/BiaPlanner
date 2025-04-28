@@ -1,7 +1,9 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
+import { stringifySegmentedTime, sumSegementedTime } from "@/components/forms/SegmentedTimeInput";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
+import { FaEye } from "react-icons/fa6";
 import { IRecipe } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteRecipeMutation } from "@/apis/RecipeApi";
@@ -42,11 +44,14 @@ export default function RecipesTable(props: RecipeTableProps) {
   return (
     <TabbedViewsTable<IRecipe>
       data={data}
+      showSerialNumber
+      leftPinnedAccessorKeys={["title"]}
       views={[
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["title", "rec"],
+          columnAccessorKeys: ["title", "recipeTags"],
+
           default: true,
 
           columnDefs: [
@@ -62,8 +67,62 @@ export default function RecipesTable(props: RecipeTableProps) {
             },
           ],
         },
+
+        {
+          viewKey: "time-taken-and-servings",
+          viewTitle: "Time Taken & Servings",
+          columnAccessorKeys: ["prepTime", "cookTime", "totalTime", "servings"],
+          columnDefs: [
+            {
+              header: "Preparation Time",
+              accessorFn: (row) => {
+                let prepTime = row.prepTime ? stringifySegmentedTime(row.prepTime) : null;
+                return prepTime;
+              },
+              accessorKey: "prepTime",
+            },
+            {
+              header: "Cooking Time",
+              accessorFn: (row) => {
+                let cookTime = row.cookingTime ? stringifySegmentedTime(row.cookingTime) : null;
+                return cookTime;
+              },
+              accessorKey: "cookTime",
+            },
+            {
+              header: "Total Time",
+              accessorFn: (row) => {
+                const prepTime = row.prepTime ?? null;
+                const cookTime = row.cookingTime ?? null;
+                let totalTime: string | null = null;
+                if (prepTime && cookTime) {
+                  totalTime = stringifySegmentedTime(sumSegementedTime(prepTime, cookTime));
+                } else if (prepTime) {
+                  totalTime = stringifySegmentedTime(prepTime);
+                } else if (cookTime) {
+                  totalTime = stringifySegmentedTime(cookTime);
+                }
+                return totalTime;
+              },
+              accessorKey: "totalTime",
+            },
+            {
+              header: "Servings",
+              accessorFn: (row) => row.defaultNumberOfServings ?? null,
+              accessorKey: "servings",
+            },
+          ],
+        },
       ]}
       actions={[
+        {
+          icon: FaEye,
+          label: "View Recipe",
+          type: "view",
+          onClick: (row) => {
+            navigate(fillParametersInPath(RoutePaths.RECIPES_VIEW, { id: String(row.id) }));
+          },
+        },
         {
           icon: FaPencilAlt,
           label: "Edit Recipe",

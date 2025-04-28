@@ -3,9 +3,7 @@ import InputLabel, { InputLabelProps } from "@/components/forms/InputLabel";
 import { useEffect, useMemo, useState } from "react";
 
 import Form from "react-bootstrap/esm/Form";
-import { FormSelectProps } from "react-bootstrap/esm/FormSelect";
 import { ICuisine } from "@biaplanner/shared";
-import SelectInput from "@/components/forms/SelectInput";
 import { useGetCuisinesQuery } from "@/apis/CuisinesApi";
 
 export type CuisineSelectProps = {
@@ -19,20 +17,22 @@ export default function CuisineSelect(props: CuisineSelectProps) {
   const { onChange, defaultValue, inputLabelProps, error } = props;
   const { data: cuisineOptions, isSuccess, isLoading, isError } = useGetCuisinesQuery();
 
-  const defaultCuisine = useMemo(() => {
-    if (defaultValue && isSuccess && cuisineOptions) {
-      return cuisineOptions.find((cuisine) => cuisine.id === defaultValue.id);
-    }
-    return undefined;
-  }, [defaultValue, isSuccess, cuisineOptions]);
-
-  const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>(defaultCuisine);
+  const [selectedValue, setSelectedValue] = useState<ICuisine | undefined>(undefined);
 
   useEffect(() => {
-    if (defaultCuisine) {
-      setSelectedValue(defaultCuisine);
+    if (defaultValue && cuisineOptions) {
+      const matchingCuisine = cuisineOptions.find((cuisine) => cuisine.id === defaultValue.id);
+      if (matchingCuisine && selectedValue?.id !== matchingCuisine.id) {
+        setSelectedValue(matchingCuisine);
+      }
     }
-  }, [defaultCuisine]);
+  }, [cuisineOptions, defaultValue, selectedValue?.id]);
+
+  useEffect(() => {
+    if (selectedValue) {
+      onChange(selectedValue);
+    }
+  }, [onChange, selectedValue]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -50,13 +50,12 @@ export default function CuisineSelect(props: CuisineSelectProps) {
     <Form.Group>
       <InputLabel {...inputLabelProps}>Cuisine</InputLabel>
       <FilterSelect<ICuisine>
-        list={cuisineOptions ?? []}
+        list={cuisineOptions}
         idSelector={(item) => item.id}
         nameSelector={(item) => item.name}
         selectedValues={selectedValue ? [selectedValue] : []}
         onChange={([selectedValue]) => {
-          setSelectedValue(() => selectedValue);
-          onChange(selectedValue);
+          setSelectedValue(selectedValue);
         }}
         multi={false}
       />
