@@ -20,7 +20,6 @@ import z from "zod";
 export interface IRecipe extends IBaseEntity {
   title: string;
   description?: string;
-  instructions: string;
   ingredients: IRecipeIngredient[];
   difficultyLevel: DifficultyLevels;
   cuisineId: string;
@@ -60,16 +59,15 @@ export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | 
 
 export const WriteRecipeValidationSchema = zfd.formData({
   title: zfd.text(z.string()),
-  description: zfd.text(z.string().optional()),
-  instructions: zfd.text(z.string().optional()),
+  description: zfd.text(z.string().optional().nullable()),
 
   ingredients: zfd.repeatable(z.array(zfd.json(WriteRecipeIngredientDtoSchema)).min(1, { message: "At least one ingredient is required" })),
 
   difficultyLevel: zfd.text(z.string()),
   cuisine: zfd.json(z.object({ id: z.coerce.string() })),
 
-  cookingTime: zfd.json(SegmentedTimeSchema).optional(),
-  prepTime: zfd.json(SegmentedTimeSchema).optional(),
+  cookingTime: zfd.json(SegmentedTimeSchema).optional().nullable(),
+  prepTime: zfd.json(SegmentedTimeSchema).optional().nullable(),
 
   tags: zfd.repeatable(z.array(zfd.json(z.object({ id: z.coerce.string() }))).min(1, { message: "At least one tag is required" })),
 

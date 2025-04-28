@@ -118,12 +118,6 @@ export class RecipeEntity implements IRecipe {
 
   @Column({
     type: 'text',
-    nullable: false,
-  })
-  instructions: string;
-
-  @Column({
-    type: 'text',
     nullable: true,
   })
   notes?: string;
