@@ -1,9 +1,9 @@
 import { ConcreteIngredientAndMeasurementSchema, IConcreteIngredient, ICreateConcreteIngredientDto } from "./ConcreteIngredient";
-import { IPantryItem, PantryItemSchema } from "../pantry";
 
 import { DeepPartial } from "utility-types";
 import { FilterParamsSchema } from "../../util";
 import { IBaseEntity } from "../BaseEntity";
+import { IPantryItem } from "../pantry";
 import { IRecipe } from "./Recipe";
 import { MealTypes } from "../units";
 import { z } from "zod";

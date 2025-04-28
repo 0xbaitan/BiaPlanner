@@ -1,6 +1,6 @@
 import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-router-dom";
 
-import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/AddPantryItemPage";
+import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/CreatePantryItemPage";
 import AddProductPage from "./features/product-catalogue/_products/pages/CreateProductPage";
 import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
 import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
@@ -8,6 +8,7 @@ import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/
 import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
+import CreatePantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/CreatePantryItemPage";
 import CreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/CreateProductCategoryPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
@@ -102,9 +103,7 @@ export default function Routes() {
       <RoutingTable>
         <Route path="" element={<ProtectedPagesContainer />}>
           <Route path={RoutePaths.PANTRY} element={<PantryPage />} />
-          <Route path={RoutePaths.PANTRY_VIEW_ITEM} element={<PantryPage />} />
-          <Route path={RoutePaths.PANTRY_ADD_ITEM} element={<AddPantryItemPage />} />
-          <Route path={RoutePaths.PANTRY_EDIT_ITEM} element={<AddPantryItemPage />} />
+          <Route path={RoutePaths.PANTRY_ADD_ITEM} element={<CreatePantryItemPage />} />
 
           <Route path={RoutePaths.MEAL_PLANS} element={<MealPlansPage />} />
           <Route path={RoutePaths.MEAL_PLANS_CREATE} element={<CreateMealPlanPage />} />

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -27,6 +28,12 @@ export class ProductController {
   async getProductById(@Param('id') id: string): Promise<IProduct> {
     const product = await this.productService.readProductById(id);
     return product;
+  }
+
+  @Get('/')
+  async getAllProducts(): Promise<IProduct[]> {
+    const products = await this.productService.readAllProducts();
+    return products;
   }
 
   @Post('/')
@@ -56,5 +63,10 @@ export class ProductController {
   ): Promise<IProduct> {
     const product = await this.productService.updateProduct(id, dto, file);
     return product;
+  }
+
+  @Delete('/:id')
+  async deleteProduct(@Param('id') id: string): Promise<void> {
+    await this.productService.deleteProduct(id);
   }
 }

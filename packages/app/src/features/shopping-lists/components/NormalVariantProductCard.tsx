@@ -30,7 +30,7 @@ export default function NormalVariantProductCard(props: ProductCardProps) {
               {product.name} {alreadyAdded && <span className="bp-product_item_card__badge active">Already added</span>}
             </div>
             <div className="bp-product_item_card__measurement">
-              {product.measurement.magnitude} {product.measurement.unit}
+              {product?.measurement?.magnitude} {product?.measurement?.unit}
             </div>
             <div className="bp-product_item_card__product_categories">
               {product.productCategories?.map((category) => (

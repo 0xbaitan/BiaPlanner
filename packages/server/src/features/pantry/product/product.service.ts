@@ -53,6 +53,20 @@ export class ProductService {
     return product;
   }
 
+  async readAllProducts(): Promise<IProduct[]> {
+    const products = await this.productRepository.find({
+      relations: {
+        productCategories: true,
+        pantryItems: true,
+        createdBy: true,
+        brand: true,
+        cover: true,
+        shoppingItems: true,
+      },
+    });
+    return products;
+  }
+
   async createProduct(
     dto: IWriteProductDto,
     file: Express.Multer.File,
@@ -137,7 +151,7 @@ export class ProductService {
     return this.productRepository.save(updatedProduct);
   }
 
-  async deleteProduct(id: number): Promise<void> {
+  async deleteProduct(id: string): Promise<void> {
     await this.productRepository.delete(id);
   }
 

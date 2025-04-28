@@ -42,7 +42,7 @@ export default function AddExtraVariantProductCard(props: ProductCardProps) {
               {product.name} {isPresentInList && !hideAddedBadge && <span className={`bp-product_item_card__badge ${isPresentInList === "extra" ? "active" : "passive"}`}>{isPresentInList === "extra" ? "Added as extra" : "Already added"}</span>}
             </div>
             <div className="bp-product_item_card__measurement">
-              {product.measurement.magnitude} {product.measurement.unit}
+              {product?.measurement.magnitude} {product?.measurement.unit}
             </div>
             <div className="bp-product_item_card__product_categories">
               {product.productCategories?.map((category) => (

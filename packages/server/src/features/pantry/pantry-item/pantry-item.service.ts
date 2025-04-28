@@ -1,17 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
-import { Between, In, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   CookingMeasurementType,
-  CreatePantryItemDto,
   ICreatePantryItemDto,
   IPantryItem,
-  IPantryItemExtended,
   IPantryItemPortion,
+  IWritePantryItemDto,
 } from '@biaplanner/shared';
 import { ProductService } from '../product/product.service';
-import { ProductCategoryService } from '../product/category/product-category.service';
 import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
 import convertCookingMeasurement from '@biaplanner/shared/build/util/CookingMeasurementConversion';
 
@@ -36,25 +34,46 @@ export default class PantryItemService {
     }
 
     pantryItem.totalMeasurements = {
-      magnitude: product.measurement.magnitude * pantryItem.quantity,
-      unit: product.measurement.unit,
+      magnitude: product?.measurement.magnitude * pantryItem.quantity,
+      unit: product?.measurement.unit,
     };
     pantryItem.consumedMeasurements = {
       magnitude: 0,
-      unit: product.measurement.unit,
+      unit: product?.measurement.unit,
     };
     pantryItem.availableMeasurements = {
       ...pantryItem.totalMeasurements,
     };
     pantryItem.reservedMeasurements = {
       magnitude: 0,
-      unit: product.measurement.unit,
+      unit: product?.measurement.unit,
     };
 
     return pantryItem;
   }
-  async createPantryItem(
+
+  async updatePantryItem(
+    pantryItemId: string,
     dto: ICreatePantryItemDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: pantryItemId },
+    });
+
+    if (!pantryItem) {
+      throw new Error('Pantry item not found');
+    }
+
+    Object.assign(pantryItem, dto);
+
+    const pantryItemWithMeasurements =
+      await this.populatePantryItemMeasurements(pantryItem);
+
+    return await this.pantryItemRepository.save(pantryItemWithMeasurements);
+  }
+
+  async createPantryItem(
+    dto: IWritePantryItemDto,
     createdById: string,
   ): Promise<IPantryItem> {
     const pantryItem = this.pantryItemRepository.create({
@@ -111,7 +130,7 @@ export default class PantryItemService {
         .where('productCategories.id IN (:...productCategoryIds)', {
           productCategoryIds: productCategories.map((category) => category.id),
         })
-        .andWhere('product.measurementType = :measurementType', {
+        .andWhere('product?.measurementType = :measurementType', {
           measurementType,
         })
         .andWhere('pantryItem.isExpired = :isExpired', { isExpired: false })

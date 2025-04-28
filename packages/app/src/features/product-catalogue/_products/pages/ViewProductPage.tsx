@@ -113,11 +113,11 @@ export default function ViewProductPage() {
                 "No categories"
               )}
             </dd>
-            {product.measurement && (
+            {product?.measurement && (
               <>
                 <dt>Measurement</dt>
                 <dd>
-                  {product.measurement.magnitude} {product.measurement.unit}
+                  {product?.measurement.magnitude} {product?.measurement.unit}
                 </dd>
               </>
             )}

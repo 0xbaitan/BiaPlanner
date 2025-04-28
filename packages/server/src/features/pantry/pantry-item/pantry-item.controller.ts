@@ -1,22 +1,20 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
 import {
   CookingMeasurementType,
-  CreatePantryItemDto,
   IPantryItem,
   IPantryItemExtended,
   IUser,
+  IWritePantryItemDto,
+  WritePantryItemSchema,
 } from '@biaplanner/shared';
-import { plainToInstance } from 'class-transformer';
 import { User } from 'src/features/user-info/authentication/user.decorator';
+
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const WritePantryItemValidationPipe = new ZodValidationPipe(
+  WritePantryItemSchema,
+);
 
 @Controller('/pantry/items')
 export default class PantryItemController {
@@ -46,7 +44,7 @@ export default class PantryItemController {
 
   @Post('/')
   async createPantryItem(
-    @Body() dto: CreatePantryItemDto,
+    @Body(WritePantryItemValidationPipe) dto: IWritePantryItemDto,
     @User() { id: createdById }: IUser,
   ): Promise<IPantryItem> {
     const pantryItem = await this.pantryItemService.createPantryItem(

@@ -51,7 +51,7 @@ export default function ShoppingListItemCard(props: ShoppingListItemCardProps) {
           <div className="bp-shopping_list_item_card__product_info__details">
             <div className="bp-shopping_list_item_card__product_name">{product.name}</div>
             <div className="bp-shopping_list_item_card__measurement">
-              {product.measurement.magnitude} {product.measurement.unit}
+              {product?.measurement.magnitude} {product?.measurement.unit}
             </div>
             <div className="bp-shopping_list_item_card__product_categories">
               {product.productCategories?.map((category) => (

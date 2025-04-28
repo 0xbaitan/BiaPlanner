@@ -71,15 +71,20 @@ export class UpdatePantryItemDto implements IUpdatePantryItemDto {
   totalMeasurements?: CookingMeasurement | undefined;
 }
 
-export const PantryItemSchema = {
+export const WritePantryItemSchema = z.object({
   productId: z.string().optional(),
-  quantity: z.number().min(0, { message: "Quantity must be greater than 0" }),
-  expiryDate: z.string().optional(),
-  bestBeforeDate: z.string().optional(),
-  openedDate: z.string().optional(),
-  manufacturedDate: z.string().optional(),
-  isExpired: z.boolean().optional(),
-};
+  quantity: z.coerce.number().min(0, { message: "Quantity must be greater than 0" }),
+  expiryDate: z
+    .string()
+    .refine((val) => {
+      if (!val) return true;
+      const date = new Date(val);
+      return date.getTime() > Date.now();
+    })
+    .optional(),
+});
+
+export type IWritePantryItemDto = z.infer<typeof WritePantryItemSchema>;
 
 export enum PantryItemSortBy {
   PRODUCT_NAME_A_TO_Z = "PRODUCT_NAME_A_TO_Z",

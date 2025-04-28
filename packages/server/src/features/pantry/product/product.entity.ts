@@ -83,6 +83,7 @@ export class ProductEntity implements IProduct {
 
   @OneToMany(() => PantryItemEntity, (pantryItem) => pantryItem.product, {
     cascade: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'productId' })
   pantryItems?: IPantryItem[];
