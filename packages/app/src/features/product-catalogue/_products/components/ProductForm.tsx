@@ -13,10 +13,7 @@ import ImageSelector from "@/components/forms/ImageSelector";
 import { MdCancel } from "react-icons/md";
 import ProductCategoryMultiselect from "@/components/forms/ProductCategoryMultiselect";
 import { RoutePaths } from "@/Routes";
-import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
-import { Time } from "@biaplanner/shared/build/types/units/Time";
-import TimeInput from "@/components/forms/TimeInput";
 import serialiseIntoFormData from "@/util/serialiseIntoFormData";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -72,7 +69,7 @@ export default function ProductForm(props: ProductFormProps) {
   );
 
   return (
-    <DualPaneForm onSubmit={handleSubmit(submitForm, onSubmitError)} className="bp-product_form">
+    <DualPaneForm onSubmit={handleSubmit(submitForm, onSubmitError)}>
       <DualPaneForm.Header>
         <DualPaneForm.Header.Title>{type === "create" ? "Create Product" : "Edit Product"}</DualPaneForm.Header.Title>
         <DualPaneForm.Header.Actions>
@@ -89,52 +86,48 @@ export default function ProductForm(props: ProductFormProps) {
 
       <DualPaneForm.Panel>
         <DualPaneForm.Panel.Pane>
-          <div className="bp-product_form__general_info">
-            <ImageSelector value={coverFile} valueMetadata={initialValue?.cover} onChange={(file) => setCoverFile(file)} helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px." />
-            <TextInput label="Product Name" value={watch("name")} inputLabelProps={{ required: true }} error={errors.name?.message} onChange={(e) => setValue("name", e.target.value)} />
-            <BrandSingleSelect error={errors.brandId?.message} initialValueId={initialValue?.brandId} onChange={(brand) => setValue("brandId", brand.id)} />
-            <ProductCategoryMultiselect
-              error={errors.productCategoryIds?.message}
-              initialValues={initialValue?.productCategories ?? []}
-              onSelectionChange={(categories) =>
-                setValue(
-                  "productCategoryIds",
-                  categories.map((c) => c.id)
-                )
-              }
-            />
-          </div>
+          <ImageSelector value={coverFile} valueMetadata={initialValue?.cover} onChange={(file) => setCoverFile(file)} helpText="Upload a cover image for this product. Recommended image dimensions are 1200 x 800 px." />
+          <TextInput label="Product Name" value={watch("name")} inputLabelProps={{ required: true }} error={errors.name?.message} onChange={(e) => setValue("name", e.target.value)} />
+          <BrandSingleSelect error={errors.brandId?.message} initialValueId={initialValue?.brandId} onChange={(brand) => setValue("brandId", brand.id)} />
+          <ProductCategoryMultiselect
+            error={errors.productCategoryIds?.message}
+            initialValues={initialValue?.productCategories ?? []}
+            onSelectionChange={(categories) =>
+              setValue(
+                "productCategoryIds",
+                categories.map((c) => c.id)
+              )
+            }
+          />
         </DualPaneForm.Panel.Pane>
 
         <DualPaneForm.Panel.Pane>
-          <div className="bp-product_form__configuration">
-            <Form.Group>
-              <Form.Switch
-                checked={watch("canExpire")}
-                onChange={(e) => {
-                  setValue("canExpire", e.target.checked);
-                }}
-                label="Can this product have an expiry date?"
-              />
-            </Form.Group>
+          <Form.Group>
+            <Form.Switch
+              checked={watch("canExpire")}
+              onChange={(e) => {
+                setValue("canExpire", e.target.checked);
+              }}
+              label="Can this product have an expiry date?"
+            />
+          </Form.Group>
 
-            <Form.Group>
-              <Form.Switch
-                checked={watch("isLoose")}
-                onChange={(e) => {
-                  setValue("isLoose", e.target.checked);
-                  if (!e.target.checked) {
-                    setValue("measurement", {
-                      magnitude: 0,
-                      unit: Weights.GRAM,
-                    });
-                  }
-                }}
-                label="Is this product sold as a loose item?"
-              />
-              {!watch("isLoose") && <CookingMeasurementInput initialValue={initialValue?.measurement} onChange={(value) => setValue("measurement", value)} />}
-            </Form.Group>
-          </div>
+          <Form.Group>
+            <Form.Switch
+              checked={watch("isLoose")}
+              onChange={(e) => {
+                setValue("isLoose", e.target.checked);
+                if (!e.target.checked) {
+                  setValue("measurement", {
+                    magnitude: 0,
+                    unit: Weights.GRAM,
+                  });
+                }
+              }}
+              label="Is this product sold as a loose item?"
+            />
+            {!watch("isLoose") && <CookingMeasurementInput initialValue={initialValue?.measurement} onChange={(value) => setValue("measurement", value)} />}
+          </Form.Group>
         </DualPaneForm.Panel.Pane>
       </DualPaneForm.Panel>
     </DualPaneForm>

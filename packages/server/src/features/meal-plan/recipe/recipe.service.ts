@@ -33,10 +33,21 @@ export class RecipeService {
     });
   }
 
-  async createRecipe(dto: IWriteRecipeDto): Promise<IRecipe> {
-    const { file, ...rest } = dto;
-    const recipe = this.recipeRepository.create(rest as DeepPartial<IRecipe>);
-    return this.recipeRepository.save(recipe);
+  async createRecipe(
+    dto: IWriteRecipeDto,
+    file: Express.Multer.File,
+  ): Promise<IRecipe> {
+    delete dto.file;
+    const recipe = this.recipeRepository.create(dto as DeepPartial<IRecipe>);
+
+    const savedRecipe = await this.recipeRepository.save(recipe);
+    if (file) {
+      await this.manageRecipeImagesService.manageRecipeCoverImage(
+        recipe.id,
+        file,
+      );
+    }
+    return savedRecipe;
   }
 
   async updateRecipe(

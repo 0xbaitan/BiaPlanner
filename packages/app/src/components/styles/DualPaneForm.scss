@@ -44,11 +44,12 @@
       justify-content: flex-start;
       align-items: stretch;
       padding: 1.5rem;
+      min-height: calc(100vh - 4em);
       background-color: #f8f9fa; // Light gray background for the panes
       border: 1px solid #dee2e6;
       border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Subtle shadow for elegance
-      overflow: hidden; // Prevent content overflow
+      overflow: visible;
     }
   }
 }

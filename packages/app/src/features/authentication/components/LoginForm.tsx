@@ -1,3 +1,5 @@
+import "../styles/LoginForm.scss";
+
 import { FormProvider, useForm } from "react-hook-form";
 import { ZodType, z } from "zod";
 import { useCallback, useEffect } from "react";

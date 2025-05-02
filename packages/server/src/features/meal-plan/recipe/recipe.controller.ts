@@ -37,11 +37,16 @@ export class RecipeController {
   }
 
   @Post()
-  @FormDataRequest({
-    cleanupAfterSuccessHandle: true,
-  })
-  async createRecipe(@Body() dto: WriteRecipeDto) {
-    return this.recipeService.createRecipe(dto);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'tmp/',
+    }),
+  )
+  async createRecipe(
+    @Body(WriteRecipeValidationPipe) dto: IWriteRecipeDto,
+    @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
+  ) {
+    return this.recipeService.createRecipe(dto, file);
   }
 
   @Put('/:id')

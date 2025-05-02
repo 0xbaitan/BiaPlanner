@@ -72,15 +72,20 @@ export class UpdatePantryItemDto implements IUpdatePantryItemDto {
 }
 
 export const WritePantryItemSchema = z.object({
-  productId: z.string().optional(),
+  productId: z.string().min(1, { message: "Product ID is required" }),
   quantity: z.coerce.number().min(0, { message: "Quantity must be greater than 0" }),
   expiryDate: z
     .string()
-    .refine((val) => {
-      if (!val) return true;
-      const date = new Date(val);
-      return date.getTime() > Date.now();
-    })
+    .refine(
+      (val) => {
+        if (!val) return true;
+        const date = new Date(val);
+        return date.getTime() > Date.now();
+      },
+      {
+        message: "Expiry date must be in the future",
+      }
+    )
     .optional(),
 });
 

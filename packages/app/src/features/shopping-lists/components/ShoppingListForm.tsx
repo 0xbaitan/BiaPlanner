@@ -92,7 +92,7 @@ export default function ShoppingListForm({ initialValue, onSubmit, disableSubmit
     <FormProvider {...formMethods}>
       <DualPaneForm onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
         <DualPaneForm.Header>
-          <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Update current shopping list"}</DualPaneForm.Header.Title>
+          <DualPaneForm.Header.Title>{type === "create" ? "Create a new shopping list" : "Edit current shopping list"}</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>
             <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
               <MdCancel />

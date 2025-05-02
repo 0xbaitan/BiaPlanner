@@ -1,0 +1,32 @@
+#bp-login-form {
+  max-width: clamp(20em, 80vw, 40em);
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+      }
+    }
+  }
+
+  #bp-login-submit {
+    display: flex;
+    justify-content: left;
+
+    button {
+      width: 100%;
+    }
+  }
+}

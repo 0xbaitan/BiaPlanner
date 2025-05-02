@@ -154,7 +154,7 @@ export default function RecipeForm(props: RecipeFormProps) {
             </DualPaneForm.Header.Actions>
           </DualPaneForm.Header>
           <DualPaneForm.Panel className="bp-recipe_form__dual_pane">
-            <DualPaneForm.Panel.Pane className="bp-recipe_form__dual_pane__pane">
+            <DualPaneForm.Panel.Pane className="bp-recipe_form__dual_pane_pane">
               <Heading level={Heading.Level.H2}>General Information</Heading>
               <MemoizedImageSelector
                 className="bp-recipe_form__image_selector"
