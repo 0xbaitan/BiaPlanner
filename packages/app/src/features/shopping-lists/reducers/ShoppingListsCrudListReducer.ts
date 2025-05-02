@@ -1,9 +1,9 @@
-import { IQueryShoppingListFilterParams, ShoppingListSortBy } from "@biaplanner/shared";
+import { IQueryShoppingListDto, ShoppingListSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 export type ShoppingListsCrudListState = {
-  shoppingListsQuery: IQueryShoppingListFilterParams;
+  shoppingListsQuery: IQueryShoppingListDto;
 };
 
 const initialState: ShoppingListsCrudListState = {
@@ -19,7 +19,7 @@ export const shoppingListsCrudListSlice = createSlice({
   name: "shoppingListsCrudList",
   initialState,
   reducers: {
-    setFilter: (state, action: PayloadAction<Partial<IQueryShoppingListFilterParams>>) => {
+    setFilter: (state, action: PayloadAction<Partial<IQueryShoppingListDto>>) => {
       state.shoppingListsQuery = {
         ...state.shoppingListsQuery,
         ...action.payload,
@@ -54,7 +54,7 @@ export function useShoppingListsCrudListActions() {
   const dispatch = useStoreDispatch();
 
   return {
-    setFilter: (filter: Partial<IQueryShoppingListFilterParams>) => dispatch(setFilter(filter)),
+    setFilter: (filter: Partial<IQueryShoppingListDto>) => dispatch(setFilter(filter)),
     setPage: (page: number) => dispatch(setPage(page)),
     setLimit: (limit: number) => dispatch(setLimit(limit)),
     setSearch: (search: string) => dispatch(setSearch(search)),

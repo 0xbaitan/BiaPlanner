@@ -1,17 +1,16 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { QueryShoppingListService } from './query-shopping-list.service';
 import {
-  IQueryShoppingListFilterParams,
-  IQueryShoppingListResultsDto,
+  IQueryShoppingListDto,
   IShoppingList,
   Paginated,
-  QueryShoppingListParamsSchema,
+  QueryShoppingListDtoSchema,
 } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { Public } from '@/features/user-info/authentication/public.decorator';
 
 const QueryShoppingListValidationPipe = new ZodValidationPipe(
-  QueryShoppingListParamsSchema,
+  QueryShoppingListDtoSchema,
 );
 
 @Controller('/query/shopping-lists')
@@ -25,7 +24,7 @@ export class QueryShoppingListController {
   @Get()
   async query(
     @Query(QueryShoppingListValidationPipe)
-    query: IQueryShoppingListFilterParams,
+    query: IQueryShoppingListDto,
   ): Promise<Paginated<IShoppingList>> {
     return this.queryShoppingListService.query(query);
   }

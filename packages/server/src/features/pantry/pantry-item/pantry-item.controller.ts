@@ -3,7 +3,6 @@ import PantryItemService from './pantry-item.service';
 import {
   CookingMeasurementType,
   IPantryItem,
-  IPantryItemExtended,
   IUser,
   IWritePantryItemDto,
   WritePantryItemSchema,
@@ -58,7 +57,7 @@ export default class PantryItemController {
   async findIngredientCompatiblePantryItems(
     @Query('measurementType') measurementType: CookingMeasurementType,
     @Query('ingredientId') ingredientId: string,
-  ): Promise<IPantryItemExtended[]> {
+  ): Promise<IPantryItem[]> {
     const pantryItems =
       await this.pantryItemService.findIngredientCompatiblePantryItems(
         ingredientId,

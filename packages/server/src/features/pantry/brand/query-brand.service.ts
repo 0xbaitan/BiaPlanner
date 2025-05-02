@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate, Paginated } from 'nestjs-paginate';
 import { BrandEntity } from './brand.entity';
-import {
-  IQueryBrandParamsDto,
-  IQueryBrandResultsDto,
-  QueryBrandResultsSchema,
-} from '@biaplanner/shared';
+import { IBrand, IQueryBrandDto } from '@biaplanner/shared';
 
 @Injectable()
 export class QueryBrandService {
@@ -43,19 +39,17 @@ export class QueryBrandService {
   /**
    * Query brands with filters, search, and sorting.
    */
-  async query(
-    query: IQueryBrandParamsDto,
-  ): Promise<Pagination<IQueryBrandResultsDto>> {
+  async query(query: IQueryBrandDto): Promise<Paginated<IBrand>> {
     console.log('Querying brands with query:', query);
     const { sortBy = 'DEFAULT', search = '', page = 1, limit = 25 } = query;
 
     const qb = this.brandRepository.createQueryBuilder('brand');
 
     qb.select([
-      'brand.id as id',
-      'brand.name as name',
-      'brand.description as description',
-      'brand.logoId as logoId',
+      'brand.id',
+      'brand.name',
+      'brand.description',
+      'brand.logoId',
       'COUNT(product.id) as productCount',
     ]);
 
@@ -82,42 +76,19 @@ export class QueryBrandService {
     qb.groupBy('brand.id, brand.name, brand.description, brand.logoId');
 
     // Paginate the results
-    const rawResults = await paginateRaw(qb, {
-      page,
-      limit,
-      metaTransformer: (meta) => ({
-        ...meta,
-        search: query.search,
-        sortBy: query.sortBy,
-        limit: query.limit,
-      }),
-    });
-
-    console.log(rawResults);
-
-    const hydratedResults = await Promise.all(
-      rawResults.items.map(async (item) => {
-        const brand = await this.brandRepository.findOne({
-          where: { id: item.id },
-          relations: ['logo'],
-        });
-
-        return {
-          ...item,
-          imageFileMetadata: brand?.logo,
-        };
-      }),
+    const results = await paginate<IBrand>(
+      {
+        path: '/query/brands',
+        page,
+        limit,
+      },
+      qb,
+      {
+        sortableColumns: ['name', 'createdAt'],
+        defaultLimit: 25,
+      },
     );
 
-    // Transform raw results using Zod schema
-    const transformedResults = hydratedResults.map((item) =>
-      QueryBrandResultsSchema.parse(item),
-    );
-
-    return new Pagination<IQueryBrandResultsDto>(
-      transformedResults,
-      rawResults.meta,
-      rawResults.links,
-    );
+    return results;
   }
 }

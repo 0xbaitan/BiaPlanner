@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginate, Pagination } from 'nestjs-typeorm-paginate';
+
 import { PantryItemEntity } from './pantry-item.entity';
 import {
-  IQueryPantryItemFilterParams,
   PantryItemSortBy,
   IPantryItem,
+  IQueryPantryItemDto,
 } from '@biaplanner/shared';
+import { paginate, Paginated } from 'nestjs-paginate';
 
 @Injectable()
 export class QueryPantryItemService {
@@ -63,9 +64,7 @@ export class QueryPantryItemService {
   /**
    * Query pantry items with filters, search, and sorting.
    */
-  async query(
-    query: IQueryPantryItemFilterParams,
-  ): Promise<Pagination<IPantryItem>> {
+  async query(query: IQueryPantryItemDto): Promise<Paginated<IPantryItem>> {
     const {
       sortBy,
       search,
@@ -74,15 +73,16 @@ export class QueryPantryItemService {
       brandIds,
       productCategoryIds,
       productIds,
-      page,
-      limit,
+      page = 1,
+      limit = 25,
     } = query;
 
     const qb = this.pantryItemRepository.createQueryBuilder('pantryItem');
 
-    qb.leftJoin('pantryItem.product', 'product')
-      .leftJoin('product.brand', 'brand')
-      .leftJoin('product.productCategories', 'productCategory');
+    qb.distinct(true)
+      .leftJoinAndSelect('pantryItem.product', 'product')
+      .leftJoinAndSelect('product.brand', 'brand')
+      .leftJoinAndSelect('product.productCategories', 'productCategory');
 
     // Apply search filter
     if (search && search.trim().length > 0) {
@@ -104,29 +104,33 @@ export class QueryPantryItemService {
       );
     }
 
+    // Apply expired items visibility filter
     if (expiredItemsVisibility) {
       if (expiredItemsVisibility === 'SHOW_EXPIRED_ONLY') {
         qb.andWhere('pantryItem.isExpired = true');
       } else if (expiredItemsVisibility === 'SHOW_FRESH_ONLY') {
         qb.andWhere('pantryItem.isExpired = false');
       }
-      // If expiredItemsVisibility is SHOW_ALL, do not apply any filter
     }
 
+    // Apply loose product filter
     if (showLooseOnly) {
       qb.andWhere('product.isLoose = true');
     }
 
+    // Apply brand filter
     if (brandIds?.length) {
       qb.andWhere('product.brandId IN (:...brandIds)', { brandIds });
     }
 
+    // Apply product category filter
     if (productCategoryIds?.length) {
       qb.andWhere('productCategory.id IN (:...productCategoryIds)', {
         productCategoryIds,
       });
     }
 
+    // Apply product filter
     if (productIds?.length) {
       qb.andWhere('product.id IN (:...productIds)', { productIds });
     }
@@ -134,29 +138,35 @@ export class QueryPantryItemService {
     // Apply sorting
     this.applySorting(qb, sortBy);
 
-    // Paginate the results
-    const results = await paginate(qb, {
-      page,
-      limit,
-      metaTransformer: (meta) => ({
-        ...meta,
-        search: query.search,
-        sortBy: query.sortBy,
-        limit: query.limit,
-        page: query.page,
-      }),
-    });
+    qb.addGroupBy('pantryItem.id')
+      .addGroupBy('product.id')
+      .addGroupBy('brand.id')
+      .addGroupBy('productCategory.id');
 
-    const hydratedResults = await Promise.all(
-      results.items.map(async (item) => {
-        const hydratedItem = await this.pantryItemRepository.findOne({
-          where: { id: item.id },
-          relations: ['product', 'product.brand', 'product.productCategories'],
-        });
-        return hydratedItem;
-      }),
+    // Paginate the results
+    const results = await paginate<IPantryItem>(
+      {
+        path: '/query/pantry-items',
+        page,
+        limit,
+      },
+      qb,
+      {
+        sortableColumns: ['createdAt', 'expiryDate', 'quantity'],
+        defaultLimit: 25,
+      },
     );
 
-    return new Pagination(hydratedResults, results.meta, results.links);
+    return results;
+  }
+
+  /**
+   * Find a single pantry item by ID.
+   */
+  async findOne(id: string): Promise<IPantryItem> {
+    return this.pantryItemRepository.findOneOrFail({
+      where: { id },
+      relations: ['product', 'product.brand', 'product.productCategories'],
+    });
   }
 }

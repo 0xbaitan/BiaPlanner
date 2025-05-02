@@ -1,4 +1,4 @@
-import { IBrand, IQueryBrandParamsDto, IQueryBrandResultsDto, IWriteBrandDto, Paginated } from "@biaplanner/shared";
+import { IBrand, IQueryBrandDto, IWriteBrandDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -51,12 +51,12 @@ export const brandsApi = rootApi.injectEndpoints({
     }),
 
     // New searchBrands query
-    searchBrands: build.query<Paginated<IQueryBrandResultsDto>, IQueryBrandParamsDto>({
+    searchBrands: build.query<Paginated<IBrand>, IQueryBrandDto>({
       query: (query) => ({
         url: `/query/brands?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Brand" as const, id })), { type: "Brand", id: "LIST" }] : [{ type: "Brand", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.data.filter(({ id }) => id != null).map(({ id }) => ({ type: "Brand" as const, id })), { type: "Brand", id: "LIST" }] : [{ type: "Brand", id: "LIST" }]),
     }),
   }),
 });

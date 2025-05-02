@@ -1,13 +1,12 @@
-import { RoutePaths, fillParametersInPath } from "@/Routes";
-
 import CreatePantryItemForm from "../components/CreatePantryItemForm";
+import { RoutePaths } from "@/Routes";
 import { useCreatePantryItemMutation } from "@/apis/PantryItemsApi";
 import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function CreatePantryItemPage() {
   const navigate = useNavigate();
-  const [createPantryItem, { isSuccess, isError, isLoading, data }] = useCreatePantryItemMutation();
+  const [createPantryItem, { isSuccess, isError, isLoading }] = useCreatePantryItemMutation();
 
   const { notify: notifyOnCreateTrigger } = useSimpleStatusToast({
     isError,

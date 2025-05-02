@@ -1,9 +1,9 @@
-import { CuisineSortBy, IQueryCuisineParamsDto } from "@biaplanner/shared";
+import { CuisineSortBy, IQueryCuisineDto } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 export type CuisinesCrudListState = {
-  cuisinesQuery: IQueryCuisineParamsDto;
+  cuisinesQuery: IQueryCuisineDto;
 };
 
 const initialState: CuisinesCrudListState = {
@@ -15,7 +15,7 @@ const initialState: CuisinesCrudListState = {
   },
 };
 
-export type CuisineFilter = Omit<IQueryCuisineParamsDto, "page" | "limit" | "search" | "sortBy">;
+export type CuisineFilter = Omit<IQueryCuisineDto, "page" | "limit" | "search" | "sortBy">;
 
 export const cuisinesCrudListSlice = createSlice({
   name: "cuisinesCrudList",

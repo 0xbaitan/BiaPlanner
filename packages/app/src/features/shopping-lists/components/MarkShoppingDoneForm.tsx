@@ -1,14 +1,13 @@
 import "../styles/MarkShoppingDoneForm.scss";
 
-import { FaCheckCircle, FaSave } from "react-icons/fa";
-import { IMarkShoppingListDoneDto, IShoppingList, IUpdateShoppingItemExtendedDto, IUpdateShoppingListExtendedDto, MarkShoppingListDoneSchema } from "@biaplanner/shared";
+import { IMarkShoppingListDoneDto, IShoppingList, MarkShoppingListDoneSchema } from "@biaplanner/shared";
 import { useCallback, useEffect, useMemo } from "react";
 import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import BrowseProductsOffcanvas from "./BrowseProductsOffcanvas";
 import Button from "react-bootstrap/esm/Button";
 import DualPaneForm from "@/components/forms/DualPaneForm";
-import { FormProvider } from "react-hook-form";
+import { FaCheckCircle } from "react-icons/fa";
 import Heading from "@/components/Heading";
 import MarkShoppingItemsTable from "./MarkShoppingItemsTable";
 import { MdCancel } from "react-icons/md";
@@ -25,7 +24,7 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
   const { initialValue, disableSubmit, onSubmit } = props;
   const navigate = useNavigate();
   const { initialiseFormState, openEditMode, resetFormState, closeEditMode, hideOffcanvas, showAddExtraOffcanvas } = useMarkShoppingDoneActions();
-  const { updatedShoppingItems, isInitialised, isInEditMode, transientUpdatedShoppingItems, offCanvasType, showOffcanvas, currentItemToReplace } = useMarkShoppingDoneState();
+  const { updatedShoppingItems, isInitialised, isInEditMode, transientUpdatedShoppingItems, offCanvasType, showOffcanvas } = useMarkShoppingDoneState();
   const itemsToShow = useMemo(() => {
     if (isInEditMode) {
       return transientUpdatedShoppingItems;
@@ -42,7 +41,7 @@ export default function MarkShoppingDoneForm(props: MarkShoppingDoneFormProps) {
   }, [initialValue, initialiseFormState, isInitialised, resetFormState]);
 
   const handleSubmit = useCallback(() => {
-    const dto: IUpdateShoppingListExtendedDto = {
+    const dto: IMarkShoppingListDoneDto = {
       ...initialValue,
       items: updatedShoppingItems,
     };

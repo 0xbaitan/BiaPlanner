@@ -41,8 +41,8 @@ function PantryPage() {
           <CrudListPageLayout.Body.Content>
             {isLoading && <div>Loading...</div>}
             {isError && <NoResultsFound title="Error" description="Failed to fetch pantry items." />}
-            {results?.items.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}
-            {results?.items && results.items.length > 0 && <PantryItemsTable data={results.items} />}
+            {results?.data.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}
+            {results?.data && results.data.length > 0 && <PantryItemsTable data={results.data} />}
           </CrudListPageLayout.Body.Content>
         }
       />

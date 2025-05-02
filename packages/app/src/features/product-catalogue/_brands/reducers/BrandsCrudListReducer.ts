@@ -1,11 +1,11 @@
-import { BrandSortBy, IQueryBrandParamsDto } from "@biaplanner/shared";
+import { BrandSortBy, IQueryBrandDto } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { ViewType } from "@/components/ViewSegmentedButton";
 
 export type BrandsCrudListState = {
-  brandsQuery: IQueryBrandParamsDto;
+  brandsQuery: IQueryBrandDto;
   view: ViewType;
 };
 
@@ -19,7 +19,7 @@ const initialState: BrandsCrudListState = {
   view: "grid",
 };
 
-export type BrandFilter = Omit<IQueryBrandParamsDto, "page" | "limit" | "search" | "sortBy">;
+export type BrandFilter = Omit<IQueryBrandDto, "page" | "limit" | "search" | "sortBy">;
 
 export const brandsCrudListSlice = createSlice({
   name: "brandsCrudList",

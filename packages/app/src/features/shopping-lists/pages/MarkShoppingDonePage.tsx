@@ -1,14 +1,10 @@
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetShoppingListQuery, useMarkShoppingDoneMutation } from "@/apis/ShoppingListsApi";
-import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 import { useNavigate, useParams } from "react-router-dom";
 
-import BrowseProductsOffcanvas from "../components/BrowseProductsOffcanvas";
-import { IUpdateShoppingListExtendedDto } from "@biaplanner/shared";
 import MarkShoppingDoneForm from "../components/MarkShoppingDoneForm";
 import { RoutePaths } from "@/Routes";
-import { Status } from "@/hooks/useStatusToast";
 import { useEffect } from "react";
+import { useMarkShoppingDoneActions } from "../reducers/MarkShoppingDoneReducer";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 function MarkShoppingDonePage() {

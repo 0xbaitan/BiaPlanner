@@ -1,5 +1,4 @@
 import {
-  UpdateShoppingListExtendedDto,
   IUser,
   MarkShoppingListDoneSchema,
   IMarkShoppingListDoneDto,

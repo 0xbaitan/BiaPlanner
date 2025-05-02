@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ShoppingListEntity } from './shopping-list.entity';
 import { Repository } from 'typeorm';
 import {
-  CreateShoppingListDto,
-  IUpdateShoppingListDto,
   IWriteShoppingListDto,
   WriteShoppingListItemSchema,
 } from '@biaplanner/shared';

@@ -25,7 +25,7 @@ export default function ReplacementVariantProductCard(props: ProductCardProps) {
     }
     replaceShoppingItem(currentItemToReplace.id, {
       productId: product.id,
-      product,
+
       quantity: getOriginalItem(currentItemToReplace.id)?.quantity ?? 1,
       expiryDate: product.canExpire ? dayjs().toISOString() : undefined,
       shoppingListId,

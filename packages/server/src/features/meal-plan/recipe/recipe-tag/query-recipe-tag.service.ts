@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { Paginate, paginate } from 'nestjs-paginate';
+
 import { RecipeTagEntity } from './recipe-tag.entity';
-import { Paginated } from '@biaplanner/shared';
+import { IRecipeTag, Paginated } from '@biaplanner/shared';
 import {
   IQueryRecipeTagDto,
   IQueryRecipeTagItemDto,
   QueryRecipeTagItemSchema,
   RecipeTagSortBy,
 } from '@biaplanner/shared';
-import {
-  IPaginationMeta,
-  paginateRaw,
-  paginateRawAndEntities,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+import { paginate } from 'nestjs-paginate';
+
 import { raw } from 'mysql2';
 
 @Injectable()
@@ -56,9 +52,7 @@ export class QueryRecipeTagService {
   /**
    * Query recipe tags with filters, search, and sorting.
    */
-  async query(
-    query: IQueryRecipeTagDto,
-  ): Promise<Paginated<IQueryRecipeTagItemDto>> {
+  async query(query: IQueryRecipeTagDto): Promise<Paginated<IRecipeTag>> {
     console.log('Querying recipe tags with query:', query);
     const { sortBy, search, page, limit } = query;
 
@@ -98,22 +92,23 @@ export class QueryRecipeTagService {
     qb.groupBy('recipeTag.id, recipeTag.name, recipeTag.description');
 
     // Paginate the results
-    const rawResults = await paginateRaw(qb, {
-      page,
-      limit,
-    });
+    const results = await paginate<IRecipeTag>(
+      {
+        path: 'recipe-tags',
+        page,
+        limit,
+      },
 
-    console.log(rawResults);
+      qb,
 
-    const transformedResults = rawResults.items.map((item) =>
-      QueryRecipeTagItemSchema.parse(item),
+      {
+        sortableColumns: ['createdAt'],
+        defaultSortBy: [['createdAt', 'DESC']],
+        maxLimit: 100,
+      },
     );
 
-    return new Pagination<IQueryRecipeTagItemDto>(
-      transformedResults,
-      rawResults.meta,
-      rawResults.links,
-    );
+    return results;
   }
   /**
    * Find a single recipe tag by ID.

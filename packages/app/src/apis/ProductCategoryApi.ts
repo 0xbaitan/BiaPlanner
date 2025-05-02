@@ -1,4 +1,4 @@
-import { ICreateProductCategoryDto, IProductCategory, IQueryProductCategoryParamsDto, IQueryProductCategoryResultsDto, IWriteProductCategoryDto, Paginated } from "@biaplanner/shared";
+import { ICreateProductCategoryDto, IProductCategory, IQueryProductCategoryDto, IWriteProductCategoryDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -61,12 +61,12 @@ export const productCategoriesApi = rootApi.injectEndpoints({
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),
     }),
 
-    searchProductCategories: build.query<Paginated<IQueryProductCategoryResultsDto>, IQueryProductCategoryParamsDto>({
+    searchProductCategories: build.query<Paginated<IProductCategory>, IQueryProductCategoryDto>({
       query: (query) => ({
         url: `/query/product-categories?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.data.filter(({ id }) => id != null).map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),
     }),
   }),
 });

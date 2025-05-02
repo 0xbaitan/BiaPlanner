@@ -1,18 +1,10 @@
 import "../styles/MeasurementInput.scss";
 
 import { ICookingMeasurement, getCookingMeasurement, getCookingMeasurementList, getMeasurementLabel } from "@biaplanner/shared";
-import { Option, SelectInputProps, SelectRendererProps } from "@/components/forms/SelectInput";
-import { SelectMethods, SelectProps, SelectState } from "react-dropdown-select";
-import { useMemo, useState } from "react";
 
-import { BiSolidSelectMultiple } from "react-icons/bi";
-import { Button } from "react-bootstrap";
-import { FaEraser } from "react-icons/fa6";
 import FilterSelect from "@/components/forms/FilterSelect";
-import Form from "react-bootstrap/Form";
-import SelectInput from "@/components/forms/SelectInput";
-import fuzzysearch from "fuzzysearch";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { SelectInputProps } from "@/components/forms/SelectInput";
+import { useMemo } from "react";
 
 export type MeasurementInputProps = Omit<SelectInputProps<ICookingMeasurement>, "list" | "idSelector" | "nameSelector" | "dropdownRenderer">;
 

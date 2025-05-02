@@ -1,7 +1,7 @@
 import "../styles/MealPlanForm.scss";
 
 import { FormProvider, useForm } from "react-hook-form";
-import { IConcreteRecipe, ICreateConcreteRecipeDto, IUpdateConcreteRecipeDto } from "@biaplanner/shared";
+import { IConcreteRecipe, IWriteConcreteRecipeDto } from "@biaplanner/shared";
 import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -17,19 +17,17 @@ import { getImagePath } from "@/util/imageFunctions";
 import { useConfirmedIngredients } from "../../reducers/IngredientManagementReducer";
 import { useNavigate } from "react-router-dom";
 
-export type ConcreteRecipeFormValues = ICreateConcreteRecipeDto | IUpdateConcreteRecipeDto;
-
 export type MealPlanFormValues = {
   type: "create" | "update";
   disableSubmit?: boolean;
   initialValue?: Partial<IConcreteRecipe>;
-  onSubmit: (values: ConcreteRecipeFormValues) => void;
+  onSubmit: (values: IWriteConcreteRecipeDto) => void;
 };
 
 export default function MealPlanForm(props: MealPlanFormValues) {
   const { initialValue, onSubmit } = props;
 
-  const methods = useForm<ConcreteRecipeFormValues>({
+  const methods = useForm<IWriteConcreteRecipeDto>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
   });

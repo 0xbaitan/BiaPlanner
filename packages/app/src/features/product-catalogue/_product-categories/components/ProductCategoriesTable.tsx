@@ -1,7 +1,7 @@
 import { FaAllergies, FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
-import { IQueryProductCategoryResultsDto } from "@biaplanner/shared";
+import { IProductCategory } from "@biaplanner/shared";
 import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteProductCategoryMutation } from "@/apis/ProductCategoryApi";
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type ProductCategoriesTableProps = {
-  data: IQueryProductCategoryResultsDto[];
+  data: IProductCategory[];
 };
 
 export default function ProductCategoriesTable(props: ProductCategoriesTableProps) {
@@ -29,7 +29,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
     isLoading,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IQueryProductCategoryResultsDto>({
+  const { notify: notifyDeletion } = useDeletionToast<IProductCategory>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
       if (!!item.id) {
@@ -40,7 +40,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
   });
 
   return (
-    <TabbedViewsTable<IQueryProductCategoryResultsDto>
+    <TabbedViewsTable<IProductCategory>
       data={data}
       views={[
         {
@@ -57,7 +57,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
             },
             {
               header: "Product Count",
-              accessorFn: (row) => row.productCount ?? 0,
+              accessorFn: (row) => row.products?.length ?? 0,
               accessorKey: "productCount",
             },
             {

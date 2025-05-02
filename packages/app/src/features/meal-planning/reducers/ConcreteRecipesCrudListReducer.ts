@@ -1,11 +1,11 @@
-import { ConcreteRecipeSortBy, IQueryConcreteRecipeFilterParams } from "@biaplanner/shared";
+import { ConcreteRecipeSortBy, IQueryConcreteRecipeDto } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { ViewType } from "@/components/ViewSegmentedButton";
 
 export type ConcreteRecipesCrudListState = {
-  concreteRecipesQuery: IQueryConcreteRecipeFilterParams;
+  concreteRecipesQuery: IQueryConcreteRecipeDto;
   view: ViewType;
 };
 
@@ -20,7 +20,7 @@ const initialState: ConcreteRecipesCrudListState = {
   },
 };
 
-export type ConcreteRecipeFilter = Omit<IQueryConcreteRecipeFilterParams, "page" | "limit" | "search" | "sortBy">;
+export type ConcreteRecipeFilter = Omit<IQueryConcreteRecipeDto, "page" | "limit" | "search" | "sortBy">;
 
 export const concreteRecipesCrudListSlice = createSlice({
   name: "concreteRecipesCrudList",

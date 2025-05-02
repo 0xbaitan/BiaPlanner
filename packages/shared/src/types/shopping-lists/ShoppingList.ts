@@ -1,6 +1,6 @@
-import { ICreateShoppingItemDto, ICreateShoppingItemExtendedDto, IShoppingItem, IUpdateShoppingItemDto, IUpdateShoppingItemExtendedDto, WriteShoppingListItemSchema } from "./ShoppingItem";
+import { IShoppingItem, WriteShoppingItemExtended, WriteShoppingListItemSchema } from "./ShoppingItem";
 
-import { FilterParamsSchema } from "../../util";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { z } from "zod";
 
@@ -10,43 +10,6 @@ export interface IShoppingList extends IBaseEntity {
   plannedDate: string;
   isShoppingComplete?: boolean;
   items?: IShoppingItem[];
-}
-
-export interface ICreateShoppingListDto extends Omit<IShoppingList, keyof IBaseEntity | "items"> {
-  items?: ICreateShoppingItemDto[];
-}
-
-export interface IUpdateShoppingListDto extends Partial<Omit<IShoppingList, keyof IBaseEntity | "items">>, Pick<IShoppingList, "id"> {
-  items?: IUpdateShoppingListDto[] | undefined;
-}
-
-export interface IUpdateShoppingListExtendedDto extends Partial<Omit<IShoppingList, keyof IBaseEntity | "items">>, Pick<IShoppingList, "id"> {
-  items?: IUpdateShoppingItemExtendedDto[] | undefined;
-}
-
-export class CreateShoppingListDto implements ICreateShoppingListDto {
-  title: string;
-  notes?: string;
-  plannedDate: string;
-  items?: ICreateShoppingItemDto[];
-}
-
-export class UpdateShoppingListDto implements IUpdateShoppingListDto {
-  id: string;
-  title?: string | undefined;
-  notes?: string | undefined;
-  plannedDate?: string | undefined;
-  isShoppingComplete?: boolean | undefined;
-  items?: IUpdateShoppingItemDto[] | undefined;
-}
-
-export class UpdateShoppingListExtendedDto implements IUpdateShoppingListExtendedDto {
-  id: string;
-  title?: string | undefined;
-  notes?: string | undefined;
-  plannedDate?: string | undefined;
-  isShoppingComplete?: boolean | undefined;
-  items: IUpdateShoppingItemExtendedDto[] | undefined;
 }
 
 export const WriteShoppingListSchema = z.object({
@@ -71,7 +34,7 @@ export const WriteShoppingListSchema = z.object({
 export type IWriteShoppingListDto = z.infer<typeof WriteShoppingListSchema>;
 
 export const MarkShoppingListDoneSchema = WriteShoppingListSchema.extend({
-  items: z.array(WriteShoppingListItemSchema).min(1, "At least one item is required"),
+  items: z.array(WriteShoppingItemExtended).min(1, "At least one item is required"),
 });
 
 export type IMarkShoppingListDoneDto = z.infer<typeof MarkShoppingListDoneSchema>;
@@ -85,29 +48,10 @@ export enum ShoppingListSortBy {
   LEAST_URGENT = "LEAST_URGENT",
 }
 
-export const QueryShoppingListParamsSchema = FilterParamsSchema.extend({
+export const QueryShoppingListDtoSchema = FilterParamsSchema.extend({
   sortBy: z.nativeEnum(ShoppingListSortBy).optional(),
   search: z.string().optional(),
   plannedDate: z.coerce.date().optional(),
 });
 
-export const QueryShoppingListResultsSchema = z.object({
-  shoppingListId: z.string(),
-  title: z.string(),
-  notes: z.string().optional().nullable(),
-  plannedDate: z.coerce.date().optional().nullable(),
-  isShoppingComplete: z.coerce.boolean().optional(),
-  items: z
-    .array(
-      z.object({
-        productId: z.string(),
-        quantity: z.number(),
-      })
-    )
-    .optional()
-    .nullable(),
-});
-
-export type IQueryShoppingListResultsDto = z.infer<typeof QueryShoppingListResultsSchema>;
-
-export type IQueryShoppingListFilterParams = z.infer<typeof QueryShoppingListParamsSchema>;
+export type IQueryShoppingListDto = z.infer<typeof QueryShoppingListDtoSchema>;

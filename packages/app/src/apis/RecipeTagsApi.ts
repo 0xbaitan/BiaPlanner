@@ -58,7 +58,7 @@ const recipeTagsApi = rootApi.injectEndpoints({
         url: `/query/recipe-tags?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter((tag) => tag.id != null).map((tag) => ({ id: tag.id as string | number, type: "RecipeTag" as const })), { type: "RecipeTag", id: "LIST" }] : [{ type: "RecipeTag", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.data.filter((tag) => tag.id != null).map((tag) => ({ id: tag.id as string | number, type: "RecipeTag" as const })), { type: "RecipeTag", id: "LIST" }] : [{ type: "RecipeTag", id: "LIST" }]),
     }),
   }),
 });

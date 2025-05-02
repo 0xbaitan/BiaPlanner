@@ -1,5 +1,4 @@
 import { RoutePaths, fillParametersInPath } from "@/Routes";
-import calculatePaginationElements, { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import { useBrandsCrudListActions, useBrandsCrudListState } from "../reducers/BrandsCrudListReducer";
 
 import BrandGrid from "../components/BrandGrid";
@@ -10,6 +9,7 @@ import CrudListPageLayout from "@/components/CrudListPageLayout";
 import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import { ViewType } from "@/components/ViewSegmentedButton";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,22 +25,22 @@ export default function BrandsPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationMeta(brandsQuery.limit ?? 25, results);
+  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationElements(brandsQuery.limit ?? 25, results);
 
   const brandsTable = useMemo(() => {
-    return <BrandsTable data={results?.items ?? []} />;
-  }, [results?.items]);
+    return <BrandsTable data={results?.data ?? []} />;
+  }, [results?.data]);
 
   const brandsGrid = useMemo(() => {
     return (
       <BrandGrid
-        brands={results?.items ?? []}
+        brands={results?.data ?? []}
         onClick={(brand) => {
           navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: brand.id }));
         }}
       />
     );
-  }, [navigate, results?.items]);
+  }, [navigate, results?.data]);
 
   return (
     <CrudListPageLayout>

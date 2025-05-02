@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginateRaw, Pagination } from 'nestjs-typeorm-paginate';
+import { paginate, Paginated } from 'nestjs-paginate';
 import { CuisineEntity } from './cuisine.entity';
-import {
-  IQueryCuisineParamsDto,
-  IQueryCuisineResultsDto,
-  QueryCuisineResultsSchema,
-} from '@biaplanner/shared';
+import { ICuisine, IQueryCuisineDto } from '@biaplanner/shared';
 
 @Injectable()
 export class QueryCuisineService {
@@ -43,18 +39,16 @@ export class QueryCuisineService {
   /**
    * Query cuisines with filters, search, and sorting.
    */
-  async query(
-    query: IQueryCuisineParamsDto,
-  ): Promise<Pagination<IQueryCuisineResultsDto>> {
+  async query(query: IQueryCuisineDto): Promise<Paginated<ICuisine>> {
     console.log('Querying cuisines with query:', query);
     const { sortBy = 'DEFAULT', search = '', page = 1, limit = 25 } = query;
 
     const qb = this.cuisineRepository.createQueryBuilder('cuisine');
 
     qb.select([
-      'cuisine.id as id',
-      'cuisine.name as name',
-      'cuisine.description as description',
+      'cuisine.id',
+      'cuisine.name',
+      'cuisine.description',
       'COUNT(recipe.id) as recipeCount',
     ]);
 
@@ -81,28 +75,19 @@ export class QueryCuisineService {
     qb.groupBy('cuisine.id, cuisine.name, cuisine.description');
 
     // Paginate the results
-    const rawResults = await paginateRaw(qb, {
-      page,
-      limit,
-      metaTransformer: (meta) => ({
-        ...meta,
-        search: query.search,
-        sortBy: query.sortBy,
-        limit: query.limit,
-      }),
-    });
-
-    console.log(rawResults);
-
-    // Transform raw results using Zod schema
-    const transformedResults = rawResults.items.map((item) =>
-      QueryCuisineResultsSchema.parse(item),
+    const results = await paginate<ICuisine>(
+      {
+        path: '/query/cuisines',
+        page,
+        limit,
+      },
+      qb,
+      {
+        sortableColumns: ['name', 'createdAt'],
+        defaultLimit: 25,
+      },
     );
 
-    return new Pagination<IQueryCuisineResultsDto>(
-      transformedResults,
-      rawResults.meta,
-      rawResults.links,
-    );
+    return results;
   }
 }

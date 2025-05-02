@@ -1,4 +1,4 @@
-import { ICreatePantryItemPortionDto, IPantryItemPortion, PantryItemPortionSchema } from "./PantryItemPortion";
+import { IPantryItemPortion, PantryItemPortionSchema, WritePantryItemPortionDtoSchema } from "./PantryItemPortion";
 
 import { CookingMeasurement } from "../CookingMeasurement";
 import { IBaseEntity } from "../BaseEntity";
@@ -16,13 +16,16 @@ export interface IConcreteIngredient extends IBaseEntity {
   pantryItemsWithPortions?: IPantryItemPortion[];
 }
 
-export interface ICreateConcreteIngredientDto {
-  concreteRecipeId?: string;
-  ingredientId: string;
-  pantryItemsWithPortions?: ICreatePantryItemPortionDto[];
-}
-
 export const ConcreteIngredientAndMeasurementSchema = {
   ingredientId: z.string(),
   pantryItemsWithPortions: z.array(z.object(PantryItemPortionSchema)).optional(),
 };
+
+export const WriteConcreteIngredientDtoSchema = z.object({
+  concreteRecipeId: z.string().optional().nullable(),
+  ingredientId: z.string().min(1, { message: "Ingredient ID is required" }),
+  pantryItemsWithPortions: z.array(WritePantryItemPortionDtoSchema).optional(),
+  id: z.string().optional(),
+});
+
+export type IWriteConcreteIngredientDto = z.infer<typeof WriteConcreteIngredientDtoSchema>;

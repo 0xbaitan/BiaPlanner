@@ -1,9 +1,8 @@
 import "../styles/ProductGrid.scss";
 
-import { IProduct, IQueryProductResultsDto } from "@biaplanner/shared";
-
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import { IProduct } from "@biaplanner/shared";
 import ProductCard from "./ProductCard";
 import Row from "react-bootstrap/Row";
 import { useMemo } from "react";

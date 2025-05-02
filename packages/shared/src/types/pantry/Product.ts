@@ -1,7 +1,7 @@
 import { CookingMeasurement, CookingMeasurementSchema, CookingMeasurementType } from "../CookingMeasurement";
 import { Time, Volumes, Weights } from "../units";
 
-import { FilterParamsSchema } from "../../util";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IBrand } from "./Brand";
 import { IFile } from "../File";
@@ -57,7 +57,7 @@ export const WriteProductDtoSchema = zfd.formData({
 });
 export type IWriteProductDto = z.infer<typeof WriteProductDtoSchema>;
 
-export const QueryProductParamsSchema = FilterParamsSchema.extend({
+export const QueryProductDtoSchema = FilterParamsSchema.extend({
   sortBy: z
     .enum([
       ProductSortBy.PRODUCT_NAME_A_TO_Z,
@@ -75,19 +75,4 @@ export const QueryProductParamsSchema = FilterParamsSchema.extend({
   isNonExpirable: z.coerce.boolean().optional(),
 });
 
-export type IQueryProductParamsDto = z.infer<typeof QueryProductParamsSchema>;
-
-export const QueryProductResultsSchema = z.object({
-  productId: z.string(),
-  productName: z.string().min(1).max(255),
-  description: z.string().optional().nullable(),
-  brandId: z.string(),
-  brandName: z.string(),
-  productCategoryIds: z.array(z.string()).optional(),
-  productCategoryNames: z.array(z.string()).optional(),
-  coverImagePath: z.string().optional().nullable(),
-  measurementType: z.nativeEnum(CookingMeasurementType).optional(),
-  measurement: z.object(CookingMeasurementSchema).optional(),
-});
-
-export type IQueryProductResultsDto = z.infer<typeof QueryProductResultsSchema>;
+export type IQueryProductDto = z.infer<typeof QueryProductDtoSchema>;

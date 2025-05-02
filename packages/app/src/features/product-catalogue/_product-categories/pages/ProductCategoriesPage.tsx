@@ -6,7 +6,7 @@ import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import ProductCategoriesFilterBar from "../components/ProductCategoriesFilterBar";
 import ProductCategoriesTable from "../components/ProductCategoriesTable";
-import { calculatePaginationMeta } from "@/util/calculatePaginationElements";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ export default function ProductCategoriesPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = calculatePaginationMeta(productCategoriesQuery.limit ?? 25, productCategories);
+  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = calculatePaginationElements(productCategoriesQuery.limit ?? 25, productCategories);
 
   useEffect(() => {
     return () => {
@@ -56,10 +56,10 @@ export default function ProductCategoriesPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="product categories" />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
-            {isError || !productCategories?.items || productCategories.items.length === 0 ? (
+            {isError || !productCategories?.data || productCategories.data.length === 0 ? (
               <NoResultsFound title="Oops! No product categories found" description="Try creating a new product category to get started." />
             ) : (
-              <ProductCategoriesTable data={productCategories.items} />
+              <ProductCategoriesTable data={productCategories.data} />
             )}
           </CrudListPageLayout.Body.Content>
         }

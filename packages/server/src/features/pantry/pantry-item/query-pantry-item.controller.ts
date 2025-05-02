@@ -1,8 +1,8 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { QueryPantryItemService } from './query-pantry-item.service';
 import {
-  IQueryPantryItemFilterParams,
-  QueryPantryItemParamsSchema,
+  IQueryPantryItemDto,
+  QueryPantryItemDtoSchema,
   IPantryItem,
   Paginated,
 } from '@biaplanner/shared';
@@ -10,7 +10,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { Public } from '@/features/user-info/authentication/public.decorator';
 
 const QueryPantryItemValidationPipe = new ZodValidationPipe(
-  QueryPantryItemParamsSchema,
+  QueryPantryItemDtoSchema,
 );
 
 @Controller('/query/pantry-items')
@@ -23,7 +23,7 @@ export class QueryPantryItemController {
   @Get()
   async query(
     @Query(QueryPantryItemValidationPipe)
-    query: IQueryPantryItemFilterParams,
+    query: IQueryPantryItemDto,
   ): Promise<Paginated<IPantryItem>> {
     return this.queryPantryItemService.query(query);
   }

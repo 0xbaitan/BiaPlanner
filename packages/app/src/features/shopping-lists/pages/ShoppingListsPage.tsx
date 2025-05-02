@@ -41,8 +41,8 @@ function ShoppingListsPage() {
           <CrudListPageLayout.Body.Content>
             {isLoading && <div>Loading...</div>}
             {isError && <NoResultsFound title="Error" description="Error loading shopping lists." />}
-            {results?.items.length === 0 && <NoResultsFound title="No Shopping Lists Found" description="Try creating a new shopping list to get started." />}
-            {results?.items && results.items.length > 0 && <ShoppingListTable data={results.items} />}
+            {results?.data.length === 0 && <NoResultsFound title="No Shopping Lists Found" description="Try creating a new shopping list to get started." />}
+            {results?.data && results.data.length > 0 && <ShoppingListTable data={results.data} />}
           </CrudListPageLayout.Body.Content>
         }
       />

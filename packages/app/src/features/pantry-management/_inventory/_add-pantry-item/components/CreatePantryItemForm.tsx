@@ -1,6 +1,6 @@
 import "../styles/CreatePantryItemForm.scss";
 
-import { CreatePantryItemDto, WritePantryItemSchema } from "@biaplanner/shared";
+import { IPantryItem, IWritePantryItemDto, WritePantryItemSchema } from "@biaplanner/shared";
 
 import Button from "react-bootstrap/Button";
 import { FaSave } from "react-icons/fa";
@@ -15,8 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type CreatePantryItemFormProps = {
-  initialValues?: CreatePantryItemDto;
-  onSubmit: (data: CreatePantryItemDto) => void;
+  initialValues?: IPantryItem;
+  onSubmit: (data: IWritePantryItemDto) => void;
   disableSubmit?: boolean;
 };
 
@@ -24,7 +24,7 @@ export default function CreatePantryItemForm(props: CreatePantryItemFormProps) {
   const { onSubmit, initialValues, disableSubmit } = props;
   const navigate = useNavigate();
 
-  const methods = useForm<CreatePantryItemDto>({
+  const methods = useForm<IWritePantryItemDto>({
     defaultValues: initialValues,
     shouldFocusError: true,
     mode: "onBlur",
@@ -39,7 +39,7 @@ export default function CreatePantryItemForm(props: CreatePantryItemFormProps) {
   } = methods;
 
   const onSubmitForm = useCallback(
-    (values: CreatePantryItemDto) => {
+    (values: IWritePantryItemDto) => {
       console.log(values);
       onSubmit(values);
     },

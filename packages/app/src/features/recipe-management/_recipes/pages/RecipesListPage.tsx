@@ -1,4 +1,3 @@
-import calculatePaginationElements, { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import { useRecipesCrudListActions, useRecipesCrudListState } from "../../../meal-planning/reducers/RecipesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -10,6 +9,7 @@ import RecipeGrid from "@/components/layouts/RecipeGrid";
 import RecipesFilterBar from "../components/RecipesFilterBar";
 import RecipesTable from "../components/RecipesTable";
 import { ViewType } from "@/components/ViewSegmentedButton";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import qs from "qs";
 import { useMemo } from "react";

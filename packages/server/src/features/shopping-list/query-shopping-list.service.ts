@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginate, paginateRaw, Pagination } from 'nestjs-typeorm-paginate';
+
 import { ShoppingListEntity } from './shopping-list.entity';
 import {
-  IQueryShoppingListFilterParams,
+  IQueryShoppingListDto,
   ShoppingListSortBy,
-  QueryShoppingListResultsSchema,
-  IQueryShoppingListResultsDto,
   Paginated,
   IShoppingList,
 } from '@biaplanner/shared';
+import { paginate } from 'nestjs-paginate';
 
 @Injectable()
 export class QueryShoppingListService {
@@ -54,9 +53,7 @@ export class QueryShoppingListService {
   /**
    * Query shopping lists with filters, search, and sorting.
    */
-  async query(
-    query: IQueryShoppingListFilterParams,
-  ): Promise<Paginated<IShoppingList>> {
+  async query(query: IQueryShoppingListDto): Promise<Paginated<IShoppingList>> {
     const { sortBy, search, plannedDate, page, limit } = query;
 
     const qb = this.shoppingListRepository.createQueryBuilder('shoppingList');
@@ -99,34 +96,19 @@ export class QueryShoppingListService {
     qb.addGroupBy('shoppingList.createdAt');
 
     // Paginate the results
-    const results = await paginate(qb, {
-      page,
-      limit,
-      metaTransformer: (meta) => ({
-        ...meta,
-        search: query.search,
-        sortBy: query.sortBy,
-        limit: query.limit,
-        page: query.page,
-      }),
-    });
-
-    const hydratedItems = await Promise.all(
-      results.items.map(async (item) => {
-        const hydratedItem = await this.shoppingListRepository.findOne({
-          where: { id: item.id },
-          relations: ['items', 'items.product'],
-        });
-        return hydratedItem;
-      }),
+    const results = await paginate<IShoppingList>(
+      {
+        path: '/query/shopping-lists',
+        page,
+        limit,
+      },
+      qb,
+      {
+        sortableColumns: ['createdAt'],
+        defaultSortBy: [['createdAt', 'DESC']],
+      },
     );
 
-    console.log('results', results);
-
-    return new Pagination<IShoppingList>(
-      hydratedItems,
-      results.meta,
-      results.links,
-    );
+    return results;
   }
 }

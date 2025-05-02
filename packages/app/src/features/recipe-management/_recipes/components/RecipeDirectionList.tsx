@@ -8,7 +8,7 @@ import RecipeDirectionItem from "./RecipeDirectionItem";
 export default function RecipeDirectionList({ directions }: { directions: IRecipeDirection[] }) {
   const formMethods = useFormContext<IWriteRecipeDto>();
 
-  const { append, fields, insert, remove } = useFieldArray({
+  const { append, fields, remove } = useFieldArray({
     control: formMethods.control,
     name: "directions",
     keyName: "fieldId",

@@ -8,7 +8,6 @@ import { useShoppingListItemsActions, useShoppingListItemsState } from "../reduc
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/esm/Form";
 import Heading from "@/components/Heading";
-import { IWriteShoppingItemDto } from "@biaplanner/shared";
 import Offcanvas from "react-bootstrap/esm/Offcanvas";
 import PaginationComponent from "@/components/PaginationComponent";
 import calculatePaginationElements from "@/util/calculatePaginationElements";

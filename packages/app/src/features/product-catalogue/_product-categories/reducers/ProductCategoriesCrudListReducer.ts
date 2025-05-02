@@ -1,11 +1,11 @@
-import { IQueryProductCategoryParamsDto, ProductCategoryAllergenFilter, ProductCategorySortBy } from "@biaplanner/shared";
+import { IQueryProductCategoryDto, ProductCategoryAllergenFilter, ProductCategorySortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { resetAll } from "../../_products/reducers/ProductsCrudListReducer";
 
 export type ProductCategoriesCrudListState = {
-  productCategoriesQuery: IQueryProductCategoryParamsDto;
+  productCategoriesQuery: IQueryProductCategoryDto;
 };
 
 const initialState: ProductCategoriesCrudListState = {

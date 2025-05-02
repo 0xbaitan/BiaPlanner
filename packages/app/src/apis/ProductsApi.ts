@@ -1,4 +1,4 @@
-import { IProduct, IQueryProductParamsDto, IQueryTopBrandedProductsParamsDto } from "@biaplanner/shared";
+import { IProduct, IQueryProductDto } from "@biaplanner/shared";
 
 import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
@@ -58,7 +58,7 @@ export const productsApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchProducts: build.query<Paginated<IProduct>, IQueryProductParamsDto>({
+    searchProducts: build.query<Paginated<IProduct>, IQueryProductDto>({
       query: (query) => ({
         url: `/query/products?${qs.stringify(query)}`,
         method: "GET",
@@ -66,13 +66,13 @@ export const productsApi = rootApi.injectEndpoints({
       providesTags: (result) => (result ? [...result.data?.filter(({ id }) => id != null).map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
 
-    getTopBrandedProducts: build.query<IProduct[], IQueryTopBrandedProductsParamsDto>({
-      query: (query) => ({
-        url: `/query/products/top-branded?${qs.stringify(query)}`,
-        method: "GET",
-      }),
-      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
-    }),
+    // getTopBrandedProducts: build.query<IProduct[], IQueryTopBrandedProductsParamsDto>({
+    //   query: (query) => ({
+    //     url: `/query/products/top-branded?${qs.stringify(query)}`,
+    //     method: "GET",
+    //   }),
+    //   providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
+    // }),
   }),
 });
 
@@ -85,7 +85,7 @@ export const {
   useLazyGetProductByIdQuery,
   useSearchProductsQuery,
   useLazySearchProductsQuery,
-  useGetTopBrandedProductsQuery,
-  useLazyGetTopBrandedProductsQuery,
+  // useGetTopBrandedProductsQuery,
+  // useLazyGetTopBrandedProductsQuery,
   useDeleteProductMutation,
 } = productsApi;

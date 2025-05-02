@@ -1,6 +1,6 @@
 import {
   IConcreteIngredient,
-  ICreateConcreteIngredientDto,
+  IWriteConcreteIngredientDto,
 } from '@biaplanner/shared';
 
 import { Inject, Injectable } from '@nestjs/common';
@@ -18,7 +18,7 @@ export class ConcreteIngredientService {
     private readonly pantryItemPortionService: PantryItemPortionService,
   ) {}
 
-  async create(dto: ICreateConcreteIngredientDto) {
+  async create(dto: IWriteConcreteIngredientDto) {
     const pantryItemPortions = await Promise.all(
       dto.pantryItemsWithPortions.map((pantryItemWithPortion) =>
         this.pantryItemPortionService.create(pantryItemWithPortion),

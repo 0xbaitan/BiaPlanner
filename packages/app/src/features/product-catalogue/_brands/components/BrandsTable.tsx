@@ -3,14 +3,14 @@ import { RoutePaths, fillParametersInPath } from "@/Routes";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import { FaEye } from "react-icons/fa6";
-import { IQueryBrandResultsDto } from "@biaplanner/shared";
+import { IBrand } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteBrandMutation } from "@/apis/BrandsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
 
 export type BrandsTableProps = {
-  data: IQueryBrandResultsDto[];
+  data: IBrand[];
 };
 
 export default function BrandsTable(props: BrandsTableProps) {
@@ -19,7 +19,7 @@ export default function BrandsTable(props: BrandsTableProps) {
 
   const [deleteBrand, { isSuccess, isError, isLoading }] = useDeleteBrandMutation();
 
-  const { setItem } = useDefaultStatusToast<IQueryBrandResultsDto>({
+  const { setItem } = useDefaultStatusToast<IBrand>({
     isSuccess,
     isError,
     isLoading,
@@ -32,7 +32,7 @@ export default function BrandsTable(props: BrandsTableProps) {
     entityIdentifier: (brand) => brand.name,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IQueryBrandResultsDto>({
+  const { notify: notifyDeletion } = useDeletionToast<IBrand>({
     identifierSelector: (brand) => brand.name,
     onConfirm: async (item) => {
       setItem(item);
@@ -41,7 +41,7 @@ export default function BrandsTable(props: BrandsTableProps) {
   });
 
   return (
-    <TabbedViewsTable<IQueryBrandResultsDto>
+    <TabbedViewsTable<IBrand>
       data={data}
       views={[
         {
@@ -62,7 +62,7 @@ export default function BrandsTable(props: BrandsTableProps) {
             },
             {
               header: "Product Count",
-              accessorFn: (row) => row.productCount ?? 0,
+              accessorFn: (row) => row.products?.length ?? 0,
               accessorKey: "productCount",
             },
           ],

@@ -16,7 +16,6 @@ export default function IngredientModal(props: IngredientModalProps) {
   const { appendIngredient, updateIngredient } = props;
   const { showIngredientModal, modalType, ingredientIndex, currentIngredient } = useRecipeFormState();
   const { closeIngredientModal, setErrors } = useRecipeFormActions();
-  const formMethods = useFormContext<IWriteRecipeDto>();
   const confirmIngredient = useCallback(() => {
     if (!currentIngredient) {
       return;

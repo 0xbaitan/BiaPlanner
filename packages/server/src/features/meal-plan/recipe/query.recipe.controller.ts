@@ -1,9 +1,19 @@
-import { Controller, Get, Inject, Module } from '@nestjs/common';
+import { Controller, Get, Inject, Module, Query } from '@nestjs/common';
 import { QueryRecipeService } from './query.recipe.service';
 import { Paginate } from 'nestjs-paginate';
-import { PaginateQuery, QueryRecipeDto } from '@biaplanner/shared';
+import {
+  IQueryRecipeDto,
+  IRecipe,
+  Paginated,
+  QueryRecipeDtoSchema,
+} from '@biaplanner/shared';
 import { Public } from '@/features/user-info/authentication/public.decorator';
-import { RecipeQuery } from './recipe-query.decorator';
+
+import { ZodValidationPipe } from 'nestjs-zod';
+
+const QueryRecipeParamsValidationPipe = new ZodValidationPipe(
+  QueryRecipeDtoSchema,
+);
 
 @Controller('/query/recipes')
 export class QueryRecipeController {
@@ -14,7 +24,10 @@ export class QueryRecipeController {
 
   @Public()
   @Get()
-  async query(@RecipeQuery() query: QueryRecipeDto) {
+  async query(
+    @Query(QueryRecipeParamsValidationPipe) query: IQueryRecipeDto,
+  ): Promise<Paginated<IRecipe>> {
     return this.queryRecipeService.query(query);
   }
+  eryRecipeDto;
 }

@@ -1,9 +1,8 @@
 import "../styles/IngredientItem.scss";
 
-import { IRecipeIngredient, IWriteRecipeIngredientDto } from "@biaplanner/shared";
-
 import { DeepPartial } from "utility-types";
 import { FaTrash } from "react-icons/fa";
+import { IWriteRecipeIngredientDto } from "@biaplanner/shared";
 import { MdEdit } from "react-icons/md";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useGetProductCategoriesQuery } from "@/apis/ProductCategoryApi";

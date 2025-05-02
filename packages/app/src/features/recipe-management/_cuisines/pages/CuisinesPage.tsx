@@ -7,7 +7,7 @@ import CuisinesTable from "../components/CuisinesTable";
 import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import { RoutePaths } from "@/Routes";
-import { calculatePaginationMeta } from "@/util/calculatePaginationElements";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import { useNavigate } from "react-router-dom";
 import { useSearchCuisinesQuery } from "@/apis/CuisinesApi";
@@ -22,7 +22,7 @@ export default function CuisinesPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, searchTermUsed, totalPages } = calculatePaginationMeta(cuisinesQuery.limit ?? 25, cuisines);
+  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, searchTermUsed, totalPages } = calculatePaginationElements(cuisinesQuery.limit ?? 25, cuisines);
 
   return (
     <CrudListPageLayout>
@@ -51,7 +51,7 @@ export default function CuisinesPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="cuisines" searchTermUsed={searchTermUsed} />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
-            {isError || !cuisines?.items || cuisines.items.length === 0 ? <NoResultsFound title="Oops! No cuisines found" description="Try creating a new cuisine to get started." /> : <CuisinesTable data={cuisines.items} />}
+            {isError || !cuisines?.data || cuisines.data.length === 0 ? <NoResultsFound title="Oops! No cuisines found" description="Try creating a new cuisine to get started." /> : <CuisinesTable data={cuisines.data} />}
           </CrudListPageLayout.Body.Content>
         }
         itemsPerPageCountSelectorComponent={

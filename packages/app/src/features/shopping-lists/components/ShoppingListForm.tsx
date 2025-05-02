@@ -1,7 +1,7 @@
 import "../styles/ShoppingListForm.scss";
 
 import { FieldErrors, FormProvider, useForm } from "react-hook-form";
-import { ICreateShoppingListDto, IShoppingList, IWriteShoppingListDto, WriteShoppingListItemSchema, WriteShoppingListSchema } from "@biaplanner/shared";
+import { IShoppingList, IWriteShoppingListDto, WriteShoppingListItemSchema, WriteShoppingListSchema } from "@biaplanner/shared";
 import { useCallback, useEffect } from "react";
 import { useShoppingListItemsActions, useShoppingListItemsState } from "../reducers/ShoppingListItemsReducer";
 

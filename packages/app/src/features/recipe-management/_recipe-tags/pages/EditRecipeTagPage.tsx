@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import GenericSinglePaneFormPage from "@/pages/GenericSinglePaneFormPage";
 import RecipeTagForm from "../components/RecipeTagForm";
 import { RoutePaths } from "@/Routes";
-import { Suspense } from "react";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function EditRecipeTagPage() {

@@ -1,11 +1,11 @@
-import { IQueryProductParamsDto, ProductSortBy } from "@biaplanner/shared";
+import { IQueryProductDto, ProductSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { ViewType } from "@/components/ViewSegmentedButton";
 
 export type ProductsCrudListState = {
-  productsQuery: IQueryProductParamsDto;
+  productsQuery: IQueryProductDto;
   view: ViewType;
 };
 
@@ -23,7 +23,7 @@ export const productsCrudListSlice = createSlice({
   name: "productsCrudList",
   initialState,
   reducers: {
-    setFilter: (state, action: PayloadAction<Partial<IQueryProductParamsDto>>) => {
+    setFilter: (state, action: PayloadAction<Partial<IQueryProductDto>>) => {
       state.productsQuery = {
         ...state.productsQuery,
         ...action.payload,
@@ -71,7 +71,7 @@ export function useProductsCrudListActions() {
   const dispatch = useStoreDispatch();
 
   return {
-    setFilter: (filter: Partial<IQueryProductParamsDto>) => dispatch(setFilter(filter)),
+    setFilter: (filter: Partial<IQueryProductDto>) => dispatch(setFilter(filter)),
     setPage: (page: number) => dispatch(setPage(page)),
     setLimit: (limit: number) => dispatch(setLimit(limit)),
     setSearch: (search: string) => dispatch(setSearch(search)),

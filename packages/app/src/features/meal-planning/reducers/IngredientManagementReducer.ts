@@ -1,4 +1,4 @@
-import { ICreateConcreteIngredientDto, ICreatePantryItemPortionDto, IPantryItem, IRecipe, IRecipeIngredient, Weights } from "@biaplanner/shared";
+import { IPantryItem, IRecipe, IRecipeIngredient, IWriteConcreteIngredientDto, IWritePantryItemPortionDto, Weights } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
@@ -13,7 +13,7 @@ export type IngredientManagementState = {
   selectedIngredient?: IRecipeIngredient;
 };
 
-export interface ICreatePantryItemPortionExtendedDto extends ICreatePantryItemPortionDto {
+export interface ICreatePantryItemPortionExtendedDto extends IWritePantryItemPortionDto {
   pantryItem: IPantryItem;
 }
 
@@ -46,7 +46,7 @@ export const ingredientManagementSlice = createSlice({
     addPantryItemPortionToIngredient(state, action: PayloadAction<{ ingredientId: string; portion: ICreatePantryItemPortionExtendedDto }>) {
       const { ingredientId, portion } = action.payload;
 
-      if (portion.portion.magnitude <= 0) {
+      if (!portion.portion || portion.portion.magnitude <= 0) {
         return;
       }
 
@@ -140,7 +140,7 @@ export function useGetPortionFulfilledStatus() {
       if (required === undefined || unit === undefined) {
         return undefined;
       }
-      const selected = mappedIngredients?.[ingredientId]?.reduce((acc, curr) => acc + curr.portion.magnitude, 0) ?? 0;
+      const selected = mappedIngredients?.[ingredientId]?.reduce((acc, curr) => acc + 0, 0) ?? 0;
 
       const isFulfilled = selected >= required;
       return { required, selected, unit, isFulfilled };
@@ -197,7 +197,7 @@ export function useIngredientPantryPortionItemActions() {
       const targetIngredientMeasurementUnit = selectedIngredient?.measurement?.unit;
       console.log(mappedIngredients);
       const item = mappedIngredients[ingredientId]?.find((p) => p.pantryItemId === pantryItemId);
-      if (!item) {
+      if (!item || !item.portion) {
         return {
           portionMagnitude: 0,
           portionUnit: targetIngredientMeasurementUnit ?? Weights.GRAM,
@@ -222,16 +222,25 @@ export function useIngredientPantryPortionItemActions() {
 
 export function useSelectedPantryItems(ingredientId: string) {
   const { mappedIngredients } = useIngredientManagementState();
-  const selectedPantryItems = mappedIngredients[ingredientId]?.filter((portion) => portion.portion.magnitude > 0) ?? [];
+  const selectedPantryItems =
+    mappedIngredients[ingredientId]?.filter((item) => {
+      if (!item.portion) {
+        return false;
+      }
+      return item.portion.magnitude > 0;
+    }) ?? [];
+
   return selectedPantryItems;
 }
 
 export function useConfirmedIngredients() {
   const { mappedIngredients } = useIngredientManagementState();
-  const confirmedIngredients: ICreateConcreteIngredientDto[] = Object.entries(mappedIngredients).map(([ingredientId, portions]) => {
+  const confirmedIngredients: IWriteConcreteIngredientDto[] = Object.entries(mappedIngredients).map(([ingredientId, portions]) => {
     return {
       ingredientId,
       pantryItemsWithPortions: portions,
+      concreteRecipeId: undefined,
+      id: undefined,
     };
   });
   return confirmedIngredients;

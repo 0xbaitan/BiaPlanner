@@ -1,11 +1,7 @@
 import { ICuisine, IWriteRecipeTagDto, WriteRecipeTagDtoSchema } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
-import Breadcrumb from "react-bootstrap/Breadcrumb";
-import Button from "react-bootstrap/esm/Button";
 import CancelButton from "@/components/buttons/CancelButton";
-import { FaSave } from "react-icons/fa";
-import { MdCancel } from "react-icons/md";
 import SaveButton from "@/components/buttons/SaveButton";
 import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";

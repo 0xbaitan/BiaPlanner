@@ -1,4 +1,4 @@
-import { IProduct, IQueryProductParamsDto, ProductSortBy } from "@biaplanner/shared";
+import { IProduct, IQueryProductDto, ProductSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
@@ -12,11 +12,11 @@ export type ShoppingListItem = {
 
 export type ShoppingListItemsState = {
   selectedItems: ShoppingListItem[];
-  paginateQuery: IQueryProductParamsDto;
+  paginateQuery: IQueryProductDto;
   showOffcanvas: boolean;
 };
 
-const initialPaginateQuery: IQueryProductParamsDto = {
+const initialPaginateQuery: IQueryProductDto = {
   sortBy: ProductSortBy.DEFAULT,
   search: "",
   page: 1,
@@ -64,7 +64,7 @@ export const shoppingListItemsSlice = createSlice({
       state.showOffcanvas = false;
     },
 
-    setFilter: (state, action: PayloadAction<Partial<IQueryProductParamsDto>>) => {
+    setFilter: (state, action: PayloadAction<Partial<IQueryProductDto>>) => {
       const { payload } = action;
       state.paginateQuery = {
         ...state.paginateQuery,
@@ -155,7 +155,7 @@ export function useShoppingListItemsActions() {
   }, [dispatch]);
 
   const setFilterCallback = useCallback(
-    (payload: Partial<IQueryProductParamsDto>) => {
+    (payload: Partial<IQueryProductDto>) => {
       dispatch(setFilter(payload));
     },
     [dispatch]

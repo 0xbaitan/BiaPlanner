@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShoppingItemEntity } from './shopping-item.entity';
 import {
-  ICreateShoppingItemDto,
   IShoppingItem,
   IWriteShoppingItemDto,
   IWriteShoppingItemExtendedDto,

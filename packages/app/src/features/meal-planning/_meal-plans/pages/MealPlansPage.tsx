@@ -18,8 +18,8 @@ export default function MealPlansPage() {
   const { data: results, isError } = useSearchConcreteRecipesQuery(concreteRecipesQuery);
 
   const mealPlanTable = useMemo(() => {
-    return <MealPlanTable data={results?.items ?? []} />;
-  }, [results?.items]);
+    return <MealPlanTable data={results?.data ?? []} />;
+  }, [results?.data]);
 
   return (
     <CrudListPageLayout>
@@ -44,7 +44,7 @@ export default function MealPlansPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={results?.meta?.totalItems ?? 0} itemsStart={1} itemsEnd={results?.meta?.totalItems ?? 0} itemDescription="meal plans" />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
-            {isError || !results?.items || results.items.length === 0 ? <NoResultsFound title="Oops! No meal plans found" description="Try creating a new meal plan to get started." /> : mealPlanTable}
+            {isError || !results?.data || results.data.length === 0 ? <NoResultsFound title="Oops! No meal plans found" description="Try creating a new meal plan to get started." /> : mealPlanTable}
           </CrudListPageLayout.Body.Content>
         }
       />

@@ -1,9 +1,9 @@
-import { IQueryPantryItemFilterParams, PantryItemSortBy } from "@biaplanner/shared";
+import { IQueryPantryItemDto, PantryItemSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 export type PantryItemsCrudListState = {
-  pantryItemsQuery: IQueryPantryItemFilterParams;
+  pantryItemsQuery: IQueryPantryItemDto;
 };
 
 const initialState: PantryItemsCrudListState = {
@@ -19,7 +19,7 @@ export const pantryItemsCrudListSlice = createSlice({
   name: "pantryItemsCrudList",
   initialState,
   reducers: {
-    setFilter: (state, action: PayloadAction<Partial<IQueryPantryItemFilterParams>>) => {
+    setFilter: (state, action: PayloadAction<Partial<IQueryPantryItemDto>>) => {
       state.pantryItemsQuery = {
         ...state.pantryItemsQuery,
         ...action.payload,
@@ -54,7 +54,7 @@ export function usePantryItemsCrudListActions() {
   const dispatch = useStoreDispatch();
 
   return {
-    setFilter: (filter: Partial<IQueryPantryItemFilterParams>) => dispatch(setFilter(filter)),
+    setFilter: (filter: Partial<IQueryPantryItemDto>) => dispatch(setFilter(filter)),
     setPage: (page: number) => dispatch(setPage(page)),
     setLimit: (limit: number) => dispatch(setLimit(limit)),
     setSearch: (search: string) => dispatch(setSearch(search)),

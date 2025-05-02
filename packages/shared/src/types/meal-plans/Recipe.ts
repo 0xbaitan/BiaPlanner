@@ -10,9 +10,9 @@ import { Transform, Type } from "class-transformer";
 import { file, zfd } from "zod-form-data";
 
 import { DeepPartial } from "utility-types";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { ICuisine } from "./Cuisine";
 import { IRecipeTag } from "./RecipeTag";
-import { PaginateQuery } from "../PaginateExtended";
 import { WriteRecipeIngredientDtoSchema } from "./RecipeIngredient";
 import { createZodDto } from "nestjs-zod";
 import z from "zod";
@@ -46,17 +46,6 @@ export enum RecipeSortBy {
   DEFAULT = "DEFAULT",
 }
 
-export interface IQueryRecipeDto extends Pick<PaginateQuery, "page" | "limit" | "search"> {
-  allergenIdsExclude?: string[];
-  difficultyLevel?: string[];
-  recipeTagIds?: string[];
-  ownRecipes?: boolean;
-  favouritesOnly?: boolean;
-  useWhatIhave?: boolean;
-  cuisineIds?: string[];
-  sortBy?: RecipeSortBy;
-}
-
 export const WriteRecipeValidationSchema = zfd.formData({
   title: zfd.text(z.string()),
   description: zfd.text(z.string().optional().nullable()),
@@ -82,69 +71,15 @@ export class WriteRecipeDto extends createZodDto(WriteRecipeValidationSchema) {}
 
 export type WriteRecipeFormattedErrors = z.inferFormattedError<typeof WriteRecipeValidationSchema>;
 
-export class QueryRecipeDto implements IQueryRecipeDto {
-  @Transform((params) => transform(params, toStringArray))
-  @IsOptional()
-  @Validate(IsStringArrayConstraint)
-  allergenIdsExclude?: string[] | undefined;
-  @Transform((params) => transform(params, toStringArray))
-  @IsOptional()
-  @Validate(IsStringArrayConstraint)
-  difficultyLevel?: string[] | undefined;
+export const QueryRecipeDtoSchema = FilterParamsSchema.extend({
+  allergenIdsExclude: z.array(z.string()).optional(),
+  difficultyLevel: z.array(z.string()).optional(),
+  recipeTagIds: z.array(z.string()).optional(),
+  ownRecipes: z.boolean().optional(),
+  favouritesOnly: z.boolean().optional(),
+  useWhatIhave: z.boolean().optional(),
+  cuisineIds: z.array(z.string()).optional(),
+  sortBy: z.nativeEnum(RecipeSortBy).optional(),
+});
 
-  @Transform((params) => transform(params, toStringArray))
-  @IsOptional()
-  @Validate(IsStringArrayConstraint)
-  recipeTagIds?: string[] | undefined;
-
-  @Transform((params) => transform(params, toBoolean))
-  @IsOptional()
-  @IsBoolean()
-  @Type(() => Boolean)
-  ownRecipes?: boolean | undefined;
-
-  @Transform((params) => transform(params, toBoolean))
-  @IsOptional()
-  @IsBoolean()
-  favouritesOnly?: boolean | undefined;
-
-  @Transform((params) => transform(params, toBoolean))
-  @IsOptional()
-  @IsBoolean()
-  useWhatIhave?: boolean | undefined;
-
-  @Transform((params) => transform(params, toStringArray))
-  @IsOptional()
-  @Validate(IsStringArrayConstraint)
-  @Type(() => String)
-  cuisineIds?: string[] | undefined;
-
-  @Transform((params) => transform(params, toNumber))
-  @IsOptional()
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-    maxDecimalPlaces: 0,
-  })
-  @IsPositive()
-  page?: number | undefined;
-
-  @Transform((params) => transform(params, toNumber))
-  @IsOptional()
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-    maxDecimalPlaces: 0,
-  })
-  limit?: number | undefined;
-
-  @Transform((params) => trimString(transform(params, toString)))
-  @IsOptional()
-  @IsString()
-  search?: string | undefined;
-
-  @Transform((params) => transform(params, toString))
-  @IsOptional()
-  @IsEnum(RecipeSortBy)
-  sortBy?: RecipeSortBy | undefined;
-}
+export type IQueryRecipeDto = z.infer<typeof QueryRecipeDtoSchema>;

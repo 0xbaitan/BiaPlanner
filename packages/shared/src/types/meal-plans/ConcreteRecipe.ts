@@ -1,7 +1,7 @@
-import { ConcreteIngredientAndMeasurementSchema, IConcreteIngredient, ICreateConcreteIngredientDto } from "./ConcreteIngredient";
+import { ConcreteIngredientAndMeasurementSchema, IConcreteIngredient, WriteConcreteIngredientDtoSchema } from "./ConcreteIngredient";
 
 import { DeepPartial } from "utility-types";
-import { FilterParamsSchema } from "../../util";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IPantryItem } from "../pantry";
 import { IRecipe } from "./Recipe";
@@ -17,29 +17,6 @@ export interface IConcreteRecipe extends IBaseEntity {
   mealType: MealTypes;
 }
 
-export interface ICreateConcreteRecipeDto extends Omit<IConcreteRecipe, keyof IBaseEntity | "recipe" | "confirmedIngredients"> {
-  confirmedIngredients: ICreateConcreteIngredientDto[];
-}
-
-export interface IUpdateConcreteRecipeDto extends Partial<ICreateConcreteRecipeDto>, Pick<IConcreteRecipe, "id"> {}
-
-export class CreateConcreteRecipeDto implements ICreateConcreteRecipeDto {
-  confirmedIngredients: ICreateConcreteIngredientDto[];
-  recipeId: string;
-  planDate?: string;
-  numberOfServings?: [number, number];
-  mealType: MealTypes;
-}
-
-export class UpdateConcreteRecipeDto implements IUpdateConcreteRecipeDto {
-  confirmedIngredients: ICreateConcreteIngredientDto[];
-  recipeId: string;
-  planDate?: string;
-  numberOfServings?: [number, number];
-  mealType: MealTypes;
-  id: string;
-}
-
 export enum ConcreteRecipeSortBy {
   RECIPE_TITLE_A_TO_Z = "RECIPE_TITLE_A_TO_Z",
   RECIPE_TITLE_Z_TO_A = "RECIPE_TITLE_Z_TO_A",
@@ -49,21 +26,25 @@ export enum ConcreteRecipeSortBy {
   LEAST_URGENT = "LEAST_URGENT",
 }
 
-export const QueryConcreteRecipeParamsSchema = FilterParamsSchema.extend({
+export const WriteConcreteRecipeDtoSchema = z.object({
+  recipeId: z.string().min(1, { message: "Recipe ID is required" }),
+  numberOfServings: z.tuple([z.number().min(1), z.number().min(1)]).optional(),
+  mealType: z.nativeEnum(MealTypes),
+  confirmedIngredients: z.array(WriteConcreteIngredientDtoSchema).optional(),
+  planDate: z.coerce
+    .string()
+    .refine((val) => {
+      const date = new Date(val);
+      return !isNaN(date.getTime());
+    })
+    .optional(),
+});
+
+export const QueryConcreteRecipeDtoSchema = FilterParamsSchema.extend({
   mealType: z.array(z.enum([MealTypes.BREAKFAST, MealTypes.LUNCH, MealTypes.DINNER])).optional(),
   sortBy: z.nativeEnum(ConcreteRecipeSortBy).optional(),
 });
 
-export const QueryConcreteRecipeResultsSchema = z.object({
-  concreteRecipeId: z.string(),
-  recipeId: z.coerce.string(),
-  recipeTitle: z.string(),
-  daysTillPlanDate: z.coerce.number().optional(),
-  mealType: z.nativeEnum(MealTypes).optional().nullable(),
-  planDate: z.coerce.date().optional().nullable(),
-  numberOfServings: z.tuple([z.number(), z.number()]).optional().nullable(),
-});
+export type IQueryConcreteRecipeDto = z.infer<typeof QueryConcreteRecipeDtoSchema>;
 
-export type IQueryConcreteRecipeResultsDto = z.infer<typeof QueryConcreteRecipeResultsSchema>;
-
-export type IQueryConcreteRecipeFilterParams = z.infer<typeof QueryConcreteRecipeParamsSchema>;
+export type IWriteConcreteRecipeDto = z.infer<typeof WriteConcreteRecipeDtoSchema>;

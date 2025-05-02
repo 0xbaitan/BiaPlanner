@@ -1,4 +1,4 @@
-import { FilterParamsSchema } from "../../util";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { IRecipeIngredient } from "../meal-plans";
@@ -37,7 +37,7 @@ export enum ProductCategoryAllergenFilter {
   HIDE_ALLERGENS = "HIDE_ALLERGENS",
 }
 
-export const QueryProductCategoryParamsSchema = FilterParamsSchema.extend({
+export const QueryProductCategoryDtoSchema = FilterParamsSchema.extend({
   sortBy: z
     .enum([
       ProductCategorySortBy.PRODUCT_CATEGORY_NAME_A_TO_Z,
@@ -50,12 +50,4 @@ export const QueryProductCategoryParamsSchema = FilterParamsSchema.extend({
   allergenVisibility: z.enum([ProductCategoryAllergenFilter.SHOW_EVERYTHING, ProductCategoryAllergenFilter.SHOW_ALLERGENS_ONLY, ProductCategoryAllergenFilter.HIDE_ALLERGENS]).optional(),
 });
 
-export type IQueryProductCategoryParamsDto = z.infer<typeof QueryProductCategoryParamsSchema>;
-export const QueryProductCategoryResultsSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1).max(255),
-  isAllergen: z.coerce.boolean().optional(),
-
-  productCount: z.coerce.number().optional(),
-});
-export type IQueryProductCategoryResultsDto = z.infer<typeof QueryProductCategoryResultsSchema>;
+export type IQueryProductCategoryDto = z.infer<typeof QueryProductCategoryDtoSchema>;

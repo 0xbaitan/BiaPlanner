@@ -13,28 +13,17 @@ export interface IPantryItemPortion extends IBaseEntity {
   concreteIngredient?: IConcreteIngredient;
 }
 
-export interface ICreatePantryItemPortionDto {
-  pantryItemId: string;
-  portion: CookingMeasurement;
-  concreteIngredientId?: string;
-}
-
-export interface IUpdatePantryItemPortionDto {
-  portion?: CookingMeasurement;
-}
-
-export class CreatePantryItemPortionDto implements ICreatePantryItemPortionDto {
-  pantryItemId: string;
-  portion: CookingMeasurement;
-  concreteIngredientId: string;
-}
-
-export class UpdatePantryItemPortionDto implements IUpdatePantryItemPortionDto {
-  portion?: CookingMeasurement;
-}
+export const WritePantryItemPortionDtoSchema = z.object({
+  pantryItemId: z.string().min(1, { message: "Pantry item is required" }),
+  portion: z.object(CookingMeasurementSchema),
+  concreteIngredientId: z.string().optional(),
+  id: z.string().optional(),
+});
 
 export const PantryItemPortionSchema = {
   pantryItemId: z.string(),
   portion: z.object(CookingMeasurementSchema).optional(),
   concreteIngredientId: z.string().optional(),
 };
+
+export type IWritePantryItemPortionDto = z.infer<typeof WritePantryItemPortionDtoSchema>;

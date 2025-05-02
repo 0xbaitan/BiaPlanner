@@ -4,7 +4,6 @@ import { PantryItemEntity } from './pantry-item.entity';
 import { In, Repository } from 'typeorm';
 import {
   CookingMeasurementType,
-  ICreatePantryItemDto,
   IPantryItem,
   IPantryItemPortion,
   IWritePantryItemDto,
@@ -54,7 +53,7 @@ export default class PantryItemService {
 
   async updatePantryItem(
     pantryItemId: string,
-    dto: ICreatePantryItemDto,
+    dto: IWritePantryItemDto,
   ): Promise<IPantryItem> {
     const pantryItem = await this.pantryItemRepository.findOneOrFail({
       where: { id: pantryItemId },

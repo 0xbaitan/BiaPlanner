@@ -15,7 +15,7 @@ import { useSearchProductsQuery } from "@/apis/ProductsApi";
 export default function ProductsPage() {
   const navigate = useNavigate();
   const { productsQuery, view } = useProductsCrudListState();
-  const { setView, setSearch, setPage, setLimit } = useProductsCrudListActions();
+  const { setSearch } = useProductsCrudListActions();
   const {
     data: results,
     isError,

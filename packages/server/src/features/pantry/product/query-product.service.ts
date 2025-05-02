@@ -3,13 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 import { paginate, Paginated } from 'nestjs-paginate';
 import { ProductEntity } from './product.entity';
-import {
-  IProduct,
-  IQueryProductParamsDto,
-  IQueryProductResultsDto,
-  IQueryTopBrandedProductsParamsDto,
-  QueryProductResultsSchema,
-} from '@biaplanner/shared';
+import { IProduct, IQueryProductDto } from '@biaplanner/shared';
 
 @Injectable()
 export class QueryProductService {
@@ -51,7 +45,7 @@ export class QueryProductService {
   /**
    * Query products with filters, search, and sorting.
    */
-  async query(query: IQueryProductParamsDto): Promise<Paginated<IProduct>> {
+  async query(query: IQueryProductDto): Promise<Paginated<IProduct>> {
     console.log('Querying products with query:', query);
     const {
       sortBy = 'DEFAULT',
@@ -121,44 +115,44 @@ export class QueryProductService {
     return paginatedResults;
   }
 
-  async queryTopBrandedProducts(params: IQueryTopBrandedProductsParamsDto) {
-    const { brandId, limit = 10 } = params;
-    const qb = this.productRepository.createQueryBuilder('product');
-    qb.select([
-      'product.id as id',
-      'COUNT(DISTINCT pantryItem.id) as distinctPantryItemCount',
-      'COUNT(DISTINCT shoppingItem.id) as distinctShoppingItemCount',
-    ]);
+  // async queryTopBrandedProducts(params: IQueryTopBrandedProductsParamsDto) {
+  //   const { brandId, limit = 10 } = params;
+  //   const qb = this.productRepository.createQueryBuilder('product');
+  //   qb.select([
+  //     'product.id as id',
+  //     'COUNT(DISTINCT pantryItem.id) as distinctPantryItemCount',
+  //     'COUNT(DISTINCT shoppingItem.id) as distinctShoppingItemCount',
+  //   ]);
 
-    qb.leftJoin('product.brand', 'brand')
-      .leftJoin('product.pantryItems', 'pantryItem')
-      .leftJoin('product.shoppingItems', 'shoppingItem');
+  //   qb.leftJoin('product.brand', 'brand')
+  //     .leftJoin('product.pantryItems', 'pantryItem')
+  //     .leftJoin('product.shoppingItems', 'shoppingItem');
 
-    qb.where('brand.id = :brandId', { brandId });
+  //   qb.where('brand.id = :brandId', { brandId });
 
-    qb.groupBy('product.id');
-    qb.orderBy('distinctShoppingItemCount', 'DESC');
-    qb.addOrderBy('distinctPantryItemCount', 'DESC');
-    qb.limit(limit);
+  //   qb.groupBy('product.id');
+  //   qb.orderBy('distinctShoppingItemCount', 'DESC');
+  //   qb.addOrderBy('distinctPantryItemCount', 'DESC');
+  //   qb.limit(limit);
 
-    const rawResults = await qb.getRawMany<{
-      id: string;
-      distinctPantryItemCount: number;
-      distinctShoppingItemCount: number;
-    }>();
+  //   const rawResults = await qb.getRawMany<{
+  //     id: string;
+  //     distinctPantryItemCount: number;
+  //     distinctShoppingItemCount: number;
+  //   }>();
 
-    const hydratedResults = await Promise.all(
-      rawResults.map((item) => {
-        const product = this.productRepository.findOne({
-          where: { id: item.id },
-          loadEagerRelations: false,
-          relations: {
-            cover: true,
-          },
-        });
-        return product;
-      }),
-    );
-    return hydratedResults;
-  }
+  //   const hydratedResults = await Promise.all(
+  //     rawResults.map((item) => {
+  //       const product = this.productRepository.findOne({
+  //         where: { id: item.id },
+  //         loadEagerRelations: false,
+  //         relations: {
+  //           cover: true,
+  //         },
+  //       });
+  //       return product;
+  //     }),
+  //   );
+  //   return hydratedResults;
+  // }
 }

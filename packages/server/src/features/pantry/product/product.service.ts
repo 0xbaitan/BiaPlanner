@@ -1,27 +1,15 @@
-import {
-  BadRequestException,
-  ConsoleLogger,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './product.entity';
 import {
-  Approximates,
   CookingMeasurement,
-  CookingMeasurementType,
   getCookingMeasurement,
-  ICookingMeasurement,
   IFile,
   IProduct,
-  IProductCategory,
   IWriteProductDto,
-  Volumes,
-  Weights,
 } from '@biaplanner/shared';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ProductCategoryService } from './category/product-category.service';
-import { plainToInstance } from 'class-transformer';
 import { FilesService } from '@/features/files/files.service';
 
 @Injectable()

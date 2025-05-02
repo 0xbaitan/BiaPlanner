@@ -1,4 +1,4 @@
-import { ICreateProductCategoryDto, IProductCategory, IWriteProductCategoryDto, WriteProductCategoryDtoSchema } from "@biaplanner/shared";
+import { IProductCategory, IWriteProductCategoryDto, WriteProductCategoryDtoSchema } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import CancelButton from "@/components/buttons/CancelButton";
@@ -8,7 +8,6 @@ import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type ProductCategoryFormProps = {

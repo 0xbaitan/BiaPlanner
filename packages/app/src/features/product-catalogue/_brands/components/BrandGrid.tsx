@@ -3,13 +3,13 @@ import "../styles/BrandGrid.scss";
 import BrandCard from "./BrandCard";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import { IQueryBrandResultsDto } from "@biaplanner/shared";
+import { IBrand } from "@biaplanner/shared";
 import Row from "react-bootstrap/Row";
 import { useMemo } from "react";
 
 export type BrandGridProps = {
-  brands: IQueryBrandResultsDto[];
-  onClick?: (brand: IQueryBrandResultsDto) => void;
+  brands: IBrand[];
+  onClick?: (brand: IBrand) => void;
 };
 
 export default function BrandGrid(props: BrandGridProps) {

@@ -1,10 +1,10 @@
 import FilterSelect, { FilterSelectProps } from "@/components/forms/FilterSelect";
 import InputLabel, { InputLabelProps } from "@/components/forms/InputLabel";
-import { useEffect, useMemo, useState } from "react";
 
 import Form from "react-bootstrap/esm/Form";
 import { ICuisine } from "@biaplanner/shared";
 import { useGetCuisinesQuery } from "@/apis/CuisinesApi";
+import { useMemo } from "react";
 
 export type CuisineSelectProps = {
   defaultValue?: Pick<ICuisine, "id">;
@@ -15,7 +15,7 @@ export type CuisineSelectProps = {
 
 export default function CuisineSelect(props: CuisineSelectProps) {
   const { onChange, defaultValue, inputLabelProps, error } = props;
-  const { data: cuisineOptions, isSuccess, isLoading, isError } = useGetCuisinesQuery();
+  const { data: cuisineOptions, isLoading, isError } = useGetCuisinesQuery();
 
   const selectedValue = useMemo(() => {
     if (!defaultValue) return null;

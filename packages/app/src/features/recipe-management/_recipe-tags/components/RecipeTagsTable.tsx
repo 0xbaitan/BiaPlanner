@@ -1,8 +1,7 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-import { IQueryRecipeTagItemDto, IRecipeTag } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
+import { IQueryRecipeTagItemDto } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";

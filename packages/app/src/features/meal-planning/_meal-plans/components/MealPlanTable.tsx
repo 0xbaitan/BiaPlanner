@@ -1,12 +1,12 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
-import { IQueryConcreteRecipeResultsDto } from "@biaplanner/shared";
+import { IConcreteRecipe } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 export type MealPlanTableProps = {
-  data: IQueryConcreteRecipeResultsDto[];
+  data: IConcreteRecipe[];
 };
 
 export default function MealPlanTable(props: MealPlanTableProps) {
@@ -14,7 +14,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
   const navigate = useNavigate();
 
   return (
-    <TabbedViewsTable<IQueryConcreteRecipeResultsDto>
+    <TabbedViewsTable<IConcreteRecipe>
       data={data}
       views={[
         {
@@ -24,7 +24,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           columnDefs: [
             {
               header: "Recipe Title",
-              accessorFn: (row) => row.recipeTitle,
+              accessorFn: (row) => row.recipe.title,
               accessorKey: "recipeTitle",
             },
             {
@@ -49,7 +49,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           label: "Update Meal Plan",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.concreteRecipeId}`);
+            navigate(`./update/${row.id}`);
           },
         },
         {
@@ -57,7 +57,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           label: "Delete Meal Plan",
           type: "delete",
           onClick: (row) => {
-            console.log(`Delete meal plan with ID: ${row.concreteRecipeId}`);
+            console.log(`Delete meal plan with ID: ${row.id}`);
           },
         },
       ]}

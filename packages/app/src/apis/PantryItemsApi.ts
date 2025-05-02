@@ -1,4 +1,4 @@
-import { CookingMeasurementType, IPantryItem, IQueryPantryItemFilterParams, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
+import { CookingMeasurementType, IPantryItem, IQueryPantryItemDto, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -59,7 +59,7 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       providesTags: (result) => (result ? result.map(({ id }) => ({ type: "PantryItem" as const, id })) : []),
     }),
 
-    searchPantryItems: build.query<Paginated<IPantryItem>, IQueryPantryItemFilterParams>({
+    searchPantryItems: build.query<Paginated<IPantryItem>, IQueryPantryItemDto>({
       query: (query) => ({
         url: `/query/pantry-items?${qs.stringify(query, {
           arrayFormat: "brackets",
@@ -70,7 +70,7 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.items.map(({ id }) => ({
+              ...result.data.map(({ id }) => ({
                 type: "PantryItem" as const,
                 id,
               })),

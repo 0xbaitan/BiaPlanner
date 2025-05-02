@@ -1,4 +1,3 @@
-import calculatePaginationElements, { calculatePaginationMeta } from "@/util/calculatePaginationElements";
 import { useRecipeTagsCrudListActions, useRecipeTagsCrudListState } from "../reducers/RecipeTagsCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -7,9 +6,8 @@ import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import RecipeTagsFilterBar from "../components/RecipeTagsFilterBar";
 import RecipeTagsTable from "../components/RecipeTagsTable";
-import { ViewType } from "@/components/ViewSegmentedButton";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
-import qs from "qs";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchRecipeTagsQuery } from "@/apis/RecipeTagsApi";
@@ -28,11 +26,11 @@ export default function RecipeTagsPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationMeta(recipeTagsQuery.limit ?? 25, results);
+  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationElements(recipeTagsQuery.limit ?? 25, results);
 
   const recipeTagsTable = useMemo(() => {
-    return <RecipeTagsTable data={results?.items ?? []} />;
-  }, [results?.items]);
+    return <RecipeTagsTable data={results?.data ?? []} />;
+  }, [results?.data]);
 
   return (
     <CrudListPageLayout>

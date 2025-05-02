@@ -1,5 +1,5 @@
 import { CookingMeasurement } from "../CookingMeasurement";
-import { FilterParamsSchema } from "../../util";
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
@@ -23,52 +23,6 @@ export interface IPantryItem extends IBaseEntity {
   availableMeasurements?: CookingMeasurement;
   consumedMeasurements?: CookingMeasurement;
   reservedMeasurements?: CookingMeasurement;
-}
-
-export interface IPantryItemExtended extends IPantryItem {
-  totalMeasurements?: CookingMeasurement;
-  availableMeasurements?: CookingMeasurement;
-  consumedMeasurements?: CookingMeasurement;
-}
-
-export interface ICreatePantryItemDto {
-  productId: string;
-  quantity: number;
-  expiryDate?: string;
-  bestBeforeDate?: string;
-  openedDate?: string;
-  manufacturedDate?: string;
-  totalMeasurements?: CookingMeasurement;
-}
-
-export interface IUpdatePantryItemDto {
-  quantity?: number;
-  expiryDate?: string;
-  bestBeforeDate?: string;
-  openedDate?: string;
-  manufacturedDate?: string;
-  isExpired?: boolean;
-  totalMeasurements?: CookingMeasurement;
-}
-
-export class CreatePantryItemDto implements ICreatePantryItemDto {
-  productId: string;
-  quantity: number;
-  expiryDate?: string;
-  bestBeforeDate?: string;
-  openedDate?: string;
-  manufacturedDate?: string;
-  totalMeasurements?: CookingMeasurement | undefined;
-}
-
-export class UpdatePantryItemDto implements IUpdatePantryItemDto {
-  quantity?: number;
-  expiryDate?: string;
-  bestBeforeDate?: string;
-  openedDate?: string;
-  manufacturedDate?: string;
-  isExpired?: boolean;
-  totalMeasurements?: CookingMeasurement | undefined;
 }
 
 export const WritePantryItemSchema = z.object({
@@ -110,7 +64,7 @@ export enum ExpiredItemsVisibility {
   SHOW_ALL = "SHOW_ALL",
 }
 
-export const QueryPantryItemParamsSchema = FilterParamsSchema.extend({
+export const QueryPantryItemDtoSchema = FilterParamsSchema.extend({
   search: z.string().optional(),
   sortBy: z.nativeEnum(PantryItemSortBy).optional(),
   expiredItemsVisibility: z.nativeEnum(ExpiredItemsVisibility).default(ExpiredItemsVisibility.SHOW_ALL).optional(),
@@ -120,4 +74,4 @@ export const QueryPantryItemParamsSchema = FilterParamsSchema.extend({
   productIds: z.array(z.string()).optional(),
 });
 
-export type IQueryPantryItemFilterParams = z.infer<typeof QueryPantryItemParamsSchema>;
+export type IQueryPantryItemDto = z.infer<typeof QueryPantryItemDtoSchema>;

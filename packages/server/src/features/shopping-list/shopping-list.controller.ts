@@ -9,10 +9,7 @@ import {
 } from '@nestjs/common';
 import { ShoppingListService } from './shopping-list.service';
 import {
-  CreateShoppingListDto,
   IWriteShoppingListDto,
-  UpdateShoppingListDto,
-  WriteShoppingListItemSchema,
   WriteShoppingListSchema,
 } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';

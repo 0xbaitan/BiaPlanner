@@ -1,5 +1,5 @@
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { MarkShoppingDoneActions, useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
+import { useMarkShoppingDoneActions, useMarkShoppingDoneState } from "../reducers/MarkShoppingDoneReducer";
 
 import Button from "react-bootstrap/esm/Button";
 import { FaTrashCan } from "react-icons/fa6";
@@ -23,7 +23,7 @@ export default function AddExtraVariantProductCard(props: ProductCardProps) {
     (quantity: number) => {
       addExtraShoppingItem({
         productId: product.id,
-        product,
+
         quantity,
         expiryDate: product.canExpire ? dayjs().toISOString() : undefined,
         shoppingListId,

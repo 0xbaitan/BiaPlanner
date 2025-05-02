@@ -1,4 +1,4 @@
-import { IProduct, IShoppingItemExtended, IShoppingList } from "@biaplanner/shared";
+import { IProduct, IShoppingList, IWriteShoppingItemExtendedDto } from "@biaplanner/shared";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -8,9 +8,9 @@ import { useCallback } from "react";
 
 type MarkShoppingDoneState = {
   shoppingListId: string;
-  transientUpdatedShoppingItems: IShoppingItemExtended[];
-  updatedShoppingItems: IShoppingItemExtended[];
-  originalShoppingItems: IShoppingItemExtended[];
+  transientUpdatedShoppingItems: IWriteShoppingItemExtendedDto[];
+  updatedShoppingItems: IWriteShoppingItemExtendedDto[];
+  originalShoppingItems: IWriteShoppingItemExtendedDto[];
   isInitialised: boolean;
   isInEditMode: boolean;
   showOffcanvas: boolean;
@@ -54,7 +54,7 @@ const markShoppingDoneReducer = createSlice({
 
       const initialShoppingItems =
         payload.items?.map(
-          (item): IShoppingItemExtended => ({
+          (item): IWriteShoppingItemExtendedDto => ({
             ...item,
             expiryDate: item.product?.canExpire ? dayjs().toISOString() : undefined,
           })
@@ -66,7 +66,7 @@ const markShoppingDoneReducer = createSlice({
       state.isInEditMode = false;
       state.showOffcanvas = false;
     },
-    addExtraShoppingItem: (state, action: PayloadAction<IShoppingItemExtended>) => {
+    addExtraShoppingItem: (state, action: PayloadAction<IWriteShoppingItemExtendedDto>) => {
       const { payload } = action;
 
       const existingItem = state.transientUpdatedShoppingItems?.find((item) => item.productId === payload.productId);
@@ -111,7 +111,7 @@ const markShoppingDoneReducer = createSlice({
         itemToUncancel.isCancelled = false;
       }
     },
-    replaceShoppingItem: (state, action: PayloadAction<{ productId: string; replacedItem: IShoppingItemExtended }>) => {
+    replaceShoppingItem: (state, action: PayloadAction<{ productId: string; replacedItem: IWriteShoppingItemExtendedDto }>) => {
       const { payload } = action;
       const { productId, replacedItem } = payload;
       const replacedItemIndex = state.transientUpdatedShoppingItems?.findIndex((item) => item.productId === productId);
@@ -281,7 +281,7 @@ export function useMarkShoppingDoneActions() {
   );
 
   const addExtraShoppingItemCallback = useCallback(
-    (payload: IShoppingItemExtended) => {
+    (payload: IWriteShoppingItemExtendedDto) => {
       dispatch(addExtraShoppingItem(payload));
     },
     [dispatch]
@@ -309,7 +309,7 @@ export function useMarkShoppingDoneActions() {
   );
 
   const replaceShoppingItemCallback = useCallback(
-    (productId: string, replacedItem: IShoppingItemExtended) => {
+    (productId: string, replacedItem: IWriteShoppingItemExtendedDto) => {
       dispatch(replaceShoppingItem({ productId, replacedItem }));
     },
     [dispatch]

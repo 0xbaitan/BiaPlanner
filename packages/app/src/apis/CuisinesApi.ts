@@ -1,4 +1,4 @@
-import { ICuisine, IQueryCuisineParamsDto, IQueryCuisineResultsDto, IWriteCuisineDto, Paginated } from "@biaplanner/shared";
+import { ICuisine, IQueryCuisineDto, IWriteCuisineDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -59,12 +59,12 @@ export const cuisinesApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchCuisines: build.query<Paginated<IQueryCuisineResultsDto>, IQueryCuisineParamsDto>({
+    searchCuisines: build.query<Paginated<ICuisine>, IQueryCuisineDto>({
       query: (query) => ({
         url: `/query/cuisines?${qs.stringify(query)}`,
         method: "GET",
       }),
-      providesTags: (result) => (result ? [...result.items.filter(({ id }) => id != null).map(({ id }) => ({ type: "Cuisine" as const, id })), { type: "Cuisine", id: "LIST" }] : [{ type: "Cuisine", id: "LIST" }]),
+      providesTags: (result) => (result ? [...result.data.filter(({ id }) => id != null).map(({ id }) => ({ type: "Cuisine" as const, id })), { type: "Cuisine", id: "LIST" }] : [{ type: "Cuisine", id: "LIST" }]),
     }),
   }),
 });

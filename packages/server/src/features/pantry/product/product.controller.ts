@@ -11,12 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  IProduct,
-  IWriteProductDto,
-  IQueryProductParamsDto,
-  QueryProductParamsSchema,
-} from '@biaplanner/shared';
+import { IProduct, IWriteProductDto } from '@biaplanner/shared';
 import { ProductService } from './product.service';
 import { ZodValidationPipe } from 'nestjs-zod';
 

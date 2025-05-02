@@ -1,10 +1,6 @@
 import {
   IShoppingList,
-  IUpdateShoppingItemDto,
-  IUpdateShoppingItemExtendedDto,
   IShoppingItem,
-  IUpdateShoppingListExtendedDto,
-  ICreatePantryItemDto,
   IMarkShoppingListDoneDto,
   IWriteShoppingItemWithExpiryDto,
   IWriteShoppingItemExtendedDto,
@@ -25,9 +21,9 @@ export class MarkShoppingDoneService {
 
   private reshapeToCreatePantryItemDto(
     items: IWriteShoppingItemExtendedDto[],
-  ): ICreatePantryItemDto[] {
+  ): IWriteShoppingItemExtendedDto[] {
     return items
-      .map((item): ICreatePantryItemDto => {
+      .map((item): IWriteShoppingItemExtendedDto => {
         if (item.isCancelled) {
           return null;
         }
@@ -52,8 +48,8 @@ export class MarkShoppingDoneService {
   async markShoppingDone(
     dto: IMarkShoppingListDoneDto,
     createdById: string,
-  ): Promise<IUpdateShoppingListExtendedDto> {
-    const pantryItems: ICreatePantryItemDto[] =
+  ): Promise<IShoppingList> {
+    const pantryItems: IWriteShoppingItemExtendedDto[] =
       this.reshapeToCreatePantryItemDto(dto.items);
 
     const updatedShoppingList = await this.shoppingListRepository.save({

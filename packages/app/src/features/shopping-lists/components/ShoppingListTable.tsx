@@ -1,8 +1,8 @@
 import { FaShoppingCart, FaTrash } from "react-icons/fa";
-import { IQueryShoppingListResultsDto, IShoppingList } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { FaPencil } from "react-icons/fa6";
+import { IShoppingList } from "@biaplanner/shared";
 import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteShoppingListMutation } from "@/apis/ShoppingListsApi";
@@ -15,7 +15,7 @@ export type ShoppingListTableProps = {
 };
 export default function ShoppingListTable(props: ShoppingListTableProps) {
   const navigate = useNavigate();
-  const [deleteShoppingList, { isLoading: isDeleting, isSuccess: isDeleted, isError: isDeleteError, error: deleteError }] = useDeleteShoppingListMutation();
+  const [deleteShoppingList, { isLoading: isDeleting, isSuccess: isDeleted, isError: isDeleteError }] = useDeleteShoppingListMutation();
 
   const { notify: notifyOnDeletion } = useDeletionToast<IShoppingList>({
     identifierSelector: (row) => row.title,

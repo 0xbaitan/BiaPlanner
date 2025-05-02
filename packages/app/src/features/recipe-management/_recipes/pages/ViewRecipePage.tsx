@@ -1,7 +1,6 @@
 import "../styles/ViewRecipePage.scss";
 
 import { FaPencil, FaTrash } from "react-icons/fa6";
-import { IRecipe, SegmentedTime } from "@biaplanner/shared";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useDeleteRecipeMutation, useGetRecipeQuery } from "@/apis/RecipeApi";
@@ -11,6 +10,7 @@ import { Button } from "react-bootstrap";
 import CrudViewPageLayout from "@/components/CrudViewPageLayout";
 import { FaInfoCircle } from "react-icons/fa";
 import Heading from "@/components/Heading";
+import { IRecipe } from "@biaplanner/shared";
 import { IconType } from "react-icons";
 import { PiChefHatFill } from "react-icons/pi";
 import { SiLevelsdotfyi } from "react-icons/si";

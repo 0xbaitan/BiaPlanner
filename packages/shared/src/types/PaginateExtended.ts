@@ -1,18 +1,12 @@
-export type PaginateQuery = {
-  page?: number;
-  limit?: number;
-  sortBy?: [string, string][];
-  searchBy?: string[];
-  search?: string;
-  filter?: {
-    [column: string]: string | string[];
-  };
-  select?: string[];
-  cursor?: string;
-  cursorColumn?: string;
-  cursorDirection?: "before" | "after";
-  path: string;
-};
+import { Paginated as NestjsPaginated } from "nestjs-paginate";
+import { z } from "zod";
+export const FilterParamsSchema = z.object({
+  page: z.coerce.number(),
+  limit: z.coerce.number().optional(),
+  search: z.string().optional(),
+});
+
+export type Paginated<T> = NestjsPaginated<T>;
 
 export type FuzzyQuery = {
   strategy: "trigram" | "soundex";

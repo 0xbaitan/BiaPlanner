@@ -13,7 +13,7 @@ import { IBrand } from "@biaplanner/shared";
 import { getImagePath } from "@/util/imageFunctions";
 import { useCallback } from "react";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
-import { useGetTopBrandedProductsQuery } from "@/apis/ProductsApi";
+// import { useGetTopBrandedProductsQuery } from "@/apis/ProductsApi";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 const TOP_BRANDED_PRODUCTS_LIMIT = 10;
@@ -30,16 +30,16 @@ export default function ViewBrandPage() {
 
   const [deleteBrand, { isError: isDeletionFailure, isLoading: isDeletionPending, isSuccess: isDeletionSuccess }] = useDeleteBrandMutation();
 
-  const { data: topBrandedProducts } = useGetTopBrandedProductsQuery(
-    {
-      brandId: String(brand?.id),
-      limit: TOP_BRANDED_PRODUCTS_LIMIT,
-    },
-    {
-      refetchOnMountOrArgChange: true,
-      skip: !brand?.id,
-    }
-  );
+  // const { data: topBrandedProducts } = useGetTopBrandedProductsQuery(
+  //   {
+  //     brandId: String(brand?.id),
+  //     limit: TOP_BRANDED_PRODUCTS_LIMIT,
+  //   },
+  //   {
+  //     refetchOnMountOrArgChange: true,
+  //     skip: !brand?.id,
+  //   }
+  // );
 
   const { notify: notifyOnDeletion } = useSimpleStatusToast({
     isError: isDeletionFailure,
@@ -113,7 +113,7 @@ export default function ViewBrandPage() {
         <Heading level={Heading.Level.H2} className="bp-brand_view__products_heading">
           Most popular products
         </Heading>
-        {topBrandedProducts?.length && topBrandedProducts.length > 0 ? (
+        {/* {topBrandedProducts?.length && topBrandedProducts.length > 0 ? (
           <ol className="bp-brand_view__products_list">
             {brand.products?.map((product) => (
               <li key={product.id} className="bp-brand_view__products_list_item">
@@ -128,7 +128,7 @@ export default function ViewBrandPage() {
           </ol>
         ) : (
           <Alert variant="warning" title="No Products Found" message="This brand does not have any associated products." />
-        )}
+        )} */}
       </div>
     </CrudViewPageLayout>
   );

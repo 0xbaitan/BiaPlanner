@@ -1,11 +1,8 @@
-import { ICuisine, IUpdateUserDto } from "@biaplanner/shared";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useGetCuisineQuery, useUpdateCuisineMutation } from "@/apis/CuisinesApi";
 import { useNavigate, useParams } from "react-router-dom";
 
 import CuisinesForm from "../components/CuisinesForm";
 import { RoutePaths } from "@/Routes";
-import { addListener } from "@reduxjs/toolkit";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function AdminUpdateCuisinePage() {

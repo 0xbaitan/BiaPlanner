@@ -1,4 +1,4 @@
-import { IConcreteRecipe, ICreateConcreteRecipeDto } from "@biaplanner/shared";
+import { IConcreteRecipe, IWriteConcreteRecipeDto } from "@biaplanner/shared";
 import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useResetMealPlanForm, useSelectRecipe } from "../../reducers/IngredientManagementReducer";
@@ -18,7 +18,7 @@ export default function CreateMealPlanPage() {
   const navigate = useNavigate();
   const { data: recipe, isError: recipeIsError, isLoading: recipeIsLoading, isSuccess: recipeIsSuccess } = useGetRecipeQuery(String(selectedRecipe?.id));
   const resetMealPlanForm = useResetMealPlanForm();
-  const [createConcreteRecipeMutation, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
+  const [createConcreteRecipe, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
   const selectRecipe = useSelectRecipe();
   const { setItem } = useDefaultStatusToast<IConcreteRecipe>({
     idSelector: (entity) => entity.id,
@@ -77,7 +77,7 @@ export default function CreateMealPlanPage() {
         type="create"
         onSubmit={async (values) => {
           setItem(values as IConcreteRecipe);
-          await createConcreteRecipeMutation(values as ICreateConcreteRecipeDto);
+          await createConcreteRecipe(values);
         }}
       />
     </div>
