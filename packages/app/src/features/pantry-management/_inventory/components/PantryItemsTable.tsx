@@ -2,12 +2,14 @@ import { FaPlateWheat, FaTrash } from "react-icons/fa6";
 
 import { IPantryItem } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { usePantryItemsCrudListActions } from "../reducers/PantryItemsCrudListReducer";
 
 export type PantryItemsTableProps = {
   data: IPantryItem[];
 };
 
 export default function PantryItemsTable(props: PantryItemsTableProps) {
+  const { openConsumePantryItemModal } = usePantryItemsCrudListActions();
   return (
     <TabbedViewsTable<IPantryItem>
       data={props.data}
@@ -116,6 +118,10 @@ export default function PantryItemsTable(props: PantryItemsTableProps) {
           icon: FaPlateWheat,
           onClick(row) {
             console.log("Edit action triggered for row:", row);
+            openConsumePantryItemModal(row.id);
+          },
+          hideConditionally: (row) => {
+            return row.availableMeasurements?.magnitude === 0 || (row.isExpired ?? false);
           },
         },
         {

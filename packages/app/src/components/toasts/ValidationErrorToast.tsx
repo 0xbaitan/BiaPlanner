@@ -1,12 +1,11 @@
 import { FieldErrors } from "react-hook-form";
-import { IWriteShoppingListDto } from "@biaplanner/shared";
 import { ZodSchema } from "zod";
 import { useCallback } from "react";
 import { useErrorToast } from "./ErrorToast";
 
 function ValidationErrorToastContent<T extends ZodSchema>(props: { errors: FieldErrors<T> }) {
   const { errors } = props;
-
+  console.log("ValidationErrorToastContent", { errors });
   const errorMessages = Object.entries(errors).map(([key, error]) => {
     if (error?.message) {
       return `${key}: ${error.message}`;

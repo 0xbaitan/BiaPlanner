@@ -1,73 +1,156 @@
-import React, { useState } from "react";
+import { ConsumePantryItemDtoSchema, CookingMeasurement, IConsumePantryItemDto, Weights, getCookingMeasurement } from "@biaplanner/shared";
+import { Controller, useForm } from "react-hook-form";
+import React, { useCallback, useEffect, useState } from "react";
+import { useConsumePantryItemMutation, useGetPantryItemQuery } from "@/apis/PantryItemsApi";
+import { usePantryItemsCrudListActions, usePantryItemsCrudListState } from "../reducers/PantryItemsCrudListReducer";
 
 import Button from "react-bootstrap/Button";
+import CookingMeasurementInput from "@/features/product-catalogue/_products/components/CookingMeasurementInput";
+import { Form } from "react-bootstrap";
+import MeasurementInput from "@/features/recipe-management/_recipes/components/MeasurementInput";
 import Modal from "react-bootstrap/Modal";
+import TextInput from "@/components/forms/TextInput";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
+import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface ConsumeItemModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onConsume: (item: string, amount: number, unit: string) => void;
-  pantryItems: { id: string; name: string }[];
-}
+export default function ConsumeItemModal() {
+  const { consumePantryItemModal } = usePantryItemsCrudListState();
 
-export default function ConsumeItemModal({ visible, onClose, onConsume, pantryItems }: ConsumeItemModalProps) {
-  const [selectedItem, setSelectedItem] = useState<string | undefined>();
-  const [amount, setAmount] = useState<number | undefined>();
-  const [unit, setUnit] = useState<string>("grams");
+  const [consumeItem, { isSuccess: isConsumptionSuccess, isError: isConsumptionError, isLoading: isConsumptionPending, error }] = useConsumePantryItemMutation();
 
-  const handleConsume = () => {
-    if (selectedItem && amount) {
-      onConsume(selectedItem, amount, unit);
-      onClose();
-    }
-  };
+  const isOpen = consumePantryItemModal?.isOpen ?? false;
+  const pantryItemId = consumePantryItemModal?.pantryItemId ?? null;
+  const { closeConsumePantryItemModal } = usePantryItemsCrudListActions();
+  const {
+    data: pantryItem,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetPantryItemQuery(String(pantryItemId), {
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+    skip: !pantryItemId,
+  });
+
+  const { notify: notifyConsumption } = useSimpleStatusToast({
+    idPrefix: "consume-pantry-item",
+    successMessage: "Pantry item consumed successfully",
+    errorMessage: "Error consuming pantry item",
+    loadingMessage: "Consuming pantry item...",
+    isSuccess: isConsumptionSuccess,
+    isError: isConsumptionError,
+    isLoading: isConsumptionPending,
+    onSuccess: () => {
+      closeConsumePantryItemModal();
+    },
+    onFailure: () => {
+      console.log("Error consuming pantry item");
+      console.log(error);
+    },
+  });
+
+  console.log("ConsumeItemModal", { pantryItemId, isOpen, pantryItem });
+
+  const methods = useForm<IConsumePantryItemDto>({
+    defaultValues: {
+      measurement: {
+        magnitude: 0,
+        unit: pantryItem?.product?.measurement.unit ?? Weights.GRAM,
+      },
+
+      pantryItemId: pantryItemId ?? undefined,
+    },
+    mode: "onBlur",
+    resolver: zodResolver(ConsumePantryItemDtoSchema),
+  });
+
+  const { onSubmitError } = useValidationErrorToast();
+
+  const onSubmitSuccess = useCallback(
+    async (data: IConsumePantryItemDto) => {
+      notifyConsumption();
+      await consumeItem({
+        id: String(pantryItemId),
+        dto: data,
+      });
+    },
+    [consumeItem, notifyConsumption, pantryItemId]
+  );
+
+  useEffect(() => {
+    console.log(methods.watch());
+  }, [methods, methods.watch]);
+
+  if (isLoading) {
+    return (
+      <Modal show={isOpen} onHide={closeConsumePantryItemModal} backdrop="static" scroll>
+        <Modal.Header closeButton>
+          <Modal.Title>Consume Pantry Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>Loading...</div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeConsumePantryItemModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" disabled>
+            Consume
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   return (
-    <Modal show={visible} onHide={onClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Consume Pantry Item</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <form>
-          <div className="mb-3">
-            <label htmlFor="selectItem" className="form-label">
-              Select Item
-            </label>
-            <select id="selectItem" className="form-select" onChange={(e) => setSelectedItem(e.target.value)}>
-              <option value="">Select a pantry item</option>
-              {pantryItems.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="amount" className="form-label">
-              Amount
-            </label>
-            <input type="number" id="amount" className="form-control" placeholder="Enter amount" onChange={(e) => setAmount(Number(e.target.value))} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="unit" className="form-label">
-              Unit
-            </label>
-            <select id="unit" className="form-select" value={unit} onChange={(e) => setUnit(e.target.value)}>
-              <option value="grams">Grams</option>
-              <option value="ml">Milliliters</option>
-              <option value="pieces">Pieces</option>
-            </select>
-          </div>
-        </form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={handleConsume} disabled={!selectedItem || !amount}>
-          Consume
-        </Button>
-      </Modal.Footer>
+    <Modal show={isOpen} onHide={closeConsumePantryItemModal} backdrop="static" scroll>
+      <Form onSubmit={methods.handleSubmit(onSubmitSuccess, onSubmitError)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Consume Pantry Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {isLoading && <div>Loading...</div>}
+          {isError && <div>Error</div>}
+          {isSuccess && pantryItem && (
+            <>
+              <h5>{pantryItem.product?.name}</h5>
+              <p>
+                Available Quantity: {pantryItem.availableMeasurements?.magnitude} {pantryItem.availableMeasurements?.unit}
+              </p>
+              <p>
+                Consumed Quantity: {pantryItem.consumedMeasurements?.magnitude} {pantryItem.product?.measurement.unit}
+              </p>
+
+              <Controller name="measurement.magnitude" control={methods.control} render={({ field, fieldState }) => <TextInput type="number" label="Quantity to Consume" placeholder="Quantity" {...field} isInvalid={Boolean(fieldState.error)} />} />
+
+              <Controller
+                name="measurement.unit"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                  <MeasurementInput
+                    {...field}
+                    labelField="Unit"
+                    selectedValues={[getCookingMeasurement(field.value ?? pantryItem.product?.measurement.unit)]}
+                    onChange={([value]) => {
+                      field.onChange(value.unit as CookingMeasurement["unit"]);
+                    }}
+                  />
+                )}
+              />
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeConsumePantryItemModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" type="submit">
+            Consume
+          </Button>
+        </Modal.Footer>
+      </Form>
     </Modal>
   );
 }

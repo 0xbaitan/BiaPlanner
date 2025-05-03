@@ -1,9 +1,10 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
 import { In, Repository } from 'typeorm';
 import {
   CookingMeasurementType,
+  IConsumePantryItemDto,
   IPantryItem,
   IPantryItemPortion,
   IWritePantryItemDto,
@@ -22,6 +23,18 @@ export default class PantryItemService {
 
     @Inject(ProductService) private productService: ProductService,
   ) {}
+
+  async findPantryItemById(pantryItemId: string): Promise<IPantryItem> {
+    console.log('findPantryItemById', pantryItemId);
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: pantryItemId },
+      relations: {
+        product: true,
+      },
+    });
+
+    return pantryItem;
+  }
 
   private async populatePantryItemMeasurements(pantryItem: IPantryItem) {
     const product = await this.productService.readProductById(
@@ -133,7 +146,10 @@ export default class PantryItemService {
     return this.pantryItemRepository.save(pantryItem);
   }
 
-  async consumePantryItemPortion(pantryItemPortion: IPantryItemPortion) {
+  async consumePantryItemPortion(
+    pantryItemPortion: IPantryItemPortion,
+    ignoreReserved = false,
+  ) {
     const pantryItem = await this.pantryItemRepository.findOneOrFail({
       where: { id: pantryItemPortion.pantryItemId },
     });
@@ -144,12 +160,37 @@ export default class PantryItemService {
     );
 
     if (
+      !ignoreReserved &&
       pantryItem.reservedMeasurements.magnitude < convertedPortion.magnitude
     ) {
       throw new Error('Not enough reserved');
     }
 
     pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return this.pantryItemRepository.save(pantryItem);
+  }
+
+  async consumePantryItem(dto: IConsumePantryItemDto) {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: dto.pantryItemId },
+    });
+
+    const convertedPortion = convertCookingMeasurement(
+      dto.measurement,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new BadRequestException(
+        `Not enough available. Available: ${pantryItem.availableMeasurements.magnitude} ${pantryItem.availableMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
+      );
+    }
+
+    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
     pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
 
     return this.pantryItemRepository.save(pantryItem);

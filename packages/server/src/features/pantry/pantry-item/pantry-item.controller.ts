@@ -1,7 +1,18 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import PantryItemService from './pantry-item.service';
 import {
+  ConsumePantryItemDtoSchema,
   CookingMeasurementType,
+  IConsumePantryItemDto,
   IPantryItem,
   IUser,
   IWritePantryItemDto,
@@ -16,11 +27,25 @@ const WritePantryItemValidationPipe = new ZodValidationPipe(
   WritePantryItemSchema,
 );
 
+const ConsumePantryItemValidationPipe = new ZodValidationPipe(
+  ConsumePantryItemDtoSchema,
+);
+
 @Controller('/pantry/items')
 export default class PantryItemController {
   constructor(
     @Inject(PantryItemService) private pantryItemService: PantryItemService,
   ) {}
+
+  @Get('/:id')
+  async findPantryItemById(
+    @Param('id') pantryItemId: string,
+  ): Promise<IPantryItem> {
+    const pantryItem =
+      await this.pantryItemService.findPantryItemById(pantryItemId);
+
+    return pantryItem;
+  }
 
   @Get('/')
   async findAllPantryItems(
@@ -51,6 +76,15 @@ export default class PantryItemController {
       dto,
       createdById,
     );
+    return pantryItem;
+  }
+
+  @Put('/consume/:id')
+  async consumePantryItem(
+    @Body(ConsumePantryItemValidationPipe)
+    dto: IConsumePantryItemDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await this.pantryItemService.consumePantryItem(dto);
     return pantryItem;
   }
 }

@@ -1,6 +1,7 @@
 import { usePantryItemsCrudListActions, usePantryItemsCrudListState } from "../reducers/PantryItemsCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
+import ConsumeItemModal from "../components/ConsumeItemModal";
 import CrudListPageLayout from "@/components/CrudListPageLayout";
 import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
@@ -42,6 +43,7 @@ function PantryPage() {
         resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="pantry items" searchTermUsed={searchTermUsed} />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
+            <ConsumeItemModal />
             {isLoading && <div>Loading...</div>}
             {isError && <NoResultsFound title="Error" description="Failed to fetch pantry items." />}
             {results?.data.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}

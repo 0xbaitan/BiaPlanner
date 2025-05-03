@@ -1,10 +1,18 @@
-import { CookingMeasurementType, IPantryItem, IQueryCompatiblePantryItemDto, IQueryPantryItemDto, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
+import { CookingMeasurementType, IConsumePantryItemDto, IPantryItem, IQueryCompatiblePantryItemDto, IQueryPantryItemDto, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
 
 export const pantryItemsApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
+    getPantryItem: build.query<IPantryItem, string>({
+      query: (id) => ({
+        url: `/pantry/items/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "PantryItem", id }],
+    }),
+
     getPantryItems: build.query<IPantryItem[], { userId?: number }>({
       query: ({ userId }) => ({
         url: "/pantry/items",
@@ -78,10 +86,24 @@ export const pantryItemsApi = rootApi.injectEndpoints({
             ]
           : [{ type: "PantryItem", id: "LIST" }],
     }),
+
+    consumePantryItem: build.mutation<IPantryItem, { id: string; dto: IConsumePantryItemDto }>({
+      query: ({ id, dto }) => ({
+        url: `/pantry/items/consume/${id}`,
+        method: "PUT",
+        body: dto,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "PantryItem", id },
+        { type: "PantryItem", id: "LIST" },
+      ],
+    }),
   }),
 });
 
 export const {
+  useGetPantryItemQuery,
+  useLazyGetPantryItemQuery,
   useGetPantryItemsQuery,
   useLazyGetPantryItemsQuery,
   useCreatePantryItemMutation,
@@ -95,4 +117,5 @@ export const {
   useLazyGetExpiredPantryItemsQuery,
   useSearchPantryItemsQuery,
   useLazySearchPantryItemsQuery,
+  useConsumePantryItemMutation,
 } = pantryItemsApi;

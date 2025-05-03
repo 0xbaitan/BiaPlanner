@@ -1,4 +1,4 @@
-import { CookingMeasurement, CookingMeasurementType } from "../CookingMeasurement";
+import { CookingMeasurement, CookingMeasurementSchema, CookingMeasurementType } from "../CookingMeasurement";
 
 import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
@@ -69,7 +69,7 @@ export const QueryPantryItemDtoSchema = FilterParamsSchema.extend({
   search: z.string().optional(),
   sortBy: z.nativeEnum(PantryItemSortBy).optional(),
   expiredItemsVisibility: z.nativeEnum(ExpiredItemsVisibility).default(ExpiredItemsVisibility.SHOW_ALL).optional(),
-  showLooseOnly: z.boolean().optional(),
+  showLooseOnly: z.coerce.boolean().optional(),
   brandIds: z.array(z.string()).optional(),
   productCategoryIds: z.array(z.string()).optional(),
   productIds: z.array(z.string()).optional(),
@@ -85,3 +85,9 @@ export const QueryCompatiblePantryItemDtoSchema = z.object({
 export type IQueryCompatiblePantryItemDto = z.infer<typeof QueryCompatiblePantryItemDtoSchema>;
 
 export type IQueryPantryItemDto = z.infer<typeof QueryPantryItemDtoSchema>;
+
+export const ConsumePantryItemDtoSchema = z.object({
+  pantryItemId: z.string().min(1, { message: "Pantry item ID is required" }),
+  measurement: z.object(CookingMeasurementSchema).optional(),
+});
+export type IConsumePantryItemDto = z.infer<typeof ConsumePantryItemDtoSchema>;

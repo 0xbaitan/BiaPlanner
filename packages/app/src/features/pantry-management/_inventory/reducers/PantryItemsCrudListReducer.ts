@@ -2,8 +2,14 @@ import { IQueryPantryItemDto, PantryItemSortBy } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
+export type ConsumePantryItemModalState = {
+  isOpen: boolean;
+  pantryItemId: string | null;
+};
+
 export type PantryItemsCrudListState = {
   pantryItemsQuery: IQueryPantryItemDto;
+  consumePantryItemModal: ConsumePantryItemModalState;
 };
 
 const initialState: PantryItemsCrudListState = {
@@ -12,6 +18,11 @@ const initialState: PantryItemsCrudListState = {
     limit: 25,
     search: "",
     sortBy: PantryItemSortBy.NEWEST,
+  },
+
+  consumePantryItemModal: {
+    isOpen: false,
+    pantryItemId: null,
   },
 };
 
@@ -40,10 +51,20 @@ export const pantryItemsCrudListSlice = createSlice({
     resetFilters: (state) => {
       state.pantryItemsQuery = initialState.pantryItemsQuery;
     },
+
+    openConsumePantryItemModal: (state, action: PayloadAction<string>) => {
+      state.consumePantryItemModal.isOpen = true;
+      state.consumePantryItemModal.pantryItemId = action.payload;
+    },
+
+    closeConsumePantryItemModal: (state) => {
+      state.consumePantryItemModal.isOpen = false;
+      state.consumePantryItemModal.pantryItemId = null;
+    },
   },
 });
 
-export const { setFilter, setPage, setLimit, setSearch, setSortBy, resetFilters } = pantryItemsCrudListSlice.actions;
+export const { setFilter, setPage, setLimit, setSearch, setSortBy, resetFilters, openConsumePantryItemModal, closeConsumePantryItemModal } = pantryItemsCrudListSlice.actions;
 export default pantryItemsCrudListSlice.reducer;
 
 export function usePantryItemsCrudListState() {
@@ -60,5 +81,7 @@ export function usePantryItemsCrudListActions() {
     setSearch: (search: string) => dispatch(setSearch(search)),
     setSortBy: (sortBy: PantryItemSortBy) => dispatch(setSortBy(sortBy)),
     resetFilters: () => dispatch(resetFilters()),
+    openConsumePantryItemModal: (pantryItemId: string) => dispatch(openConsumePantryItemModal(pantryItemId)),
+    closeConsumePantryItemModal: () => dispatch(closeConsumePantryItemModal()),
   };
 }
