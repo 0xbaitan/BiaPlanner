@@ -1,11 +1,9 @@
-import { FuzzyQueryParam } from '@/features/fuzzy-query-param.decorator';
 import {
-  FuzzyQuery,
   IQueryProductCategoryDto,
   QueryProductCategoryDtoSchema,
 } from '@biaplanner/shared';
 import { Controller, Get, Inject, Query } from '@nestjs/common';
-import { Paginate, PaginateQuery } from 'nestjs-paginate';
+
 import { QueryProductCategoryService } from './query.product-category.service';
 import { ZodValidationPipe } from 'nestjs-zod';
 

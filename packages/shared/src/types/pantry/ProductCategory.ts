@@ -11,9 +11,8 @@ export interface IProductCategory extends IBaseEntity {
   isAllergen?: boolean;
 }
 
-export interface ICreateProductCategoryDto {
-  name: string;
-  isAllergen?: boolean;
+export interface IProductCategoryExtended extends IProductCategory {
+  productCount: number;
 }
 
 export const WriteProductCategoryDtoSchema = z.object({

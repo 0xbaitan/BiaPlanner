@@ -1,4 +1,4 @@
-import { ICreateProductCategoryDto, IProductCategory, IQueryProductCategoryDto, IWriteProductCategoryDto, Paginated } from "@biaplanner/shared";
+import { IProductCategory, IProductCategoryExtended, IQueryProductCategoryDto, IWriteProductCategoryDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -21,8 +21,8 @@ export const productCategoriesApi = rootApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "ProductCategory", id }],
     }),
 
-    createProductCategory: build.mutation<IProductCategory, ICreateProductCategoryDto>({
-      query: (dto: ICreateProductCategoryDto) => ({
+    createProductCategory: build.mutation<IProductCategory, IWriteProductCategoryDto>({
+      query: (dto: IWriteProductCategoryDto) => ({
         url: "/product-categories",
         method: "POST",
         body: dto,
@@ -61,7 +61,7 @@ export const productCategoriesApi = rootApi.injectEndpoints({
       providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "ProductCategory" as const, id })), { type: "ProductCategory", id: "LIST" }] : [{ type: "ProductCategory", id: "LIST" }]),
     }),
 
-    searchProductCategories: build.query<Paginated<IProductCategory>, IQueryProductCategoryDto>({
+    searchProductCategories: build.query<Paginated<IProductCategoryExtended>, IQueryProductCategoryDto>({
       query: (query) => ({
         url: `/query/product-categories?${qs.stringify(query)}`,
         method: "GET",

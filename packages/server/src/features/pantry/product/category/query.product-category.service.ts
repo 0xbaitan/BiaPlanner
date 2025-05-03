@@ -5,12 +5,14 @@ import { Injectable } from '@nestjs/common';
 import {
   FuzzyQuery,
   IProductCategory,
+  IProductCategoryExtended,
   IQueryProductCategoryDto,
   Paginated,
   ProductCategoryAllergenFilter,
   ProductCategorySortBy,
 } from '@biaplanner/shared';
 import paginate from '@/util/paginate';
+import { ProductEntity } from '../product.entity';
 
 @Injectable()
 export class QueryProductCategoryService {
@@ -38,12 +40,13 @@ export class QueryProductCategoryService {
     const qb =
       this.productCategoryRepository.createQueryBuilder('productCategory');
 
-    qb.select([
-      'productCategory.id',
-      'productCategory.name',
-      'productCategory.isAllergen',
-      'COUNT(product.id) as productCount',
-    ]);
+    qb.addSelect((subQuery) => {
+      return subQuery
+        .select('COUNT(product.id)', 'productCount')
+        .from(ProductEntity, 'product')
+        .leftJoin('product.productCategories', 'category')
+        .where('category.id = productCategory.id');
+    }, 'productCount');
 
     // Join products to count the number of products associated with each category
     qb.leftJoin('productCategory.products', 'product');
@@ -65,13 +68,24 @@ export class QueryProductCategoryService {
     // Apply sorting
     this.applySorting(qb, sortBy);
 
-    // Group by product category ID to get the count of products
-    qb.groupBy(
-      'productCategory.id, productCategory.name, productCategory.isAllergen',
-    );
-
     // Paginate the results
-    return paginate<IProductCategory>(qb, page, limit, search);
+    return paginate<IProductCategory, IProductCategoryExtended>(
+      qb,
+      page,
+      limit,
+      search,
+      (entities, raw) => {
+        const extendedProductCategories: IProductCategoryExtended[] =
+          entities.map((category, index) => {
+            return {
+              ...category,
+              productCount: Number(raw[index].productCount ?? 0),
+            };
+          });
+
+        return extendedProductCategories;
+      },
+    );
   }
 
   /**
