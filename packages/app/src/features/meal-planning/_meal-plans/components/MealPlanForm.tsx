@@ -1,7 +1,7 @@
 import "../styles/MealPlanForm.scss";
 
 import { FormProvider, useForm } from "react-hook-form";
-import { IConcreteRecipe, IWriteConcreteRecipeDto } from "@biaplanner/shared";
+import { IConcreteRecipe, IWriteConcreteRecipeDto, WriteConcreteRecipeDtoSchema } from "@biaplanner/shared";
 import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -14,8 +14,11 @@ import { MdCancel } from "react-icons/md";
 import MealTypeSelect from "./MealTypeSelect";
 import RecipeSelectOffcanvas from "./RecipeSelectOffcanvas";
 import { getImagePath } from "@/util/imageFunctions";
+import { useCallback } from "react";
 import { useConfirmedIngredients } from "../../reducers/IngredientManagementReducer";
 import { useNavigate } from "react-router-dom";
+import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export type MealPlanFormValues = {
   type: "create" | "update";
@@ -30,28 +33,39 @@ export default function MealPlanForm(props: MealPlanFormValues) {
   const methods = useForm<IWriteConcreteRecipeDto>({
     defaultValues: initialValue ?? {},
     mode: "onBlur",
+    resolver: zodResolver(WriteConcreteRecipeDtoSchema),
   });
   const navigate = useNavigate();
   const disableSubmit = props.disableSubmit ?? false;
   const confirmedIngredients = useConfirmedIngredients();
-  const { handleSubmit, getValues, setValue, reset } = methods;
+  const { handleSubmit, setValue } = methods;
   const { showRecipeSelectionOffcanvas } = useMealPlanFormActions();
   const { selectedRecipe } = useMealPlanFormState();
+
+  const { onSubmitError } = useValidationErrorToast();
+
+  const onSubmitSuccess = useCallback(
+    (values: IWriteConcreteRecipeDto) => {
+      if (!selectedRecipe) {
+        return;
+      }
+
+      const mealPlan: IWriteConcreteRecipeDto = {
+        ...values,
+        confirmedIngredients,
+        recipeId: selectedRecipe?.id,
+      };
+
+      console.log("Meal Plan submitted:", mealPlan);
+
+      onSubmit(mealPlan);
+    },
+    [confirmedIngredients, onSubmit, selectedRecipe]
+  );
+
   return (
     <FormProvider {...methods}>
-      <DualPaneForm
-        className="bp-meal_plan_form"
-        onSubmit={handleSubmit(() => {
-          let values = getValues();
-
-          values = {
-            ...values,
-            confirmedIngredients,
-          };
-          reset();
-          onSubmit(values);
-        })}
-      >
+      <DualPaneForm className="bp-meal_plan_form" onSubmit={handleSubmit(onSubmitSuccess, onSubmitError)}>
         <DualPaneForm.Header>
           <DualPaneForm.Header.Title>Create Meal Plan</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>

@@ -4,6 +4,7 @@ import { ConcreteRecipeEntity } from './concrete-recipe.entity';
 import { Repository } from 'typeorm';
 
 import { ConcreteIngredientService } from '../concrete-ingredient/concrete-ingredient.service';
+import { IWriteConcreteRecipeDto } from '@biaplanner/shared';
 
 @Injectable()
 export class ConcreteRecipeService {
@@ -25,5 +26,10 @@ export class ConcreteRecipeService {
     return this.concreteRecipeRepository.find({
       relations: ['recipe'],
     });
+  }
+
+  async create(dto: IWriteConcreteRecipeDto) {
+    const concreteRecipe = this.concreteRecipeRepository.create(dto);
+    return this.concreteRecipeRepository.save(concreteRecipe);
   }
 }

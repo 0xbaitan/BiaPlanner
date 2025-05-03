@@ -140,7 +140,7 @@ export function useGetPortionFulfilledStatus() {
       if (required === undefined || unit === undefined) {
         return undefined;
       }
-      const selected = mappedIngredients?.[ingredientId]?.reduce((acc, curr) => acc + 0, 0) ?? 0;
+      const selected = mappedIngredients?.[ingredientId]?.reduce((acc, curr) => acc + convertCookingMeasurement(curr.portion, unit).magnitude, 0) ?? 0;
 
       const isFulfilled = selected >= required;
       return { required, selected, unit, isFulfilled };

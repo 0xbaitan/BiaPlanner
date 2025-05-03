@@ -81,9 +81,10 @@ function PortionFulfilledMeter(props: PortionFulfilledMeterProps) {
   const getPortionFulfilledStatus = useGetPortionFulfilledStatus();
   const status = getPortionFulfilledStatus(ingredientId);
 
-  if (!status) return null;
+  if (!status) return <div className="bp-portion_fulfilled_meter">Loading...</div>;
 
   const { required, selected, unit } = status;
+  console.log("Portion fulfilled status", status);
   const remaining = required - selected;
 
   const percentage = (selected / required) * 100;
@@ -95,11 +96,15 @@ function PortionFulfilledMeter(props: PortionFulfilledMeterProps) {
           {unit}&nbsp; remaining
         </div>
       )}
-      <ProgressBar now={percentage} visuallyHidden />
-      {remaining > 0 && (
+      <ProgressBar now={percentage} />
+      {remaining > 0 ? (
         <div>
           <FaExclamationTriangle />
           <span className="ms-2">Insufficient portion selected</span>
+        </div>
+      ) : (
+        <div>
+          <span className="bp-portion_fulfilled_meter__status_text">Sufficient portions selected</span>
         </div>
       )}
     </div>
