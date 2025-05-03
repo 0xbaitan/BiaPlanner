@@ -1,4 +1,4 @@
-import { ICuisine, IQueryCuisineDto, IWriteCuisineDto, Paginated } from "@biaplanner/shared";
+import { ICuisine, ICuisineExtended, IQueryCuisineDto, IWriteCuisineDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -59,7 +59,7 @@ export const cuisinesApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchCuisines: build.query<Paginated<ICuisine>, IQueryCuisineDto>({
+    searchCuisines: build.query<Paginated<ICuisineExtended>, IQueryCuisineDto>({
       query: (query) => ({
         url: `/query/cuisines?${qs.stringify(query)}`,
         method: "GET",

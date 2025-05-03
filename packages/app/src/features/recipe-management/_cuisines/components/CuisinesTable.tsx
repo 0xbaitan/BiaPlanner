@@ -1,7 +1,7 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { ICuisine, ICuisineExtended } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
-import { ICuisine } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteCuisineMutation } from "@/apis/CuisinesApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type CuisinesTableProps = {
-  data: ICuisine[];
+  data: ICuisineExtended[];
 };
 
 export default function CuisinesTable(props: CuisinesTableProps) {
@@ -28,7 +28,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
     isLoading,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<ICuisine>({
+  const { notify: notifyDeletion } = useDeletionToast<ICuisineExtended>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
       if (!!item.id) {
@@ -39,7 +39,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
   });
 
   return (
-    <TabbedViewsTable<ICuisine>
+    <TabbedViewsTable<ICuisineExtended>
       data={data}
       views={[
         {
@@ -56,7 +56,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
             },
             {
               header: "Recipes Count",
-              accessorFn: (row) => row.recipes?.length ?? 0,
+              accessorFn: (row) => row.recipeCount ?? 0,
               accessorKey: "recipeCount",
             },
           ],

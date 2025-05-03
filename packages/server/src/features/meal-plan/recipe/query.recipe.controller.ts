@@ -22,12 +22,10 @@ export class QueryRecipeController {
     private readonly queryRecipeService: QueryRecipeService,
   ) {}
 
-  @Public()
   @Get()
   async query(
     @Query(QueryRecipeParamsValidationPipe) query: IQueryRecipeDto,
   ): Promise<Paginated<IRecipe>> {
     return this.queryRecipeService.query(query);
   }
-  eryRecipeDto;
 }

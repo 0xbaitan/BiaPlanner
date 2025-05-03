@@ -9,6 +9,10 @@ export interface ICuisine extends IBaseEntity {
   recipes?: IRecipe[];
 }
 
+export interface ICuisineExtended extends ICuisine {
+  recipeCount: number;
+}
+
 export const WriteCuisineDtoSchema = z.object({
   name: z.string().min(1, { message: "Cuisine name is required" }),
   description: z.string().optional().nullable(),

@@ -18,7 +18,6 @@ export class QueryCuisineController {
     private readonly queryCuisineService: QueryCuisineService,
   ) {}
 
-  @Public()
   @Get()
   async queryCuisines(
     @Query(QueryCuisineParamsValidationPipe) query: IQueryCuisineDto,

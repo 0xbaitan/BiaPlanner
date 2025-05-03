@@ -92,13 +92,13 @@ export default function RecipeCard(props: RecipeCardProps) {
               <dd className="bp-recipe_card__body__dl__dd">{formatSegmentedTimeAsString(recipe.cookingTime)}</dd>
             </div>
           )}
-          {recipe.cuisine.name && (
+          {recipe.cuisine?.name && (
             <div className="bp-recipe_card__body__dl__pair">
               <dt className="bp-recipe_card__body__dl__dt">
                 <PiChefHatFill className="bp-recipe_card__body__dl__dt__icon" />
                 Cuisine
               </dt>
-              <dd className="bp-recipe_card__body__dl__dd">{recipe.cuisine.name}</dd>
+              <dd className="bp-recipe_card__body__dl__dd">{recipe.cuisine?.name ?? "N/A"}</dd>
             </div>
           )}
           {recipe.difficultyLevel && (

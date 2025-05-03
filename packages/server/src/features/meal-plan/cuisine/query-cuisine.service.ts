@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginate, Paginated } from 'nestjs-paginate';
+import { ICuisineExtended, Paginated } from '@biaplanner/shared';
+import paginate from '@/util/paginate';
 import { CuisineEntity } from './cuisine.entity';
 import { ICuisine, IQueryCuisineDto } from '@biaplanner/shared';
+import { RecipeEntity } from '../recipe/recipe.entity';
 
 @Injectable()
 export class QueryCuisineService {
@@ -45,12 +47,12 @@ export class QueryCuisineService {
 
     const qb = this.cuisineRepository.createQueryBuilder('cuisine');
 
-    qb.select([
-      'cuisine.id',
-      'cuisine.name',
-      'cuisine.description',
-      'COUNT(recipe.id) as recipeCount',
-    ]);
+    qb.addSelect((subQuery: SelectQueryBuilder<CuisineEntity>) => {
+      return subQuery
+        .select('COUNT(recipe.id)', 'recipeCount')
+        .from(RecipeEntity, 'recipe')
+        .where('recipe.cuisineId = cuisine.id');
+    }, 'recipeCount');
 
     // Join recipes to count the number of recipes associated with each cuisine
     qb.leftJoin('cuisine.recipes', 'recipe');
@@ -71,20 +73,17 @@ export class QueryCuisineService {
     // Apply sorting
     this.applySorting(qb, sortBy);
 
-    // Group by cuisine ID to get the count of recipes
-    qb.groupBy('cuisine.id, cuisine.name, cuisine.description');
-
-    // Paginate the results
-    const results = await paginate<ICuisine>(
-      {
-        path: '/query/cuisines',
-        page,
-        limit,
-      },
+    // Paginate the
+    const results = await paginate<ICuisine, ICuisineExtended>(
       qb,
-      {
-        sortableColumns: ['name', 'createdAt'],
-        defaultLimit: 25,
+      page,
+      limit,
+      search,
+      (entities, raw) => {
+        return entities.map((entity, index) => ({
+          ...entity,
+          recipeCount: Number(raw[index].recipeCount),
+        }));
       },
     );
 
