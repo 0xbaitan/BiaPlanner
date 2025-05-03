@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { GlobalModule } from './global.module';
 import { Module } from '@nestjs/common';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,6 +26,7 @@ import { modules } from './modules';
     }),
 
     ...modules,
+    GlobalModule,
   ],
   controllers: [AppController],
   providers: [AppService],

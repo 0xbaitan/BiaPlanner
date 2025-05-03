@@ -70,8 +70,6 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
   ingredientId?: string;
 
   @OneToOne(() => RecipeIngredientEntity, {
-    eager: true,
-    cascade: true,
     onDelete: 'NO ACTION',
   })
   ingredient?: IRecipeIngredient;
@@ -79,6 +77,12 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
   @OneToMany(
     () => PantryItemPortionEntity,
     (portion) => portion.concreteIngredient,
+    {
+      cascade: true,
+      orphanedRowAction: 'delete',
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    },
   )
   pantryItemsWithPortions: IPantryItemPortion[];
 }

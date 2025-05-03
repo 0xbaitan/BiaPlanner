@@ -8,7 +8,7 @@ export type MealPlanFormState = {
   isRecipeOffcanvasVisible: boolean;
 };
 
-const initialState: MealPlanFormState = {
+export const initialState: MealPlanFormState = {
   selectedRecipe: undefined,
   isRecipeOffcanvasVisible: false,
 };
@@ -34,7 +34,7 @@ export const mealPlanSlice = createSlice({
   },
 });
 
-export const { selectRecipe, resetMealPlanForm } = mealPlanSlice.actions;
+export const mealPlanActions = mealPlanSlice.actions;
 export default mealPlanSlice.reducer;
 export type MealPlanFormAction = typeof mealPlanSlice.actions;
 
@@ -46,9 +46,9 @@ export function useMealPlanFormActions() {
   const dispatch = useStoreDispatch();
 
   return {
-    selectRecipe: (recipe: IRecipe) => dispatch(selectRecipe(recipe)),
+    selectRecipe: (recipe: IRecipe) => dispatch(mealPlanActions.selectRecipe(recipe)),
     showRecipeSelectionOffcanvas: () => dispatch(mealPlanSlice.actions.showRecipeSelectionOffcanvas()),
     hideRecipeSelectionOffcanvas: () => dispatch(mealPlanSlice.actions.hideRecipeSelectionOffcanvas()),
-    resetMealPlanForm: () => dispatch(resetMealPlanForm()),
+    resetMealPlanForm: () => dispatch(mealPlanActions.resetMealPlanForm()),
   };
 }

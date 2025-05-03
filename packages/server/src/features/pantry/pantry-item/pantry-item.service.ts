@@ -8,6 +8,7 @@ import {
   IPantryItem,
   IPantryItemPortion,
   IWritePantryItemDto,
+  IWritePantryItemPortionDto,
 } from '@biaplanner/shared';
 import { ProductService } from '../product/product.service';
 import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
@@ -142,6 +143,78 @@ export default class PantryItemService {
 
     pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
     pantryItem.reservedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return this.pantryItemRepository.update(pantryItem.id, pantryItem);
+  }
+
+  async releasePortion(pantryItemPortion: IPantryItemPortion) {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: pantryItemPortion.pantryItemId },
+    });
+
+    const portion = convertCookingMeasurement(
+      pantryItemPortion.portion,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    pantryItem.reservedMeasurements.magnitude -= portion.magnitude;
+    pantryItem.availableMeasurements.magnitude += portion.magnitude;
+    return this.pantryItemRepository.update(pantryItem.id, pantryItem);
+  }
+
+  async adjustPortion(
+    existingPortion: IPantryItemPortion,
+    updatedPortion: IWritePantryItemPortionDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: existingPortion.pantryItemId },
+    });
+
+    if (!pantryItem) {
+      throw new BadRequestException('Pantry item not found');
+    }
+
+    await this.releasePortion(existingPortion);
+
+    const convertedPortion = convertCookingMeasurement(
+      updatedPortion.portion,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new BadRequestException(
+        `Not enough available. Available: ${pantryItem.availableMeasurements.magnitude} ${pantryItem.availableMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
+      );
+    }
+
+    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.reservedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return this.pantryItemRepository.save(pantryItem);
+  }
+
+  async consumePortion(existingPortion: IPantryItemPortion) {
+    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+      where: { id: existingPortion.pantryItemId },
+    });
+
+    const convertedPortion = convertCookingMeasurement(
+      existingPortion.portion,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.reservedMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new BadRequestException(
+        `Not enough reserved. Reserved: ${pantryItem.reservedMeasurements.magnitude} ${pantryItem.reservedMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
+      );
+    }
+
+    pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
 
     return this.pantryItemRepository.save(pantryItem);
   }

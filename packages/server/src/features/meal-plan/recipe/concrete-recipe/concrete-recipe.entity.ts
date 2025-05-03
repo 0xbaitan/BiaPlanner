@@ -60,6 +60,12 @@ export class ConcreteRecipeEntity implements IConcreteRecipe {
   @OneToMany(
     () => ConcreteIngredientEntity,
     (ingredient) => ingredient.concreteRecipe,
+    {
+      cascade: true,
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+      orphanedRowAction: 'delete',
+    },
   )
   confirmedIngredients: IConcreteIngredient[];
 

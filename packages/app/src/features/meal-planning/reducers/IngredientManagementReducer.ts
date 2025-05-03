@@ -29,6 +29,8 @@ export const ingredientManagementSlice = createSlice({
   reducers: {
     selectRecipe: (state, action: PayloadAction<IRecipe>) => {
       state.selectedRecipe = action.payload;
+      state.mappedIngredients = {};
+      state.selectedIngredient = undefined;
     },
 
     resetMealPlanForm: (state) => {
@@ -217,7 +219,9 @@ export function useIngredientPantryPortionItemActions() {
     [mappedIngredients, selectedIngredient?.measurement?.unit]
   );
 
-  return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSummedPortion, getSelectedPantryItemPortion };
+  const selectRecipe = useSelectRecipe();
+
+  return { addPantryItemPortionToIngredient, removePantryItemPortionFromIngredient, getSummedPortion, getSelectedPantryItemPortion, selectRecipe };
 }
 
 export function useSelectedPantryItems(ingredientId: string) {
