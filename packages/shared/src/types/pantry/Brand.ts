@@ -14,6 +14,10 @@ export interface IBrand extends IBaseEntity {
   products?: IProduct[];
 }
 
+export interface IBrandExtended extends IBrand {
+  productCount: number;
+}
+
 export const WriteBrandDtoSchema = zfd.formData({
   name: z.string().min(1, { message: "Brand name is required" }),
   description: z.string().optional().nullable(),

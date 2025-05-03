@@ -1,9 +1,7 @@
-import { IBrand, IQueryBrandDto, IWriteBrandDto, Paginated } from "@biaplanner/shared";
+import { IBrand, IBrandExtended, IQueryBrandDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
-import serialiseIntoFormData from "@/util/serialiseIntoFormData";
-import { serialize } from "object-to-formdata";
 
 export const brandsApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
@@ -51,7 +49,7 @@ export const brandsApi = rootApi.injectEndpoints({
     }),
 
     // New searchBrands query
-    searchBrands: build.query<Paginated<IBrand>, IQueryBrandDto>({
+    searchBrands: build.query<Paginated<IBrandExtended>, IQueryBrandDto>({
       query: (query) => ({
         url: `/query/brands?${qs.stringify(query)}`,
         method: "GET",

@@ -54,7 +54,7 @@ export default function BrandsPage() {
         pageTitle="Brands"
         actionsComponent={
           <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate("./create")}>
+            <Button variant="primary" onClick={() => navigate(RoutePaths.BRANDS_CREATE)}>
               <FaPlus />
               &ensp;Create Brand
             </Button>

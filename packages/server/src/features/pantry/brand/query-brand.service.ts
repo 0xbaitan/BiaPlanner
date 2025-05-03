@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 import paginate from '@/util/paginate';
 import { BrandEntity } from './brand.entity';
-import { IBrand, IQueryBrandDto, Paginated } from '@biaplanner/shared';
+import {
+  IBrand,
+  IBrandExtended,
+  IQueryBrandDto,
+  Paginated,
+} from '@biaplanner/shared';
+import { ProductEntity } from '../product/product.entity';
 
 @Injectable()
 export class QueryBrandService {
@@ -45,16 +51,16 @@ export class QueryBrandService {
 
     const qb = this.brandRepository.createQueryBuilder('brand');
 
-    qb.select([
-      'brand.id',
-      'brand.name',
-      'brand.description',
-      'brand.logoId',
-      'COUNT(product.id) as productCount',
-    ]);
+    qb.addSelect((subQuery) => {
+      return subQuery
+        .select('COUNT(product.id)', 'productCount')
+        .from(ProductEntity, 'product')
+        .leftJoin('product.brand', 'productBrand')
+        .where('productBrand.id = brand.id');
+    }, 'productCount');
 
     // Join products to count the number of products associated with each brand
-    qb.leftJoin('brand.products', 'product');
+    qb.leftJoinAndSelect('brand.products', 'product');
 
     // Apply search filter
     if (search.trim().length > 0) {
@@ -72,11 +78,25 @@ export class QueryBrandService {
     // Apply sorting
     this.applySorting(qb, sortBy);
 
-    // Group by brand ID to get the count of products
-    qb.groupBy('brand.id, brand.name, brand.description, brand.logoId');
-
     // Paginate the results
-    const results = await paginate<IBrand>(qb, page, limit, search);
+    const results = await paginate<IBrand, IBrandExtended>(
+      qb,
+      page,
+      limit,
+      search,
+      (entities, raw) => {
+        const extendedBrands: IBrandExtended[] = entities.map(
+          (brand, index) => {
+            return {
+              ...brand,
+              productCount: Number(raw[index].productCount),
+            };
+          },
+        );
+
+        return extendedBrands;
+      },
+    );
 
     return results;
   }
