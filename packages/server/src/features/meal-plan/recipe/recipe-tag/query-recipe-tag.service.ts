@@ -3,16 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 
 import { RecipeTagEntity } from './recipe-tag.entity';
-import { IRecipeTag, Paginated } from '@biaplanner/shared';
-import {
-  IQueryRecipeTagDto,
-  IQueryRecipeTagItemDto,
-  QueryRecipeTagItemSchema,
-  RecipeTagSortBy,
-} from '@biaplanner/shared';
-import { paginate } from 'nestjs-paginate';
+import { IRecipeTag, IRecipeTagExtended, Paginated } from '@biaplanner/shared';
+import { IQueryRecipeTagDto, RecipeTagSortBy } from '@biaplanner/shared';
 
-import { raw } from 'mysql2';
+import { RecipeEntity } from '../recipe.entity';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryRecipeTagService {
@@ -41,7 +36,6 @@ export class QueryRecipeTagService {
       case RecipeTagSortBy.RECIPE_TAG_LEAST_RECIPES:
         qb.addOrderBy('recipeCount', 'ASC');
         break;
-
       case RecipeTagSortBy.DEFAULT:
       default:
         qb.addOrderBy('recipeTag.createdAt', 'DESC');
@@ -52,20 +46,23 @@ export class QueryRecipeTagService {
   /**
    * Query recipe tags with filters, search, and sorting.
    */
-  async query(query: IQueryRecipeTagDto): Promise<Paginated<IRecipeTag>> {
-    console.log('Querying recipe tags with query:', query);
-    const { sortBy, search, page, limit } = query;
+  async query(
+    query: IQueryRecipeTagDto,
+  ): Promise<Paginated<IRecipeTagExtended>> {
+    const { sortBy, search, page = 1, limit = 25 } = query;
 
     const qb = this.recipeTagRepository.createQueryBuilder('recipeTag');
 
-    qb.select([
-      'recipeTag.id as id',
-      'recipeTag.name as name',
-      'recipeTag.description as description',
-      'COUNT(recipe.id) as recipeCount',
-    ]);
-    // Join recipes to count the number of recipes associated with each tag
-    qb.leftJoin('recipeTag.recipes', 'recipe');
+    qb.addSelect((subQuery) => {
+      return subQuery
+        .select('COUNT(recipe.id)', 'recipeCount')
+        .from(RecipeEntity, 'recipe')
+        .leftJoin('recipe.tags', 'tag')
+        .where('tag.id = recipeTag.id');
+    }, 'recipeCount');
+
+    // Only join for counting, not selecting the full recipe entity
+    qb.leftJoinAndSelect('recipeTag.recipes', 'recipe');
 
     // Apply search filter
     if (search && search.trim().length > 0) {
@@ -87,29 +84,26 @@ export class QueryRecipeTagService {
     // Apply sorting
     this.applySorting(qb, sortBy);
 
-    // Group by recipe tag ID to get the count of recipes
-    // Add GROUP BY clause to include all non-aggregated columns
-    qb.groupBy('recipeTag.id, recipeTag.name, recipeTag.description');
-
     // Paginate the results
-    const results = await paginate<IRecipeTag>(
-      {
-        path: 'recipe-tags',
-        page,
-        limit,
-      },
-
+    return paginate<IRecipeTag, IRecipeTagExtended>(
       qb,
-
-      {
-        sortableColumns: ['createdAt'],
-        defaultSortBy: [['createdAt', 'DESC']],
-        maxLimit: 100,
+      page,
+      limit,
+      search,
+      (entities, raw) => {
+        const extendedRecipeTags: IRecipeTagExtended[] = entities.map(
+          (tag, index) => {
+            return {
+              ...tag,
+              recipeCount: Number(raw[index].recipeCount),
+            };
+          },
+        );
+        return extendedRecipeTags;
       },
     );
-
-    return results;
   }
+
   /**
    * Find a single recipe tag by ID.
    */

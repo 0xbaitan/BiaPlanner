@@ -7,8 +7,9 @@ import {
   PantryItemSortBy,
   IPantryItem,
   IQueryPantryItemDto,
+  Paginated,
 } from '@biaplanner/shared';
-import { paginate, Paginated } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryPantryItemService {
@@ -144,20 +145,7 @@ export class QueryPantryItemService {
       .addGroupBy('productCategory.id');
 
     // Paginate the results
-    const results = await paginate<IPantryItem>(
-      {
-        path: '/query/pantry-items',
-        page,
-        limit,
-      },
-      qb,
-      {
-        sortableColumns: ['createdAt', 'expiryDate', 'quantity'],
-        defaultLimit: 25,
-      },
-    );
-
-    return results;
+    return paginate<IPantryItem>(qb, page, limit, search);
   }
 
   /**

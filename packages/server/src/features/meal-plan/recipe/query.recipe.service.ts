@@ -3,6 +3,7 @@ import {
   IQueryRecipeDto,
   IRecipe,
   isUndefined,
+  Paginated,
   RecipeSortBy,
 } from '@biaplanner/shared';
 import { Injectable } from '@nestjs/common';
@@ -14,7 +15,7 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 import { RecipeEntity } from './recipe.entity';
-import { paginate, Paginated } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryRecipeService {
@@ -182,21 +183,7 @@ export class QueryRecipeService {
       .addGroupBy('productCategory.id')
       .addGroupBy('tag.id');
 
-    const results = await paginate<IRecipe>(
-      {
-        path: '/query/recipes',
-        page: query.page,
-        limit: query.limit,
-      },
-      qb,
-      {
-        sortableColumns: ['createdAt'],
-
-        defaultLimit: 10,
-      },
-    );
-
-    return results;
+    return paginate<IRecipe>(qb, query.page, query.limit, query.search);
   }
 
   async findOne(id: string): Promise<IRecipe> {

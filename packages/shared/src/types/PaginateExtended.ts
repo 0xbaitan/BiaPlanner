@@ -6,7 +6,18 @@ export const FilterParamsSchema = z.object({
   search: z.string().optional(),
 });
 
-export type Paginated<T> = NestjsPaginated<T>;
+export type Paginated<T> = {
+  data: T[];
+  meta: {
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    currentPage: number;
+    numItemsStartOnPage: number;
+    numItemsEndOnPage: number;
+    searchTermUsed?: string;
+  };
+};
 
 export type FuzzyQuery = {
   strategy: "trigram" | "soundex";

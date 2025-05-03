@@ -24,7 +24,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           columnDefs: [
             {
               header: "Recipe Title",
-              accessorFn: (row) => row.recipe.title,
+              accessorFn: (row) => row.recipe?.title ?? "N/A",
               accessorKey: "recipeTitle",
             },
             {

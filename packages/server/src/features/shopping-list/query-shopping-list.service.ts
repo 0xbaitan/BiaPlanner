@@ -9,7 +9,7 @@ import {
   Paginated,
   IShoppingList,
 } from '@biaplanner/shared';
-import { paginate } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryShoppingListService {
@@ -96,19 +96,7 @@ export class QueryShoppingListService {
     qb.addGroupBy('shoppingList.createdAt');
 
     // Paginate the results
-    const results = await paginate<IShoppingList>(
-      {
-        path: '/query/shopping-lists',
-        page,
-        limit,
-      },
-      qb,
-      {
-        sortableColumns: ['createdAt'],
-        defaultSortBy: [['createdAt', 'DESC']],
-      },
-    );
-
+    const results = await paginate<IShoppingList>(qb, page, limit, search);
     return results;
   }
 }

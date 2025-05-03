@@ -18,6 +18,7 @@ export class QueryRecipeTagController {
     private readonly queryRecipeTagService: QueryRecipeTagService,
   ) {}
 
+  @Public()
   @Get()
   async query(@Query(QueryRecipeTagValidation) query: IQueryRecipeTagDto) {
     const results = await this.queryRecipeTagService.query(query);

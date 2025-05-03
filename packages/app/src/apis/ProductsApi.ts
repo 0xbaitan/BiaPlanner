@@ -1,6 +1,5 @@
-import { IProduct, IQueryProductDto } from "@biaplanner/shared";
+import { IProduct, IQueryProductDto, Paginated } from "@biaplanner/shared";
 
-import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
 import { rootApi } from ".";
 

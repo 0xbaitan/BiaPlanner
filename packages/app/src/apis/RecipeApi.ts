@@ -1,6 +1,5 @@
-import { IQueryRecipeDto, IRecipe, IWriteRecipeDto } from "@biaplanner/shared";
+import { IQueryRecipeDto, IRecipe, IWriteRecipeDto, Paginated } from "@biaplanner/shared";
 
-import { Paginated } from "nestjs-paginate/lib/paginate";
 import qs from "qs";
 import { rootApi } from ".";
 

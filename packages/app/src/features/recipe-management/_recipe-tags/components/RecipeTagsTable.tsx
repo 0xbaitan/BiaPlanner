@@ -1,7 +1,7 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
-import { IQueryRecipeTagItemDto } from "@biaplanner/shared";
+import { IRecipeTagExtended } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { useDeleteRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type RecipeTagsTableProps = {
-  data: IQueryRecipeTagItemDto[];
+  data: IRecipeTagExtended[];
 };
 
 export default function RecipeTagsTable(props: RecipeTagsTableProps) {
@@ -28,7 +28,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
     isLoading,
   });
 
-  const { notify: notifyDeletion } = useDeletionToast<IQueryRecipeTagItemDto>({
+  const { notify: notifyDeletion } = useDeletionToast<IRecipeTagExtended>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
       if (!!item.id) {
@@ -39,7 +39,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
   });
 
   return (
-    <TabbedViewsTable<IQueryRecipeTagItemDto>
+    <TabbedViewsTable<IRecipeTagExtended>
       data={data}
       views={[
         {

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
-import { paginate, Paginated } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 import { BrandEntity } from './brand.entity';
-import { IBrand, IQueryBrandDto } from '@biaplanner/shared';
+import { IBrand, IQueryBrandDto, Paginated } from '@biaplanner/shared';
 
 @Injectable()
 export class QueryBrandService {
@@ -76,18 +76,7 @@ export class QueryBrandService {
     qb.groupBy('brand.id, brand.name, brand.description, brand.logoId');
 
     // Paginate the results
-    const results = await paginate<IBrand>(
-      {
-        path: '/query/brands',
-        page,
-        limit,
-      },
-      qb,
-      {
-        sortableColumns: ['name', 'createdAt'],
-        defaultLimit: 25,
-      },
-    );
+    const results = await paginate<IBrand>(qb, page, limit, search);
 
     return results;
   }

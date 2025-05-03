@@ -25,7 +25,9 @@ export default function BrandsPage() {
     refetchOnReconnect: true,
   });
 
-  const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationElements(brandsQuery.limit ?? 25, results);
+  const { numItems, currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = useMemo(() => {
+    return calculatePaginationElements(brandsQuery.limit ?? 25, results);
+  }, [brandsQuery.limit, results]);
 
   const brandsTable = useMemo(() => {
     return <BrandsTable data={results?.data ?? []} />;

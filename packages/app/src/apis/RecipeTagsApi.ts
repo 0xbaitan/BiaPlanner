@@ -1,4 +1,4 @@
-import { IQueryRecipeTagDto, IQueryRecipeTagItemDto, IRecipeTag, IWriteRecipeTagDto, Paginated } from "@biaplanner/shared";
+import { IQueryRecipeTagDto, IRecipeTag, IRecipeTagExtended, IWriteRecipeTagDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -53,7 +53,7 @@ const recipeTagsApi = rootApi.injectEndpoints({
       ],
     }),
 
-    searchRecipeTags: build.query<Paginated<IQueryRecipeTagItemDto>, IQueryRecipeTagDto>({
+    searchRecipeTags: build.query<Paginated<IRecipeTagExtended>, IQueryRecipeTagDto>({
       query: (query) => ({
         url: `/query/recipe-tags?${qs.stringify(query)}`,
         method: "GET",

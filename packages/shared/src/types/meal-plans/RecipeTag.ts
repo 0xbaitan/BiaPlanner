@@ -9,6 +9,10 @@ export interface IRecipeTag extends IBaseEntity {
   recipes?: IRecipe[];
 }
 
+export interface IRecipeTagExtended extends IRecipeTag {
+  recipeCount: number;
+}
+
 export const WriteRecipeTagDtoSchema = z.object({
   name: z.string().min(1, { message: "Recipe tag name is required" }),
   description: z.string().optional().nullable(),
@@ -39,9 +43,3 @@ export const QueryRecipeTagSchema = z.object({
 
 export type IQueryRecipeTagDto = z.infer<typeof QueryRecipeTagSchema>;
 export class QueryRecipeTagDto extends createZodDto(QueryRecipeTagSchema) {}
-
-export const QueryRecipeTagItemSchema = RecipeTagSchema.extend({
-  recipeCount: z.coerce.number().optional(),
-});
-
-export type IQueryRecipeTagItemDto = z.infer<typeof QueryRecipeTagItemSchema>;

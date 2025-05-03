@@ -10,7 +10,7 @@ import {
   ProductCategoryAllergenFilter,
   ProductCategorySortBy,
 } from '@biaplanner/shared';
-import { paginate } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryProductCategoryService {
@@ -71,20 +71,7 @@ export class QueryProductCategoryService {
     );
 
     // Paginate the results
-    const results = await paginate<IProductCategory>(
-      {
-        path: '/query/product-categories',
-        page,
-        limit,
-      },
-      qb,
-      {
-        sortableColumns: ['name', 'createdAt'],
-        defaultLimit: 25,
-      },
-    );
-
-    return results;
+    return paginate<IProductCategory>(qb, page, limit, search);
   }
 
   /**
