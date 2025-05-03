@@ -111,45 +111,6 @@ export default class PantryItemService {
     });
   }
 
-  async findIngredientCompatiblePantryItems(
-    ingredientId: string,
-    measurementType: CookingMeasurementType,
-  ): Promise<IPantryItem[]> {
-    const ingredient =
-      await this.recipeIngredientService.getRecipeIngredient(ingredientId);
-    const productCategories = ingredient.productCategories;
-
-    console.log('productCategories', productCategories);
-    try {
-      const applicablePantryItems = await this.pantryItemRepository
-        .createQueryBuilder('pantryItem')
-        .leftJoinAndSelect('pantryItem.product', 'product')
-        .leftJoinAndSelect('product.brand', 'brand')
-        .leftJoinAndSelect('product.productCategories', 'productCategories')
-        .where('productCategories.id IN (:...productCategoryIds)', {
-          productCategoryIds: productCategories.map((category) => category.id),
-        })
-        .andWhere('product?.measurementType = :measurementType', {
-          measurementType,
-        })
-        .andWhere('pantryItem.isExpired = :isExpired', { isExpired: false })
-        .andWhere('pantryItem.availableMeasurements IS NOT NULL')
-        .andWhere(
-          'JSON_EXTRACT(pantryItem.availableMeasurements, "$.magnitude") > :magnitude',
-          {
-            magnitude: 0,
-          },
-        )
-        .getMany();
-
-      console.log('applicablePantryItems', applicablePantryItems);
-      return applicablePantryItems;
-    } catch (e) {
-      console.error(e);
-      return [];
-    }
-  }
-
   async reservePortion(pantryItemPortion: IPantryItemPortion) {
     const pantryItem = await this.pantryItemRepository.findOneOrFail({
       where: { id: pantryItemPortion.pantryItemId },

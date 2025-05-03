@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 
@@ -8,14 +8,19 @@ import {
   IPantryItem,
   IQueryPantryItemDto,
   Paginated,
+  CookingMeasurementType,
+  IQueryCompatiblePantryItemDto,
 } from '@biaplanner/shared';
 import paginate from '@/util/paginate';
+import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
 
 @Injectable()
 export class QueryPantryItemService {
   constructor(
     @InjectRepository(PantryItemEntity)
     private readonly pantryItemRepository: Repository<PantryItemEntity>,
+    @Inject(RecipeIngredientService)
+    private readonly recipeIngredientService: RecipeIngredientService,
   ) {}
 
   /**
@@ -156,5 +161,47 @@ export class QueryPantryItemService {
       where: { id },
       relations: ['product', 'product.brand', 'product.productCategories'],
     });
+  }
+
+  async findIngredientCompatiblePantryItems(
+    dto: IQueryCompatiblePantryItemDto,
+  ): Promise<IPantryItem[]> {
+    const { ingredientId, measurementType } = dto;
+    const ingredient =
+      await this.recipeIngredientService.getRecipeIngredient(ingredientId);
+    const productCategories = ingredient.productCategories;
+
+    console.log('productCategories', productCategories);
+    try {
+      const qb = this.pantryItemRepository
+        .createQueryBuilder('pantryItem')
+        .leftJoinAndSelect('pantryItem.product', 'product')
+        .leftJoinAndSelect('product.brand', 'brand')
+        .leftJoinAndSelect('product.productCategories', 'productCategories')
+        .where('productCategories.id IN (:...productCategoryIds)', {
+          productCategoryIds: productCategories.map((category) => category.id),
+        });
+
+      if (measurementType) {
+        qb.andWhere('product.measurementType = :measurementType', {
+          measurementType,
+        });
+      }
+      qb.andWhere('pantryItem.isExpired = :isExpired', { isExpired: false })
+        .andWhere('pantryItem.availableMeasurements IS NOT NULL')
+        .andWhere(
+          'JSON_EXTRACT(pantryItem.availableMeasurements, "$.magnitude") > :magnitude',
+          {
+            magnitude: 0,
+          },
+        )
+        .getMany();
+
+      const applicablePantryItems = await qb.getMany();
+      return applicablePantryItems;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   }
 }

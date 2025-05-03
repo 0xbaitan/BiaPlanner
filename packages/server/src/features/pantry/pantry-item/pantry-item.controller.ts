@@ -10,6 +10,7 @@ import {
 import { User } from 'src/features/user-info/authentication/user.decorator';
 
 import { ZodValidationPipe } from 'nestjs-zod';
+import { Public } from '@/features/user-info/authentication/public.decorator';
 
 const WritePantryItemValidationPipe = new ZodValidationPipe(
   WritePantryItemSchema,
@@ -51,20 +52,5 @@ export default class PantryItemController {
       createdById,
     );
     return pantryItem;
-  }
-
-  @Get('/compatible')
-  async findIngredientCompatiblePantryItems(
-    @Query('measurementType') measurementType: CookingMeasurementType,
-    @Query('ingredientId') ingredientId: string,
-  ): Promise<IPantryItem[]> {
-    const pantryItems =
-      await this.pantryItemService.findIngredientCompatiblePantryItems(
-        ingredientId,
-
-        measurementType,
-      );
-
-    return pantryItems;
   }
 }

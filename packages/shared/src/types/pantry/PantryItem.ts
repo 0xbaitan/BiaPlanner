@@ -1,4 +1,5 @@
-import { CookingMeasurement } from "../CookingMeasurement";
+import { CookingMeasurement, CookingMeasurementType } from "../CookingMeasurement";
+
 import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IProduct } from "./Product";
@@ -73,5 +74,14 @@ export const QueryPantryItemDtoSchema = FilterParamsSchema.extend({
   productCategoryIds: z.array(z.string()).optional(),
   productIds: z.array(z.string()).optional(),
 });
+
+export const QueryCompatiblePantryItemDtoSchema = z.object({
+  ingredientId: z.string().min(1, {
+    message: "ingredient ID required",
+  }),
+  measurementType: z.nativeEnum(CookingMeasurementType).default(CookingMeasurementType.WEIGHT),
+});
+
+export type IQueryCompatiblePantryItemDto = z.infer<typeof QueryCompatiblePantryItemDtoSchema>;
 
 export type IQueryPantryItemDto = z.infer<typeof QueryPantryItemDtoSchema>;

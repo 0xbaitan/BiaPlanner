@@ -3,30 +3,37 @@ import "../styles/IngredientManagementOffcanvas.scss";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { useDeselectIngredient, useIngredientManagementState, useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";
+import { useGetIngredientCompatiblePantryItemsQuery, useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PantryItemField from "./PantryItemField";
 import { useEffect } from "react";
-import { useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 
 export default function IngredientManagementOffcanvas() {
   const { selectedIngredient, showIngredientManagementOffcanvas: show } = useIngredientManagementState();
   const targetMeasurement = selectedIngredient?.measurement;
-  const [getIngredientCompatiblePantryItems, { data: pantryItems, isLoading, isError, isSuccess }] = useLazyGetIngredientCompatiblePantryItemsQuery();
+  const {
+    data: pantryItems,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetIngredientCompatiblePantryItemsQuery(
+    {
+      ingredientId: String(selectedIngredient?.id),
+      measurementType: getCookingMeasurement(targetMeasurement?.unit ?? Weights.GRAM).type,
+    },
+    {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMountOrArgChange: true,
+      skip: !selectedIngredient?.id || !targetMeasurement,
+    }
+  );
   const { getSummedPortion } = useIngredientPantryPortionItemActions();
   const delesectIngredient = useDeselectIngredient();
   const selectedPortion = getSummedPortion(selectedIngredient?.id ?? "");
   const requiredPortion = selectedIngredient?.measurement;
-
-  useEffect(() => {
-    if (selectedIngredient) {
-      getIngredientCompatiblePantryItems({
-        ingredientId: selectedIngredient.id,
-        measurementType: getCookingMeasurement(targetMeasurement?.unit ?? Weights.GRAM).type,
-      });
-    }
-  }, [selectedIngredient, getIngredientCompatiblePantryItems, targetMeasurement?.unit]);
 
   return (
     <Offcanvas show={show} onHide={delesectIngredient} backdrop="static" placement="end" scroll>
