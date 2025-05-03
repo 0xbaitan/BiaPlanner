@@ -7,14 +7,17 @@ import NoResultsFound from "@/components/NoResultsFound";
 import PantryItemsFilterBar from "../components/PantryItemsFilterBar";
 import PantryItemsTable from "../components/PantryItemsTable";
 import { RoutePaths } from "@/Routes";
+import calculatePaginationElements from "@/util/calculatePaginationElements";
+import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import { useNavigate } from "react-router-dom";
 import { useSearchPantryItemsQuery } from "@/apis/PantryItemsApi";
 
 function PantryPage() {
   const navigate = useNavigate();
   const { pantryItemsQuery } = usePantryItemsCrudListState();
-  const { setSearch } = usePantryItemsCrudListActions();
+  const { setSearch, setLimit, setPage } = usePantryItemsCrudListActions();
   const { data: results, isLoading, isError } = useSearchPantryItemsQuery(pantryItemsQuery);
+  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, searchTermUsed, totalPages, itemsPerPage } = calculatePaginationElements(pantryItemsQuery.limit ?? 25, results);
 
   return (
     <CrudListPageLayout>
@@ -36,7 +39,7 @@ function PantryPage() {
       />
 
       <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={results?.meta?.totalItems ?? 0} itemsStart={1} itemsEnd={results?.meta?.totalItems ?? 0} itemDescription="pantry items" />}
+        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="pantry items" searchTermUsed={searchTermUsed} />}
         contentComponent={
           <CrudListPageLayout.Body.Content>
             {isLoading && <div>Loading...</div>}
@@ -44,6 +47,28 @@ function PantryPage() {
             {results?.data.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}
             {results?.data && results.data.length > 0 && <PantryItemsTable data={results.data} />}
           </CrudListPageLayout.Body.Content>
+        }
+        itemsPerPageCountSelectorComponent={
+          <CrudListPageLayout.Body.ItemsPerPageCountSelector
+            itemsCount={constrainItemsPerPage(itemsPerPage ?? 25)}
+            onChange={(limit) => {
+              setLimit(limit);
+            }}
+          />
+        }
+      />
+
+      <CrudListPageLayout.Footer
+        paginationComponent={
+          <CrudListPageLayout.Footer.Pagination
+            paginationProps={{
+              numPages: totalPages,
+              currentPage,
+              onPageChange: (page) => {
+                setPage(page);
+              },
+            }}
+          />
         }
       />
     </CrudListPageLayout>
