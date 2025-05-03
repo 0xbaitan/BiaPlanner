@@ -53,13 +53,13 @@ export const pantryItemsCrudListSlice = createSlice({
     },
 
     openConsumePantryItemModal: (state, action: PayloadAction<string>) => {
-      state.consumePantryItemModal.isOpen = true;
       state.consumePantryItemModal.pantryItemId = action.payload;
+      state.consumePantryItemModal.isOpen = true;
     },
 
     closeConsumePantryItemModal: (state) => {
-      state.consumePantryItemModal.isOpen = false;
       state.consumePantryItemModal.pantryItemId = null;
+      state.consumePantryItemModal.isOpen = false;
     },
   },
 });

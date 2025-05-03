@@ -26,6 +26,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "convert-units": "^2.3.4",
+    "dayjs": "^1.11.13",
     "dot-object": "^2.1.5",
     "force": "^0.0.3",
     "ms": "^2.1.3",

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ConcreteRecipeService } from './concrete-recipe.service';
 import { IConcreteRecipe } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -17,6 +17,11 @@ export class ConcreteRecipeController {
     @Inject(ConcreteRecipeService)
     private readonly concreteRecipeService: ConcreteRecipeService,
   ) {}
+
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<IConcreteRecipe> {
+    return this.concreteRecipeService.findOne(id);
+  }
 
   @Get()
   async findAll(): Promise<IConcreteRecipe[]> {

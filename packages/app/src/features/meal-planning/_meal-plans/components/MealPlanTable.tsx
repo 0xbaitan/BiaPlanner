@@ -1,4 +1,5 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import Routes, { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { IConcreteRecipe } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
@@ -49,7 +50,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           label: "Update Meal Plan",
           type: "edit",
           onClick: (row) => {
-            navigate(`./update/${row.id}`);
+            navigate(fillParametersInPath(RoutePaths.MEAL_PLANS_EDIT, { id: row.id }));
           },
         },
         {

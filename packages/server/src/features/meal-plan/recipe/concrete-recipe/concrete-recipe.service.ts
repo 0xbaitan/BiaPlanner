@@ -18,7 +18,14 @@ export class ConcreteRecipeService {
   async findOne(id: string) {
     return this.concreteRecipeRepository.findOneOrFail({
       where: { id },
-      relations: ['recipe', 'confirmedIngredients'],
+      relations: [
+        'recipe',
+        'confirmedIngredients',
+        'confirmedIngredients.ingredient',
+        'confirmedIngredients.pantryItemsWithPortions',
+        'confirmedIngredients.pantryItemsWithPortions.pantryItem',
+        'confirmedIngredients.pantryItemsWithPortions.pantryItem.product',
+      ],
     });
   }
 

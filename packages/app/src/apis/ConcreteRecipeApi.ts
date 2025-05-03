@@ -6,6 +6,14 @@ import { rootApi } from ".";
 
 export const concreteRecipesApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
+    getConcreteRecipe: build.query<IConcreteRecipe, string>({
+      query: (id) => ({
+        url: `/meal-plan/concrete-recipes/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "ConcreteRecipe", id }],
+    }),
+
     getConcreteRecipes: build.query<IConcreteRecipe[], void>({
       query: () => ({
         url: "/meal-plan/concrete-recipes",
@@ -21,6 +29,22 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: [
         "ConcreteRecipe",
+        { type: "ConcreteRecipe", id: "LIST" },
+        {
+          type: "PantryItem",
+          id: "COMPATIBLE",
+        },
+      ],
+    }),
+
+    updateConcreteRecipe: build.mutation<IConcreteRecipe, { id: string; dto: IWriteConcreteRecipeDto }>({
+      query: ({ id, dto }) => ({
+        url: `/meal-plan/concrete-recipes/${id}`,
+        method: "PUT",
+        body: dto,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "ConcreteRecipe", id },
         { type: "ConcreteRecipe", id: "LIST" },
         {
           type: "PantryItem",
@@ -50,4 +74,13 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useCreateConcreteRecipeMutation, useGetConcreteRecipesQuery, useSearchConcreteRecipesQuery, useLazyGetConcreteRecipesQuery } = concreteRecipesApi;
+export const {
+  useCreateConcreteRecipeMutation,
+  useGetConcreteRecipesQuery,
+  useSearchConcreteRecipesQuery,
+  useLazyGetConcreteRecipesQuery,
+  useGetConcreteRecipeQuery,
+  useLazyGetConcreteRecipeQuery,
+  useUpdateConcreteRecipeMutation,
+  useLazySearchConcreteRecipesQuery,
+} = concreteRecipesApi;

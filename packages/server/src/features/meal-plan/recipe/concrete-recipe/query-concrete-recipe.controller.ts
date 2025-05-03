@@ -4,10 +4,10 @@ import {
   IConcreteRecipe,
   IQueryConcreteRecipeDto,
   QueryConcreteRecipeDtoSchema,
+  Paginated,
 } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { Public } from '@/features/user-info/authentication/public.decorator';
-import { Paginated } from 'nestjs-paginate';
 
 const QueryConcreteRecipeValidationPipe = new ZodValidationPipe(
   QueryConcreteRecipeDtoSchema,

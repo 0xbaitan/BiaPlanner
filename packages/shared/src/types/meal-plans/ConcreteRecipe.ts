@@ -6,6 +6,7 @@ import { IBaseEntity } from "../BaseEntity";
 import { IPantryItem } from "../pantry";
 import { IRecipe } from "./Recipe";
 import { MealTypes } from "../units";
+import dayjs from "dayjs";
 import { z } from "zod";
 
 export interface IConcreteRecipe extends IBaseEntity {
@@ -33,11 +34,16 @@ export const WriteConcreteRecipeDtoSchema = z.object({
   confirmedIngredients: z.array(WriteConcreteIngredientDtoSchema).optional(),
   planDate: z.coerce
     .string()
-    .refine((val) => {
-      const date = new Date(val);
-      return !isNaN(date.getTime());
-    })
-    .optional(),
+    .refine(
+      (val) => {
+        const day = dayjs(val);
+        return day.isValid() && day.diff(dayjs(), "day") >= 0;
+      },
+      {
+        message: "Plan date must be a valid date and cannot be in the past",
+      }
+    )
+    .default(() => dayjs().format("YYYY-MM-DD")),
 });
 
 export const QueryConcreteRecipeDtoSchema = FilterParamsSchema.extend({

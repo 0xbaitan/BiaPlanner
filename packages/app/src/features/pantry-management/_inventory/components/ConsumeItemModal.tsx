@@ -20,7 +20,9 @@ export default function ConsumeItemModal() {
   const [consumeItem, { isSuccess: isConsumptionSuccess, isError: isConsumptionError, isLoading: isConsumptionPending, error }] = useConsumePantryItemMutation();
 
   const isOpen = consumePantryItemModal?.isOpen ?? false;
+
   const pantryItemId = consumePantryItemModal?.pantryItemId ?? null;
+
   const { closeConsumePantryItemModal } = usePantryItemsCrudListActions();
   const {
     data: pantryItem,
@@ -43,7 +45,7 @@ export default function ConsumeItemModal() {
     isError: isConsumptionError,
     isLoading: isConsumptionPending,
     onSuccess: () => {
-      closeConsumePantryItemModal();
+      // closeConsumePantryItemModal();
     },
     onFailure: () => {
       console.log("Error consuming pantry item");
@@ -72,18 +74,20 @@ export default function ConsumeItemModal() {
     async (data: IConsumePantryItemDto) => {
       notifyConsumption();
       await consumeItem({
-        id: String(pantryItemId),
+        id: String(data.pantryItemId),
         dto: data,
       });
     },
-    [consumeItem, notifyConsumption, pantryItemId]
+    [consumeItem, notifyConsumption]
   );
 
   useEffect(() => {
-    console.log(methods.watch());
-  }, [methods, methods.watch]);
+    if (pantryItemId) {
+      methods.setValue("pantryItemId", String(pantryItemId));
+    }
+  }, [methods, pantryItemId]);
 
-  if (isLoading) {
+  if (isLoading || !pantryItemId) {
     return (
       <Modal show={isOpen} onHide={closeConsumePantryItemModal} backdrop="static" scroll>
         <Modal.Header closeButton>

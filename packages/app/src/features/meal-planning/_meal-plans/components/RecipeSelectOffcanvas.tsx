@@ -5,13 +5,20 @@ import { useRecipesCrudListActions, useRecipesCrudListState } from "../../reduce
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
+import { IRecipe } from "@biaplanner/shared";
 import PaginationComponent from "@/components/PaginationComponent";
 import RecipeFilterDropdown from "./RecipeFilterDropdown";
 import RecipeHorizontalCard from "./RecipeHorizontalCard";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
+import { useCallback } from "react";
 import { useSearchRecipesQuery } from "@/apis/RecipeApi";
 
-export default function RecipeSelectOffcanvas() {
+export type RecipeSelectOffcanvasProps = {
+  onSelect: (recipe: IRecipe) => void;
+};
+
+export default function RecipeSelectOffcanvas(props: RecipeSelectOffcanvasProps) {
+  const { onSelect } = props;
   const { recipesQuery } = useRecipesCrudListState();
   const { setSearch, setPage } = useRecipesCrudListActions();
 
@@ -22,12 +29,21 @@ export default function RecipeSelectOffcanvas() {
   });
 
   const { isRecipeOffcanvasVisible } = useMealPlanFormState();
+  console.log("isRecipeOffcanvasVisible", isRecipeOffcanvasVisible);
   const { hideRecipeSelectionOffcanvas, selectRecipe } = useMealPlanFormActions();
   const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationElements(recipesQuery.limit ?? 25, results);
 
   const handleSearch = () => {
     setPage(1); // Reset to the first page when a new search is performed
   };
+
+  const handleSelectRecipe = useCallback(
+    (recipe: IRecipe) => {
+      selectRecipe(recipe);
+      onSelect(recipe);
+    },
+    [onSelect, selectRecipe]
+  );
 
   return (
     <Offcanvas show={isRecipeOffcanvasVisible} onHide={hideRecipeSelectionOffcanvas} backdrop="static" placement="end" scroll>
@@ -63,12 +79,7 @@ export default function RecipeSelectOffcanvas() {
             <ol className="bp-recipe_item_card_list">
               {results.data.map((recipe) => (
                 <li key={recipe.id} className="bp-recipe_item_card_list__item">
-                  <RecipeHorizontalCard
-                    recipe={recipe}
-                    onSelect={(recipe) => {
-                      selectRecipe(recipe);
-                    }}
-                  />
+                  <RecipeHorizontalCard recipe={recipe} onSelect={handleSelectRecipe} />
                 </li>
               ))}
             </ol>

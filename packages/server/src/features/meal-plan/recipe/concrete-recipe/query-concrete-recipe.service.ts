@@ -2,12 +2,13 @@ import {
   ConcreteRecipeSortBy,
   IConcreteRecipe,
   IQueryConcreteRecipeDto,
+  Paginated,
 } from '@biaplanner/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 import { ConcreteRecipeEntity } from './concrete-recipe.entity';
-import { paginate, Paginated } from 'nestjs-paginate';
+import paginate from '@/util/paginate';
 
 @Injectable()
 export class QueryConcreteRecipeService {
@@ -94,19 +95,9 @@ export class QueryConcreteRecipeService {
     this.applySorting(qb, sortBy);
 
     // Paginate the results
-    const results = await paginate<IConcreteRecipe>(
-      {
-        path: '/query/concrete-recipes',
-        page,
-        limit,
-      },
-      qb,
-      {
-        sortableColumns: ['createdAt', 'planDate'],
-        defaultLimit: 10,
-      },
-    );
+    const results = await paginate<IConcreteRecipe>(qb, page, limit, search);
 
+    // Return the paginated results
     return results;
   }
 }
