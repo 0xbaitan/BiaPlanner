@@ -178,4 +178,12 @@ export class PantryItemPortionService {
       );
     }
   }
+
+  public async findAllForConcreteIngredient(
+    concreteIngredientId: string,
+  ): Promise<IPantryItemPortion[]> {
+    return this.pantryItemPortionRepository.find({
+      where: { concreteIngredientId },
+    });
+  }
 }

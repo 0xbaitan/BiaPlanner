@@ -30,8 +30,11 @@ export class ConcreteRecipeService {
       where: { id },
       relations: [
         'recipe',
+        'recipe.ingredients',
+        'recipe.coverImage',
         'confirmedIngredients',
         'confirmedIngredients.pantryItemsWithPortions',
+        'confirmedIngredients.pantryItemsWithPortions.pantryItem',
       ],
     });
   }

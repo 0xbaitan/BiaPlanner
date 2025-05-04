@@ -1,13 +1,11 @@
 import { useCreateConcreteRecipeMutation, useGetConcreteRecipeQuery } from "@/apis/ConcreteRecipeApi";
-import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { IWriteConcreteRecipeDto } from "@biaplanner/shared";
 import MealPlanForm from "../components/MealPlanForm";
 import { RoutePaths } from "@/Routes";
-import { useEffect } from "react";
-import { useGetRecipeQuery } from "@/apis/RecipeApi";
-import { useSelectRecipe } from "../../reducers/IngredientManagementReducer";
+import { useMealPlanFormActions } from "../../reducers/MealPlanFormReducer";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function EditMealPlanPage() {
@@ -24,9 +22,10 @@ export default function EditMealPlanPage() {
     refetchOnMountOrArgChange: true,
     skip: !recipeId,
   });
-  const { resetMealPlanForm, selectRecipe } = useMealPlanFormActions();
-  const [createConcreteRecipe, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
+  const { resetForm, initialiseForm } = useMealPlanFormActions();
 
+  const [createConcreteRecipe, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
+  const [isInitialised, setInitialised] = useState<boolean>(false);
   const { notify: notifyOnCreate } = useSimpleStatusToast({
     idPrefix: "meal-plan-create",
     successMessage: "Meal plan updated successfully.",
@@ -45,11 +44,19 @@ export default function EditMealPlanPage() {
   });
 
   useEffect(() => {
-    if (recipeIsSuccess && mealPlan.recipe) {
-      selectRecipe(mealPlan.recipe);
-    }
-    return () => {};
-  }, [recipeIsSuccess, mealPlan, selectRecipe]);
+    const debounceTimeout = setTimeout(() => {
+      if (recipeIsSuccess && mealPlan && !isInitialised && mealPlan.recipe) {
+        resetForm();
+        initialiseForm(mealPlan);
+        setInitialised(true);
+        console.log("Initialised ingredients and selected recipe:", mealPlan.recipe);
+      }
+    }, 300); // 300ms debounce
+
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
+  }, [initialiseForm, isInitialised, mealPlan, recipeIsSuccess, resetForm]);
 
   const handleSubmit = async (values: IWriteConcreteRecipeDto) => {
     notifyOnCreate(); // Trigger toast notifications

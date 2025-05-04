@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { RecipeIngredientService } from './recipe-ingredient.service';
 
 @Controller('/meal-plan/recipe-ingredients')
@@ -15,5 +15,10 @@ export class RecipeIngredientController {
     } else {
       return this.recipeIngredientService.findAll();
     }
+  }
+
+  @Get('/:id')
+  async findOne(@Param('id') id: string) {
+    return this.recipeIngredientService.findOne(id);
   }
 }

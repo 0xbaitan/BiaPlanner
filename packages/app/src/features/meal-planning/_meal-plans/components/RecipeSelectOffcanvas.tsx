@@ -11,7 +11,6 @@ import RecipeFilterDropdown from "./RecipeFilterDropdown";
 import RecipeHorizontalCard from "./RecipeHorizontalCard";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
 import { useCallback } from "react";
-import { useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";
 import { useSearchRecipesQuery } from "@/apis/RecipeApi";
 
 export type RecipeSelectOffcanvasProps = {
@@ -32,7 +31,7 @@ export default function RecipeSelectOffcanvas(props: RecipeSelectOffcanvasProps)
   const { isRecipeOffcanvasVisible } = useMealPlanFormState();
   console.log("isRecipeOffcanvasVisible", isRecipeOffcanvasVisible);
   const { hideRecipeSelectionOffcanvas, selectRecipe } = useMealPlanFormActions();
-  const { selectRecipe: selectRecipeForIngredients } = useIngredientPantryPortionItemActions();
+  const { selectRecipe: selectRecipeForIngredients } = useMealPlanFormActions();
   const { currentPage, totalItems, numItemEndOnPage, numItemStartOnPage, totalPages } = calculatePaginationElements(recipesQuery.limit ?? 25, results);
 
   const handleSearch = () => {

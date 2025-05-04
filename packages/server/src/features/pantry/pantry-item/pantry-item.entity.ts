@@ -14,6 +14,7 @@ import {
   CookingMeasurement,
   IBrand,
   IPantryItem,
+  IPantryItemPortion,
   IProduct,
   IReminder,
   IUser,
@@ -22,6 +23,7 @@ import {
 } from '@biaplanner/shared';
 
 import { BrandEntity } from '../brand/brand.entity';
+import { PantryItemPortionEntity } from '@/features/meal-plan/recipe/pantry-item-portion/pantry-item-portion.entity';
 import { ProductEntity } from '../product/product.entity';
 import { ReminderEntity } from 'src/features/reminder/reminder.entity';
 import { UserEntity } from '../../user-info/user/user.entity';
@@ -60,6 +62,9 @@ export class PantryItemEntity implements IPantryItem {
 
   @Column({ default: false })
   isExpired?: boolean;
+
+  @OneToMany(() => PantryItemPortionEntity, (portion) => portion.pantryItem)
+  pantryItemPortions?: IPantryItemPortion[];
 
   @OneToMany(() => ReminderEntity, (reminder) => reminder.pantryItem)
   reminders?: IReminder[];

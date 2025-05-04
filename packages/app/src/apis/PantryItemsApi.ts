@@ -1,4 +1,4 @@
-import { CookingMeasurementType, IConsumePantryItemDto, IPantryItem, IQueryCompatiblePantryItemDto, IQueryPantryItemDto, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
+import { CookingMeasurementType, IConsumePantryItemDto, IPantryItem, IPantryItemWithReservationPresent, IQueryCompatiblePantryItemDto, IQueryPantryItemDto, IWritePantryItemDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -40,7 +40,7 @@ export const pantryItemsApi = rootApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: "PantryItem" as const, id: "LIST" }],
     }),
-    getIngredientCompatiblePantryItems: build.query<IPantryItem[], IQueryCompatiblePantryItemDto>({
+    getIngredientCompatiblePantryItems: build.query<IPantryItemWithReservationPresent[], IQueryCompatiblePantryItemDto>({
       query: ({ ingredientId, measurementType }) => ({
         url: `query/pantry-items/compatible`,
         method: "GET",

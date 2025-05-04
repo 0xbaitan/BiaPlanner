@@ -11,6 +11,13 @@ export class RecipeIngredientService {
     private recipeIngredientRepository: Repository<RecipeIngredientEntity>,
   ) {}
 
+  async findOne(id: string): Promise<IRecipeIngredient> {
+    return this.recipeIngredientRepository.findOneOrFail({
+      where: { id },
+      relations: ['productCategories'],
+    });
+  }
+
   async findAll(): Promise<IRecipeIngredient[]> {
     return this.recipeIngredientRepository.find();
   }

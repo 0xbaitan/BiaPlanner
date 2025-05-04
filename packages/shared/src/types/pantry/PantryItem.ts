@@ -2,6 +2,7 @@ import { CookingMeasurement, CookingMeasurementSchema, CookingMeasurementType } 
 
 import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
+import { IPantryItemPortion } from "../meal-plans";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
 import { IUser } from "../User";
@@ -24,6 +25,12 @@ export interface IPantryItem extends IBaseEntity {
   availableMeasurements?: CookingMeasurement;
   consumedMeasurements?: CookingMeasurement;
   reservedMeasurements?: CookingMeasurement;
+  pantryItemPortions?: IPantryItemPortion[];
+}
+
+export interface IPantryItemWithReservationPresent extends IPantryItem {
+  reservationPresent?: boolean;
+  reservedPortion?: CookingMeasurement;
 }
 
 export const WritePantryItemSchema = z.object({
@@ -80,6 +87,7 @@ export const QueryCompatiblePantryItemDtoSchema = z.object({
     message: "ingredient ID required",
   }),
   measurementType: z.nativeEnum(CookingMeasurementType).default(CookingMeasurementType.WEIGHT),
+  existingConcreteIngredientId: z.string().optional(),
 });
 
 export type IQueryCompatiblePantryItemDto = z.infer<typeof QueryCompatiblePantryItemDtoSchema>;

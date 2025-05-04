@@ -1,10 +1,10 @@
 import IngredientListItem from "./IngredientListItem";
 import IngredientManagementOffcanvas from "./IngredientManagementOffcanvas";
-import { useIngredientManagementState } from "../../reducers/IngredientManagementReducer";
+import { useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 import { useMemo } from "react";
 
 export default function IngredientList() {
-  const { selectedRecipe } = useIngredientManagementState();
+  const { selectedRecipe } = useMealPlanFormState();
   console.log("Selected recipe:", selectedRecipe?.ingredients);
   const ingredientListItems = useMemo(() => selectedRecipe?.ingredients.map((ingredient) => <IngredientListItem key={ingredient.id} ingredient={ingredient} index={selectedRecipe.ingredients.indexOf(ingredient) + 1} />) || [], [selectedRecipe]);
 

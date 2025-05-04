@@ -3,6 +3,7 @@ import { ComputeExpiryDatesService } from './compute-expiry-dates.service';
 import { Module } from '@nestjs/common';
 import PantryItemController from './pantry-item.controller';
 import { PantryItemEntity } from './pantry-item.entity';
+import { PantryItemPortionModule } from '@/features/meal-plan/recipe/pantry-item-portion/pantry-item-portion.module';
 import PantryItemService from './pantry-item.service';
 import ProductCategoryModule from '../product/category/product-category.module';
 import ProductModule from '../product/product.module';

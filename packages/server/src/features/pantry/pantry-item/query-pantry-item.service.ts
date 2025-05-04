@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import {
+  Repository,
+  SelectQueryBuilder,
+  Brackets,
+  EntityManager,
+} from 'typeorm';
 
 import { PantryItemEntity } from './pantry-item.entity';
 import {
@@ -10,9 +15,13 @@ import {
   Paginated,
   CookingMeasurementType,
   IQueryCompatiblePantryItemDto,
+  IPantryItemPortion,
+  IPantryItemWithReservationPresent,
 } from '@biaplanner/shared';
 import paginate from '@/util/paginate';
 import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
+import { PantryItemPortionService } from '@/features/meal-plan/recipe/pantry-item-portion/pantry-item-portion.service';
+import { PantryItemPortionEntity } from '@/features/meal-plan/recipe/pantry-item-portion/pantry-item-portion.entity';
 
 @Injectable()
 export class QueryPantryItemService {
@@ -21,6 +30,9 @@ export class QueryPantryItemService {
     private readonly pantryItemRepository: Repository<PantryItemEntity>,
     @Inject(RecipeIngredientService)
     private readonly recipeIngredientService: RecipeIngredientService,
+
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   /**
@@ -165,8 +177,8 @@ export class QueryPantryItemService {
 
   async findIngredientCompatiblePantryItems(
     dto: IQueryCompatiblePantryItemDto,
-  ): Promise<IPantryItem[]> {
-    const { ingredientId, measurementType } = dto;
+  ): Promise<IPantryItemWithReservationPresent[]> {
+    const { ingredientId, measurementType, existingConcreteIngredientId } = dto;
     const ingredient =
       await this.recipeIngredientService.getRecipeIngredient(ingredientId);
     const productCategories = ingredient.productCategories;
@@ -178,6 +190,7 @@ export class QueryPantryItemService {
         .leftJoinAndSelect('pantryItem.product', 'product')
         .leftJoinAndSelect('product.brand', 'brand')
         .leftJoinAndSelect('product.productCategories', 'productCategories')
+        .leftJoinAndSelect('pantryItem.pantryItemPortions', 'pantryItemPortion')
         .where('productCategories.id IN (:...productCategoryIds)', {
           productCategoryIds: productCategories.map((category) => category.id),
         });
@@ -187,21 +200,70 @@ export class QueryPantryItemService {
           measurementType,
         });
       }
-      qb.andWhere('pantryItem.isExpired = :isExpired', { isExpired: false })
-        .andWhere('pantryItem.availableMeasurements IS NOT NULL')
-        .andWhere(
-          'JSON_EXTRACT(pantryItem.availableMeasurements, "$.magnitude") > :magnitude',
-          {
-            magnitude: 0,
-          },
-        )
-        .getMany();
+      qb.andWhere('pantryItem.isExpired = :isExpired', {
+        isExpired: false,
+      }).andWhere('pantryItem.availableMeasurements IS NOT NULL');
 
-      const applicablePantryItems = await qb.getMany();
+      qb.andWhere(
+        'JSON_EXTRACT(pantryItem.availableMeasurements, "$.magnitude") > :magnitude',
+        {
+          magnitude: 0,
+        },
+      );
+
+      if (existingConcreteIngredientId) {
+        qb.orWhere(
+          'pantryItemPortion.concreteIngredientId = :concreteIngredientId',
+          {
+            concreteIngredientId: existingConcreteIngredientId,
+          },
+        );
+      }
+
+      let applicablePantryItems: IPantryItemWithReservationPresent[] =
+        await qb.getMany();
+
+      if (existingConcreteIngredientId) {
+        applicablePantryItems = await Promise.all(
+          applicablePantryItems.map((item) =>
+            this.populateWithReservations(item, existingConcreteIngredientId),
+          ),
+        );
+      }
+
       return applicablePantryItems;
     } catch (e) {
       console.error(e);
       return [];
     }
+  }
+
+  private async populateWithReservations(
+    pantryItem: IPantryItem,
+    concreteIngredientId: string,
+  ): Promise<IPantryItemWithReservationPresent> {
+    const existingPantryItemPortion = await this.entityManager
+      .getRepository(PantryItemPortionEntity)
+      .createQueryBuilder('pantryItemPortion')
+      .where('pantryItemPortion.concreteIngredientId = :concreteIngredientId', {
+        concreteIngredientId,
+      })
+      .andWhere('pantryItemPortion.pantryItemId = :pantryItemId', {
+        pantryItemId: pantryItem.id,
+      })
+      .getOne();
+
+    if (existingPantryItemPortion) {
+      return {
+        ...pantryItem,
+        reservationPresent: true,
+        reservedPortion: {
+          magnitude: existingPantryItemPortion.portion.magnitude,
+          unit: existingPantryItemPortion.portion.unit,
+        },
+      };
+    }
+
+    return pantryItem;
   }
 }

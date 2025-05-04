@@ -14,7 +14,7 @@ export type CookingMeasurementInputProps = {
   disabled?: boolean;
   minMagnitude?: number;
   maxMagnitude?: number;
-} & React.HTMLAttributes<HTMLDivElement>;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">;
 
 type CookingMeasurementInputState = CookingMeasurement;
 enum CookingMeasurementInputActionType {

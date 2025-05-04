@@ -5,8 +5,15 @@ export type GetRecipeIngredientsParms = {
   recipeId?: string;
 };
 
-export const RecipeApi = rootApi.injectEndpoints({
+export const RecipeIngredientApi = rootApi.injectEndpoints({
   endpoints: (build) => ({
+    getRecipeIngredient: build.query<IRecipeIngredient, string>({
+      query: (id: string) => ({
+        url: `/meal-plan/recipe-ingredients/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => (result ? [{ type: "RecipeIngredient", id }] : [{ type: "RecipeIngredient", id }]),
+    }),
     getRecipeIngredients: build.query<IRecipeIngredient[], GetRecipeIngredientsParms>({
       query: (params: GetRecipeIngredientsParms) => ({
         url: `/meal-plan/recipe-ingredients`,
@@ -18,4 +25,4 @@ export const RecipeApi = rootApi.injectEndpoints({
   }),
 });
 
-export const { useGetRecipeIngredientsQuery } = RecipeApi;
+export const { useGetRecipeIngredientsQuery, useGetRecipeIngredientQuery } = RecipeIngredientApi;

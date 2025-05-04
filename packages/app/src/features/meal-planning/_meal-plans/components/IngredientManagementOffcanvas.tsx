@@ -1,17 +1,18 @@
 import "../styles/IngredientManagementOffcanvas.scss";
 
+import { CookingMeasurement, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
-import { Weights, getCookingMeasurement } from "@biaplanner/shared";
-import { useDeselectIngredient, useIngredientManagementState, useIngredientPantryPortionItemActions } from "../../reducers/IngredientManagementReducer";
-import { useGetIngredientCompatiblePantryItemsQuery, useLazyGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
+import { useExtendedMealPlanFormState, useMealPlanFormActions } from "../../reducers/MealPlanFormReducer";
 
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PantryItemField from "./PantryItemField";
-import { useEffect } from "react";
+import { useGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
+import { useMemo } from "react";
 
 export default function IngredientManagementOffcanvas() {
-  const { selectedIngredient, showIngredientManagementOffcanvas: show } = useIngredientManagementState();
+  const { selectedIngredient, isIngredientManagementOffcanvasVisible, formValue } = useExtendedMealPlanFormState();
+  console.log(formValue.confirmedIngredients);
   const targetMeasurement = selectedIngredient?.measurement;
   const {
     data: pantryItems,
@@ -22,6 +23,7 @@ export default function IngredientManagementOffcanvas() {
     {
       ingredientId: String(selectedIngredient?.id),
       measurementType: getCookingMeasurement(targetMeasurement?.unit ?? Weights.GRAM).type,
+      existingConcreteIngredientId: "47",
     },
     {
       refetchOnFocus: true,
@@ -30,22 +32,34 @@ export default function IngredientManagementOffcanvas() {
       skip: !selectedIngredient?.id || !targetMeasurement,
     }
   );
-  const { getSummedPortion } = useIngredientPantryPortionItemActions();
-  const delesectIngredient = useDeselectIngredient();
-  const selectedPortion = getSummedPortion(selectedIngredient?.id ?? "");
+
+  const { getSummedPortion, hideIngredientManagementOffcanvas } = useMealPlanFormActions();
+
+  const summedPortion: CookingMeasurement | undefined = useMemo(() => {
+    const ingredientId = selectedIngredient?.id;
+    const measurementUnit = selectedIngredient?.measurement?.unit;
+    if (!ingredientId || !measurementUnit) {
+      return undefined;
+    }
+    const summed = getSummedPortion(ingredientId, measurementUnit);
+    return summed;
+  }, [getSummedPortion, selectedIngredient?.id, selectedIngredient?.measurement?.unit]);
+
   const requiredPortion = selectedIngredient?.measurement;
 
   return (
-    <Offcanvas show={show} onHide={delesectIngredient} backdrop="static" placement="end" scroll>
+    <Offcanvas show={isIngredientManagementOffcanvasVisible} onHide={hideIngredientManagementOffcanvas} backdrop="static" placement="end" scroll>
       <Offcanvas.Header closeButton className="bp-ingredient_management_offcanvas__header">
         <Offcanvas.Title>
           <Heading level={Heading.Level.H2}>Select portions from your pantry</Heading>
           <Heading level={Heading.Level.H3}>For {selectedIngredient?.title ?? "N/A"}</Heading>
           <div className="bp-ingredient_management_offcanvas__header__pills">
             <div className="bp-ingredient_management_offcanvas__header__portion_status_pill">
-              {selectedPortion.magnitude} / {requiredPortion?.magnitude} {selectedPortion.unit} selected
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__text">Selected portions:</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__value">{summedPortion?.magnitude ?? 0}</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__unit">{summedPortion?.unit}</span>
             </div>
-            <PortionFullfilmentStatusPill required={requiredPortion?.magnitude ?? 0} selected={selectedPortion.magnitude} />
+            <PortionFullfilmentStatusPill required={requiredPortion?.magnitude ?? 0} selected={summedPortion?.magnitude ?? 0} />
           </div>
         </Offcanvas.Title>
       </Offcanvas.Header>

@@ -16,7 +16,6 @@ import { MdCancel } from "react-icons/md";
 import RecipeSelectOffcanvas from "./RecipeSelectOffcanvas";
 import dayjs from "dayjs";
 import { getImagePath } from "@/util/imageFunctions";
-import { useConfirmedIngredients } from "../../reducers/IngredientManagementReducer";
 import { useNavigate } from "react-router-dom";
 import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,7 +29,7 @@ export type MealPlanFormValues = {
 
 export default function MealPlanForm(props: MealPlanFormValues) {
   const { initialValue, onSubmit } = props;
-  const { selectedRecipe } = useMealPlanFormState();
+  const { selectedRecipe, formValue, disableRecipeSelection } = useMealPlanFormState();
   const methods = useForm<IWriteConcreteRecipeDto>({
     defaultValues: initialValue
       ? {
@@ -49,11 +48,10 @@ export default function MealPlanForm(props: MealPlanFormValues) {
           recipeId: selectedRecipe?.id,
         },
     mode: "onBlur",
-    resolver: zodResolver(WriteConcreteRecipeDtoSchema),
   });
   const navigate = useNavigate();
   const disableSubmit = props.disableSubmit ?? false;
-  const confirmedIngredients = useConfirmedIngredients();
+
   const { handleSubmit, setValue } = methods;
   const { showRecipeSelectionOffcanvas } = useMealPlanFormActions();
 
@@ -65,17 +63,28 @@ export default function MealPlanForm(props: MealPlanFormValues) {
         return;
       }
 
-      const mealPlan: IWriteConcreteRecipeDto = {
+      const dto: IWriteConcreteRecipeDto = {
         ...values,
-        confirmedIngredients,
-        recipeId: selectedRecipe?.id,
+        ...formValue,
       };
 
-      console.log("Meal Plan submitted:", mealPlan);
+      const parsedDtoResult = WriteConcreteRecipeDtoSchema.safeParse(dto);
+      if (!parsedDtoResult.success) {
+        parsedDtoResult.error.issues.forEach((issue) => {
+          methods.setError(issue.path[0] as keyof IWriteConcreteRecipeDto, {
+            type: "manual",
+            message: issue.message,
+          });
+        });
 
-      onSubmit(mealPlan);
+        return;
+      }
+
+      const parsedDto: IWriteConcreteRecipeDto = parsedDtoResult.data;
+      onSubmit(parsedDto);
     },
-    [confirmedIngredients, onSubmit, selectedRecipe]
+
+    [formValue, methods, onSubmit, selectedRecipe]
   );
 
   useEffect(() => {
@@ -106,6 +115,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
               }}
             />
             <Button
+              disabled={disableRecipeSelection}
               onClick={() => {
                 showRecipeSelectionOffcanvas();
                 console.log("Recipe selection offcanvas opened");

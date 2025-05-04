@@ -34,6 +34,7 @@ export class QueryPantryItemController {
     return this.queryPantryItemService.query(query);
   }
 
+  @Public()
   @Get('/compatible')
   async queryCompatible(
     @Query(QueryPantryItemCompatibleValidationPipe)
