@@ -170,4 +170,44 @@ export class ConcreteRecipeService {
       return this.updateWithManager(manager, id, dto);
     });
   }
+
+  /**
+   * Delete with manager.
+   *
+   */
+  async deleteWithManager(manager: EntityManager, id: string): Promise<void> {
+    const concreteRecipe = await manager.findOneOrFail(ConcreteRecipeEntity, {
+      where: { id },
+      relations: ['confirmedIngredients'],
+    });
+
+    // Delete concrete ingredients
+    await Promise.all(
+      concreteRecipe.confirmedIngredients.map((ingredient) =>
+        this.concreteIngredientService.deleteWithManager(
+          manager,
+          ingredient.id,
+        ),
+      ),
+    );
+
+    // Delete the concrete recipe
+    await manager.delete(ConcreteRecipeEntity, id);
+  }
+
+  /**
+   * Delete a concrete recipe.
+   */
+  async delete(id: string): Promise<void> {
+    return this.deleteWithManager(this.concreteRecipeRepository.manager, id);
+  }
+
+  /**
+   * Delete a concrete recipe with transaction.
+   */
+  async deleteWithTransaction(id: string): Promise<void> {
+    return this.transactionContext.execute(async (manager: EntityManager) => {
+      return this.deleteWithManager(manager, id);
+    });
+  }
 }

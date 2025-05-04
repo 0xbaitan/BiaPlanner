@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -51,5 +52,10 @@ export class ConcreteRecipeController {
     dto: IWriteConcreteRecipeDto,
   ): Promise<IConcreteRecipe> {
     return this.concreteRecipeService.updateWithTransaction(id, dto);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.concreteRecipeService.deleteWithTransaction(id);
   }
 }

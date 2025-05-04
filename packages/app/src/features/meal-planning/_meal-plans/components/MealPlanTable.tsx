@@ -1,10 +1,13 @@
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-import Routes, { RoutePaths, fillParametersInPath } from "@/Routes";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { IConcreteRecipe } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
+import { useDeleteConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
+import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type MealPlanTableProps = {
   data: IConcreteRecipe[];
@@ -13,6 +16,26 @@ export type MealPlanTableProps = {
 export default function MealPlanTable(props: MealPlanTableProps) {
   const { data } = props;
   const navigate = useNavigate();
+  const [deleteConcreteRecipe, { isLoading: isDeleting, isError: isDeleteError, isSuccess: isDeleteSuccess }] = useDeleteConcreteRecipeMutation();
+
+  const { notify: notifyAfterDeletion } = useSimpleStatusToast({
+    successMessage: "Meal plan deleted successfully",
+    errorMessage: "Failed to delete meal plan",
+    loadingMessage: "Deleting meal plan...",
+    isLoading: isDeleting,
+    isError: isDeleteError,
+
+    isSuccess: isDeleteSuccess,
+    idPrefix: "meal-plan-deletion",
+  });
+
+  const { notify: notifyOnDelete } = useDeletionToast<IConcreteRecipe>({
+    identifierSelector: (item) => item?.recipe?.title ?? "this meal plan",
+    onConfirm: async (item) => {
+      notifyAfterDeletion();
+      await deleteConcreteRecipe(item.id);
+    },
+  });
 
   return (
     <TabbedViewsTable<IConcreteRecipe>
@@ -58,7 +81,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           label: "Delete Meal Plan",
           type: "delete",
           onClick: (row) => {
-            console.log(`Delete meal plan with ID: ${row.id}`);
+            notifyOnDelete(row);
           },
         },
       ]}

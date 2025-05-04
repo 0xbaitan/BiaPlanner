@@ -63,7 +63,6 @@ export default function MealPlanForm(props: MealPlanFormValues) {
       }
 
       const dto: IWriteConcreteRecipeDto = {
-        ...values,
         ...formValue,
       };
 
@@ -197,7 +196,7 @@ function MealTypeSelectInput() {
 function PlanDateField() {
   const { formValue } = useMealPlanFormState();
   const { setFormValue } = useMealPlanFormActions();
-  console.log("Plan date field value:");
+  console.log("Plan date field value:", formValue.planDate);
   return (
     <Form.Group>
       <Form.Label>Plan date</Form.Label>

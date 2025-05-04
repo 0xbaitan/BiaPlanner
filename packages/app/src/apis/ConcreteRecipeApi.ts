@@ -71,6 +71,29 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
             ]
           : [{ type: "ConcreteRecipe", id: "LIST" }],
     }),
+
+    deleteConcreteRecipe: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/meal-plan/concrete-recipes/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "ConcreteRecipe", id },
+
+        { type: "ConcreteRecipe", id: "LIST" },
+        {
+          type: "PantryItem",
+          id: "COMPATIBLE",
+        },
+        {
+          type: "PantryItem",
+          id: "LIST",
+        },
+        {
+          type: "PantryItem",
+        },
+      ],
+    }),
   }),
 });
 
@@ -83,4 +106,5 @@ export const {
   useLazyGetConcreteRecipeQuery,
   useUpdateConcreteRecipeMutation,
   useLazySearchConcreteRecipesQuery,
+  useDeleteConcreteRecipeMutation,
 } = concreteRecipesApi;

@@ -264,4 +264,30 @@ export class ConcreteIngredientService {
       dto,
     );
   }
+
+  public async deleteWithManager(
+    manager: EntityManager,
+    id: string,
+  ): Promise<void> {
+    const ingredient = await manager.findOne(ConcreteIngredientEntity, {
+      where: { id },
+      relations: ['pantryItemsWithPortions'],
+    });
+
+    if (!ingredient) {
+      throw new BadRequestException(
+        `Concrete ingredient with id ${id} not found`,
+      );
+    }
+
+    // Delete pantry item portions
+    await Promise.all(
+      ingredient.pantryItemsWithPortions.map((portion) =>
+        this.pantryItemPortionService.deleteWithManager(manager, portion.id),
+      ),
+    );
+
+    // Delete the concrete ingredient
+    await manager.delete(ConcreteIngredientEntity, id);
+  }
 }
