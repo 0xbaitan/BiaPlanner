@@ -101,4 +101,73 @@ export class ConcreteRecipeService {
       where: { id: createdRecipeId },
     });
   }
+
+  private async updateWithManager(
+    manager: EntityManager,
+    id: string,
+    dto: IWriteConcreteRecipeDto,
+  ): Promise<IConcreteRecipe> {
+    const existingConcreteRecipe = await manager.findOneOrFail(
+      ConcreteRecipeEntity,
+      {
+        where: { id },
+        relations: ['confirmedIngredients'],
+      },
+    );
+
+    const { confirmedIngredients, ...recipeDto } = dto;
+
+    confirmedIngredients.forEach((ingredient) => {
+      if (!ingredient.id) {
+        throw new InternalServerErrorException(
+          'Ingredient ID is required for update',
+        );
+      }
+
+      ingredient.concreteRecipeId = existingConcreteRecipe.id;
+    });
+
+    // Update concrete recipe ingredients
+    await Promise.all(
+      confirmedIngredients.map(async (ingredient) =>
+        this.concreteIngredientService.updateWithManager(
+          manager,
+          ingredient.id,
+          ingredient,
+        ),
+      ),
+    );
+
+    // Update the concrete recipe
+    await manager.update(ConcreteRecipeEntity, id, recipeDto);
+
+    // Return the updated concrete recipe with relations
+    return manager.findOneOrFail(ConcreteRecipeEntity, {
+      where: { id },
+      relations: ['confirmedIngredients'],
+    });
+  }
+
+  /**
+   * Update a concrete recipe.
+   */
+  async update(
+    id: string,
+    dto: IWriteConcreteRecipeDto,
+  ): Promise<IConcreteRecipe> {
+    return this.updateWithManager(
+      this.concreteRecipeRepository.manager,
+      id,
+      dto,
+    );
+  }
+
+  async updateWithTransaction(
+    id: string,
+    dto: IWriteConcreteRecipeDto,
+  ): Promise<IConcreteRecipe> {
+    return this.transactionContext.execute(async (manager: EntityManager) => {
+      return this.updateWithManager(manager, id, dto);
+    });
+  }
 }

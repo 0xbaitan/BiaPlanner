@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ConcreteRecipeService } from './concrete-recipe.service';
 import { IConcreteRecipe } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -34,5 +42,14 @@ export class ConcreteRecipeController {
     dto: IWriteConcreteRecipeDto,
   ): Promise<IConcreteRecipe> {
     return this.concreteRecipeService.create(dto);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body(WriteConcreteRecipeValidationPipe)
+    dto: IWriteConcreteRecipeDto,
+  ): Promise<IConcreteRecipe> {
+    return this.concreteRecipeService.updateWithTransaction(id, dto);
   }
 }

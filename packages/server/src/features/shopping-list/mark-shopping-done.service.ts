@@ -58,7 +58,7 @@ export class MarkShoppingDoneService {
     });
     await Promise.all(
       pantryItems.map(async (item) => {
-        const pantryItem = await this.pantryItemService.createPantryItem(
+        const pantryItem = await this.pantryItemService.create(
           item,
           createdById,
         );

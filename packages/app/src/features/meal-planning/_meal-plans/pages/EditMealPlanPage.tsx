@@ -1,5 +1,5 @@
-import { useCreateConcreteRecipeMutation, useGetConcreteRecipeQuery } from "@/apis/ConcreteRecipeApi";
 import { useEffect, useState } from "react";
+import { useGetConcreteRecipeQuery, useUpdateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { IWriteConcreteRecipeDto } from "@biaplanner/shared";
@@ -9,22 +9,22 @@ import { useMealPlanFormActions } from "../../reducers/MealPlanFormReducer";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function EditMealPlanPage() {
-  const { id: recipeId } = useParams();
+  const { id: mealPlanId } = useParams();
   const navigate = useNavigate();
   const {
     data: mealPlan,
     isError: recipeIsError,
     isLoading: recipeIsLoading,
     isSuccess: recipeIsSuccess,
-  } = useGetConcreteRecipeQuery(String(recipeId), {
+  } = useGetConcreteRecipeQuery(String(mealPlanId), {
     refetchOnFocus: true,
     refetchOnReconnect: true,
     refetchOnMountOrArgChange: true,
-    skip: !recipeId,
+    skip: !mealPlanId,
   });
   const { resetForm, initialiseForm } = useMealPlanFormActions();
 
-  const [createConcreteRecipe, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
+  const [updateConcreteRecipe, { isLoading, isError, isSuccess }] = useUpdateConcreteRecipeMutation();
   const [isInitialised, setInitialised] = useState<boolean>(false);
   const { notify: notifyOnCreate } = useSimpleStatusToast({
     idPrefix: "meal-plan-create",
@@ -61,7 +61,10 @@ export default function EditMealPlanPage() {
   const handleSubmit = async (values: IWriteConcreteRecipeDto) => {
     notifyOnCreate(); // Trigger toast notifications
     try {
-      await createConcreteRecipe(values).unwrap();
+      await updateConcreteRecipe({
+        id: String(mealPlanId),
+        dto: values,
+      });
     } catch (error) {
       console.error("Error creating meal plan:", error);
     }

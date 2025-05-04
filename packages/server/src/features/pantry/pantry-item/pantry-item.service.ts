@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, EntityManager, In } from 'typeorm';
 import { PantryItemEntity } from './pantry-item.entity';
-import { In, Repository } from 'typeorm';
 import {
   CookingMeasurementType,
   IConsumePantryItemDto,
@@ -12,121 +12,220 @@ import {
 } from '@biaplanner/shared';
 import { ProductService } from '../product/product.service';
 import { RecipeIngredientService } from '@/features/meal-plan/recipe/recipe-ingredient/recipe-ingredient.service';
-import convertCookingMeasurement from '@biaplanner/shared/build/util/CookingMeasurementConversion';
+import convertCookingMeasurement, {
+  addMeasurements,
+  subtractMeasurements,
+} from '@biaplanner/shared/build/util/CookingMeasurementConversion';
 
 @Injectable()
 export default class PantryItemService {
   constructor(
     @InjectRepository(PantryItemEntity)
-    private pantryItemRepository: Repository<PantryItemEntity>,
+    private readonly pantryItemRepository: Repository<PantryItemEntity>,
     @Inject(RecipeIngredientService)
-    private recipeIngredientService: RecipeIngredientService,
-
-    @Inject(ProductService) private productService: ProductService,
+    private readonly recipeIngredientService: RecipeIngredientService,
+    @Inject(ProductService)
+    private readonly productService: ProductService,
   ) {}
 
+  /**
+   * Find a pantry item by ID.
+   */
   async findPantryItemById(pantryItemId: string): Promise<IPantryItem> {
-    console.log('findPantryItemById', pantryItemId);
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+    return this.pantryItemRepository.findOneOrFail({
       where: { id: pantryItemId },
-      relations: {
-        product: true,
-      },
+      relations: { product: true },
     });
-
-    return pantryItem;
   }
 
-  private async populatePantryItemMeasurements(pantryItem: IPantryItem) {
-    const product = await this.productService.readProductById(
-      String(pantryItem.productId),
-    );
-
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    pantryItem.totalMeasurements = {
-      magnitude: product?.measurement.magnitude * pantryItem.quantity,
-      unit: product?.measurement.unit,
-    };
-    pantryItem.consumedMeasurements = {
-      magnitude: 0,
-      unit: product?.measurement.unit,
-    };
-    pantryItem.availableMeasurements = {
-      ...pantryItem.totalMeasurements,
-    };
-    pantryItem.reservedMeasurements = {
-      magnitude: 0,
-      unit: product?.measurement.unit,
-    };
-
-    return pantryItem;
-  }
-
-  async updatePantryItem(
-    pantryItemId: string,
-    dto: IWritePantryItemDto,
-  ): Promise<IPantryItem> {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
-      where: { id: pantryItemId },
+  async findPantryItems(userId: string) {
+    return this.pantryItemRepository.find({
+      where: { createdById: userId },
+      relations: { product: true },
     });
-
-    if (!pantryItem) {
-      throw new Error('Pantry item not found');
-    }
-
-    Object.assign(pantryItem, dto);
-
-    const pantryItemWithMeasurements =
-      await this.populatePantryItemMeasurements(pantryItem);
-
-    return await this.pantryItemRepository.save(pantryItemWithMeasurements);
   }
 
-  async createPantryItem(
+  /**
+   * Create a pantry item.
+   */
+  async create(
     dto: IWritePantryItemDto,
     createdById: string,
   ): Promise<IPantryItem> {
-    const pantryItem = this.pantryItemRepository.create({
+    return this.createWithManager(
+      this.pantryItemRepository.manager,
+      dto,
+      createdById,
+    );
+  }
+
+  async createWithManager(
+    manager: EntityManager,
+    dto: IWritePantryItemDto,
+    createdById: string,
+  ): Promise<IPantryItem> {
+    return this.createPantryItem(manager, dto, createdById);
+  }
+
+  /**
+   * Update a pantry item.
+   */
+  async update(
+    pantryItemId: string,
+    dto: IWritePantryItemDto,
+  ): Promise<IPantryItem> {
+    return this.updateWithManager(
+      this.pantryItemRepository.manager,
+      pantryItemId,
+      dto,
+    );
+  }
+
+  async updateWithManager(
+    manager: EntityManager,
+    pantryItemId: string,
+    dto: IWritePantryItemDto,
+  ): Promise<IPantryItem> {
+    return this.updatePantryItem(manager, pantryItemId, dto);
+  }
+
+  /**
+   * Reserve a portion of a pantry item.
+   */
+  async reservePortion(pantryItemPortion: IPantryItemPortion): Promise<void> {
+    return this.reservePortionWithManager(
+      this.pantryItemRepository.manager,
+      pantryItemPortion,
+    );
+  }
+
+  async reservePortionWithManager(
+    manager: EntityManager,
+    pantryItemPortion: IPantryItemPortion,
+  ): Promise<void> {
+    return this.reservePantryItemPortion(manager, pantryItemPortion);
+  }
+
+  /**
+   * Release a portion of a pantry item.
+   */
+  async releasePortion(pantryItemPortion: IPantryItemPortion): Promise<void> {
+    return this.releasePortionWithManager(
+      this.pantryItemRepository.manager,
+      pantryItemPortion,
+    );
+  }
+
+  async releasePortionWithManager(
+    manager: EntityManager,
+    pantryItemPortion: IPantryItemPortion,
+  ): Promise<void> {
+    return this.releasePantryItemPortion(manager, pantryItemPortion);
+  }
+
+  /**
+   * Adjust a portion of a pantry item.
+   */
+  async adjustPortion(
+    existingPortion: IPantryItemPortion,
+    updatedPortion: IWritePantryItemPortionDto,
+  ): Promise<IPantryItem> {
+    return this.adjustPortionWithManager(
+      this.pantryItemRepository.manager,
+      existingPortion,
+      updatedPortion,
+    );
+  }
+
+  async adjustPortionWithManager(
+    manager: EntityManager,
+    existingPortion: IPantryItemPortion,
+    updatedPortion: IWritePantryItemPortionDto,
+  ): Promise<IPantryItem> {
+    return this.adjustPantryItemPortion(
+      manager,
+      existingPortion,
+      updatedPortion,
+    );
+  }
+
+  /**
+   * Consume a portion of a pantry item.
+   */
+  async consumePortionWithManager(
+    manager: EntityManager,
+    pantryItemId: string,
+    dto: IConsumePantryItemDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
+      where: { id: pantryItemId },
+      relations: { product: true },
+    });
+    const convertedPortion = convertCookingMeasurement(
+      dto.measurement,
+      pantryItem.availableMeasurements.unit,
+    );
+
+    if (
+      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
+    ) {
+      throw new BadRequestException('Not enough available');
+    }
+
+    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
+    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
+
+    return manager.save(PantryItemEntity, pantryItem);
+  }
+
+  async consumePortion(
+    pantryItemId: string,
+    dto: IConsumePantryItemDto,
+  ): Promise<IPantryItem> {
+    return this.consumePortionWithManager(
+      this.pantryItemRepository.manager,
+      pantryItemId,
+      dto,
+    );
+  }
+
+  /**
+   * Private helper functions for core logic.
+   */
+
+  private async createPantryItem(
+    manager: EntityManager,
+    dto: IWritePantryItemDto,
+    createdById: string,
+  ): Promise<IPantryItem> {
+    const pantryItem = manager.create(PantryItemEntity, {
       ...dto,
       createdById,
     });
-
     const pantryItemWithMeasurements =
-      await this.populatePantryItemMeasurements(pantryItem);
-
-    return await this.pantryItemRepository.save(pantryItemWithMeasurements);
+      await this.populatePantryItemMeasurements(manager, pantryItem);
+    return manager.save(PantryItemEntity, pantryItemWithMeasurements);
   }
 
-  async findAllPantryItems(createdById: string): Promise<IPantryItem[]> {
-    const userScopedPantryItems = await this.pantryItemRepository.find({
-      where: { createdById },
-      relations: [
-        'createdBy',
-        'product',
-        'product.brand',
-        'product.productCategories',
-      ],
+  private async updatePantryItem(
+    manager: EntityManager,
+    pantryItemId: string,
+    dto: IWritePantryItemDto,
+  ): Promise<IPantryItem> {
+    const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
+      where: { id: pantryItemId },
     });
-    return userScopedPantryItems;
+    Object.assign(pantryItem, dto);
+    const pantryItemWithMeasurements =
+      await this.populatePantryItemMeasurements(manager, pantryItem);
+    return manager.save(PantryItemEntity, pantryItemWithMeasurements);
   }
 
-  async findPantryItemsByIds(pantryItemIds: string[]): Promise<IPantryItem[]> {
-    return this.pantryItemRepository.find({
-      where: { id: In(pantryItemIds) },
-      relations: [
-        'createdBy',
-        'product',
-        'product.brand',
-        'product.productCategories',
-      ],
-    });
-  }
-
-  async reservePortion(pantryItemPortion: IPantryItemPortion) {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+  private async reservePantryItemPortion(
+    manager: EntityManager,
+    pantryItemPortion: IPantryItemPortion,
+  ): Promise<void> {
+    const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
       where: { id: pantryItemPortion.pantryItemId },
     });
 
@@ -138,17 +237,20 @@ export default class PantryItemService {
     if (
       pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
     ) {
-      throw new Error('Not enough available');
+      throw new BadRequestException('Not enough available');
     }
 
     pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
     pantryItem.reservedMeasurements.magnitude += convertedPortion.magnitude;
 
-    return this.pantryItemRepository.update(pantryItem.id, pantryItem);
+    await manager.save(PantryItemEntity, pantryItem);
   }
 
-  async releasePortion(pantryItemPortion: IPantryItemPortion) {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+  private async releasePantryItemPortion(
+    manager: EntityManager,
+    pantryItemPortion: IPantryItemPortion,
+  ): Promise<void> {
+    const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
       where: { id: pantryItemPortion.pantryItemId },
     });
 
@@ -159,113 +261,75 @@ export default class PantryItemService {
 
     pantryItem.reservedMeasurements.magnitude -= portion.magnitude;
     pantryItem.availableMeasurements.magnitude += portion.magnitude;
-    return this.pantryItemRepository.update(pantryItem.id, pantryItem);
+
+    await manager.save(PantryItemEntity, pantryItem);
   }
 
-  async adjustPortion(
+  private async adjustPantryItemPortion(
+    manager: EntityManager,
     existingPortion: IPantryItemPortion,
     updatedPortion: IWritePantryItemPortionDto,
   ): Promise<IPantryItem> {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
+    const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
       where: { id: existingPortion.pantryItemId },
     });
 
-    if (!pantryItem) {
-      throw new BadRequestException('Pantry item not found');
-    }
-
-    await this.releasePortion(existingPortion);
+    await this.releasePantryItemPortion(manager, existingPortion);
 
     const convertedPortion = convertCookingMeasurement(
       updatedPortion.portion,
       pantryItem.availableMeasurements.unit,
     );
 
-    if (
-      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
-    ) {
-      throw new BadRequestException(
-        `Not enough available. Available: ${pantryItem.availableMeasurements.magnitude} ${pantryItem.availableMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
-      );
-    }
-
-    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
-    pantryItem.reservedMeasurements.magnitude += convertedPortion.magnitude;
-
-    return this.pantryItemRepository.save(pantryItem);
-  }
-
-  async consumePortion(existingPortion: IPantryItemPortion) {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
-      where: { id: existingPortion.pantryItemId },
-    });
-
-    const convertedPortion = convertCookingMeasurement(
+    const netAvailableMeasurement = addMeasurements(
+      pantryItem.availableMeasurements,
       existingPortion.portion,
-      pantryItem.availableMeasurements.unit,
+    );
+    const netReservedMeasurement = subtractMeasurements(
+      pantryItem.reservedMeasurements,
+      existingPortion.portion,
     );
 
-    if (
-      pantryItem.reservedMeasurements.magnitude < convertedPortion.magnitude
-    ) {
+    if (netAvailableMeasurement.magnitude < convertedPortion.magnitude) {
       throw new BadRequestException(
-        `Not enough reserved. Reserved: ${pantryItem.reservedMeasurements.magnitude} ${pantryItem.reservedMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
+        `Not enough available. Available: ${netAvailableMeasurement.magnitude} ${netAvailableMeasurement.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
       );
     }
 
-    pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
-    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
+    pantryItem.availableMeasurements.magnitude =
+      netAvailableMeasurement.magnitude - convertedPortion.magnitude;
+    pantryItem.reservedMeasurements.magnitude =
+      netReservedMeasurement.magnitude + convertedPortion.magnitude;
 
-    return this.pantryItemRepository.save(pantryItem);
+    return manager.save(PantryItemEntity, pantryItem);
   }
 
-  async consumePantryItemPortion(
-    pantryItemPortion: IPantryItemPortion,
-    ignoreReserved = false,
-  ) {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
-      where: { id: pantryItemPortion.pantryItemId },
-    });
-
-    const convertedPortion = convertCookingMeasurement(
-      pantryItemPortion.portion,
-      pantryItem.availableMeasurements.unit,
+  private async populatePantryItemMeasurements(
+    manager: EntityManager,
+    pantryItem: IPantryItem,
+  ): Promise<IPantryItem> {
+    const product = await this.productService.readProductById(
+      String(pantryItem.productId),
     );
 
-    if (
-      !ignoreReserved &&
-      pantryItem.reservedMeasurements.magnitude < convertedPortion.magnitude
-    ) {
-      throw new Error('Not enough reserved');
+    if (!product) {
+      throw new Error('Product not found');
     }
 
-    pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
-    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
+    pantryItem.totalMeasurements = {
+      magnitude: product.measurement.magnitude * pantryItem.quantity,
+      unit: product.measurement.unit,
+    };
+    pantryItem.consumedMeasurements = {
+      magnitude: 0,
+      unit: product.measurement.unit,
+    };
+    pantryItem.availableMeasurements = { ...pantryItem.totalMeasurements };
+    pantryItem.reservedMeasurements = {
+      magnitude: 0,
+      unit: product.measurement.unit,
+    };
 
-    return this.pantryItemRepository.save(pantryItem);
-  }
-
-  async consumePantryItem(dto: IConsumePantryItemDto) {
-    const pantryItem = await this.pantryItemRepository.findOneOrFail({
-      where: { id: dto.pantryItemId },
-    });
-
-    const convertedPortion = convertCookingMeasurement(
-      dto.measurement,
-      pantryItem.availableMeasurements.unit,
-    );
-
-    if (
-      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
-    ) {
-      throw new BadRequestException(
-        `Not enough available. Available: ${pantryItem.availableMeasurements.magnitude} ${pantryItem.availableMeasurements.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
-      );
-    }
-
-    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
-    pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
-
-    return this.pantryItemRepository.save(pantryItem);
+    return pantryItem;
   }
 }

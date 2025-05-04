@@ -29,9 +29,12 @@ export enum ConcreteRecipeSortBy {
 
 export const WriteConcreteRecipeDtoSchema = z.object({
   recipeId: z.string().min(1, { message: "Recipe ID is required" }),
-  numberOfServings: z.tuple([z.number().min(1), z.number().min(1)]).optional(),
+  numberOfServings: z
+    .tuple([z.number().min(1), z.number().min(1)])
+    .optional()
+    .nullable(),
   mealType: z.nativeEnum(MealTypes),
-  confirmedIngredients: z.array(WriteConcreteIngredientDtoSchema).optional(),
+  confirmedIngredients: z.array(WriteConcreteIngredientDtoSchema).optional().nullable(),
   planDate: z.coerce
     .string()
     .refine(

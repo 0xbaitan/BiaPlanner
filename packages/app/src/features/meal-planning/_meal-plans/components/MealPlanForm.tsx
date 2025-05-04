@@ -1,7 +1,7 @@
 import "../styles/MealPlanForm.scss";
 
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
-import { IConcreteRecipe, IWriteConcreteIngredientDto, IWriteConcreteRecipeDto, MealTypes, WriteConcreteRecipeDtoSchema } from "@biaplanner/shared";
+import { IConcreteRecipe, IWriteConcreteRecipeDto, MealTypes, WriteConcreteRecipeDtoSchema } from "@biaplanner/shared";
 import { useCallback, useEffect } from "react";
 import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
@@ -18,7 +18,6 @@ import dayjs from "dayjs";
 import { getImagePath } from "@/util/imageFunctions";
 import { useNavigate } from "react-router-dom";
 import useValidationErrorToast from "@/components/toasts/ValidationErrorToast";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 export type MealPlanFormValues = {
   type: "create" | "update";
@@ -71,6 +70,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
       const parsedDtoResult = WriteConcreteRecipeDtoSchema.safeParse(dto);
       if (!parsedDtoResult.success) {
         parsedDtoResult.error.issues.forEach((issue) => {
+          console.error("Validation error:", issue);
           methods.setError(issue.path[0] as keyof IWriteConcreteRecipeDto, {
             type: "manual",
             message: issue.message,
@@ -81,6 +81,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
       }
 
       const parsedDto: IWriteConcreteRecipeDto = parsedDtoResult.data;
+      console.log("Submitting meal plan form with values:", parsedDto);
       onSubmit(parsedDto);
     },
 
@@ -88,9 +89,8 @@ export default function MealPlanForm(props: MealPlanFormValues) {
   );
 
   useEffect(() => {
-    console.log(methods.watch());
-  }, [methods, methods.watch]);
-
+    console.log("Form value changed:", formValue);
+  }, [formValue]);
   return (
     <FormProvider {...methods}>
       <DualPaneForm className="bp-meal_plan_form" onSubmit={handleSubmit(onSubmitSuccess, onSubmitError)}>
@@ -168,54 +168,51 @@ function RecipeInformation() {
 
 function MealTypeSelectInput() {
   const { control } = useFormContext<IWriteConcreteRecipeDto>();
-
+  const { setFormValue } = useMealPlanFormActions();
+  const { formValue } = useMealPlanFormState();
+  console.log("Meal type select input value:", formValue.mealType);
   return (
     <Form.Group>
       <Form.Label>Meal type</Form.Label>
-      <Controller
+
+      <Form.Select
         name="mealType"
-        control={control}
-        render={({ field }) => (
-          <Form.Select
-            className="form-select"
-            {...field}
-            onChange={(e) => {
-              field.onChange(e);
-            }}
-            value={field.value}
-          >
-            <option value={MealTypes.BREAKFAST}>Breakfast</option>
-            <option value={MealTypes.LUNCH}>Lunch</option>
-            <option value={MealTypes.DINNER}>Dinner</option>
-          </Form.Select>
-        )}
-      />
+        value={formValue.mealType}
+        onChange={(e) => {
+          setFormValue({
+            mealType: e.target.value as MealTypes,
+          });
+        }}
+        className="form-control"
+      >
+        <option value={MealTypes.BREAKFAST}>Breakfast</option>
+        <option value={MealTypes.LUNCH}>Lunch</option>
+        <option value={MealTypes.DINNER}>Dinner</option>
+      </Form.Select>
       <ErrorMessage name="mealType" />
     </Form.Group>
   );
 }
 
 function PlanDateField() {
-  const { control } = useFormContext<IWriteConcreteRecipeDto>();
-
+  const { formValue } = useMealPlanFormState();
+  const { setFormValue } = useMealPlanFormActions();
+  console.log("Plan date field value:");
   return (
     <Form.Group>
-      <Form.Label>Date of cooking</Form.Label>
-      <Controller
+      <Form.Label>Plan date</Form.Label>
+      <input
+        type="date"
         name="planDate"
-        control={control}
-        render={({ field }) => (
-          <input
-            type="date"
-            className="form-control"
-            {...field}
-            onChange={(e) => {
-              field.onChange(e);
-            }}
-            value={dayjs(field.value).format("YYYY-MM-DD")}
-          />
-        )}
+        value={dayjs(formValue.planDate).format("YYYY-MM-DD")}
+        className="form-control"
+        onChange={(e) => {
+          setFormValue({
+            planDate: e.target.value,
+          });
+        }}
       />
+
       <ErrorMessage name="mealType" />
     </Form.Group>
   );

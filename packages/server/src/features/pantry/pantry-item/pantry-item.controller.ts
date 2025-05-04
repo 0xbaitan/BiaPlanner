@@ -22,6 +22,8 @@ import { User } from 'src/features/user-info/authentication/user.decorator';
 
 import { ZodValidationPipe } from 'nestjs-zod';
 import { Public } from '@/features/user-info/authentication/public.decorator';
+import { create } from 'domain';
+import { identity } from 'rxjs';
 
 const WritePantryItemValidationPipe = new ZodValidationPipe(
   WritePantryItemSchema,
@@ -52,17 +54,7 @@ export default class PantryItemController {
     @User() { id: createdById }: IUser,
   ): Promise<IPantryItem[]> {
     const pantryItems =
-      await this.pantryItemService.findAllPantryItems(createdById);
-
-    return pantryItems;
-  }
-
-  @Get('/group')
-  async findPantryItemsByIds(
-    @Query('pantryItemIds') pantryItemIds: string[],
-  ): Promise<IPantryItem[]> {
-    const pantryItems =
-      await this.pantryItemService.findPantryItemsByIds(pantryItemIds);
+      await this.pantryItemService.findPantryItems(createdById);
 
     return pantryItems;
   }
@@ -72,19 +64,20 @@ export default class PantryItemController {
     @Body(WritePantryItemValidationPipe) dto: IWritePantryItemDto,
     @User() { id: createdById }: IUser,
   ): Promise<IPantryItem> {
-    const pantryItem = await this.pantryItemService.createPantryItem(
-      dto,
-      createdById,
-    );
+    const pantryItem = await this.pantryItemService.create(dto, createdById);
     return pantryItem;
   }
 
   @Put('/consume/:id')
   async consumePantryItem(
+    @Param('id') pantryItemId: string,
     @Body(ConsumePantryItemValidationPipe)
     dto: IConsumePantryItemDto,
   ): Promise<IPantryItem> {
-    const pantryItem = await this.pantryItemService.consumePantryItem(dto);
+    const pantryItem = await this.pantryItemService.consumePortion(
+      pantryItemId,
+      dto,
+    );
     return pantryItem;
   }
 }

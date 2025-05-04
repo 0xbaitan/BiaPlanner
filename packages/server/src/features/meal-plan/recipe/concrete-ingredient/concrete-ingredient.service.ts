@@ -176,12 +176,16 @@ export class ConcreteIngredientService {
         ),
       );
 
+      const updatedPortionIds = updatedPortions.map((portion) => portion.id);
+
       // Create new portions
       const createdPortions = await Promise.all(
         toBeCreatedPortions.map((portion) =>
           this.pantryItemPortionService.createWithManager(manager, portion),
         ),
       );
+
+      const createdPortionIds = createdPortions.map((portion) => portion.id);
 
       // Delete old portions
       await Promise.all(
@@ -190,12 +194,19 @@ export class ConcreteIngredientService {
         ),
       );
 
-      // Update relations for the concrete ingredient
+      const deletedPortionIds = toBeDeletedPortions.map(
+        (portion) => portion.id,
+      );
+
+      // Save the updated concrete ingredient
       await manager
         .createQueryBuilder()
         .relation(ConcreteIngredientEntity, 'pantryItemsWithPortions')
         .of(concreteIngredient)
-        .set([...updatedPortions, ...createdPortions]);
+        .addAndRemove(
+          [...updatedPortionIds, ...createdPortionIds],
+          deletedPortionIds,
+        );
 
       // Return the updated concrete ingredient
       return manager.findOne(ConcreteIngredientEntity, {
@@ -206,5 +217,51 @@ export class ConcreteIngredientService {
       console.error('Error managing portions:', error);
       throw new BadRequestException('Failed to manage portions');
     }
+  }
+
+  public async updateWithManager(
+    manager: EntityManager,
+    id: string,
+    dto: IWriteConcreteIngredientDto,
+  ): Promise<IConcreteIngredient> {
+    const concreteIngredient = await manager.findOne(ConcreteIngredientEntity, {
+      where: { id },
+      relations: ['pantryItemsWithPortions'],
+    });
+
+    if (!concreteIngredient) {
+      throw new BadRequestException(
+        `Concrete ingredient with id ${id} not found`,
+      );
+    }
+
+    // Update the concrete ingredient
+    const { pantryItemsWithPortions, ...ingredientDto } = dto;
+
+    await this.manageConcreteIngredientPortions(
+      manager,
+      concreteIngredient.id,
+      pantryItemsWithPortions,
+    );
+
+    // Save the updated concrete ingredient
+    await manager.update(
+      ConcreteIngredientEntity,
+      concreteIngredient.id,
+      ingredientDto,
+    );
+
+    return concreteIngredient;
+  }
+
+  public async update(
+    id: string,
+    dto: IWriteConcreteIngredientDto,
+  ): Promise<IConcreteIngredient> {
+    return this.updateWithManager(
+      this.concreteIngredientRepository.manager,
+      id,
+      dto,
+    );
   }
 }

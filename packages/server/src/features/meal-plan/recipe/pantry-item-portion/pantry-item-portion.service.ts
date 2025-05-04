@@ -116,7 +116,10 @@ export class PantryItemPortionService {
     );
 
     // Adjust pantry item measurements
-    await this.pantryItemService.reservePortion(pantryItemPortionWithRelations);
+    await this.pantryItemService.reservePortionWithManager(
+      manager,
+      pantryItemPortionWithRelations,
+    );
 
     // Return the created portion with relations
     return pantryItemPortionWithRelations;
@@ -139,7 +142,11 @@ export class PantryItemPortionService {
     );
 
     // Adjust pantry item measurements for the updated portion
-    await this.pantryItemService.adjustPortion(existingPortion, dto);
+    await this.pantryItemService.adjustPortionWithManager(
+      manager,
+      existingPortion,
+      dto,
+    );
 
     // Merge the updated data into the existing portion
     const updatedPortion = manager.merge(
@@ -168,7 +175,10 @@ export class PantryItemPortionService {
     );
 
     // Adjust pantry item measurements for the deleted portion
-    await this.pantryItemService.releasePortion(pantryItemPortion);
+    await this.pantryItemService.releasePortionWithManager(
+      manager,
+      pantryItemPortion,
+    );
 
     // Delete the portion
     const result = await manager.delete(PantryItemPortionEntity, id);

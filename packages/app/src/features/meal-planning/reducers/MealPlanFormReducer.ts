@@ -1,11 +1,10 @@
-import { CookingMeasurement, CookingMeasurementUnit, IConcreteIngredient, IConcreteRecipe, IRecipe, IRecipeIngredient, IWriteConcreteIngredientDto, IWriteConcreteRecipeDto, IWritePantryItemPortionDto, MealTypes, Weights } from "@biaplanner/shared";
+import { CookingMeasurement, CookingMeasurementUnit, IConcreteRecipe, IRecipe, IRecipeIngredient, IWriteConcreteRecipeDto, IWritePantryItemPortionDto, MealTypes, Weights } from "@biaplanner/shared";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useCallback, useMemo } from "react";
 import { useStoreDispatch, useStoreSelector } from "@/store";
 
 import convertCookingMeasurement from "@biaplanner/shared/build/util/CookingMeasurementConversion";
 import dayjs from "dayjs";
-import { set } from "zod";
 
 export type MealPlanFormState = {
   selectedRecipe?: IRecipe;
@@ -78,10 +77,12 @@ export const mealPlanSlice = createSlice({
         mealType,
         planDate: planDate ? dayjs(planDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
         confirmedIngredients: confirmedIngredients
-          .filter((ingredient) => ingredient.ingredientId !== undefined)
-          .map((ingredient) => ({
-            ingredientId: ingredient.ingredientId as string,
-            pantryItemsWithPortions: ingredient.pantryItemsWithPortions?.map((item) => ({
+          .filter((ingredient) => ingredient.ingredientId !== undefined && ingredient.concreteRecipeId !== undefined && ingredient.id !== undefined)
+          .map((concreteIngredient) => ({
+            ingredientId: concreteIngredient.ingredientId as string,
+            concreteRecipeId: concreteIngredient.concreteRecipeId as string,
+            id: concreteIngredient.id as string,
+            pantryItemsWithPortions: concreteIngredient.pantryItemsWithPortions?.map((item) => ({
               pantryItemId: item.pantryItemId,
               portion: {
                 magnitude: item.portion?.magnitude ?? 0,
@@ -152,12 +153,12 @@ export const mealPlanSlice = createSlice({
 
       if (pantryItemIndex !== -1) {
         state.formValue.confirmedIngredients[ingredientIndex].pantryItemsWithPortions![pantryItemIndex] = {
+          ...state.formValue.confirmedIngredients[ingredientIndex].pantryItemsWithPortions![pantryItemIndex],
           pantryItemId,
           portion: {
             magnitude: portion.magnitude,
             unit: portion.unit,
           },
-          id: state.formValue.confirmedIngredients[ingredientIndex].pantryItemsWithPortions![pantryItemIndex].id,
         };
       } else {
         state.formValue.confirmedIngredients[ingredientIndex].pantryItemsWithPortions?.push({
