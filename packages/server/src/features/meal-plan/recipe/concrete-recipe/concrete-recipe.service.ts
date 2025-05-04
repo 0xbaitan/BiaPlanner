@@ -31,10 +31,7 @@ export class ConcreteRecipeService {
       relations: [
         'recipe',
         'confirmedIngredients',
-        'confirmedIngredients.ingredient',
         'confirmedIngredients.pantryItemsWithPortions',
-        'confirmedIngredients.pantryItemsWithPortions.pantryItem',
-        'confirmedIngredients.pantryItemsWithPortions.pantryItem.product',
       ],
     });
   }

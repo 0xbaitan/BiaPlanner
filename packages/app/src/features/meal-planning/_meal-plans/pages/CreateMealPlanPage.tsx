@@ -1,29 +1,29 @@
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
-import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
-
-import { IConcreteRecipe } from "@biaplanner/shared";
 import MealPlanForm from "../components/MealPlanForm";
-import { Status } from "@/hooks/useStatusToast";
-import dayjs from "dayjs";
+import { RoutePaths } from "@/Routes";
 import { useCreateConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
+import { useMealPlanFormActions } from "../../reducers/MealPlanFormReducer";
+import { useNavigate } from "react-router-dom";
+import { useResetIngredientManagementForm } from "../../reducers/IngredientManagementReducer";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function CreateMealPlanPage() {
   const [createConcreteRecipe, { isLoading, isError, isSuccess }] = useCreateConcreteRecipeMutation();
-  const { setItem } = useDefaultStatusToast<IConcreteRecipe>({
-    idSelector: (entity) => entity.id,
-    action: Action.CREATE,
-    entityIdentifier: (entity) => `Meal scheduled for  ${entity.mealType} on ${dayjs(entity.planDate).format("DD/MM/YYYY")}`,
-    isSuccess: isSuccess,
-    isError: isError,
-    idPrefix: "meal-plan",
+  const navigate = useNavigate();
+  const { resetMealPlanForm } = useMealPlanFormActions();
+  const resetIngredientForm = useResetIngredientManagementForm();
+  const { notify } = useSimpleStatusToast({
+    idPrefix: "create-meal-plan",
+    isError,
     isLoading,
-    toastProps: {
-      autoClose: 5000,
-    },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectButtonText: "Return to Meal Plans",
-      redirectUrl: "/",
+    isSuccess,
+    successMessage: "Meal plan created successfully",
+    errorMessage: "Failed to create meal plan",
+    loadingMessage: "Creating meal plan...",
+    onSuccess: () => {
+      // Reset the form and redirect to another page
+      resetIngredientForm();
+      resetMealPlanForm();
+      navigate(RoutePaths.MEAL_PLANS);
     },
   });
 
@@ -32,7 +32,7 @@ export default function CreateMealPlanPage() {
       <MealPlanForm
         type="create"
         onSubmit={async (values) => {
-          setItem(values as IConcreteRecipe);
+          notify();
           await createConcreteRecipe(values);
         }}
       />

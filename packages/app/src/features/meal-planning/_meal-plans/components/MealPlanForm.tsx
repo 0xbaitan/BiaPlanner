@@ -1,7 +1,7 @@
 import "../styles/MealPlanForm.scss";
 
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
-import { IConcreteRecipe, IWriteConcreteRecipeDto, MealTypes, WriteConcreteRecipeDtoSchema } from "@biaplanner/shared";
+import { IConcreteRecipe, IWriteConcreteIngredientDto, IWriteConcreteRecipeDto, MealTypes, WriteConcreteRecipeDtoSchema } from "@biaplanner/shared";
 import { useCallback, useEffect } from "react";
 import { useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 export type MealPlanFormValues = {
   type: "create" | "update";
   disableSubmit?: boolean;
-  initialValue?: Partial<IConcreteRecipe>;
+  initialValue?: IConcreteRecipe;
   onSubmit: (values: IWriteConcreteRecipeDto) => void;
 };
 
@@ -32,11 +32,22 @@ export default function MealPlanForm(props: MealPlanFormValues) {
   const { initialValue, onSubmit } = props;
   const { selectedRecipe } = useMealPlanFormState();
   const methods = useForm<IWriteConcreteRecipeDto>({
-    defaultValues: initialValue ?? {
-      mealType: MealTypes.BREAKFAST,
-      planDate: dayjs().toISOString(),
-      recipeId: selectedRecipe?.id,
-    },
+    defaultValues: initialValue
+      ? {
+          recipeId: initialValue.recipeId ?? selectedRecipe?.id,
+          mealType: initialValue.mealType ?? MealTypes.BREAKFAST,
+          planDate: initialValue.planDate ?? dayjs().toISOString(),
+          confirmedIngredients: initialValue.confirmedIngredients.map((ingredient) => ({
+            ...ingredient,
+          })),
+
+          numberOfServings: initialValue.numberOfServings,
+        }
+      : {
+          mealType: MealTypes.BREAKFAST,
+          planDate: dayjs().toISOString(),
+          recipeId: selectedRecipe?.id,
+        },
     mode: "onBlur",
     resolver: zodResolver(WriteConcreteRecipeDtoSchema),
   });
@@ -75,7 +86,7 @@ export default function MealPlanForm(props: MealPlanFormValues) {
     <FormProvider {...methods}>
       <DualPaneForm className="bp-meal_plan_form" onSubmit={handleSubmit(onSubmitSuccess, onSubmitError)}>
         <DualPaneForm.Header>
-          <DualPaneForm.Header.Title>Create Meal Plan</DualPaneForm.Header.Title>
+          <DualPaneForm.Header.Title>{props.type === "create" ? "Create Meal Plan" : "Edit Meal Plan"}</DualPaneForm.Header.Title>
           <DualPaneForm.Header.Actions>
             <Button type="button" variant="outline-secondary" onClick={() => navigate(-1)}>
               <MdCancel />

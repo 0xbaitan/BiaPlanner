@@ -33,10 +33,11 @@ export const ingredientManagementSlice = createSlice({
       state.selectedIngredient = undefined;
     },
 
-    resetMealPlanForm: (state) => {
+    resetIngredientManagementForm: (state) => {
       state.mappedIngredients = {};
       state.selectedIngredient = undefined;
       state.showIngredientManagementOffcanvas = false;
+      state.selectedRecipe = undefined;
     },
     deselectRecipe: (state) => {
       state.selectedRecipe = undefined;
@@ -92,7 +93,16 @@ export const ingredientManagementSlice = createSlice({
   },
 });
 
-export const { selectRecipe, mapIngredients, selectIngredient, deselectIngredient, addPantryItemPortionToIngredient, deselectRecipe, removePantryItemPortionFromIngredient, resetMealPlanForm } = ingredientManagementSlice.actions;
+export const {
+  selectRecipe,
+  mapIngredients,
+  selectIngredient,
+  deselectIngredient,
+  addPantryItemPortionToIngredient,
+  deselectRecipe,
+  removePantryItemPortionFromIngredient,
+  resetIngredientManagementForm: resetMealPlanForm,
+} = ingredientManagementSlice.actions;
 
 export default ingredientManagementSlice.reducer;
 export type IngredientManagementAction = typeof ingredientManagementSlice.actions;
@@ -250,8 +260,8 @@ export function useConfirmedIngredients() {
   return confirmedIngredients;
 }
 
-export function useResetMealPlanForm() {
+export function useResetIngredientManagementForm() {
   const dispatch = useStoreDispatch();
-  const resetMealPlanForm = useCallback(() => dispatch(ingredientManagementSlice.actions.resetMealPlanForm()), [dispatch]);
+  const resetMealPlanForm = useCallback(() => dispatch(ingredientManagementSlice.actions.resetIngredientManagementForm()), [dispatch]);
   return resetMealPlanForm;
 }
