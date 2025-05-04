@@ -1,14 +1,15 @@
 import "../styles/IngredientListItem.scss";
 
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { IRecipeIngredient, IWritePantryItemPortionDto, Weights } from "@biaplanner/shared";
 import { useExtendedMealPlanFormState, useMealPlanFormActions, useMealPlanFormState } from "../../reducers/MealPlanFormReducer";
 
 import Button from "react-bootstrap/esm/Button";
-import { FaExclamationTriangle } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
 import Heading from "@/components/Heading";
 import { ImEnlarge2 } from "react-icons/im";
 import { ImShrink2 } from "react-icons/im";
+import Pill from "@/components/Pill";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import dayjs from "dayjs";
 import { useGetPantryItemQuery } from "@/apis/PantryItemsApi";
@@ -133,7 +134,7 @@ function PortionFulfilledMeter(props: PortionFulfilledMeterProps) {
 
   if (!status) return <div className="bp-portion_fulfilled_meter">No status found</div>;
 
-  const { isFulfilled, remainingPortion, requiredPortion, selectedPortion } = status;
+  const { isFulfilled, remainingPortion, requiredPortion, selectedPortion, isOverfulfilled } = status;
   console.log("Portion fulfilled status", status);
 
   const percentage = Math.min((selectedPortion.magnitude / requiredPortion.magnitude) * 100, 100);
@@ -146,14 +147,20 @@ function PortionFulfilledMeter(props: PortionFulfilledMeterProps) {
       )}
       <ProgressBar now={percentage} />
       {!isFulfilled ? (
-        <div>
+        <Pill className="bp-portion_fulfilled_meter__pill" status="error">
           <FaExclamationTriangle />
-          <span className="ms-2">Insufficient portion selected</span>
-        </div>
+          &nbsp; Insufficient portion selected
+        </Pill>
+      ) : isOverfulfilled ? (
+        <Pill status="warning" className="bp-portion_fulfilled_meter__pill">
+          <FaExclamationTriangle />
+          &nbsp;Excessive portion selected
+        </Pill>
       ) : (
-        <div>
-          <span className="bp-portion_fulfilled_meter__status_text">Sufficient portions selected</span>
-        </div>
+        <Pill status="success" className="bp-portion_fulfilled_meter__pill">
+          <FaCheckCircle />
+          &nbsp; Sufficient portion selected
+        </Pill>
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import { useExtendedMealPlanFormState, useMealPlanFormActions } from "../../redu
 import Heading from "@/components/Heading";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PantryItemField from "./PantryItemField";
+import Pill from "@/components/Pill";
 import { useGetIngredientCompatiblePantryItemsQuery } from "@/apis/PantryItemsApi";
 import { useMemo } from "react";
 
@@ -53,11 +54,18 @@ export default function IngredientManagementOffcanvas() {
         <Offcanvas.Title>
           <Heading level={Heading.Level.H2}>Select portions from your pantry</Heading>
           <Heading level={Heading.Level.H3}>For {selectedIngredient?.title ?? "N/A"}</Heading>
+
+          <Heading level={Heading.Level.H4}>Selected portions will be used to fulfill the ingredient requirement.</Heading>
+
           <div className="bp-ingredient_management_offcanvas__header__pills">
             <div className="bp-ingredient_management_offcanvas__header__portion_status_pill">
               <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__text">Selected portions:</span>
               <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__value">{summedPortion?.magnitude ?? 0}</span>
               <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__unit">{summedPortion?.unit}</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__required">
+                / {requiredPortion?.magnitude ?? 0}
+                {requiredPortion?.unit}
+              </span>
             </div>
             <PortionFullfilmentStatusPill required={requiredPortion?.magnitude ?? 0} selected={summedPortion?.magnitude ?? 0} />
           </div>
@@ -81,8 +89,9 @@ type PortionFullfilmentStatusPillProps = {
 function PortionFullfilmentStatusPill(props: PortionFullfilmentStatusPillProps) {
   const { required, selected } = props;
   const status = selected < required ? "unfulfilled" : selected === required ? "fulfilled" : "overfulfilled";
+  console.log("Portion status:", status);
   return (
-    <div className={["bp-portion_status_pill", status].join(" ")}>
+    <Pill className={["bp-portion_status_pill", status].join(" ")}>
       {status === "unfulfilled" && (
         <div>
           <FaExclamationTriangle />
@@ -101,6 +110,6 @@ function PortionFullfilmentStatusPill(props: PortionFullfilmentStatusPillProps) 
           <span className="bp-portion_status_pill__status_text">Excessive portions selected</span>
         </div>
       )}
-    </div>
+    </Pill>
   );
 }

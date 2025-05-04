@@ -1,6 +1,9 @@
 import { FaPlateWheat, FaTrash } from "react-icons/fa6";
 
+import { FaExclamationTriangle } from "react-icons/fa";
 import { IPantryItem } from "@biaplanner/shared";
+import Pill from "@/components/Pill";
+import { SiCodefresh } from "react-icons/si";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import { usePantryItemsCrudListActions } from "../reducers/PantryItemsCrudListReducer";
 
@@ -19,12 +22,31 @@ export default function PantryItemsTable(props: PantryItemsTableProps) {
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["productName", "quantity", "expiryDate"],
+          columnAccessorKeys: ["productName", "quantity", "expiryDate", "isExpired"],
           columnDefs: [
             {
               header: "Product Name",
               accessorFn: (row) => row.product?.name || "N/A",
               accessorKey: "productName",
+            },
+            {
+              header: "Is Expired?",
+              cell: (cell) => {
+                const isExpired = cell.row.original.isExpired;
+                return isExpired ? (
+                  <Pill status="error">
+                    <FaExclamationTriangle size={20} />
+                    &ensp;Expired
+                  </Pill>
+                ) : (
+                  <Pill status="success">
+                    <SiCodefresh size={20} />
+                    &ensp;Fresh
+                  </Pill>
+                );
+              },
+
+              accessorKey: "isExpired",
             },
             {
               header: "Quantity",

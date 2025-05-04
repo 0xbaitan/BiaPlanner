@@ -79,3 +79,11 @@
     transition: max-height 2s ease-in;
   }
 }
+
+.bp-portion_fulfilled_meter__pill {
+  margin-top: 1em;
+  font-size: 0.8em !important;
+  padding: 0.25em 0.75em !important;
+  border-radius: 1rem;
+  font-weight: 600;
+}
