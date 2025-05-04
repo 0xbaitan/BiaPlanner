@@ -16,6 +16,8 @@ export interface IConcreteRecipe extends IBaseEntity {
   numberOfServings?: [number, number];
   confirmedIngredients: IConcreteIngredient[];
   mealType: MealTypes;
+  isSufficient?: boolean;
+  isCooked?: boolean;
 }
 
 export enum ConcreteRecipeSortBy {

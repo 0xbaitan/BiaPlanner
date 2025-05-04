@@ -86,4 +86,26 @@ export class ConcreteRecipeEntity implements IConcreteRecipe {
     nullable: true,
   })
   planDate?: string;
+
+  @Column({
+    type: 'tinyint',
+    default: 0,
+    nullable: false,
+    transformer: {
+      from: (value: number) => Boolean(value),
+      to: (value: boolean) => Number(value),
+    },
+  })
+  isSufficient: boolean;
+
+  @Column({
+    type: 'tinyint',
+    default: 0,
+    nullable: false,
+    transformer: {
+      from: (value: number) => Boolean(value),
+      to: (value: boolean) => Number(value),
+    },
+  })
+  isCooked: boolean;
 }
