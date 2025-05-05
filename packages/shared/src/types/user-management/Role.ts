@@ -1,4 +1,4 @@
-import { IPermissionGroup, WritePermissionDtoSchema, WritePermissionGroupDtoSchema } from "./Permission";
+import { IPermissionGroup, WriteMealPlanPermissionDtoSchema, WritePantryPermissionDtoSchema, WritePermissionDtoSchema, WritePermissionGroupDtoSchema, WriteShoppingListPermissionDtoSchema } from "./Permission";
 
 import { IBaseEntity } from "../BaseEntity";
 import { IUser } from "./User";
@@ -18,3 +18,15 @@ export const WriteRoleDtoSchema = z.object({
 });
 
 export type IWriteRoleDto = z.infer<typeof WriteRoleDtoSchema>;
+
+export const ViewOnlyRoleValue: IPermissionGroup = {
+  brand: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  recipe: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  shoppingList: WriteShoppingListPermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  pantry: WritePantryPermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  mealPlan: WriteMealPlanPermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  recipeTag: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  productCategory: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  cuisine: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+  product: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
+};

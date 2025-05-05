@@ -8,13 +8,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IPermissionGroup, IRole, IUser } from '@biaplanner/shared';
+import {
+  IPermissionGroup,
+  IRole,
+  IUser,
+  ViewOnlyRoleValue,
+} from '@biaplanner/shared';
 
 import { UserEntity } from '../user/user.entity';
 
 @Entity('roles')
 export class RoleEntity implements IRole {
-  permissions: IPermissionGroup;
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
 
@@ -28,6 +32,12 @@ export class RoleEntity implements IRole {
     cascade: ['update'],
   })
   users: IUser[];
+
+  @Column({
+    type: 'simple-json',
+    nullable: true,
+  })
+  permissions: IPermissionGroup;
 
   @CreateDateColumn({
     type: 'timestamp',
