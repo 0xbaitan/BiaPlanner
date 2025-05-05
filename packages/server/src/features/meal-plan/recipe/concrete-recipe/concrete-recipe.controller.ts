@@ -58,4 +58,9 @@ export class ConcreteRecipeController {
   async delete(@Param('id') id: string): Promise<void> {
     return this.concreteRecipeService.deleteWithTransaction(id);
   }
+
+  @Put('/:id/mark-cooked')
+  async markAsCooked(@Param('id') id: string): Promise<IConcreteRecipe> {
+    return this.concreteRecipeService.markAsCookedWithTransaction(id);
+  }
 }

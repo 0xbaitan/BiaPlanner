@@ -94,6 +94,28 @@ export const concreteRecipesApi = rootApi.injectEndpoints({
         },
       ],
     }),
+
+    markConcreteRecipeAsCooked: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/meal-plan/concrete-recipes/${id}/mark-cooked`,
+        method: "PUT",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "ConcreteRecipe", id },
+        { type: "ConcreteRecipe", id: "LIST" },
+        {
+          type: "PantryItem",
+          id: "COMPATIBLE",
+        },
+        {
+          type: "PantryItem",
+          id: "LIST",
+        },
+        {
+          type: "PantryItem",
+        },
+      ],
+    }),
   }),
 });
 
@@ -107,4 +129,5 @@ export const {
   useUpdateConcreteRecipeMutation,
   useLazySearchConcreteRecipesQuery,
   useDeleteConcreteRecipeMutation,
+  useMarkConcreteRecipeAsCookedMutation,
 } = concreteRecipesApi;

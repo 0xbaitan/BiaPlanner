@@ -1,10 +1,12 @@
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
+import { useDeleteConcreteRecipeMutation, useMarkConcreteRecipeAsCookedMutation } from "@/apis/ConcreteRecipeApi";
 
 import { IConcreteRecipe } from "@biaplanner/shared";
+import { PiCookingPotFill } from "react-icons/pi";
+import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
 import dayjs from "dayjs";
-import { useDeleteConcreteRecipeMutation } from "@/apis/ConcreteRecipeApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
@@ -17,6 +19,7 @@ export default function MealPlanTable(props: MealPlanTableProps) {
   const { data } = props;
   const navigate = useNavigate();
   const [deleteConcreteRecipe, { isLoading: isDeleting, isError: isDeleteError, isSuccess: isDeleteSuccess }] = useDeleteConcreteRecipeMutation();
+  const [markCookingDone, { isLoading: isMarkingCookingDone, isError: isMarkingCookingDoneError, isSuccess: isMarkingCookingDoneSuccess }] = useMarkConcreteRecipeAsCookedMutation();
 
   const { notify: notifyAfterDeletion } = useSimpleStatusToast({
     successMessage: "Meal plan deleted successfully",
@@ -37,6 +40,16 @@ export default function MealPlanTable(props: MealPlanTableProps) {
     },
   });
 
+  const { notify: notifyAfterMarkingCookingDone } = useSimpleStatusToast({
+    successMessage: "Cooking marked as done successfully",
+    errorMessage: "Failed to mark cooking as done",
+    loadingMessage: "Marking cooking as done...",
+    isLoading: isMarkingCookingDone,
+    isError: isMarkingCookingDoneError,
+    isSuccess: isMarkingCookingDoneSuccess,
+    idPrefix: "meal-plan-mark-cooking-done",
+  });
+
   return (
     <TabbedViewsTable<IConcreteRecipe>
       data={data}
@@ -44,12 +57,57 @@ export default function MealPlanTable(props: MealPlanTableProps) {
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["recipeTitle", "mealType", "planDate"],
+          columnAccessorKeys: ["recipeTitle", "mealType", "planDate", "status"],
           columnDefs: [
             {
               header: "Recipe Title",
               accessorFn: (row) => row.recipe?.title ?? "N/A",
               accessorKey: "recipeTitle",
+            },
+            {
+              header: "Fulfilment Status",
+              cell: (info) => {
+                const isSufficient = info.row.original.isSufficient;
+                return (
+                  <Pill status={isSufficient ? "success" : "warning"}>
+                    {isSufficient ? (
+                      <>
+                        <FaCheckCircle />
+                        &nbsp; Sufficient
+                      </>
+                    ) : (
+                      <>
+                        <FaExclamationTriangle />
+                        &nbsp; Insufficient
+                      </>
+                    )}
+                  </Pill>
+                );
+              },
+              accessorKey: "status",
+            },
+
+            {
+              header: "Cooking Status",
+              cell: (info) => {
+                const isCooked = info.row.original.isCooked;
+                return (
+                  <Pill status={isCooked ? "success" : "warning"}>
+                    {isCooked ? (
+                      <>
+                        <PiCookingPotFill />
+                        &nbsp; Cooked
+                      </>
+                    ) : (
+                      <>
+                        <FaExclamationTriangle />
+                        &nbsp; Not Cooked
+                      </>
+                    )}
+                  </Pill>
+                );
+              },
+              accessorKey: "cookingStatus",
             },
             {
               header: "Meal Type",
@@ -69,13 +127,25 @@ export default function MealPlanTable(props: MealPlanTableProps) {
       ]}
       actions={[
         {
+          icon: FaCheckCircle,
+          label: "Mark Cooking Done",
+          type: "edit",
+          hideConditionally: (row) => row.isCooked || !row.isSufficient,
+          onClick: async (row) => {
+            notifyAfterMarkingCookingDone();
+            await markCookingDone(row.id);
+          },
+        },
+        {
           icon: FaPencilAlt,
           label: "Update Meal Plan",
           type: "edit",
+          hideConditionally: (row) => row.isCooked ?? false,
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.MEAL_PLANS_EDIT, { id: row.id }));
           },
         },
+
         {
           icon: FaTrashAlt,
           label: "Delete Meal Plan",

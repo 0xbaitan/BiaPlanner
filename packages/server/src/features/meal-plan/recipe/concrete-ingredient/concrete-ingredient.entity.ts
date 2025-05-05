@@ -69,7 +69,7 @@ export class ConcreteIngredientEntity implements IConcreteIngredient {
   })
   ingredientId?: string;
 
-  @OneToOne(() => RecipeIngredientEntity, {
+  @ManyToOne(() => RecipeIngredientEntity, {
     onDelete: 'NO ACTION',
   })
   ingredient?: IRecipeIngredient;

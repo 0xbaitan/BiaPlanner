@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { PantryItemPortionService } from '../pantry-item-portion/pantry-item-portion.service';
 import { ConcreteIngredientEntity } from './concrete-ingredient.entity';
+import convertCookingMeasurement from '@biaplanner/shared/build/util/CookingMeasurementConversion';
 
 @Injectable()
 export class ConcreteIngredientService {
@@ -289,5 +290,94 @@ export class ConcreteIngredientService {
 
     // Delete the concrete ingredient
     await manager.delete(ConcreteIngredientEntity, id);
+  }
+
+  public async checkFulfillmenWithManager(
+    manager: EntityManager,
+    id: string,
+  ): Promise<boolean> {
+    const concreteIngredient = await manager.findOne(ConcreteIngredientEntity, {
+      where: { id },
+      relations: ['pantryItemsWithPortions', 'ingredient'],
+    });
+
+    if (!concreteIngredient) {
+      throw new BadRequestException(
+        `Concrete ingredient with id ${id} not found`,
+      );
+    }
+
+    if (
+      !concreteIngredient.pantryItemsWithPortions ||
+      concreteIngredient.pantryItemsWithPortions.length === 0
+    ) {
+      // No pantry items with portions, so we can't check fulfillment
+      return false;
+    }
+
+    if (!concreteIngredient.ingredient) {
+      // No ingredient associated with the concrete ingredient
+      throw new BadRequestException(
+        `Concrete ingredient with id ${id} has no associated ingredient`,
+      );
+    }
+
+    // Check if the ingredient has a required amount
+    const requiredAmount = concreteIngredient.ingredient.measurement;
+
+    if (!requiredAmount || requiredAmount.magnitude <= 0) {
+      // No required amount, so we can't check fulfillment
+      return false;
+    }
+
+    // Check if the required amount is fulfilled by the pantry items
+    const totalFulfilledAmount =
+      concreteIngredient.pantryItemsWithPortions.reduce(
+        (total, item) => {
+          return (
+            total +
+            convertCookingMeasurement(item.portion, requiredAmount.unit)
+              .magnitude
+          );
+        },
+
+        0,
+      );
+
+    // Check if total fulfilled amount is greater than or equal to the required amount
+    if (totalFulfilledAmount >= requiredAmount.magnitude) {
+      return true; // Fulfilled
+    }
+
+    return false; // Not fulfilled
+  }
+
+  public async consumeIngredientWithManager(
+    manager: EntityManager,
+    id: string,
+  ): Promise<IConcreteIngredient> {
+    const concreteIngredient = await manager.findOne(ConcreteIngredientEntity, {
+      where: { id },
+      relations: ['pantryItemsWithPortions'],
+    });
+
+    if (!concreteIngredient) {
+      throw new BadRequestException(
+        `Concrete ingredient with id ${id} not found`,
+      );
+    }
+
+    // Consume the pantry item portions
+    await Promise.all(
+      concreteIngredient.pantryItemsWithPortions.map(
+        async (x) =>
+          await this.pantryItemPortionService.consumeWithManager(manager, {
+            pantryItemId: x.pantryItemId,
+            measurement: x.portion,
+          }),
+      ),
+    );
+
+    return concreteIngredient;
   }
 }

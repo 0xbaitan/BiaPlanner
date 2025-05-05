@@ -9,6 +9,7 @@ import { PantryItemPortionEntity } from './pantry-item-portion.entity';
 import PantryItemService from '@/features/pantry/pantry-item/pantry-item.service';
 import {
   IConcreteIngredient,
+  IConsumePantryItemDto,
   IPantryItemPortion,
   IWriteConcreteIngredientDto,
   IWritePantryItemPortionDto,
@@ -187,6 +188,19 @@ export class PantryItemPortionService {
         'Failed to delete pantry item portion',
       );
     }
+  }
+
+  public async consumeWithManager(
+    manager: EntityManager,
+    dto: IConsumePantryItemDto,
+  ): Promise<void> {
+    // Adjust pantry item measurements for the consumed portion
+    await this.pantryItemService.consumePortionWithManager(
+      manager,
+      dto.pantryItemId,
+      dto,
+      true,
+    );
   }
 
   public async findAllForConcreteIngredient(

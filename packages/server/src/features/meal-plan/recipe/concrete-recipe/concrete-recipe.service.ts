@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -76,6 +77,8 @@ export class ConcreteRecipeService {
 
     // Create the concrete recipe
     const concreteRecipe = manager.create(ConcreteRecipeEntity, recipeDto);
+    concreteRecipe.isCooked = false;
+    concreteRecipe.isSufficient = false;
     const result = await manager.insert(ConcreteRecipeEntity, concreteRecipe);
 
     if (!result.identifiers.length) {
@@ -95,6 +98,9 @@ export class ConcreteRecipeService {
         }),
       ),
     );
+
+    // Update status of the concrete recipe
+    await this.updateSufficientStatusWithManager(manager, createdRecipeId);
 
     // Return the created concrete recipe with relations
     return manager.findOneOrFail(ConcreteRecipeEntity, {
@@ -140,6 +146,9 @@ export class ConcreteRecipeService {
 
     // Update the concrete recipe
     await manager.update(ConcreteRecipeEntity, id, recipeDto);
+
+    // Update the sufficient status of the concrete recipe
+    await this.updateSufficientStatusWithManager(manager, id);
 
     // Return the updated concrete recipe with relations
     return manager.findOneOrFail(ConcreteRecipeEntity, {
@@ -208,6 +217,99 @@ export class ConcreteRecipeService {
   async deleteWithTransaction(id: string): Promise<void> {
     return this.transactionContext.execute(async (manager: EntityManager) => {
       return this.deleteWithManager(manager, id);
+    });
+  }
+
+  private async updateSufficientStatusWithManager(
+    manager: EntityManager,
+    id: string,
+  ) {
+    const concreteRecipe = await manager.findOne(ConcreteRecipeEntity, {
+      where: { id },
+      relations: ['confirmedIngredients'],
+    });
+
+    if (!concreteRecipe) {
+      throw new InternalServerErrorException(
+        `Concrete recipe with ID ${id} not found`,
+      );
+    }
+
+    // Check if all concrete ingredients are sufficient
+    const sufficientStatuses = await Promise.all(
+      concreteRecipe.confirmedIngredients.map(async (ingredient) =>
+        this.concreteIngredientService.checkFulfillmenWithManager(
+          manager,
+          ingredient.id,
+        ),
+      ),
+    );
+
+    const allSufficient = sufficientStatuses.every((status) => !!status);
+
+    // Update the concrete recipe's sufficient status
+    await manager.update(ConcreteRecipeEntity, id, {
+      isSufficient: allSufficient, // False if any ingredient is not sufficient
+    });
+  }
+
+  public async markAsCooked(id: string): Promise<IConcreteRecipe> {
+    return this.transactionContext.execute(async (manager: EntityManager) => {
+      return this.markAsCookedWithManager(manager, id);
+    });
+  }
+
+  public async markAsCookedWithTransaction(
+    id: string,
+  ): Promise<IConcreteRecipe> {
+    return this.transactionContext.execute(async (manager: EntityManager) => {
+      return this.markAsCookedWithManager(manager, id);
+    });
+  }
+
+  public async markAsCookedWithManager(
+    manager: EntityManager,
+    id: string,
+  ): Promise<IConcreteRecipe> {
+    const concreteRecipe = await manager.findOne(ConcreteRecipeEntity, {
+      where: { id },
+      relations: ['confirmedIngredients'],
+    });
+
+    if (!concreteRecipe) {
+      throw new BadRequestException(`Concrete recipe with ID ${id} not found`);
+    }
+
+    if (concreteRecipe.isCooked) {
+      throw new BadRequestException(
+        `Concrete recipe with ID ${id} is already marked as cooked`,
+      );
+    }
+
+    if (!concreteRecipe.isSufficient) {
+      throw new BadRequestException(
+        `Concrete recipe with ID ${id} is not sufficient`,
+      );
+    }
+
+    await Promise.all(
+      concreteRecipe.confirmedIngredients.map(async (ingredient) => {
+        await this.concreteIngredientService.consumeIngredientWithManager(
+          manager,
+          ingredient.id,
+        );
+      }),
+    );
+
+    // Mark the concrete recipe as cooked
+    await manager.update(ConcreteRecipeEntity, id, {
+      isCooked: true,
+    });
+
+    // Return the updated concrete recipe with relations
+    return manager.findOneOrFail(ConcreteRecipeEntity, {
+      where: { id },
+      relations: ['confirmedIngredients'],
     });
   }
 }

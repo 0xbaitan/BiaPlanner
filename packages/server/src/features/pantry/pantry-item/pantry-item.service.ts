@@ -156,26 +156,51 @@ export default class PantryItemService {
     manager: EntityManager,
     pantryItemId: string,
     dto: IConsumePantryItemDto,
+    useReserved = false,
   ): Promise<IPantryItem> {
     const pantryItem = await manager.findOneOrFail(PantryItemEntity, {
       where: { id: pantryItemId },
       relations: { product: true },
     });
+
+    const measurementUnit = useReserved
+      ? pantryItem.reservedMeasurements.unit
+      : pantryItem.availableMeasurements.unit;
+
     const convertedPortion = convertCookingMeasurement(
       dto.measurement,
-      pantryItem.availableMeasurements.unit,
+      measurementUnit,
     );
 
-    if (
-      pantryItem.availableMeasurements.magnitude < convertedPortion.magnitude
-    ) {
-      throw new BadRequestException('Not enough available');
+    if (useReserved) {
+      this.validateSufficientQuantity(
+        pantryItem.reservedMeasurements.magnitude,
+        convertedPortion.magnitude,
+        'reserved',
+      );
+      pantryItem.reservedMeasurements.magnitude -= convertedPortion.magnitude;
+    } else {
+      this.validateSufficientQuantity(
+        pantryItem.availableMeasurements.magnitude,
+        convertedPortion.magnitude,
+        'available',
+      );
+      pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
     }
 
-    pantryItem.availableMeasurements.magnitude -= convertedPortion.magnitude;
     pantryItem.consumedMeasurements.magnitude += convertedPortion.magnitude;
 
     return manager.save(PantryItemEntity, pantryItem);
+  }
+
+  private validateSufficientQuantity(
+    available: number,
+    required: number,
+    type: string,
+  ): void {
+    if (available < required) {
+      throw new BadRequestException(`Not enough ${type}`);
+    }
   }
 
   async consumePortion(

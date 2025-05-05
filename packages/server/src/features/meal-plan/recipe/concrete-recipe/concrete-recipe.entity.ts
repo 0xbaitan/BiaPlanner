@@ -90,7 +90,7 @@ export class ConcreteRecipeEntity implements IConcreteRecipe {
   @Column({
     type: 'tinyint',
     default: 0,
-    nullable: false,
+    nullable: true,
     transformer: {
       from: (value: number) => Boolean(value),
       to: (value: boolean) => Number(value),
@@ -101,7 +101,7 @@ export class ConcreteRecipeEntity implements IConcreteRecipe {
   @Column({
     type: 'tinyint',
     default: 0,
-    nullable: false,
+    nullable: true,
     transformer: {
       from: (value: number) => Boolean(value),
       to: (value: boolean) => Number(value),
