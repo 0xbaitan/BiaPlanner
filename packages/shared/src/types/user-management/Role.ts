@@ -1,5 +1,6 @@
 import { IPermissionGroup, WriteMealPlanPermissionDtoSchema, WritePantryPermissionDtoSchema, WritePermissionDtoSchema, WritePermissionGroupDtoSchema, WriteShoppingListPermissionDtoSchema } from "./Permission";
 
+import { FilterParamsSchema } from "../PaginateExtended";
 import { IBaseEntity } from "../BaseEntity";
 import { IUser } from "./User";
 import { z } from "zod";
@@ -30,3 +31,16 @@ export const ViewOnlyRoleValue: IPermissionGroup = {
   cuisine: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
   product: WritePermissionDtoSchema.parse({ viewItem: true, editItem: false, deleteItem: false, createItem: false, viewList: true }),
 };
+
+export enum RolesSortBy {
+  NAME_A_TO_Z = "NAME_A_TO_Z",
+  NAME_Z_TO_A = "NAME_Z_TO_A",
+  NEWEST = "NEWEST",
+  OLDEST = "OLDEST",
+}
+
+export const QueryRoleDtoSchema = FilterParamsSchema.extend({
+  sortBy: z.nativeEnum(RolesSortBy).optional(),
+});
+
+export type IQueryRoleDto = z.infer<typeof QueryRoleDtoSchema>;

@@ -86,6 +86,7 @@ export default function SideNavigationBar() {
         <MealPlansMenu />
         <ProductCatalogueMenu />
         <RecipeManagementMenu />
+        <UserManagementMenu />
 
         {/* <SettingsMenu /> */}
         <div style={{ flexGrow: 1, display: "flex", justifyContent: "center", alignItems: "center", padding: "2em 1em", marginTop: "1.5em", borderTop: "1px solid #e0e0e0" }}>
@@ -129,6 +130,14 @@ function RecipeManagementMenu() {
       <NavigationMenuItem label="Recipes" path={RoutePaths.RECIPES} icon={<FaBook size={20} className="bp-side_navbar__menu_item_icon" />} />
       <NavigationMenuItem label="Cuisines" path={RoutePaths.CUISINES} icon={<FaBowlRice size={20} className="bp-side_navbar__menu_item_icon" />} />
       <NavigationMenuItem label="Recipe Tags" path={RoutePaths.RECIPE_TAGS} icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />} />
+    </SubMenu>
+  );
+}
+
+function UserManagementMenu() {
+  return (
+    <SubMenu label="User Management" className="+primary" icon={<FaGear size={20} className="bp-side_navbar__menu_item_icon" />}>
+      <NavigationMenuItem label="Roles" path={RoutePaths.ROLES} icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />} />
     </SubMenu>
   );
 }

@@ -14,6 +14,7 @@ import recipeCatalogueReducer from "@/features/recipe-management/reducers";
 import { rootApi } from "@/apis";
 import sessionStorage from "redux-persist/lib/storage/session";
 import shoppingListsReducer from "@/features/shopping-lists/reducers";
+import userManagementReducer from "@/features/user-management/reducers";
 
 const persistConfig = {
   key: "root",
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   recipeCatalogue: recipeCatalogueReducer,
   productCatalogue: productCatalogueReducer,
   pantry: pantryReducer,
+  userManagement: userManagementReducer,
   [rootApi.reducerPath]: rootApi.reducer,
 });
 

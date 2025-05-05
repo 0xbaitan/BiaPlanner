@@ -11,6 +11,7 @@ import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/Creat
 import CreatePantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/CreatePantryItemPage";
 import CreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/CreateProductCategoryPage";
 import CreateRecipePage from "./features/recipe-management/_recipes/pages/CreateRecipePage";
+import CreateRolePage from "./features/user-management/_roles/pages/CreateRolePage";
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
@@ -19,6 +20,7 @@ import EditProductCategoryPage from "./features/product-catalogue/_product-categ
 import EditProductPage from "./features/product-catalogue/_products/pages/EditProductPage";
 import EditRecipePage from "./features/recipe-management/_recipes/pages/EditRecipePage";
 import EditRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/EditRecipeTagPage";
+import EditRolePage from "./features/user-management/_roles/pages/EditRolePage";
 import EditShoppingListPage from "./features/shopping-lists/pages/EditShoppingListPage";
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
@@ -31,6 +33,7 @@ import ProtectedPagesContainer from "./components/layouts/ProtectedPagesContaine
 import PublicPagesContainer from "./components/layouts/PublicPagesContainer";
 import RecipeTagsPage from "./features/recipe-management/_recipe-tags/pages/RecipeTagsPage";
 import RecipesListPage from "./features/recipe-management/_recipes/pages/RecipesListPage";
+import RolesPage from "./features/user-management/_roles/pages/RolesPage";
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import ViewBrandPage from "@/features/product-catalogue/_brands/pages/ViewBrandPage";
@@ -88,6 +91,11 @@ export enum RoutePaths {
 
   SETTINGS_ACCOUNT = "/settings/account",
   SETTINGS_NOTIFICATIONS = "/settings/notifications",
+
+  ROLES = "/user-management/roles",
+  ROLES_CREATE = "/user-management/roles/create",
+  ROLES_VIEW = "/user-management/roles/view/:id",
+  ROLES_EDIT = "/user-management/roles/edit/:id",
 
   SIGNUP = "/signup",
   LOGIN = "/login",
@@ -155,6 +163,10 @@ export default function Routes() {
 
           <Route path={RoutePaths.SETTINGS_ACCOUNT} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.SETTINGS_NOTIFICATIONS} element={<AdminBrandsPage />} />
+
+          <Route path={RoutePaths.ROLES} element={<RolesPage />} />
+          <Route path={RoutePaths.ROLES_CREATE} element={<CreateRolePage />} />
+          <Route path={RoutePaths.ROLES_EDIT} element={<EditRolePage />} />
 
           <Route path={RoutePaths.NOT_FOUND} element={<NotFoundPage />} />
         </Route>
