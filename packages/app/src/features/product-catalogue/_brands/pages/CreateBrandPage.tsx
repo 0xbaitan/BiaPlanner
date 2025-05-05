@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import BrandForm from "../components/BrandForm";
@@ -27,13 +28,21 @@ export default function CreateBrandPage() {
   });
 
   return (
-    <BrandForm
-      type="create"
-      disableSubmit={isLoading}
-      onSubmit={async (brandDto) => {
-        notifyOnCreateTrigger();
-        await createBrand(brandDto);
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "brand",
+        key: "createItem",
       }}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <BrandForm
+        type="create"
+        disableSubmit={isLoading}
+        onSubmit={async (brandDto) => {
+          notifyOnCreateTrigger();
+          await createBrand(brandDto);
+        }}
+      />
+    </AuthorisationSieve>
   );
 }

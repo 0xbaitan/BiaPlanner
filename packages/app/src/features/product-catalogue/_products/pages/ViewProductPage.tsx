@@ -90,7 +90,7 @@ export default function ViewProductPage() {
               }}
               type={AuthorisationSieveType.NULLIFY}
             >
-              <Button variant="primary" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }))}>
+              <Button variant="secondary" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }))}>
                 <FaEdit />
                 &ensp;Edit product
               </Button>
@@ -102,7 +102,7 @@ export default function ViewProductPage() {
               }}
               type={AuthorisationSieveType.NULLIFY}
             >
-              <Button variant="danger" onClick={handleDeleteProduct}>
+              <Button variant="outline-danger" onClick={handleDeleteProduct}>
                 <FaTrash />
                 &ensp;Delete product
               </Button>

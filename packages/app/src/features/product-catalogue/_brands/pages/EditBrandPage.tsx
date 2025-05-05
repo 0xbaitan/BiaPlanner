@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useGetBrandQuery, useUpdateBrandMutation } from "@/apis/BrandsApi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,13 +31,21 @@ export default function EditBrandPage() {
   console.log("brand", brand);
   if (!brand) return <div>Could not find brand</div>;
   return (
-    <BrandForm
-      type="update"
-      initialValue={brand}
-      onSubmit={async (brandDto) => {
-        notifyOnUpdateTrigger();
-        await updateBrand({ id: String(brand.id), dto: brandDto });
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "brand",
+        key: "createItem",
       }}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <BrandForm
+        type="update"
+        initialValue={brand}
+        onSubmit={async (brandDto) => {
+          notifyOnUpdateTrigger();
+          await updateBrand({ id: String(brand.id), dto: brandDto });
+        }}
+      />
+    </AuthorisationSieve>
   );
 }

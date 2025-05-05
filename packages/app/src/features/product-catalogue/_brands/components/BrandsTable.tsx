@@ -11,10 +11,11 @@ import { useNavigate } from "react-router-dom";
 
 export type BrandsTableProps = {
   data: IBrandExtended[];
+  offset?: number;
 };
 
 export default function BrandsTable(props: BrandsTableProps) {
-  const { data } = props;
+  const { data, offset } = props;
   const navigate = useNavigate();
 
   const [deleteBrand, { isSuccess, isError, isLoading }] = useDeleteBrandMutation();
@@ -43,6 +44,7 @@ export default function BrandsTable(props: BrandsTableProps) {
   return (
     <TabbedViewsTable<IBrandExtended>
       data={data}
+      offset={offset}
       views={[
         {
           viewKey: "general-details",

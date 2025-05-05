@@ -5,8 +5,10 @@ import {
   IProduct,
   IQueryBrandDto,
   IQueryProductDto,
+  IQueryTopBrandedProductsDto,
   QueryBrandDtoSchema,
   QueryProductDtoSchema,
+  QueryTopBrandedProductsDtoSchema,
 } from '@biaplanner/shared';
 import { ZodQuery } from '@/util/zod-query.decorator';
 
@@ -18,7 +20,7 @@ const QueryProductParamsValidationPipe = new ZodValidationPipe(
 );
 
 const QueryTopBrandedProductsParamsValidationPipe = new ZodValidationPipe(
-  QueryBrandDtoSchema,
+  QueryTopBrandedProductsDtoSchema,
 );
 @Controller('/query/products')
 export class QueryProductController {
@@ -34,12 +36,11 @@ export class QueryProductController {
     return this.queryProductService.query(query);
   }
 
-  // @Public()
-  // @Get('/top-branded')
-  // async queryTopBrandedProducts(
-  //   @Query(QueryTopBrandedProductsParamsValidationPipe)
-  //   query: IQueryTopBrandedProductsParamsDto,
-  // ): Promise<IProduct[]> {
-  //   return this.queryProductService.queryTopBrandedProducts(query);
-  // }
+  @Get('/top-branded')
+  async queryTopBrandedProducts(
+    @Query(QueryTopBrandedProductsParamsValidationPipe)
+    query: IQueryTopBrandedProductsDto,
+  ): Promise<IProduct[]> {
+    return this.queryProductService.queryTopBrandedProducts(query);
+  }
 }

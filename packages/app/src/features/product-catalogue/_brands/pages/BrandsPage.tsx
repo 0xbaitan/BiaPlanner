@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useBrandsCrudListActions, useBrandsCrudListState } from "../reducers/BrandsCrudListReducer";
 
@@ -25,13 +26,13 @@ export default function BrandsPage() {
     refetchOnReconnect: true,
   });
 
-  const { numItems, currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = useMemo(() => {
+  const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, totalPages } = useMemo(() => {
     return calculatePaginationElements(brandsQuery.limit ?? 25, results);
   }, [brandsQuery.limit, results]);
 
   const brandsTable = useMemo(() => {
-    return <BrandsTable data={results?.data ?? []} />;
-  }, [results?.data]);
+    return <BrandsTable data={results?.data ?? []} offset={numItemStartOnPage} />;
+  }, [numItemStartOnPage, results?.data]);
 
   const brandsGrid = useMemo(() => {
     return (
@@ -45,62 +46,78 @@ export default function BrandsPage() {
   }, [navigate, results?.data]);
 
   return (
-    <CrudListPageLayout>
-      <CrudListPageLayout.Header
-        searchTerm={brandsQuery.search}
-        onSearch={(searchTerm) => {
-          setSearch(searchTerm);
-        }}
-        pageTitle="Brands"
-        actionsComponent={
-          <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate(RoutePaths.BRANDS_CREATE)}>
-              <FaPlus />
-              &ensp;Create Brand
-            </Button>
-          </CrudListPageLayout.Header.Actions>
-        }
-        filtersComponent={<BrandsFilterBar />}
-      />
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "brand",
+        key: "viewList",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <CrudListPageLayout>
+        <CrudListPageLayout.Header
+          searchTerm={brandsQuery.search}
+          onSearch={(searchTerm) => {
+            setSearch(searchTerm);
+          }}
+          pageTitle="Brands"
+          actionsComponent={
+            <CrudListPageLayout.Header.Actions>
+              <AuthorisationSieve
+                permissionIndex={{
+                  area: "brand",
+                  key: "createItem",
+                }}
+                type={AuthorisationSieveType.NULLIFY}
+              >
+                <Button variant="primary" onClick={() => navigate(RoutePaths.BRANDS_CREATE)}>
+                  <FaPlus />
+                  &ensp;Create Brand
+                </Button>
+              </AuthorisationSieve>
+            </CrudListPageLayout.Header.Actions>
+          }
+          filtersComponent={<BrandsFilterBar />}
+        />
 
-      <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="brands" />}
-        contentComponent={
-          <CrudListPageLayout.Body.Content>
-            {totalItems === 0 || isError ? <NoResultsFound title={"Oops! No brands found"} description={"Try searching with different keywords or check the spelling."} /> : view === "grid" ? brandsGrid : brandsTable}
-          </CrudListPageLayout.Body.Content>
-        }
-        itemsPerPageCountSelectorComponent={
-          <CrudListPageLayout.Body.ItemsPerPageCountSelector
-            itemsCount={constrainItemsPerPage(brandsQuery.limit ?? 25)}
-            onChange={(limit) => {
-              setLimit(limit);
-            }}
-          />
-        }
-        viewSegmentedButtonComponent={
-          <CrudListPageLayout.Body.ViewSegmentedButton
-            view={view}
-            onChange={(view: ViewType) => {
-              setView(view);
-            }}
-          />
-        }
-      />
+        <CrudListPageLayout.Body
+          resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="brands" />}
+          contentComponent={
+            <CrudListPageLayout.Body.Content>
+              {totalItems === 0 || isError ? <NoResultsFound title={"Oops! No brands found"} description={"Try searching with different keywords or check the spelling."} /> : view === "grid" ? brandsGrid : brandsTable}
+            </CrudListPageLayout.Body.Content>
+          }
+          itemsPerPageCountSelectorComponent={
+            <CrudListPageLayout.Body.ItemsPerPageCountSelector
+              itemsCount={constrainItemsPerPage(brandsQuery.limit ?? 25)}
+              onChange={(limit) => {
+                setLimit(limit);
+              }}
+            />
+          }
+          viewSegmentedButtonComponent={
+            <CrudListPageLayout.Body.ViewSegmentedButton
+              view={view}
+              onChange={(view: ViewType) => {
+                setView(view);
+              }}
+            />
+          }
+        />
 
-      <CrudListPageLayout.Footer
-        paginationComponent={
-          <CrudListPageLayout.Footer.Pagination
-            paginationProps={{
-              numPages: totalPages,
-              currentPage,
-              onPageChange: (page) => {
-                setPage(page);
-              },
-            }}
-          />
-        }
-      />
-    </CrudListPageLayout>
+        <CrudListPageLayout.Footer
+          paginationComponent={
+            <CrudListPageLayout.Footer.Pagination
+              paginationProps={{
+                numPages: totalPages,
+                currentPage,
+                onPageChange: (page) => {
+                  setPage(page);
+                },
+              }}
+            />
+          }
+        />
+      </CrudListPageLayout>
+    </AuthorisationSieve>
   );
 }

@@ -60,7 +60,10 @@ export class QueryBrandService {
     }, 'productCount');
 
     // Join products to count the number of products associated with each brand
-    qb.leftJoinAndSelect('brand.products', 'product');
+    qb.leftJoinAndSelect('brand.products', 'product').leftJoinAndSelect(
+      'brand.logo',
+      'logo',
+    );
 
     // Apply search filter
     if (search.trim().length > 0) {

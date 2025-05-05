@@ -1,4 +1,4 @@
-import { IProduct, IQueryProductDto, Paginated } from "@biaplanner/shared";
+import { IProduct, IQueryProductDto, IQueryTopBrandedProductsDto, Paginated } from "@biaplanner/shared";
 
 import qs from "qs";
 import { rootApi } from ".";
@@ -65,13 +65,13 @@ export const productsApi = rootApi.injectEndpoints({
       providesTags: (result) => (result ? [...result.data?.filter(({ id }) => id != null).map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
     }),
 
-    // getTopBrandedProducts: build.query<IProduct[], IQueryTopBrandedProductsParamsDto>({
-    //   query: (query) => ({
-    //     url: `/query/products/top-branded?${qs.stringify(query)}`,
-    //     method: "GET",
-    //   }),
-    //   providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
-    // }),
+    getTopBrandedProducts: build.query<IProduct[], IQueryTopBrandedProductsDto>({
+      query: (query) => ({
+        url: `/query/products/top-branded?${qs.stringify(query)}`,
+        method: "GET",
+      }),
+      providesTags: (result) => (result ? [...result.map(({ id }) => ({ type: "Product" as const, id })), { type: "Product", id: "LIST" }] : [{ type: "Product", id: "LIST" }]),
+    }),
   }),
 });
 
@@ -84,7 +84,7 @@ export const {
   useLazyGetProductByIdQuery,
   useSearchProductsQuery,
   useLazySearchProductsQuery,
-  // useGetTopBrandedProductsQuery,
-  // useLazyGetTopBrandedProductsQuery,
+  useGetTopBrandedProductsQuery,
+  useLazyGetTopBrandedProductsQuery,
   useDeleteProductMutation,
 } = productsApi;

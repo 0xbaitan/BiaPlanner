@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, Brackets } from 'typeorm';
 import { paginate, Paginated } from 'nestjs-paginate';
 import { ProductEntity } from './product.entity';
-import { IProduct, IQueryProductDto } from '@biaplanner/shared';
+import {
+  IProduct,
+  IQueryProductDto,
+  IQueryTopBrandedProductsDto,
+} from '@biaplanner/shared';
+import { ShoppingItemEntity } from '@/features/shopping-list/shopping-item/shopping-item.entity';
+import { PantryItemEntity } from '../pantry-item/pantry-item.entity';
 
 @Injectable()
 export class QueryProductService {
@@ -115,44 +121,40 @@ export class QueryProductService {
     return paginatedResults;
   }
 
-  // async queryTopBrandedProducts(params: IQueryTopBrandedProductsParamsDto) {
-  //   const { brandId, limit = 10 } = params;
-  //   const qb = this.productRepository.createQueryBuilder('product');
-  //   qb.select([
-  //     'product.id as id',
-  //     'COUNT(DISTINCT pantryItem.id) as distinctPantryItemCount',
-  //     'COUNT(DISTINCT shoppingItem.id) as distinctShoppingItemCount',
-  //   ]);
+  async queryTopBrandedProducts(params: IQueryTopBrandedProductsDto) {
+    const { brandId, limit = 10 } = params;
+    const qb = this.productRepository.createQueryBuilder('product');
 
-  //   qb.leftJoin('product.brand', 'brand')
-  //     .leftJoin('product.pantryItems', 'pantryItem')
-  //     .leftJoin('product.shoppingItems', 'shoppingItem');
+    qb.distinct(true);
 
-  //   qb.where('brand.id = :brandId', { brandId });
+    qb.addSelect((subQuery) => {
+      return subQuery
+        .select('COUNT(DISTINCT shoppingItem.id)', 'distinctShoppingItemCount')
+        .from(ShoppingItemEntity, 'shoppingItem')
+        .where('shoppingItem.productId = product.id');
+    }, 'distinctShoppingItemCount')
 
-  //   qb.groupBy('product.id');
-  //   qb.orderBy('distinctShoppingItemCount', 'DESC');
-  //   qb.addOrderBy('distinctPantryItemCount', 'DESC');
-  //   qb.limit(limit);
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(DISTINCT pantryItem.id)', 'distinctPantryItemCount')
+          .from(PantryItemEntity, 'pantryItem')
+          .where('pantryItem.productId = product.id');
+      }, 'distinctPantryItemCount');
 
-  //   const rawResults = await qb.getRawMany<{
-  //     id: string;
-  //     distinctPantryItemCount: number;
-  //     distinctShoppingItemCount: number;
-  //   }>();
+    qb.leftJoin('product.brand', 'brand')
+      .leftJoin('product.pantryItems', 'pantryItem')
+      .leftJoin('product.shoppingItems', 'shoppingItem');
 
-  //   const hydratedResults = await Promise.all(
-  //     rawResults.map((item) => {
-  //       const product = this.productRepository.findOne({
-  //         where: { id: item.id },
-  //         loadEagerRelations: false,
-  //         relations: {
-  //           cover: true,
-  //         },
-  //       });
-  //       return product;
-  //     }),
-  //   );
-  //   return hydratedResults;
-  // }
+    qb.orderBy('distinctShoppingItemCount', 'DESC');
+    qb.addOrderBy('distinctPantryItemCount', 'DESC');
+    qb.limit(limit);
+
+    if (brandId) {
+      qb.andWhere('product.brandId = :brandId', { brandId });
+    }
+
+    const results = await qb.getMany();
+
+    return results;
+  }
 }

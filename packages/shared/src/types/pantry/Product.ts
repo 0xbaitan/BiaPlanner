@@ -76,3 +76,10 @@ export const QueryProductDtoSchema = FilterParamsSchema.extend({
 });
 
 export type IQueryProductDto = z.infer<typeof QueryProductDtoSchema>;
+
+export const QueryTopBrandedProductsDtoSchema = z.object({
+  brandId: z.string().min(1, "Brand is required"),
+  limit: z.coerce.number().optional().default(10),
+});
+
+export type IQueryTopBrandedProductsDto = z.infer<typeof QueryTopBrandedProductsDtoSchema>;
