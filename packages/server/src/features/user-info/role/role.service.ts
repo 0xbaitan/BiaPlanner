@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { RoleEntity } from './role.entity';
-import { IRole, IWriteRoleDto } from '@biaplanner/shared';
+import { IPermissionGroup, IRole, IWriteRoleDto } from '@biaplanner/shared';
 import { TransactionContext } from '@/util/transaction-context';
 
 @Injectable()
@@ -24,6 +24,20 @@ export class RoleService {
     return this.roleRepository.findOneOrFail({
       where: { id },
     });
+  }
+
+  async findCurrentAuthenticatedUserRoles(userId: string): Promise<IRole[]> {
+    const roles = await this.roleRepository
+      .createQueryBuilder('role')
+      .leftJoin('role.users', 'user')
+      .where('user.id = :userId', { userId })
+      .getMany();
+
+    if (!roles) {
+      throw new BadRequestException('No role found');
+    }
+
+    return roles;
   }
 
   /**

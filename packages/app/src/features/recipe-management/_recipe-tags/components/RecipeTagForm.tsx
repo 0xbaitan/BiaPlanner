@@ -53,7 +53,7 @@ export default function RecipeTagForm(props: RecipeTagFormProps) {
           href: RoutePaths.RECIPE_TAGS,
         },
         {
-          label: type === "create" ? "Create Recipe Tag" : "Edit Recipe Tag",
+          label: type === "create" ? "Create Recipe Tag" : `Edit '${initialValue?.name}'`,
           href:
             type === "create"
               ? RoutePaths.RECIPE_TAGS_CREATE

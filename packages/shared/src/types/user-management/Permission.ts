@@ -78,3 +78,43 @@ export const WritePermissionGroupDtoSchema = z.object({
 });
 
 export type IWritePermissionGroupDto = z.infer<typeof WritePermissionGroupDtoSchema>;
+
+export type PermissionArea = keyof IWritePermissionGroupDto;
+
+export type PermissionAreaAndKey =
+  | {
+      area: "shoppingList";
+      key: keyof IShoppingListPermission;
+    }
+  | {
+      area: "pantry";
+      key: keyof IPantryPermission;
+    }
+  | {
+      area: "mealPlan";
+      key: keyof IMealPlanPermission;
+    }
+  | {
+      area: "recipeTag";
+      key: keyof IRecipeTagPermission;
+    }
+  | {
+      area: "productCategory";
+      key: keyof IProductCategoryPermission;
+    }
+  | {
+      area: "cuisine";
+      key: keyof ICuisinePermission;
+    }
+  | {
+      area: "product";
+      key: keyof IPermission;
+    }
+  | {
+      area: "brand";
+      key: keyof IBrandPermission;
+    }
+  | {
+      area: "recipe";
+      key: keyof IRecipePermission;
+    };

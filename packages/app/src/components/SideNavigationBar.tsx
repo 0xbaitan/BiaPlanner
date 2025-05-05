@@ -1,5 +1,6 @@
 import "./styles/SideNavigationBar.scss";
 
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { BiSolidCategory, BiSolidFridge } from "react-icons/bi";
 import { ElementStyles, Menu, MenuItem, Sidebar, SubMenu } from "react-pro-sidebar";
 import { FaBook, FaBowlRice, FaGear, FaKitchenSet, FaShop, FaTags } from "react-icons/fa6";
@@ -11,8 +12,10 @@ import BiaPlannerLogo from "@/icons/bia-planner-logo.svg";
 import { FaShoppingCart } from "react-icons/fa";
 import { IoMdNotifications } from "react-icons/io";
 import LogoutButton from "@/features/authentication/components/LogoutButton";
+import { PermissionAreaAndKey } from "@biaplanner/shared";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { RoutePaths } from "@/Routes";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 
 export default function SideNavigationBar() {
   return (
@@ -97,13 +100,129 @@ export default function SideNavigationBar() {
   );
 }
 
+function PantryMenu() {
+  return (
+    <NavigationMenuItem
+      label="Pantry"
+      path={RoutePaths.PANTRY}
+      icon={<BiSolidFridge size={20} className="bp-side_navbar__menu_item_icon" />}
+      permissionIndex={{
+        area: "pantry",
+        key: "viewList",
+      }}
+    />
+  );
+}
+
+function MealPlansMenu() {
+  return (
+    <NavigationMenuItem
+      label="Meal Plans"
+      path={RoutePaths.MEAL_PLANS}
+      icon={<GiMeal size={20} className="bp-side_navbar__menu_item_icon" />}
+      permissionIndex={{
+        area: "mealPlan",
+        key: "viewList",
+      }}
+    />
+  );
+}
+
 function ProductCatalogueMenu() {
   return (
     <SubMenu label="Product Catalogue" className="+primary" icon={<AiFillProduct size={20} className="bp-side_navbar__menu_item_icon" />}>
-      <NavigationMenuItem label="Products" path={RoutePaths.PRODUCTS} icon={<GiMilkCarton size={20} className="bp-side_navbar__menu_item_icon" />} />
-      <NavigationMenuItem label="Brands" path={RoutePaths.BRANDS} icon={<FaShop size={20} className="bp-side_navbar__menu_item_icon" />} />
-      <NavigationMenuItem label="Product Categories" path={RoutePaths.PRODUCT_CATEGORIES} icon={<BiSolidCategory size={20} className="bp-side_navbar__menu_item_icon" />} />
+      <NavigationMenuItem
+        label="Products"
+        path={RoutePaths.PRODUCTS}
+        icon={<GiMilkCarton size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "product",
+          key: "viewList",
+        }}
+      />
+      <NavigationMenuItem
+        label="Brands"
+        path={RoutePaths.BRANDS}
+        icon={<FaShop size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "brand",
+          key: "viewList",
+        }}
+      />
+      <NavigationMenuItem
+        label="Product Categories"
+        path={RoutePaths.PRODUCT_CATEGORIES}
+        icon={<BiSolidCategory size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "productCategory",
+          key: "viewList",
+        }}
+      />
     </SubMenu>
+  );
+}
+
+function RecipeManagementMenu() {
+  return (
+    <SubMenu label="Recipe Catalogue" className="+primary" icon={<FaKitchenSet size={20} className="bp-side_navbar__menu_item_icon" />}>
+      <NavigationMenuItem
+        label="Recipes"
+        path={RoutePaths.RECIPES}
+        icon={<FaBook size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "recipe",
+          key: "viewList",
+        }}
+      />
+      <NavigationMenuItem
+        label="Cuisines"
+        path={RoutePaths.CUISINES}
+        icon={<FaBowlRice size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "cuisine",
+          key: "viewList",
+        }}
+      />
+      <NavigationMenuItem
+        label="Recipe Tags"
+        path={RoutePaths.RECIPE_TAGS}
+        icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "recipeTag",
+          key: "viewList",
+        }}
+      />
+    </SubMenu>
+  );
+}
+
+function UserManagementMenu() {
+  return (
+    <SubMenu label="User Management" className="+primary" icon={<FaGear size={20} className="bp-side_navbar__menu_item_icon" />}>
+      <NavigationMenuItem
+        label="Roles"
+        path={RoutePaths.ROLES}
+        icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />}
+        permissionIndex={{
+          area: "brand", // Replace with the correct area for roles if applicable
+          key: "viewList",
+        }}
+      />
+    </SubMenu>
+  );
+}
+
+function ShoppingListMenu() {
+  return (
+    <NavigationMenuItem
+      label="Shopping Lists"
+      path={RoutePaths.SHOPPING_LISTS}
+      icon={<FaShoppingCart size={20} className="bp-side_navbar__menu_item_icon" />}
+      permissionIndex={{
+        area: "shoppingList",
+        key: "viewList",
+      }}
+    />
   );
 }
 
@@ -116,49 +235,23 @@ function SettingsMenu() {
   );
 }
 
-function PantryMenu() {
-  return <NavigationMenuItem label="Pantry" path={RoutePaths.PANTRY} icon={<BiSolidFridge size={20} className="bp-side_navbar__menu_item_icon" />} />;
-}
-
-function MealPlansMenu() {
-  return <NavigationMenuItem label="Meal Plans" path={RoutePaths.MEAL_PLANS} icon={<GiMeal size={20} className="bp-side_navbar__menu_item_icon" />} />;
-}
-
-function RecipeManagementMenu() {
-  return (
-    <SubMenu label="Recipe Catalogue" className="+primary" icon={<FaKitchenSet size={20} className="bp-side_navbar__menu_item_icon" />}>
-      <NavigationMenuItem label="Recipes" path={RoutePaths.RECIPES} icon={<FaBook size={20} className="bp-side_navbar__menu_item_icon" />} />
-      <NavigationMenuItem label="Cuisines" path={RoutePaths.CUISINES} icon={<FaBowlRice size={20} className="bp-side_navbar__menu_item_icon" />} />
-      <NavigationMenuItem label="Recipe Tags" path={RoutePaths.RECIPE_TAGS} icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />} />
-    </SubMenu>
-  );
-}
-
-function UserManagementMenu() {
-  return (
-    <SubMenu label="User Management" className="+primary" icon={<FaGear size={20} className="bp-side_navbar__menu_item_icon" />}>
-      <NavigationMenuItem label="Roles" path={RoutePaths.ROLES} icon={<FaTags size={20} className="bp-side_navbar__menu_item_icon" />} />
-    </SubMenu>
-  );
-}
-
-function ShoppingListMenu() {
-  return <NavigationMenuItem label="Shopping Lists" path={RoutePaths.SHOPPING_LISTS} icon={<FaShoppingCart size={20} className="bp-side_navbar__menu_item_icon" />} />;
-}
-
 type NavigationMenuItemProps = {
   label: string;
   path: RoutePaths;
   icon?: React.ReactNode;
+  permissionIndex?: PermissionAreaAndKey[] | PermissionAreaAndKey;
 };
 function NavigationMenuItem(props: NavigationMenuItemProps) {
-  const { label, path, icon } = props;
+  const { label, path, icon, permissionIndex } = props;
   const { pathname } = useLocation();
   const isActive = pathname === path;
   const navigate = useNavigate();
+
   return (
-    <MenuItem className={`bp-side_navbar__menu_item ${isActive ? "+active" : ""}`} icon={icon} onClick={() => navigate(path)} active={isActive}>
-      {label}
-    </MenuItem>
+    <AuthorisationSieve permissionIndex={permissionIndex} type={AuthorisationSieveType.NULLIFY}>
+      <MenuItem className={`bp-side_navbar__menu_item ${isActive ? "+active" : ""}`} icon={icon} onClick={() => navigate(path)} active={isActive}>
+        {label}
+      </MenuItem>
+    </AuthorisationSieve>
   );
 }

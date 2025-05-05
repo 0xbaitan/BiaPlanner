@@ -88,6 +88,9 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
           );
         });
 
+      if (kebabContent?.length === 0) {
+        return null;
+      }
       const kebabMenu = <Dropdown className="bp-tabbed_views_table__kebab_dropdown">{kebabContent}</Dropdown>;
       const kebabMenuPopup = (
         <Popup

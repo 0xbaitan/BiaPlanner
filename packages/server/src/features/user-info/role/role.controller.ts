@@ -7,11 +7,13 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { IRole, IWriteRoleDto } from '@biaplanner/shared';
+import { IRole, IUser, IWriteRoleDto } from '@biaplanner/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { WriteRoleDtoSchema } from '@biaplanner/shared';
+import { User } from '../authentication/user.decorator';
 
 const WriteRoleValidationPipe = new ZodValidationPipe(WriteRoleDtoSchema);
 
@@ -28,7 +30,13 @@ export class RoleController {
   }
 
   @Get()
-  async findAll(): Promise<IRole[]> {
+  async findAll(
+    @Query('currentUser') currentUser: string,
+    @User() user: IUser,
+  ): Promise<IRole[]> {
+    if (user && user.id && currentUser) {
+      return this.roleService.findCurrentAuthenticatedUserRoles(user.id);
+    }
     return this.roleService.findAll();
   }
 

@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { useGetRecipeTagQuery, useUpdateRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -34,15 +35,23 @@ export default function EditRecipeTagPage() {
   }
 
   return (
-    <RecipeTagForm
-      type="update"
-      initialValue={recipeTag}
-      onSubmit={async (dto) => {
-        notify();
-        await updateRecipeTag({ id: String(recipeTag?.id), dto });
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "recipeTag",
+        key: "editItem",
       }}
-      disableSubmit={isUpdateLoading}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <RecipeTagForm
+        type="update"
+        initialValue={recipeTag}
+        onSubmit={async (dto) => {
+          notify();
+          await updateRecipeTag({ id: String(recipeTag?.id), dto });
+        }}
+        disableSubmit={isUpdateLoading}
+      />
+    </AuthorisationSieve>
   );
 }
 

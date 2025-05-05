@@ -3,6 +3,7 @@ import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { IRecipeTagExtended } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 import { useDeleteRecipeTagMutation } from "@/apis/RecipeTagsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,7 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
   const navigate = useNavigate();
 
   const [deleteRecipeTag, { isSuccess, isError, isLoading }] = useDeleteRecipeTagMutation();
-
+  const containsNecessaryPermission = useContainsNecessaryPermission();
   const { notify } = useSimpleStatusToast({
     idPrefix: "delete-recipe-tag",
     successMessage: "Recipe tag deleted successfully",
@@ -67,6 +68,11 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
           icon: FaPencilAlt,
           label: "Edit Tag",
           type: "edit",
+          hideConditionally: () =>
+            !containsNecessaryPermission({
+              area: "recipeTag",
+              key: "editItem",
+            }),
           onClick: (row) => {
             if (!row.id) return;
             navigate(fillParametersInPath(RoutePaths.RECIPE_TAGS_EDIT, { id: row.id }));
@@ -80,6 +86,11 @@ export default function RecipeTagsTable(props: RecipeTagsTableProps) {
           onClick: (row) => {
             notifyDeletion(row);
           },
+          hideConditionally: () =>
+            !containsNecessaryPermission({
+              area: "recipeTag",
+              key: "deleteItem",
+            }),
         },
       ]}
     />

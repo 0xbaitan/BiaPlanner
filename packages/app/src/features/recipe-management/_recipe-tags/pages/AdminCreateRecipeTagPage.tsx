@@ -1,3 +1,5 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
+
 import RecipeTagForm from "../components/RecipeTagForm";
 import { RoutePaths } from "@/Routes";
 import { useCreateRecipeTagMutation } from "@/apis/RecipeTagsApi";
@@ -25,12 +27,20 @@ export default function AdminCreateRecipeTagPage() {
     },
   });
   return (
-    <RecipeTagForm
-      type="create"
-      onSubmit={async (dto) => {
-        notify();
-        await createRecipeTag(dto);
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "recipeTag",
+        key: "createItem",
       }}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <RecipeTagForm
+        type="create"
+        onSubmit={async (dto) => {
+          notify();
+          await createRecipeTag(dto);
+        }}
+      />
+    </AuthorisationSieve>
   );
 }

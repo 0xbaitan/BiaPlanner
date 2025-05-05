@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { usePantryItemsCrudListActions, usePantryItemsCrudListState } from "../reducers/PantryItemsCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -21,59 +22,67 @@ function PantryPage() {
   const { currentPage, totalItems, numItemStartOnPage, numItemEndOnPage, searchTermUsed, totalPages, itemsPerPage } = calculatePaginationElements(pantryItemsQuery.limit ?? 25, results);
 
   return (
-    <CrudListPageLayout>
-      <CrudListPageLayout.Header
-        searchTerm={pantryItemsQuery.search}
-        onSearch={(searchTerm) => {
-          setSearch(searchTerm);
-        }}
-        pageTitle="Pantry"
-        actionsComponent={
-          <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate(RoutePaths.PANTRY_ADD_ITEM)}>
-              <FaPlus />
-              &ensp;Add New Item
-            </Button>
-          </CrudListPageLayout.Header.Actions>
-        }
-        filtersComponent={<PantryItemsFilterBar />}
-      />
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "pantry",
+        key: "viewList",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <CrudListPageLayout>
+        <CrudListPageLayout.Header
+          searchTerm={pantryItemsQuery.search}
+          onSearch={(searchTerm) => {
+            setSearch(searchTerm);
+          }}
+          pageTitle="Pantry"
+          actionsComponent={
+            <CrudListPageLayout.Header.Actions>
+              <Button variant="primary" onClick={() => navigate(RoutePaths.PANTRY_ADD_ITEM)}>
+                <FaPlus />
+                &ensp;Add New Item
+              </Button>
+            </CrudListPageLayout.Header.Actions>
+          }
+          filtersComponent={<PantryItemsFilterBar />}
+        />
 
-      <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="pantry items" searchTermUsed={searchTermUsed} />}
-        contentComponent={
-          <CrudListPageLayout.Body.Content>
-            <ConsumeItemModal />
-            {isLoading && <div>Loading...</div>}
-            {isError && <NoResultsFound title="Error" description="Failed to fetch pantry items." />}
-            {results?.data.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}
-            {results?.data && results.data.length > 0 && <PantryItemsTable data={results.data} />}
-          </CrudListPageLayout.Body.Content>
-        }
-        itemsPerPageCountSelectorComponent={
-          <CrudListPageLayout.Body.ItemsPerPageCountSelector
-            itemsCount={constrainItemsPerPage(itemsPerPage ?? 25)}
-            onChange={(limit) => {
-              setLimit(limit);
-            }}
-          />
-        }
-      />
+        <CrudListPageLayout.Body
+          resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="pantry items" searchTermUsed={searchTermUsed} />}
+          contentComponent={
+            <CrudListPageLayout.Body.Content>
+              <ConsumeItemModal />
+              {isLoading && <div>Loading...</div>}
+              {isError && <NoResultsFound title="Error" description="Failed to fetch pantry items." />}
+              {results?.data.length === 0 && <NoResultsFound title="No Pantry Items Found" description="Try adding a new item to your pantry to get started." />}
+              {results?.data && results.data.length > 0 && <PantryItemsTable data={results.data} />}
+            </CrudListPageLayout.Body.Content>
+          }
+          itemsPerPageCountSelectorComponent={
+            <CrudListPageLayout.Body.ItemsPerPageCountSelector
+              itemsCount={constrainItemsPerPage(itemsPerPage ?? 25)}
+              onChange={(limit) => {
+                setLimit(limit);
+              }}
+            />
+          }
+        />
 
-      <CrudListPageLayout.Footer
-        paginationComponent={
-          <CrudListPageLayout.Footer.Pagination
-            paginationProps={{
-              numPages: totalPages,
-              currentPage,
-              onPageChange: (page) => {
-                setPage(page);
-              },
-            }}
-          />
-        }
-      />
-    </CrudListPageLayout>
+        <CrudListPageLayout.Footer
+          paginationComponent={
+            <CrudListPageLayout.Footer.Pagination
+              paginationProps={{
+                numPages: totalPages,
+                currentPage,
+                onPageChange: (page) => {
+                  setPage(page);
+                },
+              }}
+            />
+          }
+        />
+      </CrudListPageLayout>
+    </AuthorisationSieve>
   );
 }
 

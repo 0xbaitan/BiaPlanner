@@ -71,14 +71,24 @@ export const rolesApi = rootApi.injectEndpoints({
             ]
           : [{ type: "Role", id: "LIST" }],
     }),
+
+    getCurrentAuthenticatedUserRoles: build.query<IRole[], void>({
+      query: () => ({
+        url: "/user-info/roles?currentUser=true",
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({
+                type: "Role" as const,
+                id,
+              })),
+              { type: "Role", id: "LIST" },
+            ]
+          : [{ type: "Role", id: "LIST" }],
+    }),
   }),
 });
 
-export const {
-  useGetRoleQuery,
-  useGetRolesQuery,
-  useCreateRoleMutation,
-  useUpdateRoleMutation,
-  useDeleteRoleMutation,
-  useSearchRolesQuery, // Export the new search query hook
-} = rolesApi;
+export const { useGetRoleQuery, useGetRolesQuery, useCreateRoleMutation, useUpdateRoleMutation, useDeleteRoleMutation, useSearchRolesQuery, useGetCurrentAuthenticatedUserRolesQuery } = rolesApi;
