@@ -34,6 +34,7 @@ import RecipesListPage from "./features/recipe-management/_recipes/pages/Recipes
 import ShoppingListsPage from "./features/shopping-lists/pages/ShoppingListsPage";
 import SignUpPage from "./features/authentication/pages/SignUpPage";
 import ViewBrandPage from "@/features/product-catalogue/_brands/pages/ViewBrandPage";
+import ViewMealPlanPage from "./features/meal-planning/_meal-plans/pages/ViewMealPlanPage";
 import ViewProductPage from "./features/product-catalogue/_products/pages/ViewProductPage";
 import ViewRecipePage from "./features/recipe-management/_recipes/pages/ViewRecipePage";
 
@@ -46,7 +47,6 @@ export enum RoutePaths {
 
   MEAL_PLANS = "/meal-plans",
   MEAL_PLANS_CREATE = "/meal-plans/create",
-  MEAL_PLANS_SELECT_RECIPE = "/meal-plans/select-recipe",
   MEAL_PLANS_VIEW = "/meal-plans/view/:id",
   MEAL_PLANS_EDIT = "/meal-plans/edit/:id",
 
@@ -112,6 +112,7 @@ export default function Routes() {
           <Route path={RoutePaths.MEAL_PLANS} element={<MealPlansPage />} />
           <Route path={RoutePaths.MEAL_PLANS_CREATE} element={<CreateMealPlanPage />} />
           <Route path={RoutePaths.MEAL_PLANS_EDIT} element={<EditMealPlanPage />} />
+          <Route path={RoutePaths.MEAL_PLANS_VIEW} element={<ViewMealPlanPage />} />
 
           <Route path={RoutePaths.MEAL_PLANS_VIEW} element={<ViewRecipePage />} />
           <Route path={RoutePaths.MEAL_PLANS_EDIT} element={<EditRecipePage />} />

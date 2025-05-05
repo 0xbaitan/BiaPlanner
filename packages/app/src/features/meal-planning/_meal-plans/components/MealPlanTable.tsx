@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationTriangle, FaEye, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useDeleteConcreteRecipeMutation, useMarkConcreteRecipeAsCookedMutation } from "@/apis/ConcreteRecipeApi";
 
@@ -134,6 +134,14 @@ export default function MealPlanTable(props: MealPlanTableProps) {
           onClick: async (row) => {
             notifyAfterMarkingCookingDone();
             await markCookingDone(row.id);
+          },
+        },
+        {
+          icon: FaEye,
+          label: "View Meal Plan",
+          type: "view",
+          onClick: (row) => {
+            navigate(fillParametersInPath(RoutePaths.MEAL_PLANS_VIEW, { id: row.id }));
           },
         },
         {
