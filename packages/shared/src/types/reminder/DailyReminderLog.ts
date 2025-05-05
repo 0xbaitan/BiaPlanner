@@ -1,6 +1,6 @@
 import { IPantryItem } from "../pantry";
 import { IReminder } from "./Reminder";
-import { IUser } from "../User";
+import { IUser } from "../user-management/User";
 
 export type DailyReminderLogEntry = {
   numberOfDaysToExpiry: number;

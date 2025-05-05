@@ -4,11 +4,19 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IPantryItem, IPhoneEntry, IProduct, IUser } from '@biaplanner/shared';
+import {
+  IPantryItem,
+  IPhoneEntry,
+  IProduct,
+  IRole,
+  IUser,
+} from '@biaplanner/shared';
 
 import { PantryItemEntity } from 'src/features/pantry/pantry-item/pantry-item.entity';
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
@@ -54,6 +62,23 @@ export class UserEntity implements IUser {
   })
   @JoinColumn({ name: 'createdById' })
   pantryItems?: IPantryItem[];
+
+  @ManyToMany(() => UserEntity, (user) => user.roles, {
+    cascade: false,
+    onDelete: 'NO ACTION',
+  })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'roleId',
+      referencedColumnName: 'id',
+    },
+  })
+  roles: IRole[];
 
   @CreateDateColumn({
     type: 'timestamp',

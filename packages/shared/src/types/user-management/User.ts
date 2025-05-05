@@ -1,7 +1,8 @@
-import { IPantryItem, IProduct } from "./pantry";
+import { IPantryItem, IProduct } from "../pantry";
 
-import { IBaseEntity } from "./BaseEntity";
-import { IPhoneEntry } from "./PhoneEntry";
+import { IBaseEntity } from "../BaseEntity";
+import { IPhoneEntry } from "../PhoneEntry";
+import { IRole } from "./Role";
 
 export interface IUser extends IBaseEntity {
   firstName: string;
@@ -14,6 +15,7 @@ export interface IUser extends IBaseEntity {
   pantryItems?: IPantryItem[];
   products?: IProduct[];
   isAdmin?: boolean;
+  roles?: IRole[];
 }
 
 export interface ICreateUserDto {

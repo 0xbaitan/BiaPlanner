@@ -1,5 +1,5 @@
 import { IBaseEntity } from "./BaseEntity";
-import { IUser } from "./User";
+import { IUser } from "./user-management/User";
 
 export interface IPhoneEntry extends IBaseEntity {
   countryCode: string;

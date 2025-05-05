@@ -5,7 +5,7 @@ import { IBaseEntity } from "../BaseEntity";
 import { IPantryItemPortion } from "../meal-plans";
 import { IProduct } from "./Product";
 import { IReminder } from "../reminder";
-import { IUser } from "../User";
+import { IUser } from "../user-management/User";
 import exp from "constants";
 import { z } from "zod";
 

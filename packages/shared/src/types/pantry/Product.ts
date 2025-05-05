@@ -8,7 +8,7 @@ import { IFile } from "../File";
 import { IPantryItem } from "./PantryItem";
 import { IProductCategory } from "./ProductCategory";
 import { IShoppingItem } from "../shopping-lists";
-import { IUser } from "../User";
+import { IUser } from "../user-management/User";
 import { TimeMeasurement } from "../TimeMeasurement";
 import { z } from "zod";
 import { zfd } from "zod-form-data";

@@ -1,5 +1,5 @@
 export * from "./PhoneEntry";
-export * from "./User";
+
 export * from "./Authentication";
 export * from "./Errors";
 export * from "./units";
@@ -12,3 +12,4 @@ export * from "./File";
 export * from "./TimeMeasurement";
 export * from "./CookingMeasurement";
 export * from "./PaginateExtended";
+export * from "./user-management";
