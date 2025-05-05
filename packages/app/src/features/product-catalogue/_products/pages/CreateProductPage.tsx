@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import ProductForm from "../components/ProductForm";
@@ -27,13 +28,21 @@ export default function CreateProductPage() {
   });
 
   return (
-    <ProductForm
-      type="create"
-      disableSubmit={isLoading}
-      onSubmit={async (productDto) => {
-        notifyOnCreateTrigger();
-        await createProduct(productDto);
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "product",
+        key: "createItem",
       }}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <ProductForm
+        type="create"
+        disableSubmit={isLoading}
+        onSubmit={async (productDto) => {
+          notifyOnCreateTrigger();
+          await createProduct(productDto);
+        }}
+      />
+    </AuthorisationSieve>
   );
 }

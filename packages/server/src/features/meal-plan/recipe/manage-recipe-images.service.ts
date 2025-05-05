@@ -75,7 +75,7 @@ export class ManageRecipeImagesService {
     }
 
     if (file) {
-      this.filesService.deleteFileFromTemp(file);
+      this.filesService.unregisterExistingFile(fileMetaData.id);
     }
     return fileMetaData;
   }

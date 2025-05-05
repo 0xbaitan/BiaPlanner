@@ -77,9 +77,12 @@ export class QueryProductCategoryService {
       (entities, raw) => {
         const extendedProductCategories: IProductCategoryExtended[] =
           entities.map((category, index) => {
+            const productCount =
+              raw.find((r) => r.productCategory_id === category.id)
+                ?.productCount ?? 0;
             return {
               ...category,
-              productCount: Number(raw[index].productCount ?? 0),
+              productCount: Number(productCount),
             };
           });
 

@@ -68,9 +68,11 @@ export class ProductEntity implements IProduct {
   )
   @JoinTable({
     name: 'products_product-categories',
-    joinColumn: { name: 'productId' },
+    joinColumn: { name: 'productId', referencedColumnName: 'id' },
+
     inverseJoinColumn: {
       name: 'productCategoryId',
+      referencedColumnName: 'id',
     },
   })
   productCategories?: IProductCategory[];

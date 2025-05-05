@@ -28,6 +28,7 @@ export const productsCrudListSlice = createSlice({
         ...state.productsQuery,
         ...action.payload,
       };
+      state.productsQuery.page = 1; // Reset page to 1 when filters change
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.productsQuery.page = action.payload;
@@ -37,6 +38,7 @@ export const productsCrudListSlice = createSlice({
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.productsQuery.search = action.payload;
+      state.productsQuery.page = 1; // Reset page to 1 when search changes
     },
     setSortBy: (state, action: PayloadAction<ProductSortBy>) => {
       state.productsQuery.sortBy = action.payload;

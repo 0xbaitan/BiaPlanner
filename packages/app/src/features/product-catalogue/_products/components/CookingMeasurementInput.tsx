@@ -1,7 +1,7 @@
 import "../styles/CookingMeasurementInput.scss";
 
 import { CookingMeasurement, CookingMeasurementType, Weights, getCookingMeasurement } from "@biaplanner/shared";
-import React, { useCallback, useEffect, useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 
 import Form from "react-bootstrap/Form";
 import MeasurementInput from "@/features/recipe-management/_recipes/components/MeasurementInput";
@@ -42,10 +42,6 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
   const { initialValue, onChange, scoped, disabled, minMagnitude, maxMagnitude, className, ...rest } = props;
   const [measurement, setMeasurement] = useReducer((state: CookingMeasurementInputState, action: CookingMeasurementInputAction) => CookingMeasurementReducer(state, action), initialValue ?? initialState);
 
-  useEffect(() => {
-    onChange(measurement);
-  }, [measurement, onChange]);
-
   const onMagnitudeChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const magnitude = parseFloat(e.target.value);
@@ -58,8 +54,10 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
       } else {
         setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { magnitude } });
       }
+
+      props.onChange({ ...measurement, magnitude });
     },
-    [maxMagnitude, minMagnitude]
+    [maxMagnitude, measurement, minMagnitude, props]
   );
 
   return (
@@ -72,6 +70,7 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
           type={scoped}
           onChange={(unit) => {
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit } });
+            props.onChange({ ...measurement, unit });
           }}
           initialValue={measurement.unit}
         />
@@ -82,6 +81,7 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
           selectedValues={[getCookingMeasurement(measurement.unit)]}
           onChange={([value]) => {
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit: value.unit as CookingMeasurement["unit"] } });
+            props.onChange({ ...measurement, unit: value.unit as CookingMeasurement["unit"] });
           }}
         />
       )}

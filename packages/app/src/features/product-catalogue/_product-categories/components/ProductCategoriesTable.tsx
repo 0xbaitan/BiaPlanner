@@ -1,9 +1,10 @@
-import { FaAllergies, FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-import { IProductCategory, IProductCategoryExtended } from "@biaplanner/shared";
+import { FaExclamationTriangle, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
+import { IProductCategoryExtended } from "@biaplanner/shared";
 import Pill from "@/components/Pill";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 import { useDeleteProductCategoryMutation } from "@/apis/ProductCategoryApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +12,16 @@ import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type ProductCategoriesTableProps = {
   data: IProductCategoryExtended[];
+  offset?: number;
 };
 
 export default function ProductCategoriesTable(props: ProductCategoriesTableProps) {
-  const { data } = props;
+  const { data, offset } = props;
   const navigate = useNavigate();
 
   const [deleteProductCategory, { isSuccess, isError, isLoading }] = useDeleteProductCategoryMutation();
+
+  const containsNecessaryPermissions = useContainsNecessaryPermission();
 
   const { notify } = useSimpleStatusToast({
     idPrefix: "delete-product-category",
@@ -42,6 +46,8 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
   return (
     <TabbedViewsTable<IProductCategoryExtended>
       data={data}
+      offset={offset}
+      showSerialNumber
       views={[
         {
           viewKey: "general-details",
@@ -82,6 +88,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.PRODUCT_CATEGORIES_EDIT, { id: row.id }));
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "productCategory", key: "editItem" }),
         },
 
         {
@@ -91,6 +98,7 @@ export default function ProductCategoriesTable(props: ProductCategoriesTableProp
           onClick: (row) => {
             notifyDeletion(row);
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "productCategory", key: "deleteItem" }),
         },
       ]}
     />

@@ -8,9 +8,11 @@ import {
   IProduct,
   IWriteProductDto,
 } from '@biaplanner/shared';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager, In } from 'typeorm';
 import { ProductCategoryService } from './category/product-category.service';
 import { FilesService } from '@/features/files/files.service';
+import { TransactionContext } from '@/util/transaction-context';
+import { ProductCategoryEntity } from './category/product-category.entity';
 
 @Injectable()
 export class ProductService {
@@ -21,10 +23,11 @@ export class ProductService {
     private productCategoryService: ProductCategoryService,
     @Inject(FilesService)
     private filesService: FilesService,
+    private readonly transactionContext: TransactionContext,
   ) {}
 
   async readProductById(id: string): Promise<IProduct> {
-    const product = await this.productRepository.findOneOrFail({
+    return this.productRepository.findOneOrFail({
       where: { id },
       relations: {
         productCategories: true,
@@ -35,14 +38,10 @@ export class ProductService {
         shoppingItems: true,
       },
     });
-    if (!product) {
-      throw new BadRequestException('Product not found for given id');
-    }
-    return product;
   }
 
   async readAllProducts(): Promise<IProduct[]> {
-    const products = await this.productRepository.find({
+    return this.productRepository.find({
       relations: {
         productCategories: true,
         pantryItems: true,
@@ -52,18 +51,30 @@ export class ProductService {
         shoppingItems: true,
       },
     });
-    return products;
   }
 
   async createProduct(
     dto: IWriteProductDto,
     file: Express.Multer.File,
   ): Promise<IProduct> {
+    return this.transactionContext.execute(async (manager) => {
+      return this.createProductWithManager(manager, dto, file);
+    });
+  }
+
+  async createProductWithManager(
+    manager: EntityManager,
+    dto: IWriteProductDto,
+    file: Express.Multer.File,
+  ): Promise<IProduct> {
     delete dto.file;
-    let product = this.productRepository.create(dto);
+    const productCategories = dto.productCategoryIds;
+    delete dto.productCategoryIds;
+    let product = manager.create(ProductEntity, dto);
 
     if (file) {
-      const fileMetadata = await this.filesService.registerNewFile(
+      const fileMetadata = await this.filesService.registerNewFileWithManager(
+        manager,
         file,
         'product',
       );
@@ -74,14 +85,155 @@ export class ProductService {
       this.populateWithAppropriateMeasurementType(product, dto.measurement);
     }
 
-    return this.productRepository.save(product);
+    await manager.insert(ProductEntity, product);
+
+    await manager
+      .createQueryBuilder()
+      .relation(ProductEntity, 'productCategories')
+      .of(product.id)
+      .add(productCategories);
+
+    product = await manager.findOneOrFail(ProductEntity, {
+      where: { id: product.id },
+      relations: {
+        productCategories: true,
+        pantryItems: true,
+        createdBy: true,
+        brand: true,
+        cover: true,
+        shoppingItems: true,
+      },
+    });
+
+    return product;
+  }
+
+  async updateProduct(
+    id: string,
+    dto: IWriteProductDto,
+    file?: Express.Multer.File,
+  ): Promise<IProduct> {
+    return this.transactionContext.execute(async (manager) => {
+      return this.updateProductWithManager(manager, id, dto, file);
+    });
+  }
+
+  async updateProductWithManager(
+    manager: EntityManager,
+    id: string,
+    dto: IWriteProductDto,
+    file?: Express.Multer.File,
+  ): Promise<IProduct> {
+    delete dto.file;
+    await this.manageProductCoverDuringUpdate(manager, id, file);
+
+    const product = await manager.findOne(ProductEntity, {
+      where: { id },
+      relations: ['productCategories'],
+    });
+
+    const { productCategoryIds, ...rest } = dto;
+    const existingProductCategoryIds = product.productCategories.map(
+      (category) => category.id,
+    );
+    if (!product) {
+      throw new BadRequestException('Product not found for given id');
+    }
+
+    delete product.productCategories;
+
+    const updatedProduct = {
+      ...product,
+      ...rest,
+    };
+
+    if (dto.measurement) {
+      this.populateWithAppropriateMeasurementType(
+        updatedProduct,
+        dto.measurement,
+      );
+    }
+
+    await manager.update(ProductEntity, id, updatedProduct);
+
+    const validProductCategoryIds = await manager
+      .getRepository(ProductCategoryEntity)
+      .findBy({
+        id: In(productCategoryIds),
+      });
+    const validExistingProductCategoryIds = await manager
+      .getRepository(ProductCategoryEntity)
+      .findBy({
+        id: In(existingProductCategoryIds),
+      });
+
+    const validProductCategoryIdsSet = new Set(
+      validProductCategoryIds.map((category) => category.id),
+    );
+    const validExistingProductCategoryIdsSet = new Set(
+      validExistingProductCategoryIds.map((category) => category.id),
+    );
+
+    const filteredProductCategoryIds = productCategoryIds.filter((id) =>
+      validProductCategoryIdsSet.has(id),
+    );
+    const filteredExistingProductCategoryIds =
+      existingProductCategoryIds.filter((id) =>
+        validExistingProductCategoryIdsSet.has(id),
+      );
+
+    await manager
+      .createQueryBuilder()
+      .relation(ProductEntity, 'productCategories')
+      .of(id)
+      .addAndRemove(
+        filteredProductCategoryIds,
+        filteredExistingProductCategoryIds,
+      );
+    return manager.findOneOrFail(ProductEntity, {
+      where: { id },
+      relations: [
+        'productCategories',
+        'pantryItems',
+        'createdBy',
+        'brand',
+        'cover',
+      ],
+    });
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    return this.transactionContext.execute(async (manager) => {
+      return this.deleteProductWithManager(manager, id);
+    });
+  }
+
+  async deleteProductWithManager(
+    manager: EntityManager,
+    id: string,
+  ): Promise<void> {
+    const product = await manager.findOne(ProductEntity, { where: { id } });
+
+    if (!product) {
+      throw new BadRequestException('Product not found for given id');
+    }
+
+    if (product.coverId) {
+      await this.filesService.unregisterExistingFileWithManager(
+        manager,
+        product.coverId,
+      );
+    }
+
+    await manager.delete(ProductEntity, id);
   }
 
   private async manageProductCoverDuringUpdate(
+    manager: EntityManager,
     id: string,
     file?: Express.Multer.File,
   ) {
-    const product = await this.productRepository.findOne({
+    const product = await manager.findOne(ProductEntity, {
       where: { id },
       relations: {
         cover: true,
@@ -95,52 +247,30 @@ export class ProductService {
     let fileMetadata: IFile | null = null;
 
     if (product.coverId && file) {
-      fileMetadata = await this.filesService.overrideExistingFile(
+      fileMetadata = await this.filesService.overrideExistingFileWithManager(
+        manager,
         product.coverId,
         file,
         'product',
       );
     } else if (product.coverId && !file) {
-      await this.filesService.unregisterExistingFile(product.coverId);
+      await this.filesService.unregisterExistingFileWithManager(
+        manager,
+        product.coverId,
+      );
       fileMetadata = null;
     } else if (!product.coverId && file) {
-      fileMetadata = await this.filesService.registerNewFile(file, 'product');
+      fileMetadata = await this.filesService.registerNewFileWithManager(
+        manager,
+        file,
+        'product',
+      );
     } else {
       fileMetadata = null;
     }
 
-    await this.productRepository.update(id, { coverId: fileMetadata?.id });
+    await manager.update(ProductEntity, id, { coverId: fileMetadata?.id });
     return fileMetadata;
-  }
-
-  async updateProduct(
-    id: string,
-    dto: IWriteProductDto,
-    file?: Express.Multer.File,
-  ): Promise<IProduct> {
-    delete dto.file;
-    await this.manageProductCoverDuringUpdate(id, file);
-
-    const product = await this.productRepository.findOneOrFail({
-      where: { id },
-      relations: ['productCategories', 'pantryItems', 'createdBy', 'brand'],
-    });
-
-    delete product.productCategories;
-    const updatedProduct = this.productRepository.merge(product, dto);
-
-    if (dto.measurement) {
-      this.populateWithAppropriateMeasurementType(
-        updatedProduct,
-        dto.measurement,
-      );
-    }
-
-    return this.productRepository.save(updatedProduct);
-  }
-
-  async deleteProduct(id: string): Promise<void> {
-    await this.productRepository.delete(id);
   }
 
   private populateWithAppropriateMeasurementType(

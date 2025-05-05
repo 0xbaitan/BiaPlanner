@@ -47,15 +47,21 @@ export default function ImageSelector(props: ImageSelectorProps) {
   }, []);
 
   useEffect(() => {
-    if (!file && !isInitialised && valueMetadata) {
-      getImageFile(valueMetadata).then((imageFile) => {
-        if (imageFile) {
-          setFile(imageFile.file);
-          setInitialised(true);
-          setImages([imageFile]);
-        }
-      });
-    }
+    const debounceTimeout = setTimeout(() => {
+      if (!file && !isInitialised) {
+        getImageFile(valueMetadata).then((imageFile) => {
+          if (imageFile) {
+            setFile(imageFile.file);
+            setInitialised(true);
+            setImages([imageFile]);
+          }
+        });
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
   }, [getImageFile, isInitialised, file, valueMetadata]);
 
   const onChange = useCallback((imageList: ImageListType) => {

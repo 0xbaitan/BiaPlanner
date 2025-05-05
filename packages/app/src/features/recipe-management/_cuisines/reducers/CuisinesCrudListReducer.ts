@@ -26,6 +26,7 @@ export const cuisinesCrudListSlice = createSlice({
         ...state.cuisinesQuery,
         ...action.payload,
       };
+      state.cuisinesQuery.page = 1; // Reset page to 1 when filters change
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.cuisinesQuery.page = action.payload;
@@ -35,6 +36,7 @@ export const cuisinesCrudListSlice = createSlice({
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.cuisinesQuery.search = action.payload;
+      state.cuisinesQuery.page = 1; // Reset page to 1 when search changes
     },
     setSortBy: (state, action: PayloadAction<CuisineSortBy>) => {
       state.cuisinesQuery.sortBy = action.payload;

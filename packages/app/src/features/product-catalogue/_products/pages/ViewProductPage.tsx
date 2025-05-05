@@ -1,5 +1,6 @@
 import "../styles/ViewProductPage.scss";
 
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useDeleteProductMutation, useGetProductByIdQuery } from "@/apis/ProductsApi";
@@ -61,77 +62,101 @@ export default function ViewProductPage() {
   if (isError || !product) return <div>Error loading product details.</div>;
 
   return (
-    <CrudViewPageLayout
-      breadcrumbs={[
-        {
-          label: "Products",
-          href: RoutePaths.PRODUCTS,
-        },
-        {
-          label: product.name,
-          href: fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }),
-        },
-      ]}
-      title={product.name}
-      actions={
-        <div className="bp-product_view__actions">
-          <Button variant="primary" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }))}>
-            <FaEdit />
-            &ensp;Edit product
-          </Button>
-          <Button variant="danger" onClick={handleDeleteProduct}>
-            <FaTrash />
-            &ensp;Delete product
-          </Button>
-        </div>
-      }
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "product",
+        key: "viewList",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
     >
-      <div className="bp-product_view__details_container">
-        <div className="bp-product_view__image_container">{product.coverId ? <img src={getImagePath(product.cover)} alt={product.name} className="bp-product_view__image" /> : <div className="bp-product_view__image_placeholder">No Image</div>}</div>
-        <div className="bp-product_view__info_container">
-          <Heading level={Heading.Level.H2}>Product Details</Heading>
-          <dl className="bp-product_view__info_list">
-            <dt>Description</dt>
-            <dd>{product.description || "No description provided."}</dd>
-
-            <dt>Brand</dt>
-            <dd>
-              <Button variant="link" className="p-0" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: product.id }))}>
-                {product.brand?.name}
+      <CrudViewPageLayout
+        breadcrumbs={[
+          {
+            label: "Products",
+            href: RoutePaths.PRODUCTS,
+          },
+          {
+            label: product.name,
+            href: fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }),
+          },
+        ]}
+        title={product.name}
+        actions={
+          <div className="bp-product_view__actions">
+            <AuthorisationSieve
+              permissionIndex={{
+                area: "product",
+                key: "editItem",
+              }}
+              type={AuthorisationSieveType.NULLIFY}
+            >
+              <Button variant="primary" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_EDIT, { id: product.id }))}>
+                <FaEdit />
+                &ensp;Edit product
               </Button>
-            </dd>
+            </AuthorisationSieve>
+            <AuthorisationSieve
+              permissionIndex={{
+                area: "product",
+                key: "deleteItem",
+              }}
+              type={AuthorisationSieveType.NULLIFY}
+            >
+              <Button variant="danger" onClick={handleDeleteProduct}>
+                <FaTrash />
+                &ensp;Delete product
+              </Button>
+            </AuthorisationSieve>
+          </div>
+        }
+      >
+        <div className="bp-product_view__details_container">
+          <div className="bp-product_view__image_container">{product.coverId ? <img src={getImagePath(product.cover)} alt={product.name} className="bp-product_view__image" /> : <div className="bp-product_view__image_placeholder">No Image</div>}</div>
+          <div className="bp-product_view__info_container">
+            <Heading level={Heading.Level.H2}>Product Details</Heading>
+            <dl className="bp-product_view__info_list">
+              <dt>Description</dt>
+              <dd>{product.description || "No description provided."}</dd>
 
-            <dt>Categories</dt>
-            <dd>
-              {product.productCategories?.length ? (
-                <ul className="bp-product_view__category_list">
-                  {product.productCategories.map((category) => (
-                    <li key={category.id}>{category.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                "No categories"
+              <dt>Brand</dt>
+              <dd>
+                <Button variant="link" className="p-0" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: product.id }))}>
+                  {product.brand?.name}
+                </Button>
+              </dd>
+
+              <dt>Categories</dt>
+              <dd>
+                {product.productCategories?.length ? (
+                  <ul className="bp-product_view__category_list">
+                    {product.productCategories.map((category) => (
+                      <li key={category.id}>{category.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  "No categories"
+                )}
+              </dd>
+              {product?.measurement && (
+                <>
+                  <dt>Measurement</dt>
+                  <dd>
+                    {product?.measurement.magnitude} {product?.measurement.unit}
+                  </dd>
+                </>
               )}
-            </dd>
-            {product?.measurement && (
-              <>
-                <dt>Measurement</dt>
-                <dd>
-                  {product?.measurement.magnitude} {product?.measurement.unit}
-                </dd>
-              </>
-            )}
-            <dt>Properties</dt>
-            <dd>
-              <ul className="bp-product_view__properties_list">
-                <li>Can expire: {product.canExpire ? "Yes" : "No"}</li>
-                <li>Sold as loose item: {product.isLoose ? "Yes" : "No"}</li>
-                <li>Global product: {product.isGlobal ? "Yes" : "No"}</li>
-              </ul>
-            </dd>
-          </dl>
+              <dt>Properties</dt>
+              <dd>
+                <ul className="bp-product_view__properties_list">
+                  <li>Can expire: {product.canExpire ? "Yes" : "No"}</li>
+                  <li>Sold as loose item: {product.isLoose ? "Yes" : "No"}</li>
+                  <li>Global product: {product.isGlobal ? "Yes" : "No"}</li>
+                </ul>
+              </dd>
+            </dl>
+          </div>
         </div>
-      </div>
-    </CrudViewPageLayout>
+      </CrudViewPageLayout>
+    </AuthorisationSieve>
   );
 }

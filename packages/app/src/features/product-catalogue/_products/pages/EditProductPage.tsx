@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useGetProductByIdQuery, useUpdateProductMutation } from "@/apis/ProductsApi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,17 +32,25 @@ export default function EditProductPage() {
   if (!product) return <div>Could not find product</div>;
 
   return (
-    <ProductForm
-      type="update"
-      initialValue={product}
-      onSubmit={async (dto) => {
-        notifyOnUpdateTrigger();
-        await updateProduct({
-          id: String(product.id),
-          dto,
-        });
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "product",
+        key: "editItem",
       }}
-      disableSubmit={isLoading}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <ProductForm
+        type="update"
+        initialValue={product}
+        onSubmit={async (dto) => {
+          notifyOnUpdateTrigger();
+          await updateProduct({
+            id: String(product.id),
+            dto,
+          });
+        }}
+        disableSubmit={isLoading}
+      />
+    </AuthorisationSieve>
   );
 }

@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { useGetProductCategoryQuery, useUpdateProductCategoryMutation } from "@/apis/ProductCategoryApi";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -31,17 +32,25 @@ export default function EditProductCategoryPage() {
   if (!productCategory) return <div>Could not find product category</div>;
 
   return (
-    <ProductCategoryForm
-      type="update"
-      initialValue={productCategory}
-      onSubmit={async (productCategoryDto) => {
-        notifyOnUpdateTrigger();
-        await updateProductCategory({
-          id: productCategory.id,
-          dto: productCategoryDto,
-        });
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "productCategory",
+        key: "editItem",
       }}
-      disableSubmit={isUpdateLoading}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <ProductCategoryForm
+        type="update"
+        initialValue={productCategory}
+        onSubmit={async (productCategoryDto) => {
+          notifyOnUpdateTrigger();
+          await updateProductCategory({
+            id: productCategory.id,
+            dto: productCategoryDto,
+          });
+        }}
+        disableSubmit={isUpdateLoading}
+      />
+    </AuthorisationSieve>
   );
 }

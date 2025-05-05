@@ -11,9 +11,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IProduct, IWriteProductDto } from '@biaplanner/shared';
+import {
+  IProduct,
+  IWriteProductDto,
+  WriteProductDtoSchema,
+} from '@biaplanner/shared';
 import { ProductService } from './product.service';
 import { ZodValidationPipe } from 'nestjs-zod';
+
+const WriteProductDtoValidationPipe = new ZodValidationPipe(
+  WriteProductDtoSchema,
+);
 
 @Controller('/products')
 export class ProductController {
@@ -38,7 +46,7 @@ export class ProductController {
     }),
   )
   async createProduct(
-    @Body() dto: IWriteProductDto,
+    @Body(WriteProductDtoValidationPipe) dto: IWriteProductDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IProduct> {
     const product = await this.productService.createProduct(dto, file);
@@ -53,7 +61,7 @@ export class ProductController {
   )
   async updateProduct(
     @Param('id') id: string,
-    @Body() dto: IWriteProductDto,
+    @Body(WriteProductDtoValidationPipe) dto: IWriteProductDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IProduct> {
     const product = await this.productService.updateProduct(id, dto, file);

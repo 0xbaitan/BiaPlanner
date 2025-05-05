@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { useProductCategoriesCrudListActions, useProductCategoriesCrudListState } from "../reducers/ProductCategoriesCrudListReducer";
 
 import Button from "react-bootstrap/esm/Button";
@@ -6,6 +7,7 @@ import { FaPlus } from "react-icons/fa";
 import NoResultsFound from "@/components/NoResultsFound";
 import ProductCategoriesFilterBar from "../components/ProductCategoriesFilterBar";
 import ProductCategoriesTable from "../components/ProductCategoriesTable";
+import { RoutePaths } from "@/Routes";
 import calculatePaginationElements from "@/util/calculatePaginationElements";
 import constrainItemsPerPage from "@/util/constrainItemsPerPage";
 import { useEffect } from "react";
@@ -30,62 +32,78 @@ export default function ProductCategoriesPage() {
     };
   }, [resetAll]);
   return (
-    <CrudListPageLayout>
-      <CrudListPageLayout.Header
-        pageTitle="Product Categories"
-        searchTerm={productCategoriesQuery.search}
-        onSearch={(searchTerm) => {
-          setSearch(searchTerm);
-        }}
-        actionsComponent={
-          <CrudListPageLayout.Header.Actions>
-            <Button variant="primary" onClick={() => navigate("./create")}>
-              <FaPlus />
-              &ensp;Create Product Category
-            </Button>
-          </CrudListPageLayout.Header.Actions>
-        }
-        filtersComponent={
-          <CrudListPageLayout.Header.Filters>
-            <ProductCategoriesFilterBar />
-          </CrudListPageLayout.Header.Filters>
-        }
-      />
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "productCategory",
+        key: "viewList",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <CrudListPageLayout>
+        <CrudListPageLayout.Header
+          pageTitle="Product Categories"
+          searchTerm={productCategoriesQuery.search}
+          onSearch={(searchTerm) => {
+            setSearch(searchTerm);
+          }}
+          actionsComponent={
+            <CrudListPageLayout.Header.Actions>
+              <AuthorisationSieve
+                permissionIndex={{
+                  area: "productCategory",
+                  key: "createItem",
+                }}
+                type={AuthorisationSieveType.NULLIFY}
+              >
+                <Button variant="primary" onClick={() => navigate(RoutePaths.PRODUCT_CATEGORIES_CREATE)}>
+                  <FaPlus />
+                  &ensp;Create Product Category
+                </Button>
+              </AuthorisationSieve>
+            </CrudListPageLayout.Header.Actions>
+          }
+          filtersComponent={
+            <CrudListPageLayout.Header.Filters>
+              <ProductCategoriesFilterBar />
+            </CrudListPageLayout.Header.Filters>
+          }
+        />
 
-      <CrudListPageLayout.Body
-        resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="product categories" />}
-        contentComponent={
-          <CrudListPageLayout.Body.Content>
-            {isError || !productCategories?.data || productCategories.data.length === 0 ? (
-              <NoResultsFound title="Oops! No product categories found" description="Try creating a new product category to get started." />
-            ) : (
-              <ProductCategoriesTable data={productCategories.data} />
-            )}
-          </CrudListPageLayout.Body.Content>
-        }
-        itemsPerPageCountSelectorComponent={
-          <CrudListPageLayout.Body.ItemsPerPageCountSelector
-            itemsCount={constrainItemsPerPage(productCategoriesQuery.limit ?? 25)}
-            onChange={(limit) => {
-              setLimit(limit);
-            }}
-          />
-        }
-      />
+        <CrudListPageLayout.Body
+          resultsCountComponent={<CrudListPageLayout.Body.ResultsCount totalItems={totalItems} itemsStart={numItemStartOnPage} itemsEnd={numItemEndOnPage} itemDescription="product categories" />}
+          contentComponent={
+            <CrudListPageLayout.Body.Content>
+              {isError || !productCategories?.data || productCategories.data.length === 0 ? (
+                <NoResultsFound title="Oops! No product categories found" description="Try creating a new product category to get started." />
+              ) : (
+                <ProductCategoriesTable data={productCategories.data} offset={numItemStartOnPage - 1} />
+              )}
+            </CrudListPageLayout.Body.Content>
+          }
+          itemsPerPageCountSelectorComponent={
+            <CrudListPageLayout.Body.ItemsPerPageCountSelector
+              itemsCount={constrainItemsPerPage(productCategoriesQuery.limit ?? 25)}
+              onChange={(limit) => {
+                setLimit(limit);
+              }}
+            />
+          }
+        />
 
-      <CrudListPageLayout.Footer
-        paginationComponent={
-          <CrudListPageLayout.Footer.Pagination
-            paginationProps={{
-              numPages: totalPages,
-              currentPage,
-              onPageChange: (page) => {
-                setPage(page);
-              },
-            }}
-          />
-        }
-      />
-    </CrudListPageLayout>
+        <CrudListPageLayout.Footer
+          paginationComponent={
+            <CrudListPageLayout.Footer.Pagination
+              paginationProps={{
+                numPages: totalPages,
+                currentPage,
+                onPageChange: (page) => {
+                  setPage(page);
+                },
+              }}
+            />
+          }
+        />
+      </CrudListPageLayout>
+    </AuthorisationSieve>
   );
 }

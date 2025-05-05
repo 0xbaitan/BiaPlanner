@@ -27,6 +27,7 @@ export type TabbedViewsTableProps<T> = {
   leftPinnedAccessorKeys?: string[];
   rightPinnedAccessorKeys?: string[];
   actions?: TabbedViewsTableAction<T>[];
+  offset?: number;
 };
 
 export type TabbedViewsTableWithoutDataProps<T> = Omit<TabbedViewsTableProps<T>, "data">;
@@ -118,14 +119,14 @@ function useRenderActionsKebabMenu<T>(props: Pick<TabbedViewsTableProps<T>, "act
 }
 
 function useAllColumnDef<T>(props: TabbedViewsTableProps<T>): ColumnDef<T>[] {
-  const { views, showSerialNumber, actions } = props;
+  const { views, showSerialNumber, actions, offset = 0 } = props;
   const renderActionsKebabMenu = useRenderActionsKebabMenu({ actions });
   const allColumnDefs = useMemo(() => {
     const collatedViewColDefs = views.reduce((acc, view) => {
       return acc.concat(view.columnDefs);
     }, [] as ColumnDef<T>[]);
     return [
-      ...((showSerialNumber ? [{ header: "#", accessorKey: "serialNumber", accessorFn: (_row, index: number) => index + 1 }] : []) satisfies ColumnDef<T>[]),
+      ...((showSerialNumber ? [{ header: "#", accessorKey: "serialNumber", accessorFn: (_row, index: number) => index + 1 + offset }] : []) satisfies ColumnDef<T>[]),
       ...collatedViewColDefs,
       ...((actions
         ? [
