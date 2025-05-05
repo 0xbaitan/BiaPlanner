@@ -21,6 +21,7 @@ import {
 import { PantryItemEntity } from 'src/features/pantry/pantry-item/pantry-item.entity';
 import { PhoneEntryEntity } from '../phone-entry/phone-entry.entity';
 import { ProductEntity } from 'src/features/pantry/product/product.entity';
+import { RoleEntity } from '../role/role.entity';
 
 @Entity('users')
 export class UserEntity implements IUser {
@@ -63,7 +64,7 @@ export class UserEntity implements IUser {
   @JoinColumn({ name: 'createdById' })
   pantryItems?: IPantryItem[];
 
-  @ManyToMany(() => UserEntity, (user) => user.roles, {
+  @ManyToMany(() => RoleEntity, (role) => role.users, {
     cascade: false,
     onDelete: 'NO ACTION',
   })

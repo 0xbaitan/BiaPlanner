@@ -23,7 +23,6 @@ export class RoleService {
   async findOne(id: string): Promise<IRole> {
     return this.roleRepository.findOneOrFail({
       where: { id },
-      relations: ['users'],
     });
   }
 
