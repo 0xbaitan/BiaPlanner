@@ -1,0 +1,39 @@
+.bp-not-found-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background-color: #fff;
+  color: #333;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 20px;
+  }
+
+  &__illustration {
+    width: clamp(300px, 50%, 800px); // Enlarged and responsive
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+
+  &__description {
+    font-size: 1.2rem;
+    margin: 0;
+    margin-bottom: 20px;
+    color: #6c757d; // Muted text color
+  }
+}

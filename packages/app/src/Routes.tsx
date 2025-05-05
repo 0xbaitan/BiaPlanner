@@ -23,6 +23,7 @@ import EditShoppingListPage from "./features/shopping-lists/pages/EditShoppingLi
 import LoginPage from "./features/authentication/pages/LoginPage";
 import MarkShoppingDonePage from "./features/shopping-lists/pages/MarkShoppingDonePage";
 import MealPlansPage from "./features/meal-planning/_meal-plans/pages/MealPlansPage";
+import NotFoundPage from "./pages/404Page";
 import PantryPage from "./features/pantry-management/_inventory/pages/PantryPage";
 import ProductCategoriesPage from "./features/product-catalogue/_product-categories/pages/ProductCategoriesPage";
 import ProductsPage from "./features/product-catalogue/_products/pages/ProductsPage";
@@ -90,6 +91,8 @@ export enum RoutePaths {
 
   SIGNUP = "/signup",
   LOGIN = "/login",
+
+  NOT_FOUND = "*",
 }
 
 export function fillParametersInPath(path: RoutePaths, params: Record<string, string | number>) {
@@ -151,11 +154,14 @@ export default function Routes() {
 
           <Route path={RoutePaths.SETTINGS_ACCOUNT} element={<AdminBrandsPage />} />
           <Route path={RoutePaths.SETTINGS_NOTIFICATIONS} element={<AdminBrandsPage />} />
+
+          <Route path={RoutePaths.NOT_FOUND} element={<NotFoundPage />} />
         </Route>
 
         <Route path="" element={<PublicPagesContainer />}>
           <Route path={RoutePaths.SIGNUP} element={<SignUpPage />} />
           <Route path={RoutePaths.LOGIN} element={<LoginPage />} />
+          <Route path="*" element={<LoginPage />} />
         </Route>
       </RoutingTable>
     </Router>
