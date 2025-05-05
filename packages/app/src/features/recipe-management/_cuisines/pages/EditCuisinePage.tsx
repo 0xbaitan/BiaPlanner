@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { useGetCuisineQuery, useUpdateCuisineMutation } from "@/apis/CuisinesApi";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -5,7 +6,7 @@ import CuisinesForm from "../components/CuisinesForm";
 import { RoutePaths } from "@/Routes";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
-export default function AdminUpdateCuisinePage() {
+export default function EditCuisinePage() {
   const { id } = useParams();
   const { data: cuisine } = useGetCuisineQuery(String(id));
   const [updateCuisine, { isSuccess: isUpdateSuccess, isError: isUpdateError, isLoading: isUpdateLoading }] = useUpdateCuisineMutation();
@@ -27,14 +28,22 @@ export default function AdminUpdateCuisinePage() {
   if (!cuisine) return <div>Could not find cuisine</div>;
 
   return (
-    <CuisinesForm
-      type="update"
-      initialValue={cuisine}
-      onSubmit={async (dto) => {
-        notify();
-        await updateCuisine({ id: String(cuisine?.id), dto });
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "cuisine",
+        key: "editItem",
       }}
-      disableSubmit={isUpdateLoading}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <CuisinesForm
+        type="update"
+        initialValue={cuisine}
+        onSubmit={async (dto) => {
+          notify();
+          await updateCuisine({ id: String(cuisine?.id), dto });
+        }}
+        disableSubmit={isUpdateLoading}
+      />
+    </AuthorisationSieve>
   );
 }

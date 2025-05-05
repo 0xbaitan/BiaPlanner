@@ -3,10 +3,9 @@ import { Route, BrowserRouter as Router, Routes as RoutingTable } from "react-ro
 import AddPantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/CreatePantryItemPage";
 import AddProductPage from "./features/product-catalogue/_products/pages/CreateProductPage";
 import AdminBrandsPage from "@/features/product-catalogue/_brands/pages/BrandsPage";
-import AdminCreateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminCreateCuisinePage";
 import AdminCreateRecipeTagPage from "./features/recipe-management/_recipe-tags/pages/AdminCreateRecipeTagPage";
-import AdminUpdateCuisinePage from "./features/recipe-management/_cuisines/pages/AdminUpdateCuisinePage";
 import CreateBrandPage from "@/features/product-catalogue/_brands/pages/CreateBrandPage";
+import CreateCuisinePage from "./features/recipe-management/_cuisines/pages/CreateCuisinePage";
 import CreateMealPlanPage from "./features/meal-planning/_meal-plans/pages/CreateMealPlanPage";
 import CreatePantryItemPage from "./features/pantry-management/_inventory/_add-pantry-item/pages/CreatePantryItemPage";
 import CreateProductCategoryPage from "./features/product-catalogue/_product-categories/pages/CreateProductCategoryPage";
@@ -15,6 +14,7 @@ import CreateRolePage from "./features/user-management/_roles/pages/CreateRolePa
 import CreateShoppingListPage from "./features/shopping-lists/pages/CreateShoppingListPage";
 import CuisinesPage from "./features/recipe-management/_cuisines/pages/CuisinesPage";
 import EditBrandPage from "@/features/product-catalogue/_brands/pages/EditBrandPage";
+import EditCuisinePage from "./features/recipe-management/_cuisines/pages/EditCuisinePage";
 import EditMealPlanPage from "./features/meal-planning/_meal-plans/pages/EditMealPlanPage";
 import EditProductCategoryPage from "./features/product-catalogue/_product-categories/pages/EditProductCategorypage";
 import EditProductPage from "./features/product-catalogue/_products/pages/EditProductPage";
@@ -130,10 +130,10 @@ export default function Routes() {
           <Route path={RoutePaths.RECIPES_EDIT} element={<EditRecipePage />} />
 
           <Route path={RoutePaths.CUISINES} element={<CuisinesPage />} />
-          <Route path={RoutePaths.CUISINES_CREATE} element={<AdminCreateCuisinePage />} />
+          <Route path={RoutePaths.CUISINES_CREATE} element={<CreateCuisinePage />} />
           <Route path={RoutePaths.CUISINES_VIEW} element={<CuisinesPage />} />
 
-          <Route path={RoutePaths.CUISINES_EDIT} element={<AdminUpdateCuisinePage />} />
+          <Route path={RoutePaths.CUISINES_EDIT} element={<EditCuisinePage />} />
 
           <Route path={RoutePaths.RECIPE_TAGS} element={<RecipeTagsPage />} />
           <Route path={RoutePaths.RECIPE_TAGS_CREATE} element={<AdminCreateRecipeTagPage />} />

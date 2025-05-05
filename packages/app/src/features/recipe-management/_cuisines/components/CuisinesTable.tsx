@@ -3,6 +3,7 @@ import { ICuisine, ICuisineExtended } from "@biaplanner/shared";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 import { useDeleteCuisineMutation } from "@/apis/CuisinesApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +29,8 @@ export default function CuisinesTable(props: CuisinesTableProps) {
     isLoading,
   });
 
+  const containsNecessaryPermissions = useContainsNecessaryPermission();
+
   const { notify: notifyDeletion } = useDeletionToast<ICuisineExtended>({
     identifierSelector: (entity) => entity.name,
     onConfirm: async (item) => {
@@ -45,7 +48,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
         {
           viewKey: "general-details",
           viewTitle: "General Details",
-          columnAccessorKeys: ["category", "recipeCount"],
+          columnAccessorKeys: ["category", "description", "recipeCount"],
           default: true,
 
           columnDefs: [
@@ -53,6 +56,11 @@ export default function CuisinesTable(props: CuisinesTableProps) {
               header: "Cuisine Name",
               accessorFn: (row) => row.name,
               accessorKey: "category",
+            },
+            {
+              header: "Cuisine Description",
+              accessorFn: (row) => row.description,
+              accessorKey: "description",
             },
             {
               header: "Recipes Count",
@@ -70,6 +78,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.CUISINES_EDIT, { id: row.id }));
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "cuisine", key: "editItem" }),
         },
 
         {
@@ -79,6 +88,7 @@ export default function CuisinesTable(props: CuisinesTableProps) {
           onClick: (row) => {
             notifyDeletion(row);
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "cuisine", key: "deleteItem" }),
         },
       ]}
     />

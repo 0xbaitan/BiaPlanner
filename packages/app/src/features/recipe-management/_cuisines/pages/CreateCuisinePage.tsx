@@ -1,10 +1,12 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
+
 import CuisinesForm from "../components/CuisinesForm";
 import { RoutePaths } from "@/Routes";
 import { useCreateCuisineMutation } from "@/apis/CuisinesApi";
 import { useNavigate } from "react-router-dom";
 import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
-export default function AdminCreateCuisinePage() {
+export default function CreateCuisinePage() {
   const [createCuisine, { isLoading, isSuccess, isError }] = useCreateCuisineMutation();
   const navigate = useNavigate();
   const { notify } = useSimpleStatusToast({
@@ -25,12 +27,20 @@ export default function AdminCreateCuisinePage() {
   });
 
   return (
-    <CuisinesForm
-      type="create"
-      onSubmit={async (dto) => {
-        notify();
-        await createCuisine(dto);
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "cuisine",
+        key: "createItem",
       }}
-    />
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      <CuisinesForm
+        type="create"
+        onSubmit={async (dto) => {
+          notify();
+          await createCuisine(dto);
+        }}
+      />
+    </AuthorisationSieve>
   );
 }

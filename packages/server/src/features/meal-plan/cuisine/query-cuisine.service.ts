@@ -47,6 +47,8 @@ export class QueryCuisineService {
 
     const qb = this.cuisineRepository.createQueryBuilder('cuisine');
 
+    qb.distinct(true);
+
     qb.addSelect((subQuery: SelectQueryBuilder<CuisineEntity>) => {
       return subQuery
         .select('COUNT(recipe.id)', 'recipeCount')
@@ -80,10 +82,14 @@ export class QueryCuisineService {
       limit,
       search,
       (entities, raw) => {
-        return entities.map((entity, index) => ({
-          ...entity,
-          recipeCount: Number(raw[index].recipeCount),
-        }));
+        return entities.map((entity) => {
+          const recipeCount =
+            raw.find((r) => r.cuisine_id === entity.id)?.recipeCount ?? 0;
+          return {
+            ...entity,
+            recipeCount,
+          };
+        });
       },
     );
 

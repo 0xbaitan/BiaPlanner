@@ -53,6 +53,8 @@ export class QueryRecipeTagService {
 
     const qb = this.recipeTagRepository.createQueryBuilder('recipeTag');
 
+    qb.distinct(true);
+
     qb.addSelect((subQuery) => {
       return subQuery
         .select('COUNT(recipe.id)', 'recipeCount')
@@ -91,14 +93,13 @@ export class QueryRecipeTagService {
       limit,
       search,
       (entities, raw) => {
-        const extendedRecipeTags: IRecipeTagExtended[] = entities.map(
-          (tag, index) => {
-            return {
-              ...tag,
-              recipeCount: Number(raw[index].recipeCount),
-            };
-          },
-        );
+        const extendedRecipeTags: IRecipeTagExtended[] = entities.map((tag) => {
+          const index = raw.findIndex((r) => r.recipeTag_id === tag.id);
+          return {
+            ...tag,
+            recipeCount: index !== -1 ? Number(raw[index].recipeCount) : 0,
+          };
+        });
         return extendedRecipeTags;
       },
     );

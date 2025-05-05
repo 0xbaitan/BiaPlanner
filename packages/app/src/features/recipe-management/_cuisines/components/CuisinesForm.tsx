@@ -7,7 +7,6 @@ import SinglePaneForm from "@/components/forms/SinglePaneForm";
 import TextInput from "@/components/forms/TextInput";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type CuisinesFormProps = {
@@ -19,7 +18,7 @@ export type CuisinesFormProps = {
 
 export default function CuisinesForm(props: CuisinesFormProps) {
   const { initialValue, onSubmit, disableSubmit, type } = props;
-  const navigate = useNavigate();
+
   const methods = useForm<IWriteRecipeTagDto>({
     defaultValues: {
       name: initialValue?.name ?? undefined,

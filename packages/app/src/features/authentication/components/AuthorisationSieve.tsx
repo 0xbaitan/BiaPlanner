@@ -1,3 +1,4 @@
+import NotFoundPage from "@/pages/404Page";
 import { PermissionAreaAndKey } from "@biaplanner/shared";
 import React from "react";
 import { useContainsNecessaryPermission } from "../hooks/useContainsNecessaryPermission";
@@ -43,7 +44,7 @@ export default function AuthorisationSieve(props: AuthorisationSieveProps) {
     switch (type) {
       case AuthorisationSieveType.REDIRECT_TO_404:
         navigate("/404");
-        return null;
+        return <NotFoundPage />;
       case AuthorisationSieveType.NULLIFY:
       default:
         return null;
