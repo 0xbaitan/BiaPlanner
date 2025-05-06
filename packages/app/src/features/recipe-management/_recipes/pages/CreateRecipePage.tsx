@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { IWriteRecipeDto } from "@biaplanner/shared";
@@ -44,8 +45,14 @@ export default function CreateRecipePage() {
   );
 
   return (
-    <div>
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "recipe",
+        key: "createItem",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
       <RecipeForm type="create" onSubmit={handleCreateRecipeSubmission} disableSubmit={isLoading} />
-    </div>
+    </AuthorisationSieve>
   );
 }

@@ -1,5 +1,6 @@
 import "../styles/ViewRecipePage.scss";
 
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { MdAccessTime, MdAccessTimeFilled } from "react-icons/md";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
@@ -118,25 +119,40 @@ export default function ViewRecipePage() {
       title={recipe.title}
       actions={
         <div className="bp-recipe_view__actions">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              navigate(fillParametersInPath(RoutePaths.RECIPES_EDIT, { id: recipe.id }));
+          <AuthorisationSieve
+            permissionIndex={{
+              area: "recipe",
+              key: "editItem",
             }}
+            type={AuthorisationSieveType.NULLIFY}
           >
-            <FaPencil />
-            &ensp;Edit recipe
-          </Button>
-
-          <Button
-            variant="outline-danger"
-            onClick={() => {
-              notifyDeletion(recipe);
+            <Button
+              variant="secondary"
+              onClick={() => {
+                navigate(fillParametersInPath(RoutePaths.RECIPES_EDIT, { id: recipe.id }));
+              }}
+            >
+              <FaPencil />
+              &ensp;Edit recipe
+            </Button>
+          </AuthorisationSieve>
+          <AuthorisationSieve
+            permissionIndex={{
+              area: "recipe",
+              key: "deleteItem",
             }}
+            type={AuthorisationSieveType.NULLIFY}
           >
-            <FaTrash />
-            &ensp;Delete recipe
-          </Button>
+            <Button
+              variant="outline-danger"
+              onClick={() => {
+                notifyDeletion(recipe);
+              }}
+            >
+              <FaTrash />
+              &ensp;Delete recipe
+            </Button>
+          </AuthorisationSieve>
         </div>
       }
     >

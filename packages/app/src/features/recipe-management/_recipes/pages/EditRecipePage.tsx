@@ -1,3 +1,4 @@
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useGetRecipeQuery, useUpdateRecipeMutation } from "@/apis/RecipeApi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -53,5 +54,15 @@ export default function EditRecipePage() {
     return <div>Loading...</div>;
   }
 
-  return <div>{recipe ? <RecipeForm type="update" initialValue={recipe} onSubmit={handleUpdateRecipeSubmission} disableSubmit={isUpdateLoading} /> : <div>Could not find the recipe</div>}</div>;
+  return (
+    <AuthorisationSieve
+      permissionIndex={{
+        area: "recipe",
+        key: "editItem",
+      }}
+      type={AuthorisationSieveType.REDIRECT_TO_404}
+    >
+      {recipe ? <RecipeForm type="update" initialValue={recipe} onSubmit={handleUpdateRecipeSubmission} disableSubmit={isUpdateLoading} /> : <div>Could not find the recipe</div>}
+    </AuthorisationSieve>
+  );
 }

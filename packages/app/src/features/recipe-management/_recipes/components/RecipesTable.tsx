@@ -1,14 +1,14 @@
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { stringifySegmentedTime, sumSegementedTime } from "@/components/forms/SegmentedTimeInput";
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
-import { FaEye } from "react-icons/fa6";
 import { IRecipe } from "@biaplanner/shared";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 import { useDeleteRecipeMutation } from "@/apis/RecipeApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export type RecipeTableProps = {
   data: IRecipe[];
@@ -20,23 +20,28 @@ export default function RecipesTable(props: RecipeTableProps) {
 
   const [deleteRecipe, { isSuccess, isError, isLoading }] = useDeleteRecipeMutation();
 
-  const { setItem } = useDefaultStatusToast<IRecipe>({
-    isSuccess,
+  const containsNecessaryPermissions = useContainsNecessaryPermission();
+
+  const { notify: notifyOnDeleteTrigger } = useSimpleStatusToast({
     isError,
     isLoading,
-    idPrefix: "recipes",
-    idSelector: (entity) => entity.id,
-    toastProps: {
-      autoClose: 5000,
+    isSuccess,
+    successMessage: "Recipe deleted successfully.",
+    errorMessage: "Failed to delete recipe.",
+    loadingMessage: "Deleting recipe...",
+    idPrefix: "recipe-delete",
+    onFailure: () => {
+      console.error("Failed to delete recipe");
     },
-    action: Action.DELETE,
-    entityIdentifier: (entity) => entity.title,
+    onSuccess: () => {
+      console.log("Recipe deleted successfully");
+    },
   });
 
   const { notify: notifyDeletion } = useDeletionToast<IRecipe>({
     identifierSelector: (entity) => entity.title,
     onConfirm: async (item) => {
-      setItem(item);
+      notifyOnDeleteTrigger();
       await deleteRecipe(item.id);
     },
   });
@@ -51,9 +56,7 @@ export default function RecipesTable(props: RecipeTableProps) {
           viewKey: "general-details",
           viewTitle: "General Details",
           columnAccessorKeys: ["title", "recipeTags"],
-
           default: true,
-
           columnDefs: [
             {
               header: "Recipe Title",
@@ -67,7 +70,6 @@ export default function RecipesTable(props: RecipeTableProps) {
             },
           ],
         },
-
         {
           viewKey: "time-taken-and-servings",
           viewTitle: "Time Taken & Servings",
@@ -122,6 +124,11 @@ export default function RecipesTable(props: RecipeTableProps) {
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.RECIPES_VIEW, { id: String(row.id) }));
           },
+          hideConditionally: () =>
+            !containsNecessaryPermissions({
+              area: "recipe",
+              key: "viewItem",
+            }),
         },
         {
           icon: FaPencilAlt,
@@ -130,8 +137,12 @@ export default function RecipesTable(props: RecipeTableProps) {
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.RECIPES_EDIT, { id: String(row.id) }));
           },
+          hideConditionally: () =>
+            !containsNecessaryPermissions({
+              area: "recipe",
+              key: "editItem",
+            }),
         },
-
         {
           icon: FaTrashAlt,
           label: "Delete Recipe",
@@ -139,6 +150,11 @@ export default function RecipesTable(props: RecipeTableProps) {
           onClick: (row) => {
             notifyDeletion(row);
           },
+          hideConditionally: () =>
+            !containsNecessaryPermissions({
+              area: "recipe",
+              key: "deleteItem",
+            }),
         },
       ]}
     />
