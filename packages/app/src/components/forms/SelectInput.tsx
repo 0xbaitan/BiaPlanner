@@ -162,7 +162,7 @@ const SelectInput = forwardRef<HTMLInputElement, SelectInputProps<any>>((props, 
   );
 
   return (
-    <Form.Group className="bp-select">
+    <Form.Group className="bp-select w-100">
       <input type="hidden" ref={ref} value={selectedOptions.map((option) => option.id)} />
       <Select<Option>
         {...rest}

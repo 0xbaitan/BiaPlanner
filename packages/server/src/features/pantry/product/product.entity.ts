@@ -103,8 +103,8 @@ export class ProductEntity implements IProduct {
     type: 'tinyint',
     default: false,
     transformer: {
-      to: (value: boolean) => (value ? 1 : 0),
-      from: (value: boolean) => Boolean(value),
+      from: (value: number) => Boolean(value),
+      to: (value: boolean) => Number(value),
     },
   })
   canExpire?: boolean;
@@ -113,14 +113,14 @@ export class ProductEntity implements IProduct {
     type: 'tinyint',
     default: false,
     transformer: {
-      to: (value: boolean) => (value ? 1 : 0),
-      from: (value: boolean) => Boolean(value),
+      from: (value: number) => Boolean(value),
+      to: (value: boolean) => Number(value),
     },
   })
   isLoose?: boolean;
 
   @Column({
-    type: 'json',
+    type: 'simple-json',
     default: null,
   })
   measurement: CookingMeasurement;

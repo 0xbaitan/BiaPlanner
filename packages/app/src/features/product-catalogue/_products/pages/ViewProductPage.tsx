@@ -120,7 +120,7 @@ export default function ViewProductPage() {
 
               <dt>Brand</dt>
               <dd>
-                <Button variant="link" className="p-0" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: product.id }))}>
+                <Button variant="link" className="p-0" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: product.brandId ?? "" }))}>
                   {product.brand?.name}
                 </Button>
               </dd>

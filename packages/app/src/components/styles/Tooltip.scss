@@ -10,3 +10,42 @@
     color: darken($colors-secondary, 10%);
   }
 }
+
+.bp-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem; // Adjust the size of the tooltip icon
+  color: #6c757d; // Muted color for the tooltip icon
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #495057; // Darker color on hover for better visibility
+  }
+
+  svg {
+    font-size: 1.25rem; // Adjust the size of the icon
+  }
+}
+
+.bp-tooltip__content {
+  background-color: #ffffff; // White background for the tooltip
+  color: #212529; // Dark text color for better readability
+  border: 1px solid #dee2e6; // Light border for the tooltip
+  border-radius: 0.25rem; // Rounded corners
+  padding: 0.5rem; // Add padding inside the tooltip
+  font-size: 0.875rem; // Slightly smaller font size
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); // Subtle shadow for depth
+  max-width: 250px; // Limit the width of the tooltip
+  text-align: center; // Center-align the text
+  z-index: 1050; // Ensure the tooltip appears above other elements
+}
+
+.tooltip-arrow-container {
+  .tooltip-arrow {
+    fill: #ffffff; // Match the tooltip background color
+    stroke: #dee2e6; // Match the tooltip border color
+    stroke-width: 1px;
+  }
+}

@@ -1,6 +1,6 @@
 import "../styles/FilterMultiselect.scss";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SelectInput, { SelectInputProps, SelectRendererProps } from "./SelectInput";
 
 import { BiSolidSelectMultiple } from "react-icons/bi";
@@ -19,7 +19,7 @@ export type FilterSelectProps<T extends object> = SelectInputProps<T> & {
 export default function FilterSelect<T extends object>(props: FilterSelectProps<T>) {
   return (
     <SelectInput
-      className="bp-filter_multiselect"
+      className={["bp-filter_multiselect", props.className].join(" ")}
       multi={true}
       {...props}
       contentRenderer={(renderProps) => <FilterSelectContent {...renderProps} multiselectLabel={props.selectLabel} maxSelectedValuesToShow={props.maxSelectedValuesToShow} transformLabel={props.transformLabel} />}

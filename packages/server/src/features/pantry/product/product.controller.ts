@@ -18,10 +18,9 @@ import {
 } from '@biaplanner/shared';
 import { ProductService } from './product.service';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { ZodParsePipe } from '@/util/zod-validation.pipe';
 
-const WriteProductDtoValidationPipe = new ZodValidationPipe(
-  WriteProductDtoSchema,
-);
+const WriteProductDtoParsePipe = new ZodParsePipe(WriteProductDtoSchema);
 
 @Controller('/products')
 export class ProductController {
@@ -46,7 +45,7 @@ export class ProductController {
     }),
   )
   async createProduct(
-    @Body(WriteProductDtoValidationPipe) dto: IWriteProductDto,
+    @Body(WriteProductDtoParsePipe) dto: IWriteProductDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IProduct> {
     const product = await this.productService.createProduct(dto, file);
@@ -61,9 +60,10 @@ export class ProductController {
   )
   async updateProduct(
     @Param('id') id: string,
-    @Body(WriteProductDtoValidationPipe) dto: IWriteProductDto,
+    @Body(WriteProductDtoParsePipe) dto: IWriteProductDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<IProduct> {
+    console.log('isLoose', dto.isLoose);
     const product = await this.productService.updateProduct(id, dto, file);
     return product;
   }

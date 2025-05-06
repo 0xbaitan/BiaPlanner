@@ -81,6 +81,10 @@ export class ProductService {
       product.coverId = fileMetadata.id;
     }
 
+    if (dto.isLoose) {
+      dto.measurement = null;
+    }
+
     if (dto.measurement) {
       this.populateWithAppropriateMeasurementType(product, dto.measurement);
     }
@@ -132,6 +136,9 @@ export class ProductService {
       relations: ['productCategories'],
     });
 
+    console.log('dto', dto);
+    console.log('product', product);
+
     const { productCategoryIds, ...rest } = dto;
     const existingProductCategoryIds = product.productCategories.map(
       (category) => category.id,
@@ -141,16 +148,18 @@ export class ProductService {
     }
 
     delete product.productCategories;
-
-    const updatedProduct = {
-      ...product,
+    const updatedProduct = manager.create(ProductEntity, {
       ...rest,
-    };
+    });
 
-    if (dto.measurement) {
+    if (updatedProduct.isLoose) {
+      updatedProduct.measurement = null;
+    }
+
+    if (updatedProduct.measurement) {
       this.populateWithAppropriateMeasurementType(
         updatedProduct,
-        dto.measurement,
+        updatedProduct.measurement,
       );
     }
 

@@ -42,19 +42,45 @@ export enum ProductSortBy {
   DEFAULT = "DEFAULT",
 }
 
-export const WriteProductDtoSchema = zfd.formData({
-  name: z.string().min(1, "Product name is required"),
+const BooleanSchema = z.preprocess((value) => {
+  if (typeof value === "string") {
+    if (["1", "true"].includes(value.toLowerCase())) {
+      return true;
+    } else if (["0", "false"].includes(value.toLowerCase())) {
+      return false;
+    }
+  }
+  return value;
+}, z.boolean());
 
-  description: z.string().optional().nullable(),
-  brandId: z.string().min(1, "Brand is required"),
-  productCategoryIds: z.array(z.string()).min(1, "At least one product category is required"),
-  canExpire: z.coerce.boolean().optional(),
-  isGlobal: z.coerce.boolean().optional(),
-  isLoose: z.coerce.boolean().optional(),
-  measurement: z.object(CookingMeasurementSchema).optional().nullable(),
-  coverId: z.string().optional(),
-  file: zfd.file(z.instanceof(File).optional()),
-});
+export const WriteProductDtoSchema = zfd
+  .formData({
+    name: z.string().min(1, "Product name is required"),
+
+    description: z.string().optional().nullable(),
+    brandId: z.string().min(1, "Brand is required"),
+    productCategoryIds: z.array(z.string()).min(1, "At least one product category is required").max(5, "Maximum of 5 product categories are allowed"),
+    canExpire: BooleanSchema.optional(),
+    isGlobal: BooleanSchema.optional(),
+    isLoose: BooleanSchema.optional(),
+
+    measurement: z.object(CookingMeasurementSchema).optional().nullable(),
+    coverId: z.string().optional(),
+    file: zfd.file(z.instanceof(File).optional()),
+  })
+  .refine(
+    (data) => {
+      if (!data.isLoose && !data.measurement) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    {
+      message: "Measurement is required when the product is not sold loosely",
+    }
+  );
+
 export type IWriteProductDto = z.infer<typeof WriteProductDtoSchema>;
 
 export const QueryProductDtoSchema = FilterParamsSchema.extend({
