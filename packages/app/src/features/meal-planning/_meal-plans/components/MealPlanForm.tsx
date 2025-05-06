@@ -13,6 +13,7 @@ import Form from "react-bootstrap/Form";
 import Heading from "@/components/Heading";
 import IngredientList from "./IngredientList";
 import { MdCancel } from "react-icons/md";
+import Pill from "@/components/Pill";
 import RecipeSelectOffcanvas from "./RecipeSelectOffcanvas";
 import dayjs from "dayjs";
 import { getImagePath } from "@/util/imageFunctions";
@@ -125,8 +126,11 @@ export default function MealPlanForm(props: MealPlanFormValues) {
               Select Recipe
             </Button>
             <RecipeInformation />
-            <MealTypeSelectInput />
-            <PlanDateField />
+
+            <div className="d-flex flex-column gap-3">
+              <MealTypeSelectInput />
+              <PlanDateField />
+            </div>
           </DualPaneForm.Panel.Pane>
 
           <DualPaneForm.Panel.Pane>
@@ -156,9 +160,9 @@ function RecipeInformation() {
       <div className="recipe-info__description">{selectedRecipe?.description}</div>
       <div className="recipe-info__categories">
         {selectedRecipe?.tags?.map((category) => (
-          <span key={category.id} className="badge bg-secondary me-1">
+          <Pill key={category.id} className="recipe-info__categories__pill">
             {category.name}
-          </span>
+          </Pill>
         ))}
       </div>
     </div>

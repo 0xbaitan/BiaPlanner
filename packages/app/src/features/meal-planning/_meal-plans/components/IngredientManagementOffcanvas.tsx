@@ -59,9 +59,9 @@ export default function IngredientManagementOffcanvas() {
 
           <div className="bp-ingredient_management_offcanvas__header__pills">
             <div className="bp-ingredient_management_offcanvas__header__portion_status_pill">
-              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__text">Selected portions:</span>
-              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__value">{summedPortion?.magnitude ?? 0}</span>
-              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__unit">{summedPortion?.unit}</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__text">Selected portions:&nbsp;</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__value">{summedPortion?.magnitude ?? 0}&nbsp;</span>
+              <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__unit">{summedPortion?.unit}&nbsp;</span>
               <span className="bp-ingredient_management_offcanvas__header__portion_status_pill__required">
                 / {requiredPortion?.magnitude ?? 0}
                 {requiredPortion?.unit}
@@ -72,7 +72,7 @@ export default function IngredientManagementOffcanvas() {
         </Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        <div>
+        <div className="bp-ingredient_management_offcanvas__list">
           {isLoading && <div>Loading...</div>}
           {isError && <div>Error</div>}
           {isSuccess && selectedIngredient && pantryItems?.map((item) => <PantryItemField key={item.id} pantryItem={item} ingredientId={selectedIngredient.id} />)}

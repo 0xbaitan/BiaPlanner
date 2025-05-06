@@ -16,11 +16,11 @@ export default function MeasurementInput(props: MeasurementInputProps) {
       {...props}
       idSelector={(measurement) => measurement.id}
       list={cookingMeasurements}
-      nameSelector={(measurement) => measurement.unit}
-      extendFuzzySearch={(measurement) => [measurement.unit, measurement.type, getMeasurementLabel(measurement.unit)]}
+      nameSelector={(measurement) => measurement?.unit}
+      extendFuzzySearch={(measurement) => [measurement?.unit, measurement.type, getMeasurementLabel(measurement?.unit)]}
       transformLabel={(measurement) => {
-        const unitLabel = getMeasurementLabel(measurement.unit);
-        const unitType = getCookingMeasurement(measurement.unit);
+        const unitLabel = getMeasurementLabel(measurement?.unit);
+        const unitType = getCookingMeasurement(measurement?.unit);
         const unitTypeLabel = unitType.type === "weight" ? "Weight" : unitType.type === "volume" ? "Volume" : "Approximate";
 
         return (

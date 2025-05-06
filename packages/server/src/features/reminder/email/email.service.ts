@@ -39,7 +39,7 @@ export class EmailService {
       .map((recipeSuggestion) => {
         return `<li>${recipeSuggestion.recipe.title} - ${recipeSuggestion.recipe.ingredients
           .map((ingredient) => {
-            return `${ingredient.title} - ${ingredient.measurement.magnitude} ${ingredient.measurement.unit}`;
+            return `${ingredient.title} - ${ingredient.measurement?.magnitude} ${ingredient.measurement?.unit}`;
           })
           .join(', ')}</li>`;
       })

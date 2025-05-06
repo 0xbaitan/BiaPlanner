@@ -9,7 +9,7 @@ export type RecipeFilterDropdownProps = {
 
 export default function RecipeFilterDropdown({ filters }: RecipeFilterDropdownProps) {
   return (
-    <DropdownPane toggleId="recipe-filters" toggleText="Filter recipes" contentProps={{ className: "bp-recipe_filter_dropdown__content" }}>
+    <DropdownPane toggleId="recipe-filters" toggleText="Filter recipes" contentProps={{ className: "bp-recipe_filter_dropdown__content" }} >
       {filters}
     </DropdownPane>
   );

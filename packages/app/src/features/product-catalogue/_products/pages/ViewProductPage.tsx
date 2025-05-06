@@ -141,7 +141,7 @@ export default function ViewProductPage() {
                 <>
                   <dt>Measurement</dt>
                   <dd>
-                    {product?.measurement.magnitude} {product?.measurement.unit}
+                    {product?.measurement?.magnitude} {product?.measurement?.unit}
                   </dd>
                 </>
               )}

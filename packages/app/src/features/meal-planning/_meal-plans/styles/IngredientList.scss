@@ -1,0 +1,136 @@
+.bp-ingredient_list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  margin: 0;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    &__title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #212529;
+      }
+
+      small {
+        font-size: 0.875rem;
+        color: #6c757d;
+      }
+    }
+
+    &__add_btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+
+      svg {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  &__content {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  &__no_ingredients {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: clamp(1rem, 0.5rem, 2rem);
+    height: calc(100vh - 200px);
+
+    font-size: 1rem;
+    background-color: #dedede;
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  &__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background-color: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      transition: box-shadow 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .ingredient-name {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #212529;
+      }
+
+      .ingredient-actions {
+        display: flex;
+        gap: 0.5rem;
+
+        button {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+          border: none;
+          border-radius: 0.25rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          &.edit {
+            background-color: #ffc107;
+            color: #212529;
+
+            &:hover {
+              background-color: #e0a800;
+            }
+          }
+
+          &.delete {
+            background-color: #dc3545;
+            color: #fff;
+
+            &:hover {
+              background-color: #c82333;
+            }
+          }
+        }
+      }
+    }
+  }
+}

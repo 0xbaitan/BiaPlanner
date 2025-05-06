@@ -315,16 +315,16 @@ export default class PantryItemService {
       existingPortion.portion,
     );
 
-    if (netAvailableMeasurement.magnitude < convertedPortion.magnitude) {
+    if (netAvailableMeasurement?.magnitude < convertedPortion.magnitude) {
       throw new BadRequestException(
-        `Not enough available. Available: ${netAvailableMeasurement.magnitude} ${netAvailableMeasurement.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
+        `Not enough available. Available: ${netAvailableMeasurement?.magnitude} ${netAvailableMeasurement?.unit}. Requested: ${convertedPortion.magnitude} ${convertedPortion.unit}`,
       );
     }
 
     pantryItem.availableMeasurements.magnitude =
-      netAvailableMeasurement.magnitude - convertedPortion.magnitude;
+      netAvailableMeasurement?.magnitude - convertedPortion.magnitude;
     pantryItem.reservedMeasurements.magnitude =
-      netReservedMeasurement.magnitude + convertedPortion.magnitude;
+      netReservedMeasurement?.magnitude + convertedPortion.magnitude;
 
     return manager.save(PantryItemEntity, pantryItem);
   }
@@ -342,17 +342,17 @@ export default class PantryItemService {
     }
 
     pantryItem.totalMeasurements = {
-      magnitude: product.measurement.magnitude * pantryItem.quantity,
-      unit: product.measurement.unit,
+      magnitude: product.measurement?.magnitude * pantryItem.quantity,
+      unit: product.measurement?.unit,
     };
     pantryItem.consumedMeasurements = {
       magnitude: 0,
-      unit: product.measurement.unit,
+      unit: product.measurement?.unit,
     };
     pantryItem.availableMeasurements = { ...pantryItem.totalMeasurements };
     pantryItem.reservedMeasurements = {
       magnitude: 0,
-      unit: product.measurement.unit,
+      unit: product.measurement?.unit,
     };
 
     return pantryItem;

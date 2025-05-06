@@ -47,3 +47,9 @@
     margin-inline-start: 0.25em;
   }
 }
+
+.bp-ingredient_management_offcanvas__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

@@ -48,7 +48,7 @@ export default function RecipesFilterBar() {
   );
 }
 
-function RecipeSorter() {
+export function RecipeSorter() {
   const {
     recipesQuery: { sortBy },
   } = useRecipesCrudListState();
@@ -74,7 +74,7 @@ function RecipeSorter() {
   );
 }
 
-function CuisineProminentMultiselect() {
+export function CuisineProminentMultiselect() {
   const { data, isError, isSuccess, isLoading } = useGetCuisinesQuery();
   const {
     recipesQuery: { cuisineIds },
@@ -114,7 +114,7 @@ function CuisineProminentMultiselect() {
   );
 }
 
-function AllergenProminentMultiselect() {
+export function AllergenProminentMultiselect() {
   const { data, isError, isLoading } = useGetAllergensQuery();
   const {
     recipesQuery: { allergenIdsExclude },
@@ -154,7 +154,7 @@ function AllergenProminentMultiselect() {
   );
 }
 
-function DifficultyLevelMultiselect() {
+export function DifficultyLevelMultiselect() {
   const options = useMemo(() => {
     let entries = Object.entries(DifficultyLevels).map(([key, value]) => ({ label: `${normaliseEnumKey(key)}`, value }));
     return entries;
@@ -194,7 +194,7 @@ function DifficultyLevelMultiselect() {
   );
 }
 
-function RecipeTagsMultiselect() {
+export function RecipeTagsMultiselect() {
   const { data, isError, isLoading } = useGetRecipeTagsQuery();
 
   const {

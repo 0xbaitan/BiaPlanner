@@ -62,7 +62,7 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
 
   return (
     <Form.Group className={["bp-cooking_measurement_input", className].join(" ")} {...rest}>
-      <Form.Control className="bp-cooking_measurement_input__magnitude" disabled={disabled} type="number" min={minMagnitude} max={maxMagnitude} value={measurement.magnitude} onChange={onMagnitudeChange} />
+      <Form.Control className="bp-cooking_measurement_input__magnitude" disabled={disabled} type="number" min={minMagnitude} max={maxMagnitude} value={measurement?.magnitude} onChange={onMagnitudeChange} />
       {scoped ? (
         <ScopedMeasurementSelect
           className="bp-cooking_measurement_input__unit"
@@ -72,13 +72,13 @@ export default function CookingMeasurementInput(props: CookingMeasurementInputPr
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit } });
             props.onChange({ ...measurement, unit });
           }}
-          initialValue={measurement.unit}
+          initialValue={measurement?.unit}
         />
       ) : (
         <MeasurementInput
           className="bp-cooking_measurement_input__unit"
           disabled={disabled}
-          selectedValues={[getCookingMeasurement(measurement.unit)]}
+          selectedValues={[getCookingMeasurement(measurement?.unit)]}
           onChange={([value]) => {
             setMeasurement({ type: CookingMeasurementInputActionType.UPDATE_COOKING_MEASUREMENT, payload: { unit: value.unit as CookingMeasurement["unit"] } });
             props.onChange({ ...measurement, unit: value.unit as CookingMeasurement["unit"] });

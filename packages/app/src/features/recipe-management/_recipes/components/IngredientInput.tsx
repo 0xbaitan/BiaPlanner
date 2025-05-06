@@ -54,7 +54,7 @@ export default function IngredientInput() {
                 })
               }
             />
-            <Form.Control.Feedback type="invalid">{errors?.measurement?.magnitude ? errors.measurement.magnitude._errors[0] : undefined}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{errors?.measurement?.magnitude ? errors.measurement?.magnitude._errors[0] : undefined}</Form.Control.Feedback>
           </Form.Group>
           <span className="w-100">
             <MeasurementInput

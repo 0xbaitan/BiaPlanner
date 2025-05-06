@@ -32,12 +32,12 @@ export default function ScopedMeasurementSelect(props: ScopedMeasurementSelectPr
     <SelectInput<ICookingMeasurement>
       {...rest}
       onChange={([measurement]) => {
-        onChange(measurement.unit);
+        onChange(measurement?.unit);
       }}
       selectedValues={initialSelectedValue ? [initialSelectedValue] : undefined}
       idSelector={(measurement) => measurement.id}
       list={options}
-      nameSelector={(measurement) => measurement.unit}
+      nameSelector={(measurement) => measurement?.unit}
     />
   );
 }

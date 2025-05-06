@@ -286,6 +286,6 @@ export class ProductService {
     product: IProduct,
     measurement: CookingMeasurement,
   ) {
-    product.measurementType = getCookingMeasurement(measurement.unit).type;
+    product.measurementType = getCookingMeasurement(measurement?.unit).type;
   }
 }

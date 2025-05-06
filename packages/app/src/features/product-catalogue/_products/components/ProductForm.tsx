@@ -298,8 +298,8 @@ function MeasurementInput() {
               onChange={(measurement) => {
                 console.log("measurement", measurement);
                 onChange({
-                  magnitude: measurement.magnitude,
-                  unit: measurement.unit,
+                  magnitude: measurement?.magnitude,
+                  unit: measurement?.unit,
                 });
               }}
               initialValue={{

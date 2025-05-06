@@ -203,7 +203,7 @@ export default function ViewRecipePage() {
                 <li key={ingredient.id} className="bp-recipe_view__ingredients_directions__container__ingredients__list__item">
                   <div>{index + 1}.</div>{" "}
                   <div>
-                    {ingredient.measurement?.magnitude && ingredient.measurement?.unit ? `${ingredient.measurement.magnitude} ${ingredient.measurement.unit} of ` : ""}
+                    {ingredient.measurement?.magnitude && ingredient.measurement?.unit ? `${ingredient.measurement?.magnitude} ${ingredient.measurement?.unit} of ` : ""}
 
                     {ingredient.title}
                   </div>

@@ -22,7 +22,7 @@
   width: calc(100% - 4em);
   display: none;
   padding: 1.2em;
-
+  background-color: white;
   transition: max-height 0.3s ease-out;
   border: 0.5px solid $colors-silver;
   border-top: none;
@@ -86,4 +86,8 @@
   padding: 0.25em 0.75em !important;
   border-radius: 1rem;
   font-weight: 600;
+}
+
+.bg-primary {
+  background-color: $colors-main !important;
 }

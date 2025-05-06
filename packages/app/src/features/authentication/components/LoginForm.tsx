@@ -6,6 +6,7 @@ import { useCallback, useEffect } from "react";
 
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
+import Heading from "@/components/Heading";
 import { ILoginUserDto } from "@biaplanner/shared";
 import { toast } from "react-toastify";
 import { useAuthenticationActions } from "../reducers/AuthenticationReducer";
@@ -100,6 +101,9 @@ export default function LoginForm(props: LoginFormProps) {
   return (
     <FormProvider {...methods}>
       <Form id="bp-login-form" onSubmit={handleSubmit(onSubmit)}>
+        <Heading level={Heading.Level.H1} className="bp-login-form__title">
+          Login
+        </Heading>
         <Form.Group controlId="bp-login">
           <Form.Label>Username/Email</Form.Label>
           <Form.Control isInvalid={!!errors.login || !!userDoesNotExistMessage} {...register("login")} type="text" />
@@ -110,7 +114,7 @@ export default function LoginForm(props: LoginFormProps) {
           <Form.Control isInvalid={!!errors.password} {...register("password")} type="password" />
           <Form.Control.Feedback type="invalid">{errors.password?.message}</Form.Control.Feedback>
         </Form.Group>
-        <Form.Group controlId="bp-login-submit">
+        <Form.Group controlId="bp-login-submit" className="mt-3">
           <Button type="submit">Login</Button>
         </Form.Group>
       </Form>

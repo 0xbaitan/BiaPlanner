@@ -1,11 +1,10 @@
 import { ConsumePantryItemDtoSchema, CookingMeasurement, IConsumePantryItemDto, Weights, getCookingMeasurement } from "@biaplanner/shared";
 import { Controller, useForm } from "react-hook-form";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useConsumePantryItemMutation, useGetPantryItemQuery } from "@/apis/PantryItemsApi";
 import { usePantryItemsCrudListActions, usePantryItemsCrudListState } from "../reducers/PantryItemsCrudListReducer";
 
 import Button from "react-bootstrap/Button";
-import CookingMeasurementInput from "@/features/product-catalogue/_products/components/CookingMeasurementInput";
 import { Form } from "react-bootstrap";
 import MeasurementInput from "@/features/recipe-management/_recipes/components/MeasurementInput";
 import Modal from "react-bootstrap/Modal";
@@ -59,7 +58,7 @@ export default function ConsumeItemModal() {
     defaultValues: {
       measurement: {
         magnitude: 0,
-        unit: pantryItem?.product?.measurement.unit ?? Weights.GRAM,
+        unit: pantryItem?.product?.measurement?.unit ?? Weights.GRAM,
       },
 
       pantryItemId: pantryItemId ?? undefined,
@@ -121,10 +120,10 @@ export default function ConsumeItemModal() {
             <>
               <h5>{pantryItem.product?.name}</h5>
               <p>
-                Available Quantity: {pantryItem.availableMeasurements?.magnitude} {pantryItem.availableMeasurements?.unit}
+                Available Quantity: {pantryItem?.availableMeasurements?.magnitude} {pantryItem?.availableMeasurements?.unit}
               </p>
               <p>
-                Consumed Quantity: {pantryItem.consumedMeasurements?.magnitude} {pantryItem.product?.measurement.unit}
+                Consumed Quantity: {pantryItem?.consumedMeasurements?.magnitude} {pantryItem.product?.measurement?.unit}
               </p>
 
               <Controller name="measurement.magnitude" control={methods.control} render={({ field, fieldState }) => <TextInput type="number" label="Quantity to Consume" placeholder="Quantity" {...field} isInvalid={Boolean(fieldState.error)} />} />
@@ -136,7 +135,7 @@ export default function ConsumeItemModal() {
                   <MeasurementInput
                     {...field}
                     labelField="Unit"
-                    selectedValues={[getCookingMeasurement(field.value ?? pantryItem.product?.measurement.unit)]}
+                    selectedValues={[getCookingMeasurement(field.value ?? pantryItem.product?.measurement?.unit ?? Weights.GRAM)]}
                     onChange={([value]) => {
                       field.onChange(value.unit as CookingMeasurement["unit"]);
                     }}

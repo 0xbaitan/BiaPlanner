@@ -48,8 +48,8 @@ export default function MarkShoppingItemsTable(props: MarkShoppingItemsTableProp
                       <div className="bp-mark_shopping_items_table__product__details">
                         <div className="bp-mark_shopping_items_table__product__details__title">{product?.name}</div>
                         <div className="bp-mark_shopping_items_table__product__details__measurement">
-                          <span>{product?.measurement.magnitude}</span>
-                          <span>{product?.measurement.unit}</span>
+                          <span>{product?.measurement?.magnitude}</span>
+                          <span>{product?.measurement?.unit}</span>
                         </div>
                       </div>
                     </div>

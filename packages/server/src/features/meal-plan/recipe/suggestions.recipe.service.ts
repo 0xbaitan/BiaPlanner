@@ -179,7 +179,7 @@ export class RecipeSuggestionsService {
     ) {
       return 0;
     }
-    const unitUsed = ingredient.measurement.unit;
+    const unitUsed = ingredient.measurement?.unit;
     const unconsumedAmount =
       convertCookingMeasurement(pantryItem.totalMeasurements, unitUsed)
         .magnitude -

@@ -36,12 +36,12 @@ export function getCookingMeasurementList(): ICookingMeasurement[] {
 
 export function getCookingMeasurement(unit: CookingMeasurementUnit): ICookingMeasurement {
   const allMeasurements = getCookingMeasurementList();
-  return allMeasurements.find((measurement) => measurement.unit === unit) as ICookingMeasurement;
+  return allMeasurements.find((measurement) => measurement?.unit === unit) as ICookingMeasurement;
 }
 
 export function getMeasurementLabel(unit: CookingMeasurementUnit): string {
   const measurement = getCookingMeasurement(unit);
-  switch (measurement.unit) {
+  switch (measurement?.unit) {
     case Weights.GRAM:
       return "grams (g)";
     case Weights.KILOGRAM:
