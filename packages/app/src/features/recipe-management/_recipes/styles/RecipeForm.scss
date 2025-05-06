@@ -1,12 +1,15 @@
 .bp-recipe_form {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   gap: 2rem; // Space between sections
   height: 100%; // Ensure the form takes the full height of the container
 
   &__dual_pane {
     display: flex;
-    gap: 2rem; // Space between the two panes
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem; // Space between the two panes
     flex-grow: 1; // Allow the panel to grow and fill available space
     align-items: stretch; // Ensure both panes stretch to the same height
     height: 100%; // Ensure the dual pane takes the full height of the container
@@ -39,6 +42,26 @@
     flex-direction: column;
     gap: 1.5rem; // Space between fields
     margin-top: 2rem; // Space above the section
+
+    .bp-ingredients_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
   }
 
   &__instructions {
@@ -47,5 +70,60 @@
 
   &__directions {
     margin-top: 2rem; // Space above the directions section
+
+    .bp-directions_header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+
+    .bp-directions_list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+
+      &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #ffffff;
+
+        .bp-direction_text {
+          font-size: 1rem;
+          font-weight: 500;
+        }
+
+        .bp-direction_actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+
+          button {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
   }
 }

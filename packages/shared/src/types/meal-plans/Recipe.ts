@@ -52,8 +52,9 @@ export const WriteRecipeValidationSchema = zfd.formData({
 
   ingredients: zfd.repeatable(z.array(zfd.json(WriteRecipeIngredientDtoSchema)).min(1, { message: "At least one ingredient is required" })),
 
-  difficultyLevel: zfd.text(z.string()),
-  cuisine: zfd.json(z.object({ id: z.coerce.string() })),
+  difficultyLevel: zfd.text(z.string().min(1, { message: "Difficulty level is required" })),
+
+  cuisine: zfd.json(z.object({ id: z.coerce.string().min(1, { message: "Cuisine is required" }) })),
 
   cookingTime: zfd.json(SegmentedTimeSchema).optional(),
   prepTime: zfd.json(SegmentedTimeSchema).optional(),

@@ -33,7 +33,10 @@ export function formatSegmentedTimeAsString(time: SegmentedTime) {
   if (seconds > 0) {
     timeParts.push(`${seconds}s`);
   }
-  return timeParts.join(" ");
+  const formattedTime = timeParts.join(" ");
+  if (formattedTime.trim().length === 0) {
+    return undefined;
+  }
 }
 
 export default function RecipeCard(props: RecipeCardProps) {

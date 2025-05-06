@@ -59,22 +59,22 @@ export default function ViewRecipePage() {
 
   const metaItems = [
     {
-      label: recipe?.cuisine.name,
+      label: recipe?.cuisine?.name ?? undefined,
       icon: PiChefHatFill,
       description: "Cuisine",
     },
     {
-      label: recipe?.difficultyLevel?.toString(),
+      label: recipe?.difficultyLevel?.toString() ?? undefined,
       icon: SiLevelsdotfyi,
       description: "Difficulty",
     },
     {
-      label: recipe?.prepTime ? `${formatSegmentedTimeAsString(recipe.prepTime)}` : undefined,
+      label: recipe?.prepTime ? formatSegmentedTimeAsString(recipe.prepTime) : undefined,
       icon: MdAccessTime,
       description: "Prepping time",
     },
     {
-      label: recipe?.cookingTime ? `${formatSegmentedTimeAsString(recipe.cookingTime)}` : undefined,
+      label: recipe?.cookingTime ? formatSegmentedTimeAsString(recipe.cookingTime) : undefined,
       icon: MdAccessTimeFilled,
       description: "Cooking time",
     },

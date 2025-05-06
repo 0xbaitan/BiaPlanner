@@ -5,6 +5,7 @@ import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
 
 import { FaEye } from "react-icons/fa6";
 import TabbedViewsTable from "@/components/tables/TabbedViewsTable";
+import { useContainsNecessaryPermission } from "@/features/authentication/hooks/useContainsNecessaryPermission";
 import { useDeleteBrandMutation } from "@/apis/BrandsApi";
 import { useDeletionToast } from "@/components/toasts/DeletionToast";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,8 @@ export default function BrandsTable(props: BrandsTableProps) {
   const navigate = useNavigate();
 
   const [deleteBrand, { isSuccess, isError, isLoading }] = useDeleteBrandMutation();
+
+  const containsNecessaryPermissions = useContainsNecessaryPermission();
 
   const { setItem } = useDefaultStatusToast<IBrandExtended>({
     isSuccess,
@@ -78,6 +81,7 @@ export default function BrandsTable(props: BrandsTableProps) {
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.BRANDS_VIEW, { id: row.id }));
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "brand", key: "viewItem" }),
         },
         {
           icon: FaPencilAlt,
@@ -86,6 +90,7 @@ export default function BrandsTable(props: BrandsTableProps) {
           onClick: (row) => {
             navigate(fillParametersInPath(RoutePaths.BRANDS_EDIT, { id: row.id }));
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "brand", key: "editItem" }),
         },
         {
           icon: FaTrashAlt,
@@ -94,6 +99,7 @@ export default function BrandsTable(props: BrandsTableProps) {
           onClick: (row) => {
             notifyDeletion(row);
           },
+          hideConditionally: () => !containsNecessaryPermissions({ area: "brand", key: "deleteItem" }),
         },
       ]}
       showSerialNumber={true}

@@ -1,5 +1,6 @@
 import "../styles/ViewBrandPage.scss";
 
+import AuthorisationSieve, { AuthorisationSieveType } from "@/features/authentication/components/AuthorisationSieve";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import { RoutePaths, fillParametersInPath } from "@/Routes";
 import { useDeleteBrandMutation, useGetBrandQuery } from "@/apis/BrandsApi";
@@ -89,14 +90,30 @@ export default function ViewBrandPage() {
       title={brand.name}
       actions={
         <div className="bp-brand_view__actions">
-          <Button variant="primary" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_EDIT, { id: brand.id }))}>
-            <FaEdit />
-            &ensp;Edit brand
-          </Button>
-          <Button variant="danger" onClick={handleDeleteBrand}>
-            <FaTrash />
-            &ensp;Delete brand
-          </Button>
+          <AuthorisationSieve
+            permissionIndex={{
+              area: "brand",
+              key: "editItem",
+            }}
+            type={AuthorisationSieveType.NULLIFY}
+          >
+            <Button variant="secondary" onClick={() => navigate(fillParametersInPath(RoutePaths.BRANDS_EDIT, { id: brand.id }))}>
+              <FaEdit />
+              &ensp;Edit brand
+            </Button>
+          </AuthorisationSieve>
+          <AuthorisationSieve
+            permissionIndex={{
+              area: "product",
+              key: "deleteItem",
+            }}
+            type={AuthorisationSieveType.NULLIFY}
+          >
+            <Button variant="outline-danger" onClick={handleDeleteBrand}>
+              <FaTrash />
+              &ensp;Delete brand
+            </Button>
+          </AuthorisationSieve>
         </div>
       }
     >
@@ -119,10 +136,19 @@ export default function ViewBrandPage() {
               <li key={product.id} className="bp-brand_view__products_list_item">
                 <img src={getImagePath(product.cover)} alt={product.name} className="bp-brand_view__products_list_item_image" />
                 <span className="bp-brand_view__products_list_item_name">{product.name}</span>
-                <Button variant="outline-primary" size="sm" className="bp-brand_view__products_list_item_button" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }))}>
-                  <FaEye />
-                  &ensp;View
-                </Button>
+
+                <AuthorisationSieve
+                  permissionIndex={{
+                    area: "product",
+                    key: "viewItem",
+                  }}
+                  type={AuthorisationSieveType.NULLIFY}
+                >
+                  <Button variant="outline-primary" size="sm" className="bp-brand_view__products_list_item_button" onClick={() => navigate(fillParametersInPath(RoutePaths.PRODUCTS_VIEW, { id: product.id }))}>
+                    <FaEye />
+                    &ensp;View
+                  </Button>
+                </AuthorisationSieve>
               </li>
             ))}
           </ol>

@@ -2,7 +2,7 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: start;
     margin-bottom: 1.5rem;
 
     &__title {
@@ -12,6 +12,7 @@
 
       h2 {
         margin: 0;
+        padding: 0;
       }
 
       small {
@@ -26,18 +27,13 @@
     align-items: center;
     white-space: nowrap;
     padding: 0.5rem 1rem;
-    min-width: 140px;
-
-    svg {
-      font-size: 0.875rem;
-    }
+    font-size: 0.875rem;
   }
 
   &__content {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 0.5rem;
-    padding: 1.5rem;
   }
 
   &__empty {

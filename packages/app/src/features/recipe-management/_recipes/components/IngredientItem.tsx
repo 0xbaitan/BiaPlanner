@@ -30,35 +30,35 @@ export default function IngredientItem(props: IngredientItemProps) {
       onRemove(entity.index);
     },
   });
+
   return (
     <div className="bp-ingredient_item">
       <div className="bp-ingredient_item__main">
         <div className="bp-ingredient_item__main__count">
           <div className="bp-ingredient_item__main__count__index">{index + 1}</div>
         </div>
-        <div className="bp-ingredient_item__main__details">
-          <div className="d-flex">
-            <div className="bp-ingredient_item__main__title">{ingredient.title}</div>
+
+        <div className="bp-ingredient__overall">
+          <div className="bp-ingredient_item__main__details">
+            <div className="bp-ingredient_item__main__title fw-bold">{ingredient.title}</div>
             <div className="bp-ingredient_item__main__measurement">
-              <span className="bp-ingredient_item__main__measurement__magnitude">{ingredient.measurement?.magnitude}</span>
-              <span className="bp-ingredient_item__main__measurement__unit">{ingredient.measurement?.unit}</span>
+              <span className="bp-ingredient_item__main__measurement__magnitude fw-bold">{ingredient.measurement?.magnitude}</span>
+              <span className="bp-ingredient_item__main__measurement__unit fw-bold">{ingredient.measurement?.unit}</span>
             </div>
           </div>
-          <div className="d-flex">
-            <div className="bp-ingredient_item__categories">
-              {ingredient.productCategories.map((category, index) => (
-                <div key={index} className="bp-ingredient_item__categories__category">
-                  {isSuccess && <span className="bp-ingredient_item__categories__category__name">{getIngredientCategoryName(category.id)}</span>}
-                </div>
-              ))}
-            </div>
+          <div className="bp-ingredient_item__categories">
+            {ingredient.productCategories.map((category, index) => (
+              <div key={index} className="bp-ingredient_item__categories__category">
+                {isSuccess && getIngredientCategoryName(category.id)?.slice(0, 10)}
+              </div>
+            ))}
           </div>
         </div>
         <div className="bp-ingredient_item__main__actions">
           <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => openUpdateIngredientModal(index, ingredient)}>
             <MdEdit size={20} />
           </button>
-          <button className="bp-ingredient_item__main__actions__btn" type="button" onClick={() => notifyDeletion({ ingredient, index })}>
+          <button className="bp-ingredient_item__main__actions__btn delete" type="button" onClick={() => notifyDeletion({ ingredient, index })}>
             <FaTrash size={20} />
           </button>
         </div>

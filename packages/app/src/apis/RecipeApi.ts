@@ -22,7 +22,7 @@ export const RecipeApi = rootApi.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Recipe", id }],
     }),
 
-    createRecipe: build.mutation<IRecipe, IWriteRecipeDto>({
+    createRecipe: build.mutation<IRecipe, FormData>({
       query: (body) => ({
         url: "/meal-plan/recipes",
         method: "POST",

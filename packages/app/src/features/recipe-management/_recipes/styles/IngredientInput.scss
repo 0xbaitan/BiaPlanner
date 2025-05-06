@@ -2,14 +2,14 @@
   display: flex;
   position: relative;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.5em;
   padding: 1.25em;
   border: 1px solid #ccc;
   background-color: darken($color: #fff, $amount: 0.15);
 
   &__row {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: clamp(4px, 2%, 16px);
   }
 
@@ -18,12 +18,18 @@
   }
 
   &__measurement_magnitude_field {
-    flex-basis: 40%;
+    flex-basis: 50%;
   }
 
   &__measurement_unit_field {
     width: 100%;
-    flex-basis: 60%;
+    flex-basis: 50%;
     flex-grow: 1;
   }
+}
+
+.bp-ingredient_input__measurement {
+  display: flex;
+  flex-direction: row;
+  gap: clamp(4px, 2%, 16px);
 }

@@ -4,13 +4,10 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border-radius: 0.375rem;
   background-color: #fff;
-  border: 1px solid #a9a9a9;
-
-  padding-left: clamp(0.25em, 0.5vw, 1em);
-  padding-right: clamp(0.25em, 0.5vw, 1em);
+  border: 1px solid #dee2e6;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 
   &__main {
@@ -18,8 +15,7 @@
     justify-content: space-between;
     width: 100%;
     flex-direction: row;
-    margin-bottom: 0.5rem;
-    gap: clamp(1em, 2vw, 4em);
+    gap: 1rem;
 
     &__actions {
       flex-basis: 10%;
@@ -32,65 +28,96 @@
         color: $colors-main;
         border: none;
         cursor: pointer;
+
+        &.delete {
+          color: $colors-danger;
+        }
       }
     }
 
     &__count {
-      flex-basis: 10%;
+      flex-basis: 5%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
       &__index {
-        height: clamp(1.5rem, 2.5vw, 2.5rem);
-        width: clamp(1.5rem, 2.5vw, 2.5rem);
-
+        height: 2rem;
+        width: 2rem;
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: 0.75rem; // Smaller font size for serial number
         font-weight: bold;
-
-        background-color: $colors-dark-grey;
+        background-color: $colors-secondary;
         color: white;
         border-radius: 50%;
       }
     }
 
     &__details {
-      flex-basis: 80%;
-    }
-
-    &__title {
-      flex-grow: 1;
-    }
-
-    &__measurement {
+      flex-basis: 85%;
       display: flex;
+      flex-direction: row;
+      justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
 
-      &__magnitude {
-        margin-right: 0.25rem;
+      &__title {
+        font-size: 1.25rem; // Larger font size for ingredient title
+        font-weight: bold;
+        color: #333;
+      }
+
+      &__measurement {
+        font-size: 1.125rem; // Larger font size for measurement
+        font-weight: 500;
+        color: #555;
+
+        &__magnitude {
+          margin-right: 0.25rem;
+        }
       }
     }
   }
 
   &__categories {
-    font-size: 0.875rem;
-    color: #6c757d;
+    font-size: 0.75rem; // Smaller font size for category pills
+    color: $colors-secondary;
     display: flex;
-    margin-top: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.25rem; // Reduced gap between pills
 
-    gap: 0.5rem;
     &__category {
-      background-color: $colors-main;
-      padding: 0.25em;
-      width: max-content;
-      height: 100%;
-      padding-left: 1em;
-      padding-right: 1em;
+      background-color: $colors-secondary;
+      padding: 0.15rem 0.5rem; // Smaller padding for compact pills
+      font-size: 0.75rem; // Smaller font size
       color: white;
       border-radius: 64px;
+      cursor: pointer;
+      text-overflow: ellipsis;
     }
+  }
+}
+
+.bp-ingredient__overall {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  padding: 0.5rem;
+
+  &__title {
+    font-size: 1.125rem; // Larger font size for overall title
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem; // Space below the title
+  }
+
+  &__description {
+    font-size: 1rem; // Regular font size for description
+    color: #555;
+    line-height: 1.5; // Improved line height for readability
   }
 }

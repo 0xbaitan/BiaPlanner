@@ -1,3 +1,5 @@
+import "../styles/IngredientList.scss";
+
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import { Button } from "react-bootstrap";
@@ -40,11 +42,11 @@ export default function IngredientList() {
       <div className="bp-ingredient_list__header">
         <div className="bp-ingredient_list__header__title">
           <Heading level={Heading.Level.H2}>Ingredients</Heading>
-          <small className="text-muted">Click on the 'Add Ingredient' button to add a new ingredient</small>
+          <small className="text-muted">Click button to open a modal to add ingredients.</small>
         </div>
-        <Button onClick={openCreateIngredientModal} className="bp-ingredient_list__add_btn">
-          <FaPlus className="me-2" />
-          Add ingredient
+        <Button onClick={openCreateIngredientModal} className="bp-direction_list__add_btn">
+          <FaPlus size={16} />
+          &nbsp;Add ingredient
         </Button>
       </div>
 

@@ -1,8 +1,8 @@
-import { IWriteRecipeDto, IWriteRecipeIngredientDto, WriteRecipeIngredientDtoSchema } from "@biaplanner/shared";
-import { UseFieldArrayAppend, useFormContext } from "react-hook-form";
+import { IWriteRecipeIngredientDto, WriteRecipeIngredientDtoSchema } from "@biaplanner/shared";
 import { useRecipeFormActions, useRecipeFormState } from "../../../meal-planning/reducers/RecipeFormReducer";
 
 import Button from "react-bootstrap/Button";
+import Heading from "@/components/Heading";
 import IngredientInput from "./IngredientInput";
 import Modal from "react-bootstrap/Modal";
 import { useCallback } from "react";
@@ -38,7 +38,9 @@ export default function IngredientModal(props: IngredientModalProps) {
   return (
     <Modal show={showIngredientModal} onHide={closeIngredientModal} backdrop="static" size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>{modalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Modal.Title>
+        <Modal.Title>
+          <Heading level={Heading.Level.H2}>{modalType === "create" ? "Add new ingredient" : ingredientIndex !== undefined && ingredientIndex >= 0 ? `Update ingredient #${ingredientIndex + 1}` : "Update existing ingredient"}</Heading>
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>

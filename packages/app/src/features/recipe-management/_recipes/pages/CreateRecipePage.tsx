@@ -1,46 +1,51 @@
-import useDefaultStatusToast, { Action } from "@/hooks/useDefaultStatusToast";
+import { RoutePaths, fillParametersInPath } from "@/Routes";
 
 import { IWriteRecipeDto } from "@biaplanner/shared";
 import RecipeForm from "../components/RecipeForm";
-import { Status } from "@/hooks/useStatusToast";
+import { useCallback } from "react";
 import { useCreateRecipeMutation } from "@/apis/RecipeApi";
+import { useNavigate } from "react-router-dom";
+import useSimpleStatusToast from "@/hooks/useSimpleStatusToast";
 
 export default function CreateRecipePage() {
-  const [createRecipeMutation, { isLoading, isError, isSuccess }] = useCreateRecipeMutation();
+  const navigate = useNavigate();
+  const [createRecipe, { isSuccess, isError, isLoading, data }] = useCreateRecipeMutation();
 
-  const { setItem } = useDefaultStatusToast<IWriteRecipeDto>({
-    action: Action.CREATE,
-    entityIdentifier: (entity) => entity.title,
-    idPrefix: "recipes",
+  const { notify: notifyOnCreateTrigger } = useSimpleStatusToast({
     isError,
     isLoading,
     isSuccess,
-    idSelector: (entity) => "new",
-    toastProps: {
-      autoClose: 5000,
+    successMessage: "Recipe created successfully.",
+    errorMessage: "Failed to create recipe.",
+    loadingMessage: "Creating recipe...",
+    idPrefix: "recipe-create",
+    onFailure: () => {
+      console.error("Failed to create recipe");
     },
-    redirectContent: {
-      applicableStatuses: [Status.SUCCESS],
-      redirectUrl: "/meal-planning/recipes",
-      redirectButtonText: "Return to recipes",
+    onSuccess: () => {
+      console.log("Recipe created successfully");
+      navigate(fillParametersInPath(RoutePaths.RECIPES_VIEW, { id: String(data?.id) }));
     },
   });
 
-  const handleCreateRecipeSubmission = async (dto: IWriteRecipeDto) => {
-    console.log("Creating recipe with DTO:", dto);
-    setItem(dto);
-    try {
-      await createRecipeMutation(dto).unwrap();
-      return true;
-    } catch (error) {
-      console.error("Error creating recipe:", error);
-      return false;
-    }
-  };
+  const handleCreateRecipeSubmission = useCallback(
+    async (dto: IWriteRecipeDto, formData: FormData) => {
+      console.log("Creating recipe with DTO:", dto);
+      notifyOnCreateTrigger();
+      try {
+        await createRecipe(formData).unwrap();
+        return true;
+      } catch (error) {
+        console.error("Error creating recipe:", error);
+        return false;
+      }
+    },
+    [createRecipe, notifyOnCreateTrigger]
+  );
 
   return (
     <div>
-      <RecipeForm type="create" onSubmit={handleCreateRecipeSubmission} />
+      <RecipeForm type="create" onSubmit={handleCreateRecipeSubmission} disableSubmit={isLoading} />
     </div>
   );
 }
